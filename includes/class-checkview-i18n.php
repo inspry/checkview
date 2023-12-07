@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Define the internationalization functionality
  *
@@ -24,7 +23,7 @@
  * @subpackage Checkview/includes
  * @author     Check View <support@checkview.io>
  */
-class Checkview_i18n {
+class Checkview_I18n {
 
 
 	/**
@@ -39,9 +38,5 @@ class Checkview_i18n {
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
 		);
-
 	}
-
-
-
 }

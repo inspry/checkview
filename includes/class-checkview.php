@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The file that defines the core plugin class
  *
@@ -58,6 +57,16 @@ class Checkview {
 	protected $version;
 
 	/**
+	 * The single instance of the plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      class    $instance    The instance of the class.
+	 */
+
+	private static $instance = null;
+
+	/**
 	 * Define the core functionality of the plugin.
 	 *
 	 * Set the plugin name and the plugin version that can be used throughout the plugin.
@@ -78,7 +87,21 @@ class Checkview {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+	}
 
+	/**
+	 * The object is created from within the class itself.
+	 * only if the class has no instance.
+	 *
+	 * @since    1.0.0
+	 * @return   self   class instance
+	 */
+	public static function get_instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new Checkview();
+		}
+
+		return self::$instance;
 	}
 
 	/**
@@ -103,27 +126,26 @@ class Checkview {
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-checkview-loader.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-checkview-loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-checkview-i18n.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-checkview-i18n.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-checkview-admin.php';
+		require_once plugin_dir_path( __DIR__ ) . 'admin/class-checkview-admin.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-checkview-public.php';
+		require_once plugin_dir_path( __DIR__ ) . 'public/class-checkview-public.php';
 
 		$this->loader = new Checkview_Loader();
-
 	}
 
 	/**
@@ -140,7 +162,6 @@ class Checkview {
 		$plugin_i18n = new Checkview_i18n();
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
-
 	}
 
 	/**
@@ -156,7 +177,6 @@ class Checkview {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
-
 	}
 
 	/**
@@ -172,7 +192,6 @@ class Checkview {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
 	}
 
 	/**
@@ -214,5 +233,4 @@ class Checkview {
 	public function get_version() {
 		return $this->version;
 	}
-
 }

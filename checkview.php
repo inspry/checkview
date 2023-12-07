@@ -74,8 +74,9 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-checkview.php';
  */
 function run_checkview() {
 
-	$plugin = new Checkview();
+	$plugin = Checkview()::getInstance();
 	$plugin->run();
 }
 
 run_checkview();
+add_action( 'plugins_loaded', 'run_checkview' );
