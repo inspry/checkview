@@ -77,6 +77,4 @@ function run_checkview() {
 	$plugin = Checkview()::getInstance();
 	$plugin->run();
 }
-
-run_checkview();
 add_action( 'plugins_loaded', 'run_checkview' );
