@@ -56,13 +56,22 @@ class CheckView_Api {
 			'/forms/formstestresults',
 			array(
 				'methods'             => 'GET',
-				'callback'            => array( $this, 'checkview_get_available_forms_test_results' ),
+				'callback'            => array( $this, 'checkview_get_register_form_test' ),
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token' => array(
 						'required' => true,
 					),
-					'uid'              => array(
+					'frm_id'           => array(
+						'required' => true,
+					),
+					'pg_id'            => array(
+						'required' => true,
+					),
+					'type'             => array(
+						'required' => true,
+					),
+					'send_to'          => array(
 						'required' => true,
 					),
 				),
@@ -70,12 +79,12 @@ class CheckView_Api {
 		);
 
 		register_rest_route(
-			'wptaskmanager/v1',
-			'/tasks/delete_task',
+			'checkview/v1',
+			'/forms/registerformtest',
 			array(
 				'methods'             => 'DELETE',
-				'callback'            => array( $this, 'wp_task_manager_delete_task' ),
-				'permission_callback' => array( $this, 'get_items_permissions_check' ),
+				'callback'            => array( $this, 'checkview_get_available_forms_test_results' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'id' => array(
 						'required' => true,
@@ -366,10 +375,10 @@ class CheckView_Api {
 	/**
 	 * Reterieves all the avaiable test results for forms.
 	 *
-	 * @param \WP_REST_Request $request the request param with the API call.
+	 * @param WP_REST_Request $request the request param with the API call.
 	 * @return WP_REST_Response/WP_Error/json
 	 */
-	public function checkview_get_available_forms_test_results( \WP_REST_Request $request ) {
+	public function checkview_get_available_forms_test_results( WP_REST_Request $request ) {
 		global $wpdb;
 		$uid = $request->get_param( 'uid' );
 		$uid = isset( $uid ) ? sanitize_text_field( $uid ) : null;
@@ -446,6 +455,53 @@ class CheckView_Api {
 				);
 				wp_die();
 			}
+		}
+	}
+
+	/**
+	 * Registers form test to be validated.
+	 *
+	 * @param WP_REST_Request $request Object with the API call.
+	 * @return WP_REST_Response/WP_Error
+	 */
+	public function checkview_get_register_form_test( WP_REST_Request $request ) {
+		$frm_id  = $request->get_param( 'frm_id' );
+		$frm_id  = isset( $frm_id ) ? sanitize_text_field( $frm_id ) : '';
+		$pg_id   = $request->get_param( 'pg_id' );
+		$pg_id   = isset( $pg_id ) ? sanitize_text_field( $pg_id ) : '';
+		$type    = $request->get_param( 'type' );
+		$type    = isset( $type ) ? sanitize_text_field( $type ) : '';
+		$send_to = $request->get_param( 'send_to' );
+		$send_to = isset( $send_to ) ? sanitize_text_field( $send_to ) : '';
+
+		if ( ! empty( $frm_id ) && ! empty( $pg_id ) && ! empty( $type ) && ! empty( $send_to ) ) {
+			$args['form_id'] = $frm_id;
+			$args['page_id'] = $pg_id;
+			$args['type']    = $type;
+			$args['send_to'] = $send_to;
+			$cf_test         = get_option( 'CF_TEST_' . $args['page_id'], '' );
+			update_option( 'CF_TEST_' . $args['page_id'], wp_json_encode( $args ) );
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => 'success',
+					'body_response' => esc_html__( 'Check Form Test Successfully Added', 'checkview' ),
+				)
+			);
+			wp_die();
+		} else {
+			$error = array(
+				'status'  => 'error',
+				'code'    => 400,
+				'message' => esc_html__( 'Details to register form test are not correct.', 'checkview-helper' ),
+			);
+
+			return new WP_Error(
+				400,
+				esc_html__( 'Details to register form test are not correct.', 'checkview' ),
+				$error
+			);
+			wp_die();
 		}
 	}
 	/**

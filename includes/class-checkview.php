@@ -175,8 +175,39 @@ class Checkview {
 
 		$plugin_admin = new Checkview_Admin( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader->add_action(
+			'admin_enqueue_scripts',
+			$plugin_admin,
+			'enqueue_styles'
+		);
+
+		$this->loader->add_action(
+			'admin_enqueue_scripts',
+			$plugin_admin,
+			'enqueue_scripts'
+		);
+
+		$this->loader->add_filter(
+			'option_active_plugins',
+			$plugin_admin,
+			'checkview_disable_unwanted_plugins',
+			99,
+			1
+		);
+
+		$this->loader->add_action(
+			'after_setup_theme',
+			$plugin_admin,
+			'checkview_init_current_test',
+			99
+		);
+
+		$this->loader->add_action(
+			'admin_init',
+			$plugin_admin,
+			'checkview_init_current_test',
+			99
+		);
 	}
 
 	/**
@@ -190,8 +221,17 @@ class Checkview {
 
 		$plugin_public = new Checkview_Public( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+		$this->loader->add_action(
+			'wp_enqueue_scripts',
+			$plugin_public,
+			'enqueue_styles'
+		);
+
+		$this->loader->add_action(
+			'wp_enqueue_scripts',
+			$plugin_public,
+			'enqueue_scripts'
+		);
 	}
 
 	/**

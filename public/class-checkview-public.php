@@ -71,7 +71,13 @@ class Checkview_Public {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/checkview-public.css', array(), $this->version, 'all' );
+		wp_enqueue_style(
+			$this->plugin_name,
+			plugin_dir_url( __FILE__ ) . 'css/checkview-public.css',
+			array(),
+			$this->version,
+			'all'
+		);
 	}
 
 	/**
@@ -93,6 +99,25 @@ class Checkview_Public {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/checkview-public.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script(
+			$this->plugin_name,
+			plugin_dir_url( __FILE__ ) . 'js/checkview-public.js',
+			array( 'jquery' ),
+			$this->version,
+			false
+		);
+
+		// Current Vsitor IP.
+		$visitor_ip = get_visitor_ip();
+		// Check view Bot IP. Todo.
+		$cv_bot_ip = get_api_ip();
+		// procceed if visitor ip is equal to cv bot ip. Todo.
+		if ( $visitor_ip === $cv_bot_ip ) {
+			wp_dequeue_script( 'contact-form-7' );
+			wp_dequeue_style( 'contact-form-7' );
+			wp_dequeue_script( 'wpcf7-recaptcha' );
+			wp_dequeue_style( 'wpcf7-recaptcha' );
+			wp_dequeue_script( 'google-recaptcha' );
+		}
 	}
 }

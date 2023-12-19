@@ -71,7 +71,13 @@ class Checkview_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/checkview-admin.css', array(), $this->version, 'all' );
+		wp_enqueue_style(
+			$this->plugin_name,
+			plugin_dir_url( __FILE__ ) . 'css/checkview-admin.css',
+			array(),
+			$this->version,
+			'all'
+		);
 	}
 
 	/**
@@ -93,6 +99,126 @@ class Checkview_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/checkview-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script(
+			$this->plugin_name,
+			plugin_dir_url( __FILE__ ) . 'js/checkview-admin.js',
+			array( 'jquery' ),
+			$this->version,
+			false
+		);
+	}
+
+	/**
+	 * Disable unwanted plugins for check view bot ip
+	 *
+	 * @param [string] $plugins activated plugins list.
+	 * @return string
+	 */
+	public function cv_disable_unwanted_plugins( $plugins ) {
+
+		// Current Vsitor IP.
+		$visitor_ip = get_visitor_ip();
+		// Check view Bot IP.
+		$cv_bot_ip = get_api_ip();
+		// skip if visitor ip not equal to CV Bot IP.
+		if ( $visitor_ip !== $cv_bot_ip ) {
+			return $plugins;
+		}
+		// disable clean talk for cv bot ip.
+		$key = array_search( 'cleantalk-spam-protect/cleantalk.php', $plugins, true );
+		if ( false !== $key ) {
+			unset( $plugins[ $key ] );
+		}
+		return $plugins;
+	}
+
+	/**
+	 * Load Form Test.
+	 *
+	 * @return void
+	 */
+	public function checkview_init_current_test() {
+
+		if ( ! is_admin() ) {
+			include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		// Current Vsitor IP.
+		$visitor_ip = get_visitor_ip();
+		// Check view Bot IP. Todo.
+		$cv_bot_ip = get_api_ip();
+
+		// skip if visitor ip not equal to CV Bot IP.
+		if ( $visitor_ip !== $cv_bot_ip ) {
+			return;
+		}
+
+		// if clean talk plugin active whitelist check form API IP.
+		if ( is_plugin_active( 'cleantalk-spam-protect/cleantalk.php' ) ) {
+			whitelist_api_ip();
+		}
+
+		$cv_test_id = isset( $_REQUEST['checkview_test_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) : '';
+
+		$referrer_url = sanitize_url( wp_get_raw_referer(), array( 'http', 'https' ) );
+
+		// If Ajax submission and found test_id.
+		if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'admin-ajax.php' ) === false && '' !== $cv_test_id ) {
+			// Create session for later use when form submit VIA AJAX.
+			create_cv_session( $visitor_ip, $cv_test_id );
+		}
+
+		// If submit VIA AJAX.
+		if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'admin-ajax.php' ) !== false ) {
+			$referer_url_query = wp_parse_url( $referrer_url, PHP_URL_QUERY );
+			$qry_str           = array();
+			parse_str( $referer_url_query, $qry_str );
+			$cv_test_id = $qry_str['checkview_test_id'];
+		}
+
+		$cv_session = get_cv_session( $visitor_ip, $cv_test_id );
+
+		// top if session not found.
+		if ( ! empty( $cv_session ) ) {
+
+			$test_key = $cv_session[0]['test_key'];
+
+			$test_form = get_option( $test_key, '' );
+
+			if ( ! empty( $test_form ) ) {
+				$test_form = json_decode( $test_form, true );
+			}
+
+			$send_to = 'noreply@checkview.io';
+			if ( isset( $test_form['send_to'] ) && '' !== $test_form['send_to'] ) {
+				$send_to = $test_form['send_to'];
+			}
+
+			if ( ! defined( 'TEST_EMAIL' ) ) {
+				define( 'TEST_EMAIL', $send_to );
+			}
+
+			if ( ! defined( 'CV_TEST_ID' ) ) {
+				define( 'CV_TEST_ID', $cv_test_id );
+			}
+			if ( is_plugin_active( 'gravityforms/gravityforms.php' ) ) {
+				require_once CF_PATH . '/includes/modules/mod-gforms-helper.php';
+			}
+			if ( is_plugin_active( 'fluentform/fluentform.php' ) ) {
+				require_once CF_PATH . '/includes/modules/mod-fluent-forms-helper.php';
+			}
+			if ( is_plugin_active( 'ninja-forms/ninja-forms.php' ) ) {
+				require_once CF_PATH . '/includes/modules/mod-ninja-forms-helper.php';
+			}
+			if ( is_plugin_active( 'wpforms/wpforms.php' ) || is_plugin_active( 'wpforms-lite/wpforms.php' ) ) {
+				require_once CF_PATH . '/includes/modules/mod-wpforms-helper.php';
+			}
+			if ( is_plugin_active( 'formidable/formidable.php' ) ) {
+				require_once CF_PATH . '/includes/modules/mod-formidable-helper.php';
+			}
+			if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) ) {
+				require_once CF_PATH . '/includes/modules/mod-cf7-helper.php';
+			}
+		}
 	}
 }
