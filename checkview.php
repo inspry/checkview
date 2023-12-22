@@ -36,6 +36,8 @@ if ( ! defined( 'WPINC' ) ) {
  */
 define( 'CHECKVIEW_VERSION', '1.0.0' );
 
+define( 'CHECKVIEW_PATH', trailingslashit( plugin_dir_path( __FILE__ ) ) );
+
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-checkview-activator.php

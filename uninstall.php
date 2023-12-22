@@ -25,3 +25,18 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
+global $wpdb;
+
+
+// remove check view entry and entry meta tables.
+$cv_entry_table = $wpdb->prefix . 'cv_entry';
+$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %s', $cv_entry_table ) );
+$cv_entry_meta_table = $wpdb->prefix . 'cv_entry_meta';
+$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %s', $cv_entry_meta_table ) );
+$cv_session_table = $wpdb->prefix . 'cv_session';
+$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %s', $cv_session_table ) );
+
+
+// remove all check view options.
+$options_table = $wpdb->prefix . 'options';
+$wpdb->query( $wpdb->prepare( 'Delete from %s where option_name like %s', $options_table, '%CF_TEST_%' ) );
