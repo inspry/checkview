@@ -1,0 +1,135 @@
+<?php
+/**
+ * Fired during Fluentforms is active.
+ *
+ * @link       https://checkview.io
+ * @since      1.0.0
+ *
+ * @package    Checkview
+ * @subpackage Checkview/includes/formhelpers
+ */
+
+if ( ! defined( 'WPINC' ) ) {
+	die( 'Direct access not Allowed.' );
+}
+
+if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
+	/**
+	 * The public-facing functionality of the plugin.
+	 *
+	 * Helps in Fluentforms management.
+	 *
+	 * @package    Checkview
+	 * @subpackage Checkview/includes/formhelpers
+	 * @author     Check View <support@checkview.io>
+	 */
+	class Checkview_Fluent_Forms_Helper {
+
+		/**
+		 * Initializes the class constructor.
+		 */
+		public function __construct() {
+			if ( defined( 'TEST_EMAIL' ) ) {
+				// Change Email address to our test email.
+				$this->loader->add_filter(
+					'fluentform_email_to',
+					$this,
+					'checkview_inject_email',
+					99,
+					4
+				);
+			}
+			// clone entry after submission complete.
+			$this->loader->add_action(
+				'fluentform_submission_inserted',
+				$this,
+				'checkview_clone_fluentform_entry',
+				99,
+				3
+			);
+		}
+
+		/**
+		 * Injects email to fluentform supported emails.
+		 *
+		 * @param string $address email address.
+		 * @param string $notification email notification.
+		 * @param array  $submitted_data fluentforms submitted data.
+		 * @param object $form fluentforms form object.
+		 * @return string email.
+		 */
+		public function checkview_inject_email( $address, $notification, $submitted_data, $form ) {
+			return TEST_EMAIL;
+		}
+		/**
+		 * CLones the fluentforms enrty.
+		 *
+		 * @param int    $entry_id fluentform ID.
+		 * @param array  $form_data fluentform data.
+		 * @param object $form fluentform obj.
+		 * @return void
+		 */
+		public function checkview_clone_fluentform_entry( $entry_id, $form_data, $form ) {
+			global $wpdb;
+
+			$form_id           = $form->id;
+			$checkview_test_id = get_checkview_test_id();
+
+			if ( empty( $checkview_test_id ) ) {
+				$checkview_test_id = $form_id . gmdate( 'Ymd' );
+			}
+
+			// clone entry to check view tables.
+			$tablename = $wpdb->prefix . 'fluentform_entry_details';
+			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where submission_id=%d and form_id=%d order by id ASC', $tablename, $entry_id, $form_id ) );
+			foreach ( $rows as $row ) {
+				$meta_key = 'ff_' . $form_id . '_' . $row->field_name;
+				if ( '' !== $row->sub_field_name ) {
+					$meta_key .= '_' . $row->sub_field_name . '_';
+				}
+				$table = $wpdb->prefix . 'cv_entry_meta';
+				$data  = array(
+					'uid'        => $checkview_test_id,
+					'form_id'    => $form_id,
+					'entry_id'   => $row->submission_id,
+					'meta_key'   => $meta_key,
+					'meta_value' => $row->field_value,
+				);
+				$wpdb->insert( $table, $data );
+			}
+			$tablename = $wpdb->prefix . 'fluentform_submissions';
+			$row       = $wpdb->get_row( $wpdb->prepare( 'Select * from %s where id=%d and form_id=%d LIMIT 1', $tablename, $entry_id, $form_id ), ARRAY_A );
+			$table1    = $wpdb->prefix . 'cv_entry';
+			$data      = array(
+				'uid'            => $checkview_test_id,
+				'form_type'      => 'FluentForms',
+				'form_id'        => $form_id,
+				'source_url'     => isset( $row['source_url'] ) ? $row['source_url'] : 'n/a',
+				'response'       => isset( $row['response'] ) ? $row['response'] : 'n/a',
+				'user_agent'     => isset( $row['browser'] ) ? $row['browser'] : 'n/a',
+				'ip'             => isset( $row['ip'] ) ? $row['ip'] : 'n/a',
+				'date_created'   => $row['created_at'],
+				'date_updated'   => $row['updated_at'],
+				'payment_status' => isset( $row['payment_status'] ) ? $row['payment_status'] : 'n/a',
+				'payment_method' => isset( $row['payment_method'] ) ? $row['payment_payment'] : 'n/a',
+				'payment_amount' => isset( $row['payment_total'] ) ? $row['payment_total'] : 0,
+			);
+			$wpdb->insert( $table1, $data );
+
+			// remove entry from Fluent forms tables.
+			$delete = wpFluent()->table( 'fluentform_submissions' )
+			->where( 'form_id', $form_id )
+			->where( 'id', '=', $entry_id )
+			->delete();
+			$delete = wpFluent()->table( 'fluentform_entry_details' )
+			->where( 'form_id', $form_id )
+			->where( 'submission_id', '=', $entry_id )
+			->delete();
+
+			// Test completed So Clear sessions.
+			complete_checkview_test();
+		}
+	}
+
+	$checkview_fluent_forms_helper = new Checkview_Fluent_Forms_Helper();
+}

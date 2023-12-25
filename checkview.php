@@ -36,7 +36,13 @@ if ( ! defined( 'WPINC' ) ) {
  */
 define( 'CHECKVIEW_VERSION', '1.0.0' );
 
-define( 'CHECKVIEW_PATH', trailingslashit( plugin_dir_path( __FILE__ ) ) );
+define( 'CHECKVIEW_PLUGIN_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) );
+
+define( 'CHECKVIEW_INC_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/' );
+
+define( 'CHECKVIEW_PUBLIC_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) . 'public/' );
+
+define( 'CHECKVIEW_ADMIN_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) . 'admin/' );
 
 /**
  * The code that runs during plugin activation.

@@ -133,7 +133,7 @@ class Checkview_Admin {
 	}
 
 	/**
-	 * Load Form Test.
+	 * Loads Form Test and helper classes.
 	 *
 	 * @return void
 	 */
@@ -202,22 +202,22 @@ class Checkview_Admin {
 				define( 'CV_TEST_ID', $cv_test_id );
 			}
 			if ( is_plugin_active( 'gravityforms/gravityforms.php' ) ) {
-				require_once CF_PATH . '/includes/modules/mod-gforms-helper.php';
+				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-gforms-helper.php';
 			}
 			if ( is_plugin_active( 'fluentform/fluentform.php' ) ) {
-				require_once CF_PATH . '/includes/modules/mod-fluent-forms-helper.php';
+				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-fluent-forms-helper.php';
 			}
 			if ( is_plugin_active( 'ninja-forms/ninja-forms.php' ) ) {
-				require_once CF_PATH . '/includes/modules/mod-ninja-forms-helper.php';
+				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-ninja-forms-helper.php';
 			}
 			if ( is_plugin_active( 'wpforms/wpforms.php' ) || is_plugin_active( 'wpforms-lite/wpforms.php' ) ) {
-				require_once CF_PATH . '/includes/modules/mod-wpforms-helper.php';
+				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-wpforms-helper.php';
 			}
 			if ( is_plugin_active( 'formidable/formidable.php' ) ) {
-				require_once CF_PATH . '/includes/modules/mod-formidable-helper.php';
+				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-formidable-helper.php';
 			}
 			if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) ) {
-				require_once CF_PATH . '/includes/modules/mod-cf7-helper.php';
+				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
 			}
 		}
 	}

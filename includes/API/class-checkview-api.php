@@ -92,22 +92,6 @@ class CheckView_Api {
 				),
 			)
 		);
-
-		register_rest_route(
-			'wptaskmanager/v1',
-			'/tasks/all_tasks',
-			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'wp_task_manager_get_all_tasks' ),
-				'permission_callback' => array( $this, 'get_items_permissions_check' ),
-				'args'                => array(
-					'search'         => array(),
-					'due_start_date' => array(),
-					'due_end_date'   => array(),
-					'status'         => array(),
-				),
-			)
-		);
 	} // end checkview_register_rest_route
 
 	/**
@@ -386,7 +370,7 @@ class CheckView_Api {
 		$error   = array(
 			'status'  => 'error',
 			'code'    => 400,
-			'message' => esc_html__( 'No Result Found', 'checkform-helper' ),
+			'message' => esc_html__( 'No Result Found', 'checkview' ),
 		);
 		$results = array();
 		if ( '' === $uid || null === $uid ) {
@@ -466,9 +450,9 @@ class CheckView_Api {
 	 */
 	public function checkview_get_register_form_test( WP_REST_Request $request ) {
 		$frm_id  = $request->get_param( 'frm_id' );
-		$frm_id  = isset( $frm_id ) ? sanitize_text_field( $frm_id ) : '';
+		$frm_id  = isset( $frm_id ) ? intval( $frm_id ) : '';
 		$pg_id   = $request->get_param( 'pg_id' );
-		$pg_id   = isset( $pg_id ) ? sanitize_text_field( $pg_id ) : '';
+		$pg_id   = isset( $pg_id ) ? intval( $pg_id ) : '';
 		$type    = $request->get_param( 'type' );
 		$type    = isset( $type ) ? sanitize_text_field( $type ) : '';
 		$send_to = $request->get_param( 'send_to' );

@@ -37,13 +37,13 @@ function validate_jwt_token( $token ) {
 
 	// if url mismatch return false.
 	if ( get_bloginfo( 'url' ) !== $jwt['websiteUrl'] ) {
-		return esc_html__( 'Invalid Token', 'checkform-helper' );
+		return esc_html__( 'Invalid Token', 'checkview' );
 	}
 
 	// if token expired.
 	if ( $jwt['exp'] < time() ) {
 
-		return esc_html__( 'Token Expired', 'checkform-helper' );
+		return esc_html__( 'Token Expired', 'checkview' );
 	}
 	return true;
 }
