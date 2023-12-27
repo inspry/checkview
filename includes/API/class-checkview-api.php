@@ -27,7 +27,18 @@ class CheckView_Api {
 	 * @var WP_Error
 	 */
 	private $jwt_error = null;
+	/**
+	 * Initialize the class and set its properties.
+	 *
+	 * @since    1.0.0
+	 * @param      string $plugin_name       The name of the plugin.
+	 * @param      string $version    The version of this plugin.
+	 */
+	public function __construct( $plugin_name, $version ) {
 
+		$this->plugin_name = $plugin_name;
+		$this->version     = $version;
+	}
 	/**
 	 * Registers the rest api routes for our forms and related data.
 	 *
@@ -50,7 +61,6 @@ class CheckView_Api {
 				),
 			)
 		);
-
 		register_rest_route(
 			'checkview/v1',
 			'/forms/formstestresults',

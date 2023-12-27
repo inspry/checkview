@@ -1,0 +1,53 @@
+:root {
+    --color-priamry: #3534a7;
+  }
+  .swal2-popup {
+    display: none;
+    position: relative;
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: center;
+    width: 42em !important;
+    height: 25em !important;
+    max-width: 100% !important;
+    padding: 1.25em;
+    border: none;
+    border-radius: 0.3125em;
+    background: #fff;
+    font-family: inherit;
+    font-size: 1rem;
+  }
+  
+  .swal2-styled.swal2-confirm {
+    border: 0;
+    border-radius: 0.25em;
+    background: initial;
+    background-color: var(--color-priamry) !important;
+    color: #fff;
+    font-size: 20px !important ;
+  }
+  
+  .swal2-styled.swal2-cancel {
+    border-radius: 0.25em;
+    background: initial;
+    border: 1px solid var(--color-priamry) !important;
+    background-color: #fff !important;
+    color: var(--color-priamry) !important;
+    font-size: 20px !important;
+  }
+  .swal2-styled.swal2-cancel:hover {
+    background: #fff !important;
+  }
+  
+  .swal2-content {
+    z-index: 1;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    color: #545454;
+    font-size: 1.8em !important ;
+    font-weight: 400;
+    line-height: normal;
+    text-align: center;
+    word-wrap: break-word;
+  }

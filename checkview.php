@@ -36,13 +36,31 @@ if ( ! defined( 'WPINC' ) ) {
  */
 define( 'CHECKVIEW_VERSION', '1.0.0' );
 
-define( 'CHECKVIEW_PLUGIN_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) );
+/**
+ * Define constant for plugin settings link
+ */
+if ( ! defined( 'CHECKVIEW_BASE_DIR' ) ) {
+	define( 'CHECKVIEW_BASE_DIR', plugin_basename( __FILE__ ) );
+}
+if ( ! defined( 'CHECKVIEW_PLUGIN_DIR' ) ) {
+	define( 'CHECKVIEW_PLUGIN_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) );
+}
 
-define( 'CHECKVIEW_INC_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/' );
+if ( ! defined( 'CHECKVIEW_INC_DIR' ) ) {
+	define( 'CHECKVIEW_INC_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) . 'includes/' );
+}
 
-define( 'CHECKVIEW_PUBLIC_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) . 'public/' );
+if ( ! defined( 'CHECKVIEW_PUBLIC_DIR' ) ) {
+	define( 'CHECKVIEW_PUBLIC_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) . 'public/' );
+}
 
-define( 'CHECKVIEW_ADMIN_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) . 'admin/' );
+if ( ! defined( 'CHECKVIEW_ADMIN_DIR' ) ) {
+	define( 'CHECKVIEW_ADMIN_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) . 'admin/' );
+}
+
+if ( ! defined( 'CHECKVIEW_ADMIN_ASSETS' ) ) {
+	define( 'CHECKVIEW_ADMIN_ASSETS', trailingslashit( plugin_dir_url( __FILE__ ) ) . 'admin/assets/' );
+}
 
 /**
  * The code that runs during plugin activation.
@@ -82,7 +100,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-checkview.php';
  */
 function run_checkview() {
 
-	$plugin = Checkview()::getInstance();
+	$plugin = Checkview::get_instance();
 	$plugin->run();
 }
 add_action( 'plugins_loaded', 'run_checkview' );

@@ -73,7 +73,23 @@ class Checkview_Admin {
 
 		wp_enqueue_style(
 			$this->plugin_name,
-			plugin_dir_url( __FILE__ ) . 'css/checkview-admin.css',
+			CHECKVIEW_ADMIN_ASSETS . 'css/checkview-admin.css',
+			array(),
+			$this->version,
+			'all'
+		);
+
+		wp_enqueue_style(
+			$this->plugin_name . 'external',
+			'https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u',
+			array(),
+			$this->version,
+			'all'
+		);
+
+		wp_enqueue_style(
+			$this->plugin_name . '-swal',
+			CHECKVIEW_ADMIN_ASSETS . 'css/checkview-swal2.css',
 			array(),
 			$this->version,
 			'all'
@@ -101,10 +117,18 @@ class Checkview_Admin {
 
 		wp_enqueue_script(
 			$this->plugin_name,
-			plugin_dir_url( __FILE__ ) . 'js/checkview-admin.js',
+			CHECKVIEW_ADMIN_ASSETS . 'js/checkview-admin.js',
 			array( 'jquery' ),
 			$this->version,
 			false
+		);
+
+		wp_enqueue_script(
+			'checkview-sweetalert2.js',
+			'https://cdn.jsdelivr.net/npm/sweetalert2@9',
+			array( 'jquery' ),
+			$this->version,
+			true
 		);
 	}
 
@@ -114,7 +138,7 @@ class Checkview_Admin {
 	 * @param [string] $plugins activated plugins list.
 	 * @return string
 	 */
-	public function cv_disable_unwanted_plugins( $plugins ) {
+	public function checkview_disable_unwanted_plugins( $plugins ) {
 
 		// Current Vsitor IP.
 		$visitor_ip = get_visitor_ip();

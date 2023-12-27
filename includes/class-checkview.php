@@ -123,6 +123,18 @@ class Checkview {
 	private function load_dependencies() {
 
 		/**
+		 * The class responsible for defining all actions that occur in the public-facing
+		 * side of the site. Exposes the general functions.
+		 */
+		require_once plugin_dir_path( __DIR__ ) . 'includes/checkview-functions.php';
+
+		/**
+		 * The class responsible for defining all actions that occur in the public-facing
+		 * side of the site. Exposes the API end points.
+		 */
+		require_once plugin_dir_path( __DIR__ ) . 'includes/api/class-checkview-api.php';
+
+		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
@@ -140,12 +152,27 @@ class Checkview {
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-checkview-admin.php';
 
 		/**
+		 * The class responsible for defining all actions that occur in the admin area.
+		 */
+		require_once plugin_dir_path( __DIR__ ) . 'admin/class-checkview-admin-logs.php';
+
+		/**
+		 * The class responsible for defining all actions that occur in the admin area.
+		 */
+		require_once plugin_dir_path( __DIR__ ) . 'admin/settings/class-checkview-admin-settings.php';
+
+		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
 		require_once plugin_dir_path( __DIR__ ) . 'public/class-checkview-public.php';
 
 		$this->loader = new Checkview_Loader();
+		$this->loader->add_filter(
+			'plugin_action_links_' . CHECKVIEW_BASE_DIR,
+			$this,
+			'checkview_settings_link'
+		);
 	}
 
 	/**
@@ -169,6 +196,18 @@ class Checkview {
 	}
 
 	/**
+	 * Add settings link on plugin page.
+	 *
+	 * @since  1.0.0
+	 * @param array $links href to settings pages.
+	 * @return $links href to settings pages.
+	 */
+	public function checkview_settings_link( $links ) {
+		$settings_link = '<a href="admin.php?page=checkview-options">' . esc_html__( 'Settings', 'checkview' ) . '</a>';
+		array_unshift( $links, $settings_link );
+		return $links;
+	}
+	/**
 	 * Register all of the hooks related to the admin area functionality
 	 * of the plugin.
 	 *
@@ -177,37 +216,71 @@ class Checkview {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new Checkview_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin    = new Checkview_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_settings = new Checkview_Admin_Settings( $this->get_plugin_name(), $this->get_version() );
+		$plugin_logs     = new Checkview_Admin_Logs();
+		if ( is_admin() ) {
+			// load backend hooks.
+			$this->loader->add_action(
+				'admin_post_checkview_admin_logs_settings',
+				$plugin_logs,
+				'checkview_admin_logs_settings_save'
+			);
 
-		$this->loader->add_action(
-			'admin_enqueue_scripts',
-			$plugin_admin,
-			'enqueue_styles'
-		);
+			$this->loader->add_action(
+				'admin_post_checkview_admin_advance_settings',
+				$plugin_settings,
+				'checkview_admin_advance_settings_save'
+			);
 
-		$this->loader->add_action(
-			'admin_enqueue_scripts',
-			$plugin_admin,
-			'enqueue_scripts'
-		);
+			$this->loader->add_action(
+				'wp_ajax_checkview_update_cache',
+				$plugin_settings,
+				'checkview_update_cache'
+			);
 
-		$this->loader->add_filter(
-			'option_active_plugins',
-			$plugin_admin,
-			'checkview_disable_unwanted_plugins',
-			99,
-			1
-		);
+			$this->loader->add_action(
+				'admin_enqueue_scripts',
+				$plugin_admin,
+				'enqueue_styles'
+			);
 
+			$this->loader->add_action(
+				'admin_enqueue_scripts',
+				$plugin_admin,
+				'enqueue_scripts'
+			);
+
+			$this->loader->add_filter(
+				'option_active_plugins',
+				$plugin_admin,
+				'checkview_disable_unwanted_plugins',
+				99,
+				1
+			);
+
+			$this->loader->add_action(
+				'admin_init',
+				$plugin_admin,
+				'checkview_init_current_test',
+				99
+			);
+
+			$this->loader->add_action(
+				'admin_menu',
+				$plugin_settings,
+				'checkview_menu',
+				220
+			);
+
+			$this->loader->add_action(
+				'admin_notices',
+				$plugin_settings,
+				'checkview_admin_notices'
+			);
+		}
 		$this->loader->add_action(
 			'after_setup_theme',
-			$plugin_admin,
-			'checkview_init_current_test',
-			99
-		);
-
-		$this->loader->add_action(
-			'admin_init',
 			$plugin_admin,
 			'checkview_init_current_test',
 			99
@@ -224,7 +297,7 @@ class Checkview {
 	private function define_public_hooks() {
 
 		$plugin_public = new Checkview_Public( $this->get_plugin_name(), $this->get_version() );
-
+		$plugin_api    = new CheckView_Api( $this->get_plugin_name(), $this->get_version() );
 		$this->loader->add_action(
 			'wp_enqueue_scripts',
 			$plugin_public,
@@ -235,6 +308,12 @@ class Checkview {
 			'wp_enqueue_scripts',
 			$plugin_public,
 			'enqueue_scripts'
+		);
+
+		$this->loader->add_action(
+			'rest_api_init',
+			$plugin_api,
+			'checkview_register_rest_route'
 		);
 	}
 
