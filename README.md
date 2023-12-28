@@ -182,6 +182,3 @@ DELETE /wp-json/checkview/v1/forms/registerformtest?_checkview_token=Your_JWT_To
 - The API responses and examples provided are for illustrative purposes. Make sure to replace placeholder values such as `Your_JWT_Token`, form IDs, page IDs, etc., with actual values.
 - This documentation assumes the implementation of the JWT authentication mechanism and the functions `validate_jwt_token` and `must_ssl_url`, which are referenced in the provided code. Ensure that these functions are defined and functional in your implementation.
 - Adjust the URLs, namespaces, and authentication mechanisms based on your WordPress setup and customizations.
-```
-
-Feel free to customize the content and structure further as needed.
