@@ -72,19 +72,29 @@ class Checkview_Admin_Settings {
 			$message = esc_html__( 'Please activate your license to get feature updates, premium support and unlimited access to the checkview plugin.', 'checkview' );
 			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
 		}
+		$nonce  = isset( $_POST['checkview_admin_advance_settings_action'] ) ? sanitize_text_field( wp_unslash( $_POST['checkview_admin_advance_settings_action'] ) ) : '';
+		$action = 'checkview_admin_advance_settings_action';
+		if ( ! wp_verify_nonce( $nonce, $action ) ) {
+			return;
+		}
+		
 		$screen = get_current_screen();
 		if ( 'checkview-options' !== $screen->base && 'settings_page_checkview-options' !== $screen->base ) {
 
 			return;
 		}
 
-		if ( isset( $_POST['checkview_settings_submit'] ) || ( isset( $_GET['settings-updated'] ) && 'true' == $_GET['settings-updated'] ) ) {
+		if ( isset( $_POST['checkview_settings_submit'] ) || ( isset( $_GET['settings-updated'] ) && 'true' === $_GET['settings-updated'] ) ) {
 			$class   = 'notice notice-success is-dismissible';
 			$message = esc_html__( 'Settings Saved', 'checkview' );
 			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
 		} elseif ( isset( $_POST['checkview_settings_submit'] ) || ( isset( $_GET['token-updated'] ) && 'true' === $_GET['token-updated'] ) ) {
 			$class   = 'notice notice-success is-dismissible';
 			$message = esc_html__( 'Settings Saved , Token created And Library Activated', 'checkview' );
+			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
+		} elseif ( isset( $_POST['checkview_advance_settings_submit'] ) || ( isset( $_GET['advance-settings-updated'] ) && 'true' === $_GET['advance-settings-updated'] ) ) {
+			$class   = 'notice notice-success is-dismissible';
+			$message = esc_html__( 'Settings Saved', 'checkview' );
 			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
 		}
 	}
@@ -106,19 +116,13 @@ class Checkview_Admin_Settings {
 
 			$del_data           = isset( $_POST['checkview_delete_data'] ) ? sanitize_text_field( wp_unslash( $_POST['checkview_delete_data'] ) ) : '';
 			$allowed_extensions = isset( $_POST['checkview_allowed_extensions'] ) ? sanitize_text_field( wp_unslash( $_POST['checkview_allowed_extensions'] ) ) : '';
-			$lib_creation       = isset( $_POST['checkview_admin_create_lib'] ) ? sanitize_text_field( wp_unslash( $_POST['checkview_admin_create_lib'] ) ) : '';
 
-			$checkview_options['checkview_admin_create_lib']   = sanitize_text_field( $lib_creation );
 			$checkview_options['checkview_delete_data']        = sanitize_text_field( $del_data );
 			$checkview_options['checkview_allowed_extensions'] = sanitize_text_field( $allowed_extensions );
 			$checkview_options                                 = apply_filters( 'checkview_update_advance_options', $checkview_options );
-			$tab_title = isset( $_POST['checkview_tab_title'] ) ? sanitize_text_field( wp_unslash( $_POST['checkview_tab_title'] ) ) : esc_html__( 'Custom Templates', 'checkview' );
-			$ad_title  = isset( $_POST['checkview_admin_menu_title'] ) ? sanitize_text_field( wp_unslash( $_POST['checkview_admin_menu_title'] ) ) : esc_html__( 'Template Hero Client', 'checkview' );
-			$n_title   = isset( $_POST['checkview_network_menu_title'] ) ? sanitize_text_field( wp_unslash( $_POST['checkview_network_menu_title'] ) ) : esc_html__( 'Template Hero Client', 'checkview' );
+			$ad_title = isset( $_POST['checkview_admin_menu_title'] ) ? sanitize_text_field( wp_unslash( $_POST['checkview_admin_menu_title'] ) ) : esc_html__( 'CheckView', 'checkview' );
 
 			update_site_option( 'checkview_admin_menu_title', $ad_title );
-			update_site_option( 'checkview_tab_title', $tab_title );
-			update_site_option( 'checkview_network_menu_title', $n_title );
 			update_option( 'checkview_advance_options', $checkview_options );
 			$uploads = 'true';
 		} else {
@@ -156,7 +160,6 @@ class Checkview_Admin_Settings {
 		wp_die();
 	}
 
-
 	/**
 	 * Add plugin's menu.
 	 *
@@ -183,7 +186,7 @@ class Checkview_Admin_Settings {
 			<div class="inner-header">
 				<div class="checkview-settings-wrapper d-flex align-items-center">
 					<div class="d-flex align-items-center">
-						<img src="<?php echo esc_html( CHECKVIEW_ADMIN_ASSETS ); ?>images/logo.png" class="img-fluid main-logo" />
+						<img src="<?php echo esc_html( CHECKVIEW_ADMIN_ASSETS ); ?>images/logo.svg" class="img-fluid main-logo" />
 						<h1><?php esc_html_e( 'Checkview Settings', 'checkview' ); ?></h1>
 					</div>
 					<div class="ml-auto">
@@ -278,10 +281,10 @@ class Checkview_Admin_Settings {
 	 * @param string $footer_text footer text.
 	 * @return mixed
 	 */
-	public function checkview_remove_footer_admin( $footer_text ) {
+	public function checkview_add_footer_admin( $footer_text ) {
 		if ( isset( $_GET['page'] ) && ( 'checkview-options' === $_GET['page'] ) ) {
 			return _e(
-				'Built & Supported by <a href="https://isnpry.com" target="_blank">Inspry</a></p>',
+				'Powered by WordPress, Built & Supported by <a href="https://inspry.com" target="_blank">Inspry</a></p>',
 				'checkview'
 			);
 		} else {

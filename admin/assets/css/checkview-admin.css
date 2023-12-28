@@ -185,7 +185,7 @@ body {
   font-size: 15px !important;
 }
 
-.th-token-notice-error {
+.checkview-token-notice-error {
   margin: 20px 0 0 0 !important;
   padding: 10px 15px !important;
   background: #f1eded !important;
@@ -196,7 +196,7 @@ body {
   color: black !important;
 }
 
-.th-token-notice-success {
+.checkview-token-notice-success {
   margin: 20px 0 0 0 !important;
   padding: 10px 15px !important;
   background: #f1eded !important;
@@ -216,33 +216,33 @@ body {
 }
 
 /* Create two equal columns that floats next to each other */
-.th-column {
+.checkview-column {
   float: left !important;
   width: 50% !important;
   padding: 10px !important;
 }
 
-.th-row {
+.checkview-row {
   display: flex !important;
   align-items: center !important;
 }
 
 /* Clear floats after the columns */
-.th-row:after {
+.checkview-row:after {
   content: "" !important;
   display: table !important;
   clear: both !important;
 }
 
-.th-table-token-row {
+.checkview-table-token-row {
   max-width: 200px !important;
 }
-.th-table-token-button .btn {
+.checkview-table-token-button .btn {
   font-size: 14px !important;
 }
 /* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
 @media screen and (max-width: 600px) {
-  .th-column {
+  .checkview-column {
     width: 100% !important;
   }
 }
@@ -327,7 +327,7 @@ body {
   border-radius: .25rem  !important;
 } */
 
-.th-table-token {
+.checkview-table-token {
   max-width: 350px !important;
   font-size: 14px !important;
 }
@@ -373,23 +373,23 @@ body {
   width: 60px !important;
 }
 
-.switch .th-make-lib {
+.switch .checkview-make-lib {
   display: none !important;
 }
 
-.switch .th-allow-sites {
+.switch .checkview-allow-sites {
   display: none !important;
 }
 
-.switch .th-del-lib {
+.switch .checkview-del-lib {
   display: none !important;
 }
 
-.switch .th-allow-extension {
+.switch .checkview-allow-extension {
   display: none !important;
 }
 
-.switch .th-make-networkwide {
+.switch .checkview-make-networkwide {
   display: none !important;
 }
 
@@ -415,56 +415,56 @@ body {
   width: 26px !important;
 }
 
-.th-make-lib:checked + .slider {
+.checkview-make-lib:checked + .slider {
   background-color: var(--color-priamry) !important;
   border-color: var(--color-priamry) !important;
 }
 
-.th-make-lib:checked + .slider:before {
+.checkview-make-lib:checked + .slider:before {
   transform: translateX(18px) !important;
   border-color: #fff !important;
   background-color: #fff !important;
 }
 
-.th-allow-extension:checked + .slider {
+.checkview-allow-extension:checked + .slider {
   background-color: var(--color-priamry) !important;
   border-color: var(--color-priamry) !important;
 }
 
-.th-allow-extension:checked + .slider:before {
+.checkview-allow-extension:checked + .slider:before {
   transform: translateX(18px) !important;
   border-color: #fff !important;
   background-color: #fff !important;
 }
 
-.th-del-lib:checked + .slider {
+.checkview-del-lib:checked + .slider {
   background-color: var(--color-priamry) !important;
   border-color: var(--color-priamry) !important;
 }
 
-.th-del-lib:checked + .slider:before {
+.checkview-del-lib:checked + .slider:before {
   transform: translateX(18px) !important;
   border-color: #fff !important;
   background-color: #fff !important;
 }
 
-.th-allow-sites:checked + .slider {
+.checkview-allow-sites:checked + .slider {
   background-color: var(--color-priamry) !important;
   border-color: var(--color-priamry) !important;
 }
 
-.th-allow-sites:checked + .slider:before {
+.checkview-allow-sites:checked + .slider:before {
   transform: translateX(18px) !important;
   border-color: #fff !important;
   background-color: #fff !important;
 }
 
-.th-make-networkwide:checked + .slider {
+.checkview-make-networkwide:checked + .slider {
   background-color: var(--color-priamry) !important;
   border-color: var(--color-priamry) !important;
 }
 
-.th-make-networkwide:checked + .slider:before {
+.checkview-make-networkwide:checked + .slider:before {
   transform: translateX(18px) !important;
   border-color: #fff !important;
   background-color: #fff !important;

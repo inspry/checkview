@@ -226,7 +226,11 @@ class Checkview {
 				$plugin_logs,
 				'checkview_admin_logs_settings_save'
 			);
-
+			$this->loader->add_action(
+				'admin_footer_text',
+				$plugin_settings,
+				'checkview_add_footer_admin'
+			);
 			$this->loader->add_action(
 				'admin_post_checkview_admin_advance_settings',
 				$plugin_settings,
