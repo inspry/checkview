@@ -2,7 +2,7 @@
 /**
  * Hanldes CPT API functions.
  *
- * @link       https://inspry.com
+ * @link       https://checkview.io
  * @since      1.0.0
  *
  * @package    CheckView
@@ -63,10 +63,10 @@ class CheckView_Api {
 		);
 		register_rest_route(
 			'checkview/v1',
-			'/forms/formstestresults',
+			'/forms/registerformtest',
 			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'checkview_get_register_form_test' ),
+				'methods'             => 'PUT',
+				'callback'            => array( $this, 'checkview_register_form_test' ),
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token' => array(
@@ -90,13 +90,34 @@ class CheckView_Api {
 
 		register_rest_route(
 			'checkview/v1',
-			'/forms/registerformtest',
+			'/forms/formstestresults',
 			array(
-				'methods'             => 'DELETE',
+				'methods'             => 'GET',
 				'callback'            => array( $this, 'checkview_get_available_forms_test_results' ),
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
-					'id' => array(
+					'uid'              => array(
+						'required' => true,
+					),
+					'_checkview_token' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/forms/deleteformstest',
+			array(
+				'methods'             => 'DELETE',
+				'callback'            => array( $this, 'checkview_delete_forms_test_results' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'uid'              => array(
+						'required' => true,
+					),
+					'_checkview_token' => array(
 						'required' => true,
 					),
 				),
@@ -458,7 +479,7 @@ class CheckView_Api {
 	 * @param WP_REST_Request $request Object with the API call.
 	 * @return WP_REST_Response/WP_Error
 	 */
-	public function checkview_get_register_form_test( WP_REST_Request $request ) {
+	public function checkview_register_form_test( WP_REST_Request $request ) {
 		$frm_id  = $request->get_param( 'frm_id' );
 		$frm_id  = isset( $frm_id ) ? intval( $frm_id ) : '';
 		$pg_id   = $request->get_param( 'pg_id' );
@@ -496,6 +517,55 @@ class CheckView_Api {
 				$error
 			);
 			wp_die();
+		}
+	}
+
+	/**
+	 * Deletes all the avaiable test results for forms.
+	 *
+	 * @param WP_REST_Request $request the request param with the API call.
+	 * @return WP_REST_Response/WP_Error/json
+	 */
+	public function checkview_delete_forms_test_results( WP_REST_Request $request ) {
+		global $wpdb;
+		$uid = $request->get_param( 'uid' );
+		$uid = isset( $uid ) ? sanitize_text_field( $uid ) : null;
+
+		$error   = array(
+			'status'  => 'error',
+			'code'    => 400,
+			'message' => esc_html__( 'No Result Found', 'checkview' ),
+		);
+		$results = array();
+		if ( '' === $uid || null === $uid ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Empty UID.', 'checkview' ),
+				$error
+			);
+			wp_die();
+		} else {
+			$tablename = $wpdb->prefix . 'cv_entry';
+			$result    = $wpdb->get_results( $wpdb->prepare( 'DELETE * from %s where uid=%d', $tablename, $uid ) );
+			$tablename = $wpdb->prefix . 'cv_entry_meta';
+			$rows      = $wpdb->get_results( $wpdb->prepare( 'DELETE * from %s where uid=%d order by id ASC', $tablename, $uid ) );
+			if ( $rows ) {
+				return new WP_REST_Response(
+					array(
+						'status'        => 200,
+						'response'      => esc_html__( 'Successfully removed the results.', 'checkview' ),
+						'body_response' => $results,
+					)
+				);
+				wp_die();
+			} else {
+				return new WP_Error(
+					400,
+					esc_html__( 'Failed to remove the results.', 'checkview' ),
+					$error
+				);
+				wp_die();
+			}
 		}
 	}
 	/**
