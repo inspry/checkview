@@ -64,13 +64,14 @@ class Checkview_Admin_Logs {
 	 * @return void
 	 */
 	public function checkview_admin_logs_settings_save() {
-		if ( isset( $_POST['checkview_see_log'] ) ) {
+		$nonce  = isset( $_POST['checkview_admin_logs_settings'] ) ? sanitize_text_field( wp_unslash( $_POST['checkview_admin_logs_settings'] ) ) : '';
+		$action = 'checkview_admin_logs_settings';
+		if ( isset( $_POST['checkview_see_log'] ) && wp_verify_nonce( $nonce, $action ) ) {
 			$checkview_options = array();
-
-			$log_path = isset( $_POST['checkview_log_select'] ) ? sanitize_text_field( wp_unslash( $_POST['checkview_log_select'] ) ) : '';
-			$uploads  = 'false';
+			$log_path          = isset( $_POST['checkview_log_select'] ) ? sanitize_text_field( wp_unslash( $_POST['checkview_log_select'] ) ) : '';
+			$uploads           = 'false';
 			if ( $log_path && '' !== $log_path ) {
-				$log_path = checkview_deslash( $log_path );
+				$log_path                                  = checkview_deslash( $log_path );
 				$checkview_options['checkview_log_select'] = $log_path;
 				$checkview_options                         = apply_filters( 'checkview_save_log_options', $checkview_options );
 				update_option( 'checkview_log_options', $checkview_options );
@@ -88,16 +89,8 @@ class Checkview_Admin_Logs {
 	 * @return string
 	 */
 	public static function get_logs_folder() {
-		if ( is_multisite() ) {
 
-			switch_to_blog( get_current_site()->blog_id );
-
-			$path = apply_filters( 'checkview_get_logs_folder', self::get_uploads_folder() . '/checkview-logs/' );
-
-			restore_current_blog();
-		} else {
-			$path = apply_filters( 'checkview_get_logs_folder', self::get_uploads_folder() . '/checkview-logs/' );
-		}
+		$path = apply_filters( 'checkview_get_logs_folder', self::get_uploads_folder() . '/checkview-logs/' );
 
 		return $path;
 	} // end get_logs_folder;
@@ -229,7 +222,7 @@ class Checkview_Admin_Logs {
 	 */
 	public static function get_now( $type = 'mysql' ) {
 
-		return new \DateTime( self::get_current_time( 'mysql' ) );
+		return new DateTime( self::get_current_time( $type ) );
 	}
 
 	/**

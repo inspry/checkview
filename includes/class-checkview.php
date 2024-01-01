@@ -121,6 +121,8 @@ class Checkview {
 	 * @access   private
 	 */
 	private function load_dependencies() {
+		require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
+		require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
@@ -284,7 +286,7 @@ class Checkview {
 			);
 		}
 		$this->loader->add_action(
-			'after_setup_theme',
+			'init',
 			$plugin_admin,
 			'checkview_init_current_test',
 			99
@@ -319,6 +321,18 @@ class Checkview {
 			$plugin_api,
 			'checkview_register_rest_route'
 		);
+		// Current Vsitor IP.
+		$visitor_ip = get_visitor_ip();
+		// Check view Bot IP. Todo.
+		$cv_bot_ip = get_api_ip();
+		// procceed if visitor ip is equal to cv bot ip. Todo.
+		if ( $visitor_ip === $cv_bot_ip ) {
+			$this->loader->add_action(
+				'pre_option_require_name_email',
+				'',
+				'checkview_whitelist_saas_ip_addresses'
+			);
+		}
 	}
 
 	/**

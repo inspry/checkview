@@ -103,4 +103,4 @@ function run_checkview() {
 	$plugin = Checkview::get_instance();
 	$plugin->run();
 }
-add_action( 'plugins_loaded', 'run_checkview' );
+add_action( 'plugins_loaded', 'run_checkview', '999' );

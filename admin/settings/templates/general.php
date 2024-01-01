@@ -24,13 +24,13 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 				<tr valign="top">
 					<th scope="row" >
 						<label for="checkview_admin_menu_title">
-							<?php esc_html_e( 'Admin menu title', 'th-elementor-server-custom-template-tab' ); ?>
+							<?php esc_html_e( 'Admin menu title', 'th-checkview-server-custom-template-tab' ); ?>
 						</label>
 						<p class="make-lib-description"><?php esc_html_e( 'Use this field to white label admin menu title.', 'checkview' ); ?></p>
 					</th>
-					<td class="checkview-make-library-box">
+					<td class="checkview-make-cache-box">
 					<label  for="checkview_admin_menu_title">
-						<input type="text" name="checkview_admin_menu_title" placeholder="<?php esc_html_e( $admin_menu_title, 'checkview' ); ?>" value="<?php esc_html_e( $admin_menu_title, 'checkview' ); ?>" class="th-del-lib" id="checkview_admin_menu_title"/>
+						<input type="text" name="checkview_admin_menu_title" placeholder="<?php echo esc_html( $admin_menu_title ); ?>" value="<?php echo esc_html( $admin_menu_title ); ?>" class="th-del-lib" id="checkview_admin_menu_title"/>
 					</label>
 					</td>
 				</tr>
@@ -41,11 +41,11 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 						</label>
 						<p class="make-lib-description"><?php esc_html_e( 'If checked It Will Delete All The Data On Uninstall.', 'checkview' ); ?></p>
 					</th>
-					<td class="checkview-make-library-box">
+					<td class="checkview-make-cache-box">
 					<label class="switch" for="checkview_delete_data">
 						<input type="checkbox" name="checkview_delete_data" class="checkview-del-lib" id="checkview_delete_data"
 						<?php
-						if ( $delete_all == 'on' ) {
+						if ( 'on' === $delete_all ) {
 							?>
 							checked="checked"<?php } ?> />
 						<div class="slider round"></div>
@@ -54,14 +54,14 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 				</tr>
 				<tr valign="top">
 					<th scope="row" >
-						<label for="checkview_sync_library">
-							<?php esc_html_e( 'Sync library', 'checkview' ); ?>
+						<label for="checkview_update_cache">
+							<?php esc_html_e( 'Update Cache', 'checkview' ); ?>
 						</label>
-						<p class="make-lib-description"><?php esc_html_e( 'Elementor Library automatically updates on a daily basis. You can also manually update it by clicking on the sync button.', 'checkview' ); ?></p>
+						<p class="make-lib-description"><?php esc_html_e( 'Checkvie Cache automatically updates on a daily basis. You can also manually update it by clicking on the update cache button.', 'checkview' ); ?></p>
 					</th>
-					<td class="checkview-make-library-box">
-						<label class="" for="checkview_sync_library">
-							<button type="button" id="reset-library" data-nonce="<?php echo wp_create_nonce( 'elementor_reset_library' ); ?>" class="button elementor-button-spinner btn-outline-secondary"><?php esc_html_e( 'Sync Library', 'checkview' ); ?></button>
+					<td class="checkview-make-cache-box">
+						<label class="" for="checkview_update_cache">
+							<button onclick="checkview_update_cache()" type="button" id="checkview_update_cache" name="checkview_update_cache" data-nonce="<?php echo esc_attr( wp_create_nonce( 'checkview_reset_cache' ) ); ?>" class="button checkview-button-spinner btn-outline-secondary"><?php esc_html_e( 'Update Cache', 'checkview' ); ?></button>
 						</label>
 					</td>
 				</tr>
@@ -73,7 +73,7 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 						</label>
 						<p class="make-lib-description"><?php esc_html_e( 'Warning! If checked it will allow 3rd parties to access Core functions.', 'checkview' ); ?></p>
 					</th>
-					<td class="checkview-make-library-box">
+					<td class="checkview-make-cache-box">
 					<label class="switch" for="checkview_allowed_extensions">
 						<input type="checkbox" name="checkview_allowed_extensions" class="checkview-allow-extension" id="checkview_allowed_extensions"
 						<?php

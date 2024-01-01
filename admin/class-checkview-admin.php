@@ -81,7 +81,7 @@ class Checkview_Admin {
 
 		wp_enqueue_style(
 			$this->plugin_name . 'external',
-			'https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u',
+			'https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css',
 			array(),
 			$this->version,
 			'all'
@@ -129,6 +129,23 @@ class Checkview_Admin {
 			array( 'jquery' ),
 			$this->version,
 			true
+		);
+		if ( isset( $_GET['tab'] ) ) {
+			$tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) );
+		} else {
+			$tab = '';
+		}
+		$user_id = get_current_user_id();
+		wp_localize_script(
+			$this->plugin_name,
+			'checkview_ajax_obj',
+			array(
+				'ajaxurl'                         => admin_url( 'admin-ajax.php' ),
+				'user_id'                         => $user_id,
+				'blog_id'                         => get_current_blog_id(),
+				'tab'                             => $tab,
+				'checkview_create_token_security' => wp_create_nonce( 'create-token-' . $user_id ),
+			)
 		);
 	}
 

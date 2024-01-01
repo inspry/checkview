@@ -63,24 +63,14 @@ class Checkview_Admin_Settings {
 	 * @return void
 	 */
 	public function checkview_admin_notices() {
-		$status = get_option( '_checkview_license_key_status', 'not' );
-		if ( 'active' !== $status ) {
-			$status = get_option( '_checkview_license_key_status', 'not' );
-		}
-		if ( 'active' !== $status ) {
-			$class   = 'notice notice-error is-dismissible';
-			$message = esc_html__( 'Please activate your license to get feature updates, premium support and unlimited access to the checkview plugin.', 'checkview' );
-			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
-		}
 		$nonce  = isset( $_POST['checkview_admin_advance_settings_action'] ) ? sanitize_text_field( wp_unslash( $_POST['checkview_admin_advance_settings_action'] ) ) : '';
 		$action = 'checkview_admin_advance_settings_action';
 		if ( ! wp_verify_nonce( $nonce, $action ) ) {
 			return;
 		}
-		
+
 		$screen = get_current_screen();
 		if ( 'checkview-options' !== $screen->base && 'settings_page_checkview-options' !== $screen->base ) {
-
 			return;
 		}
 
@@ -90,7 +80,7 @@ class Checkview_Admin_Settings {
 			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
 		} elseif ( isset( $_POST['checkview_settings_submit'] ) || ( isset( $_GET['token-updated'] ) && 'true' === $_GET['token-updated'] ) ) {
 			$class   = 'notice notice-success is-dismissible';
-			$message = esc_html__( 'Settings Saved , Token created And Library Activated', 'checkview' );
+			$message = esc_html__( 'Settings Saved', 'checkview' );
 			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
 		} elseif ( isset( $_POST['checkview_advance_settings_submit'] ) || ( isset( $_GET['advance-settings-updated'] ) && 'true' === $_GET['advance-settings-updated'] ) ) {
 			$class   = 'notice notice-success is-dismissible';
@@ -166,9 +156,10 @@ class Checkview_Admin_Settings {
 	 * @since 1.0.0
 	 */
 	public function checkview_menu() {
+		$admin_menu_title = ! empty( get_site_option( 'checkview_admin_menu_title', 'CheckView' ) ) ? get_site_option( 'checkview_admin_menu_title', 'CheckView' ) : 'CheckView';
 		add_options_page(
-			esc_html__( 'CheckView', 'checkview' ),
-			esc_html__( 'CheckView', 'checkview' ),
+			esc_html( $admin_menu_title ),
+			esc_html( $admin_menu_title ),
 			'manage_options',
 			'checkview-options',
 			array( $this, 'checkview_options' )
@@ -218,7 +209,7 @@ class Checkview_Admin_Settings {
 					foreach ( $checkview_sections as $key => $checkview_section ) {
 						?>
 						<a href="?page=checkview-options&tab=<?php echo esc_attr( $key ); ?>"
-						class="nav-tab <?php echo $this->page_tab == $key ? 'nav-tab-active hero-active' : ''; ?>">
+						class="nav-tab <?php echo $this->page_tab === $key ? 'nav-tab-active hero-active' : ''; ?>">
 							<i class="fa <?php echo esc_html( $checkview_section['icon'] ); ?>" aria-hidden="true"></i>
 							<?php echo esc_html( $checkview_section['title'] ); ?>
 						</a>
@@ -230,7 +221,7 @@ class Checkview_Admin_Settings {
 
 				<?php
 				foreach ( $checkview_sections as $key => $checkview_section ) {
-					if ( $this->page_tab == $key ) {
+					if ( $this->page_tab === $key ) {
 
 						$url = 'templates/' . $key . '.php';
 						apply_filters( 'checkview_template_url', $url );
@@ -260,15 +251,23 @@ class Checkview_Admin_Settings {
 		$logs = esc_html__( 'Logs & Error Files', 'checkview' );
 		$logs = apply_filters( 'checkview_logs_tab_title', $logs );
 
+		$api = esc_html__( 'API', 'checkview' );
+		$api = apply_filters( 'checkview_logs_tab_title', $api );
+
 		$checkview_settings_sections = array(
 			'general' => array(
 				'title' => $general,
+				'icon'  => 'fa-hashtag',
+			),
+			'api'     => array(
+				'title' => $api,
 				'icon'  => 'fa-hashtag',
 			),
 			'logs'    => array(
 				'title' => $logs,
 				'icon'  => 'fa-hashtag',
 			),
+
 		);
 
 		return apply_filters( 'checkview_settings_sections', $checkview_settings_sections );

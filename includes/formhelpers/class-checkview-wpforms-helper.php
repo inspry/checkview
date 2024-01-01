@@ -55,6 +55,18 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 				4
 			);
 
+			/**
+			 * Disable the email address suggestion.
+			 *
+			 * @link  https://wpforms.com/developers/how-to-disable-the-email-suggestion-on-the-email-form-field/
+			 */
+
+			$this->loader->add_filter(
+				'wpforms_mailcheck_enabled',
+				'',
+				'__return_false'
+			);
+
 			if ( defined( 'TEST_EMAIL' ) ) {
 				// change email to send to our test account.
 				$this->loader->add_filter(

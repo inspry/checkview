@@ -114,11 +114,19 @@ class Checkview_Loader {
 	public function run() {
 
 		foreach ( $this->filters as $hook ) {
-			add_filter( $hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args'] );
+			if ( isset( $hook['component'] ) && '' !== $hook['component'] ) {
+				add_filter( $hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args'] );
+			} else {
+				add_filter( $hook['hook'], $hook['callback'], $hook['priority'], $hook['accepted_args'] );
+			}
 		}
 
 		foreach ( $this->actions as $hook ) {
-			add_action( $hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args'] );
+			if ( isset( $hook['component'] ) && '' !== $hook['component'] ) {
+				add_action( $hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args'] );
+			} else {
+				add_action( $hook['hook'], $hook['callback'], $hook['priority'], $hook['accepted_args'] );
+			}
 		}
 	}
 }

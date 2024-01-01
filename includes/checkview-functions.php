@@ -305,6 +305,11 @@ if ( ! function_exists( 'checkview_reset_cache' ) ) {
 	 * @return bool
 	 */
 	function checkview_reset_cache( $sync ) {
+		delete_transient( 'checkview_saas_pk' );
+		delete_transient( 'checkview_saas_ip_address' );
+		delete_transient( 'checkview_forms_list_transient' );
+		delete_transient( 'checkview_forms_test_transient' );
+		$sync = true;
 		return $sync;
 	}
 }
@@ -336,5 +341,18 @@ if ( ! function_exists( 'checkview_deslash' ) ) {
 		$content = preg_replace( '/\\\+/', '\\', $content );
 
 		return $content;
+	}
+}
+if ( ! function_exists( 'checkview_whitelist_saas_ip_addresses' ) ) {
+	/**
+	 * Whitelists SaaS site.
+	 *
+	 * @return bool
+	 */
+	function checkview_whitelist_saas_ip_addresses() {
+		$api_ip = get_api_ip();
+		if ( in_array( isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '', array( $api_ip ), true ) ) {
+			return true;
+		}
 	}
 }
