@@ -25,9 +25,19 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 	 */
 	class Checkview_Gforms_Helper {
 		/**
+		 * The loader that's responsible for maintaining and registering all hooks that power
+		 * the plugin.
+		 *
+		 * @since    1.0.0
+		 * @access   protected
+		 * @var      Checkview_Loader    $loader    Maintains and registers all hooks for the plugin.
+		 */
+		protected $loader;
+		/**
 		 * Initializes the class constructor.
 		 */
 		public function __construct() {
+			$this->loader = new Checkview_Loader();
 			if ( defined( 'TEST_EMAIL' ) ) {
 				// Change email address to our test email.
 				$this->loader->add_filter(

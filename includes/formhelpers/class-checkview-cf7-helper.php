@@ -25,9 +25,19 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 	 */
 	class Checkview_Cf7_Helper {
 		/**
+		 * The loader that's responsible for maintaining and registering all hooks that power
+		 * the plugin.
+		 *
+		 * @since    1.0.0
+		 * @access   protected
+		 * @var      Checkview_Loader    $loader    Maintains and registers all hooks for the plugin.
+		 */
+		protected $loader;
+		/**
 		 * Initializes class constructor.
 		 */
 		public function __construct() {
+			$this->loader = new Checkview_Loader();
 			if ( defined( 'TEST_EMAIL' ) ) {
 				// change emial address.
 				$this->loader->add_filter(
@@ -59,14 +69,16 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 				'checkview_return_false',
 				999
 			);
-			add_filter(
+			$this->loader->add_filter(
 				'wpcf7_skip_spam_check',
+				'',
 				'__return_true',
 				999
 			);
 
-			add_filter(
+			$this->loader->add_filter(
 				'wpcf7_submission_has_disallowed_words',
+				'',
 				'__return_false',
 				999,
 				2
@@ -114,7 +126,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 						$tags_names[] = $tag->name;
 					}
 				}
-					$allowed_tags = $tags_names;
+				$allowed_tags = $tags_names;
 
 				$not_allowed_tags = array( 'g-recaptcha-response' );
 

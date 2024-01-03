@@ -142,9 +142,11 @@ if ( ! function_exists( 'get_api_ip' ) ) {
 
 			$body = wp_remote_retrieve_body( $request );
 
-			$data       = json_decode( $body, true );
-			$ip_address = $data['ipAddress'];
-			set_transient( 'checkview_saas_ip_address', $ip_address, 12 * HOUR_IN_SECONDS );
+			$data = json_decode( $body, true );
+			if ( ! empty( $data ) ) {
+				$ip_address = $data['ipAddress'];
+				set_transient( 'checkview_saas_ip_address', $ip_address, 12 * HOUR_IN_SECONDS );
+			}
 		}
 		return $ip_address;
 	}

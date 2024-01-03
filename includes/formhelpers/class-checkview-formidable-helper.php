@@ -24,14 +24,23 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 	 * @author     Check View <support@checkview.io>
 	 */
 	class Checkview_Formidable_Helper {
-
+		/**
+		 * The loader that's responsible for maintaining and registering all hooks that power
+		 * the plugin.
+		 *
+		 * @since    1.0.0
+		 * @access   protected
+		 * @var      Checkview_Loader    $loader    Maintains and registers all hooks for the plugin.
+		 */
+		protected $loader;
 		/**
 		 * Initializes the class constructor.
 		 */
 		public function __construct() {
+			$this->loader = new Checkview_Loader();
 			if ( defined( 'TEST_EMAIL' ) ) {
 				// update email to our test email.
-				$this->loadar->add_filter(
+				$this->loader->add_filter(
 					'frm_to_email',
 					$this,
 					'checkview_inject_email',
@@ -40,7 +49,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 				);
 			}
 
-			$this->loadar->add_action(
+			$this->loader->add_action(
 				'frm_after_create_entry',
 				$this,
 				'checkview_log_form_test_entry',

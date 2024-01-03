@@ -8,7 +8,6 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-global $wp_filesystem, $wpdb;
 $wp_filesystem_direct = new WP_Filesystem_Direct( array() );
 $pad_spaces           = 45;
 $checkview_options    = get_option( 'checkview_log_options', array() );
@@ -43,5 +42,3 @@ $contents  = $file && file_exists( $file ) ? $wp_filesystem_direct->get_contents
 	<?php do_action( 'checkview_logs_after_textarea' ); ?>
 </div>
 <?php
-// $plugin_logs     = new Checkview_Admin_Logs();
-// $plugin_logs::add( 'checkview-api-log', "Auth Api Error: hello" );

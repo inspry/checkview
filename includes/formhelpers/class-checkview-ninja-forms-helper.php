@@ -26,9 +26,19 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 	 */
 	class Checkview_Ninja_Forms_Helper {
 		/**
+		 * The loader that's responsible for maintaining and registering all hooks that power
+		 * the plugin.
+		 *
+		 * @since    1.0.0
+		 * @access   protected
+		 * @var      Checkview_Loader    $loader    Maintains and registers all hooks for the plugin.
+		 */
+		protected $loader;
+		/**
 		 * Initializes the class constructor.
 		 */
 		public function __construct() {
+			$this->loader = new Checkview_Loader();
 			$this->loader->add_action(
 				'ninja_forms_after_submission',
 				$this,

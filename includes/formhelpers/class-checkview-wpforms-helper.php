@@ -25,24 +25,34 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 	 * @author     Check View <support@checkview.io>
 	 */
 	class Checkview_Wpforms_Helper {
-
+		/**
+		 * The loader that's responsible for maintaining and registering all hooks that power
+		 * the plugin.
+		 *
+		 * @since    1.0.0
+		 * @access   protected
+		 * @var      Checkview_Loader    $loader    Maintains and registers all hooks for the plugin.
+		 */
+		protected $loader;
 		/**
 		 * Initializes the class constructor.
 		 */
 		public function __construct() {
-
+			$this->loader = new Checkview_Loader();
 			if ( ! is_admin() ) {
 				include_once ABSPATH . 'wp-admin/includes/plugin.php';
 			}
 			// Disable reCAPTCHA assets and initialisation on the frontend.
-			add_filter(
+			$this->loader->add_filter(
 				'wpforms_frontend_recaptcha_disable',
+				'',
 				'__return_true',
 				99
 			);
 			// Disable validation and verification on the backend.
-			add_filter(
+			$this->loader->add_filter(
 				'wpforms_process_bypass_captcha',
+				'',
 				'__return_true',
 				99
 			);

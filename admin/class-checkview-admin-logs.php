@@ -42,7 +42,9 @@ class Checkview_Admin_Logs {
 	 */
 	public function __destruct() {
 		foreach ( self::$_handles as $handle ) {
-			@fclose( $handle );
+			if ( is_resource( $handle ) ) {
+				@fclose( $handle );
+			}
 		}
 	}
 
