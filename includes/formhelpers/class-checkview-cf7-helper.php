@@ -95,7 +95,8 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 
 			global $wpdb;
 
-			$form_id = $form_tag->id();
+			$form_id              = $form_tag->id();
+			$wp_filesystem_direct = new WP_Filesystem_Direct( array() );
 
 			$checkview_test_id = get_checkview_test_id();
 
@@ -107,7 +108,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 			$cv_cf7_dirname = $upload_dir['basedir'] . '/cv_cf7_uploads';
 
 			if ( ! file_exists( $cv_cf7_dirname ) ) {
-				WP_Filesystem_Direct::mkdir( $cv_cf7_dirname, 0777, true );
+				$wp_filesystem_direct->mkdir( $cv_cf7_dirname, 0777, true );
 			}
 
 			$time_now = time();

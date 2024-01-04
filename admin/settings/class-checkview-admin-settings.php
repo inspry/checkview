@@ -199,37 +199,34 @@ class Checkview_Admin_Settings {
 
 			<div class="checkview-settings-wrapper">
 				<div id="icon-options-general" class="icon32"></div>
-				
-
 				<div class="checkview-tab-box">
-
-				<div class="nav-tab-wrapper">
-					<?php
-					$checkview_sections = $this->checkview_get_setting_sections();
-					foreach ( $checkview_sections as $key => $checkview_section ) {
-						?>
-						<a href="?page=checkview-options&tab=<?php echo esc_attr( $key ); ?>"
-						class="nav-tab <?php echo $this->page_tab === $key ? 'nav-tab-active hero-active' : ''; ?>">
-							<i class="fa <?php echo esc_html( $checkview_section['icon'] ); ?>" aria-hidden="true"></i>
-							<?php echo esc_html( $checkview_section['title'] ); ?>
-						</a>
+					<div class="nav-tab-wrapper">
 						<?php
+						$checkview_sections = $this->checkview_get_setting_sections();
+						foreach ( $checkview_sections as $key => $checkview_section ) {
+							?>
+							<a href="?page=checkview-options&tab=<?php echo esc_attr( $key ); ?>"
+							class="nav-tab <?php echo $this->page_tab === $key ? 'nav-tab-active hero-active' : ''; ?>">
+								<i class="fa <?php echo esc_html( $checkview_section['icon'] ); ?>" aria-hidden="true"></i>
+								<?php echo esc_html( $checkview_section['title'] ); ?>
+							</a>
+							<?php
+						}
+						?>
+					</div>
+					<div class="checkview-tab-innerbox">
+
+					<?php
+					foreach ( $checkview_sections as $key => $checkview_section ) {
+						if ( $this->page_tab === $key ) {
+
+							$url = 'templates/' . $key . '.php';
+							apply_filters( 'checkview_template_url', $url );
+							include $url;
+						}
 					}
 					?>
-				</div>
-				<div class="checkview-tab-innerbox">
-
-				<?php
-				foreach ( $checkview_sections as $key => $checkview_section ) {
-					if ( $this->page_tab === $key ) {
-
-						$url = 'templates/' . $key . '.php';
-						apply_filters( 'checkview_template_url', $url );
-						include $url;
-					}
-				}
-				?>
-				</div>
+					</div>
 				</div>
 			</div>
 		</div> 

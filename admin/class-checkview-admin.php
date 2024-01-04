@@ -70,7 +70,10 @@ class Checkview_Admin {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
+		$screen = get_current_screen();
+		if ( 'checkview-options' !== $screen->base && 'settings_page_checkview-options' !== $screen->base ) {
+			return;
+		}
 		wp_enqueue_style(
 			$this->plugin_name,
 			CHECKVIEW_ADMIN_ASSETS . 'css/checkview-admin.css',
@@ -114,7 +117,10 @@ class Checkview_Admin {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
+		$screen = get_current_screen();
+		if ( 'checkview-options' !== $screen->base && 'settings_page_checkview-options' !== $screen->base ) {
+			return;
+		}
 		wp_enqueue_script(
 			$this->plugin_name,
 			CHECKVIEW_ADMIN_ASSETS . 'js/checkview-admin.js',
@@ -188,7 +194,6 @@ class Checkview_Admin {
 		$visitor_ip = get_visitor_ip();
 		// Check view Bot IP. Todo.
 		$cv_bot_ip = get_api_ip();
-
 		// skip if visitor ip not equal to CV Bot IP.
 		if ( $visitor_ip !== $cv_bot_ip ) {
 			return;

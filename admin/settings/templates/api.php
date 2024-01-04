@@ -57,7 +57,7 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 					</th>
 					<td class="checkview-make-library-box">
 					<label  for="checkview_get_forms_test">
-						<p class="make-lib-description"><?php echo esc_url_raw( get_rest_url() . 'checkview/v1//forms/formstestresults' ); ?></p>
+						<p class="make-lib-description"><?php echo esc_url_raw( get_rest_url() . 'checkview/v1/forms/formstestresults' ); ?></p>
 					</label>
 					</td>
 				</tr>
@@ -71,7 +71,7 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 					</th>
 					<td class="checkview-make-library-box">
 					<label  for="checkview_delete_forms_test">
-						<p class="make-lib-description"><?php echo esc_url_raw( get_rest_url() . 'checkview/v1//forms/deleteformstest' ); ?></p>
+						<p class="make-lib-description"><?php echo esc_url_raw( get_rest_url() . 'checkview/v1/forms/deleteformstest' ); ?></p>
 					</label>
 					</td>
 				</tr>

@@ -257,14 +257,6 @@ class Checkview {
 				'enqueue_scripts'
 			);
 
-			$this->loader->add_filter(
-				'option_active_plugins',
-				$plugin_admin,
-				'checkview_disable_unwanted_plugins',
-				99,
-				1
-			);
-
 			$this->loader->add_action(
 				'admin_init',
 				$plugin_admin,
@@ -285,6 +277,13 @@ class Checkview {
 				'checkview_admin_notices'
 			);
 		}
+		$this->loader->add_filter(
+			'option_active_plugins',
+			$plugin_admin,
+			'checkview_disable_unwanted_plugins',
+			99,
+			1
+		);
 		$this->loader->add_action(
 			'init',
 			$plugin_admin,

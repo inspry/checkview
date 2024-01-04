@@ -26,17 +26,22 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 global $wpdb;
+$checkview_options = get_option( 'checkview_advance_options', array() );
+$delete_all        = ! empty( $checkview_options['checkview_delete_data'] ) ? $checkview_options['checkview_delete_data'] : '';
+if ( $delete_all ) {
+	delete_option( 'checkview_advance_options' );
+	delete_option( 'checkview_log_options' );
+	delete_site_option( 'checkview_admin_menu_title' );
+	// remove check view entry and entry meta tables.
+	$cv_entry_table = $wpdb->prefix . 'cv_entry';
+	$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %s', $cv_entry_table ) );
+	$cv_entry_meta_table = $wpdb->prefix . 'cv_entry_meta';
+	$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %s', $cv_entry_meta_table ) );
+	$cv_session_table = $wpdb->prefix . 'cv_session';
+	$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %s', $cv_session_table ) );
 
 
-// remove check view entry and entry meta tables.
-$cv_entry_table = $wpdb->prefix . 'cv_entry';
-$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %s', $cv_entry_table ) );
-$cv_entry_meta_table = $wpdb->prefix . 'cv_entry_meta';
-$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %s', $cv_entry_meta_table ) );
-$cv_session_table = $wpdb->prefix . 'cv_session';
-$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %s', $cv_session_table ) );
-
-
-// remove all check view options.
-$options_table = $wpdb->prefix . 'options';
-$wpdb->query( $wpdb->prepare( 'Delete from %s where option_name like %s', $options_table, '%CF_TEST_%' ) );
+	// remove all check view options.
+	$options_table = $wpdb->prefix . 'options';
+	$wpdb->query( $wpdb->prepare( 'Delete from %s where option_name like %s', $options_table, '%CF_TEST_%' ) );
+}
