@@ -376,7 +376,9 @@ class CheckView_Api {
 				}
 			}
 		}
-		set_transient( 'checkview_forms_list_transient', $forms, 12 * HOUR_IN_SECONDS );
+		if ( $forms && ! empty( $forms ) ) {
+			set_transient( 'checkview_forms_list_transient', $forms, 12 * HOUR_IN_SECONDS );
+		}
 		return new WP_REST_Response(
 			array(
 				'status'        => 200,
@@ -574,7 +576,7 @@ class CheckView_Api {
 	 * @param \WP_REST_Request $request request data with the api call.
 	 * @return json/array
 	 */
-	public function get_items_permissions_check( \WP_REST_Request $request ) {
+	public function checkview_get_items_permissions_check( \WP_REST_Request $request ) {
 		// Wanted to Add JWT AUTH could not add because of limited time.
 		// set no cache header.
 		nocache_headers();

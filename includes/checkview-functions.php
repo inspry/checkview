@@ -279,7 +279,8 @@ if ( ! function_exists( 'get_cv_session' ) ) {
 		global $wpdb;
 
 		$session_table = $wpdb->prefix . 'cv_session';
-		$result        = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where visitor_ip=%d and test_id=%d LIMIT 1', $session_table, $ip, $test_id ) );
+		$query         = 'Select * from ' . $session_table . ' where visitor_ip=%s and test_id=%s LIMIT 1';
+		$result        = $wpdb->get_results( $wpdb->prepare( $query, $ip, $test_id ), ARRAY_A );
 		return $result;
 	}
 }

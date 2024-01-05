@@ -134,7 +134,7 @@ class Checkview {
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site. Exposes the API end points.
 		 */
-		require_once plugin_dir_path( __DIR__ ) . 'includes/api/class-checkview-api.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/API/class-checkview-api.php';
 
 		/**
 		 * The class responsible for orchestrating the actions and filters of the
