@@ -186,9 +186,9 @@ class Checkview_Admin {
 	 */
 	public function checkview_init_current_test() {
 
-		if ( ! is_admin() ) {
+		//if ( ! is_admin() ) {
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
-		}
+		//}
 
 		// Current Vsitor IP.
 		$visitor_ip = get_visitor_ip();
