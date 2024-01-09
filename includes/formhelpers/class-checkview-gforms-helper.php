@@ -124,7 +124,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 			global $wpdb;
 
 			$tablename = $wpdb->prefix . 'gf_entry_meta';
-			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where entry_id=%d and form_id=%d order by id ASC', $tablename, $entry_id, $form_id ) );
+			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where entry_id=%d and form_id=%d order by id ASC', $entry_id, $form_id ) );
 			foreach ( $rows as $row ) {
 				$table = $wpdb->prefix . 'cv_entry_meta';
 				$data  = array(
@@ -137,7 +137,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				$wpdb->insert( $table, $data );
 			}
 			$tablename = $wpdb->prefix . 'gf_entry';
-			$row       = $wpdb->get_row( $wpdb->prepare( 'Select * from %s where id=%d and form_id=%d LIMIT 1', $tablename, $entry_id, $form_id ), ARRAY_A );
+			$row       = $wpdb->get_row( $wpdb->prepare( 'Select * from ' . $tablename . ' where id=%d and form_id=%d LIMIT 1', $entry_id, $form_id ), ARRAY_A );
 			unset( $row['id'] );
 			$table1           = $wpdb->prefix . 'cv_entry';
 			$row['uid']       = $uid;
