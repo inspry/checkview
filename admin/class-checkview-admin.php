@@ -196,7 +196,7 @@ class Checkview_Admin {
 		$cv_bot_ip = get_api_ip();
 		// skip if visitor ip not equal to CV Bot IP.
 		if ( $visitor_ip !== $cv_bot_ip ) {
-			return;
+			//return;
 		}
 
 		// if clean talk plugin active whitelist check form API IP.
@@ -208,7 +208,7 @@ class Checkview_Admin {
 
 		$referrer_url = sanitize_url( wp_get_raw_referer(), array( 'http', 'https' ) );
 
-		// If Ajax submission and found test_id.
+		// If not Ajax submission and found test_id.
 		if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'admin-ajax.php' ) === false && '' !== $cv_test_id ) {
 			// Create session for later use when form submit VIA AJAX.
 			create_cv_session( $visitor_ip, $cv_test_id );
