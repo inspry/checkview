@@ -186,9 +186,9 @@ class Checkview_Admin {
 	 */
 	public function checkview_init_current_test() {
 
-		//if ( ! is_admin() ) {
+		if ( ! function_exists( 'is_plugin_active' ) ) {
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
-		//}
+		}
 
 		// Current Vsitor IP.
 		$visitor_ip = get_visitor_ip();
@@ -196,7 +196,7 @@ class Checkview_Admin {
 		$cv_bot_ip = get_api_ip();
 		// skip if visitor ip not equal to CV Bot IP.
 		if ( $visitor_ip !== $cv_bot_ip ) {
-			//return;
+			// return;
 		}
 
 		// if clean talk plugin active whitelist check form API IP.
