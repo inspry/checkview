@@ -157,7 +157,7 @@ class CheckView_Api {
 		}
 		if ( is_plugin_active( 'gravityforms/gravityforms.php' ) ) {
 			$tablename = $wpdb->prefix . 'gf_form';
-			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where is_active=%d and is_trash=%d order by ID ASC', $tablename, 1, 0 ) );
+			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where is_active=%d and is_trash=%d order by ID ASC', 1, 0 ) );
 			if ( $results ) {
 				foreach ( $results as $row ) {
 					$forms['GravityForms'][ $row->id ] = array(
@@ -165,7 +165,7 @@ class CheckView_Api {
 						'Name' => $row->title,
 					);
 					$tablename                         = $wpdb->prefix . 'gf_addon_feed';
-					$addons                            = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where is_active=%d and form_id=%d', $tablename, 1, $row->id ) );
+					$addons                            = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where is_active=%d and form_id=%d', 1, $row->id ) );
 					foreach ( $addons as $addon ) {
 						$forms['GravityForms'][ $row->id ]['addons'][] = $addon->addon_slug;
 					}
@@ -199,7 +199,7 @@ class CheckView_Api {
 
 		if ( is_plugin_active( 'fluentform/fluentform.php' ) ) {
 			$tablename = $wpdb->prefix . 'fluentform_forms';
-			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where status=%s order by ID ASC', $tablename, 'published' ) );
+			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where status=%s order by ID ASC', 'published' ) );
 			if ( $results ) {
 				foreach ( $results as $row ) {
 					$forms['FluentForms'][ $row->id ] = array(
@@ -233,7 +233,7 @@ class CheckView_Api {
 		} // FLUENT FORMS
 		if ( is_plugin_active( 'ninja-forms/ninja-forms.php' ) ) {
 			$tablename = $wpdb->prefix . 'nf3_forms';
-			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from %s order by ID ASC', $tablename ) );
+			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . 'order by ID ASC' ) );
 			if ( $results ) {
 				foreach ( $results as $row ) {
 					$forms['NinjaForms'][ $row->id ] = array(
@@ -296,7 +296,7 @@ class CheckView_Api {
 
 		if ( is_plugin_active( 'formidable/formidable.php' ) ) {
 			$tablename = $wpdb->prefix . 'frm_forms';
-			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where 1=%d and status=%s', $tablename, 1, 'published' ) );
+			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where 1=%d and status=%s', 1, 'published' ) );
 			if ( $results ) {
 				foreach ( $results as $row ) {
 					$forms['Formidable'][ $row->id ] = array(
@@ -426,9 +426,9 @@ class CheckView_Api {
 				wp_die();
 			}
 			$tablename = $wpdb->prefix . 'cv_entry';
-			$result    = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where uid=%d', $tablename, $uid ) );
+			$result    = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%d', $uid ) );
 			$tablename = $wpdb->prefix . 'cv_entry_meta';
-			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where uid=%d order by id ASC', $tablename, $uid ) );
+			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%d order by id ASC', $uid ) );
 			if ( $rows ) {
 				foreach ( $rows as $row ) {
 					if ( strtolower( 'gravityforms' === $result->form_type ) ) {

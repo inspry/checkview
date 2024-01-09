@@ -106,7 +106,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 			$entry_meta_table = $wpdb->prefix . 'cv_entry_meta';
 			$field_id_prefix  = 'nf';
 			$tablename        = $wpdb->prefix . 'postmeta';
-			$form_fields      = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where post_id=%d', $tablename, $entry_id ) );
+			$form_fields      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where post_id=%d', $entry_id ) );
 			foreach ( $form_fields as $field ) {
 				if ( ! in_array( $field->meta_key, array( '_form_id', '_seq_num' ) ) ) {
 					$entry_metadata = array(
