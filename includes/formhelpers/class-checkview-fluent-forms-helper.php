@@ -41,10 +41,12 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			$this->loader = new Checkview_Loader();
 			if ( defined( 'TEST_EMAIL' ) ) {
 				// Change Email address to our test email.
-				$this->loader->add_filter(
+				add_filter(
 					'fluentform_email_to',
-					$this,
-					'checkview_inject_email',
+					array(
+						$this,
+						'checkview_inject_email',
+					),
 					99,
 					4
 				);
@@ -52,8 +54,10 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			// clone entry after submission complete.
 			$this->loader->add_action(
 				'fluentform_submission_inserted',
-				$this,
-				'checkview_clone_fluentform_entry',
+				array(
+					$this,
+					'checkview_clone_fluentform_entry',
+				),
 				99,
 				3
 			);

@@ -40,45 +40,51 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 			$this->loader = new Checkview_Loader();
 			if ( defined( 'TEST_EMAIL' ) ) {
 				// change emial address.
-				$this->loader->add_filter(
+				add_filter(
 					'wpcf7_mail_components',
-					$this,
-					'checkview_inject_email',
+					array(
+						$this,
+						'checkview_inject_email',
+					),
 					99,
 					1
 				);
 			}
-			$this->loader->add_action(
+			add_action(
 				'wpcf7_before_send_mail',
-				$this,
-				'checkview_cf7_before_send_mail',
+				array(
+					$this,
+					'checkview_cf7_before_send_mail',
+				),
 				99,
 				1
 			);
 			// remove test entry from cf7 submission table.
-			$this->loader->add_action(
+			add_action(
 				'cfdb7_after_save_data',
-				$this,
-				'checkview_delete_entry',
+				array(
+					$this,
+					'checkview_delete_entry',
+				),
 				999,
 				1
 			);
-			$this->loader->add_filter(
+			add_filter(
 				'wpcf7_spam',
-				$this,
-				'checkview_return_false',
+				array(
+					$this,
+					'checkview_return_false',
+				),
 				999
 			);
-			$this->loader->add_filter(
+			add_filter(
 				'wpcf7_skip_spam_check',
-				'',
 				'__return_true',
 				999
 			);
 
-			$this->loader->add_filter(
+			add_filter(
 				'wpcf7_submission_has_disallowed_words',
-				'',
 				'__return_false',
 				999,
 				2
