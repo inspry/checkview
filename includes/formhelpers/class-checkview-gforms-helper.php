@@ -40,43 +40,53 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 			$this->loader = new Checkview_Loader();
 			if ( defined( 'TEST_EMAIL' ) ) {
 				// Change email address to our test email.
-				$this->loader->add_filter(
+				add_filter(
 					'gform_pre_send_email',
-					$this,
-					'checkview_inject_email',
+					array(
+						$this,
+						'checkview_inject_email',
+					),
 					99,
 					1
 				);
 			}
 			// disable addons found in forms.
-			$this->loader->add_filter(
+			add_filter(
 				'gform_addon_pre_process_feeds',
-				$this,
-				'checkview_disable_addons_feed',
+				array(
+					$this,
+					'checkview_disable_addons_feed',
+				),
 				999,
 				3
 			);
 			// disable pdf addon if added to form.
-			$this->loader->add_filter(
+			add_filter(
 				'gfpdf_pdf_config',
-				$this,
-				'checkview_disable_pdf_addon',
+				array(
+					$this,
+					'checkview_disable_pdf_addon',
+				),
 				999,
 				2
 			);
 			// disable zero spam for form testing.
-			$this->loader->add_filter(
+			add_filter(
 				'gf_zero_spam_check_key_field',
-				$this,
-				'checkview_disable_zero_spam_addon',
+				array(
+					$this,
+					'checkview_disable_zero_spam_addon',
+				),
 				99,
 				4
 			);
 			// clone entry after submission complete.
-			$this->loader->add_action(
+			add_action(
 				'gform_after_submission',
-				$this,
-				'checkview_clone_entry',
+				array(
+					$this,
+					'checkview_clone_entry',
+				),
 				99,
 				2
 			);
