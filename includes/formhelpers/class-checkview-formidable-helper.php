@@ -40,19 +40,23 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			$this->loader = new Checkview_Loader();
 			if ( defined( 'TEST_EMAIL' ) ) {
 				// update email to our test email.
-				$this->loader->add_filter(
+				add_filter(
 					'frm_to_email',
-					$this,
-					'checkview_inject_email',
+					array(
+						$this,
+						'checkview_inject_email',
+					),
 					99,
 					1
 				);
 			}
 
-			$this->loader->add_action(
+			add_action(
 				'frm_after_create_entry',
-				$this,
-				'checkview_log_form_test_entry',
+				array(
+					$this,
+					'checkview_log_form_test_entry',
+				),
 				99,
 				2
 			);
