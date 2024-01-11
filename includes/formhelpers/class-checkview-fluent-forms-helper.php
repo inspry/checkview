@@ -52,7 +52,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				);
 			}
 			// clone entry after submission complete.
-			$this->loader->add_action(
+			add_action(
 				'fluentform_submission_inserted',
 				array(
 					$this,
