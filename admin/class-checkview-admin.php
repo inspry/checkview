@@ -262,9 +262,6 @@ class Checkview_Admin {
 			if ( is_plugin_active( 'formidable/formidable.php' ) ) {
 				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-formidable-helper.php';
 			}
-			if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) ) {
-				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
-			}
 		}
 	}
 }
