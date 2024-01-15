@@ -224,7 +224,7 @@ class Checkview_Admin {
 
 		$cv_session = get_cv_session( $visitor_ip, $cv_test_id );
 
-		// top if session not found.
+		// stop if session not found.
 		if ( ! empty( $cv_session ) ) {
 
 			$test_key = $cv_session[0]['test_key'];
