@@ -51,6 +51,15 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 				);
 			}
 
+			add_action(
+				'wpcf7_before_send_mail',
+				array(
+					$this,
+					'checkview_cf7_before_send_mail',
+				),
+				99,
+				1
+			);
 			// remove test entry from cf7 submission table.
 			add_action(
 				'cfdb7_after_save_data',
@@ -203,7 +212,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 				}
 
 				// Test completed So Clear sessions.
-				complete_checkview_test();
+				complete_checkview_test( $checkview_test_id );
 			}
 		}
 

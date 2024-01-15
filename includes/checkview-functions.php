@@ -254,8 +254,14 @@ if ( ! function_exists( 'create_cv_session' ) ) {
 
 		// Add WP's redirect URL string.
 		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
-		$current_url = $current_url . $request_uri;
+		if ( count( $is_sub_directory ) > 1 ) {
+			$current_url = $current_url . $request_uri;
+		} else {
+			$current_url = $request_uri;
+		}
 
+		$url         = explode( '?', $current_url );
+		$current_url = $url[0];
 		// Retrieve the current post's ID based on its URL.
 		if ( $current_url ) {
 			$page_id = get_page_by_path( $current_url );
