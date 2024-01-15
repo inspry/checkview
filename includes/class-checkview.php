@@ -257,13 +257,6 @@ class Checkview {
 				'enqueue_scripts'
 			);
 
-			// $this->loader->add_action(
-			// 'admin_init',
-			// $plugin_admin,
-			// 'checkview_init_current_test',
-			// 99
-			// );
-
 			$this->loader->add_action(
 				'admin_menu',
 				$plugin_settings,
@@ -284,12 +277,7 @@ class Checkview {
 			99,
 			1
 		);
-		$this->loader->add_action(
-			'init',
-			$plugin_admin,
-			'checkview_init_current_test',
-			99
-		);
+		$plugin_admin->checkview_init_current_test();
 	}
 
 	/**

@@ -76,11 +76,15 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 	/**
 	 * Remove sessions after test completion.
 	 *
+	 * @param string $checkview_test_id test id.
 	 * @return void
 	 */
-	function complete_checkview_test() {
+	function complete_checkview_test( $checkview_test_id = '' ) {
 		global $wpdb;
-
+		global $CV_TEST_ID;
+		if ( ! defined( 'CV_TEST_ID' ) ) {
+			define( 'CV_TEST_ID', $checkview_test_id );
+		}
 		$session_table = $wpdb->prefix . 'cv_session';
 		$visitor_ip    = get_visitor_ip();
 		$wpdb->delete(
@@ -253,7 +257,13 @@ if ( ! function_exists( 'create_cv_session' ) ) {
 		$current_url = $current_url . $request_uri;
 
 		// Retrieve the current post's ID based on its URL.
-		$page_id       = url_to_postid( $current_url );
+		if ( $current_url ) {
+			$page_id = get_page_by_path( $current_url );
+			$page_id = $page_id->ID;
+		} else {
+			global $post;
+			$page_id = $post->ID;
+		}
 		$session_table = $wpdb->prefix . 'cv_session';
 
 		$wpdb->delete( $session_table, array( 'visitor_ip' => $ip ) );

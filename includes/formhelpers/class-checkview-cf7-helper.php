@@ -50,15 +50,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 					1
 				);
 			}
-			add_action(
-				'wpcf7_before_send_mail',
-				array(
-					$this,
-					'checkview_cf7_before_send_mail',
-				),
-				99,
-				1
-			);
+
 			// remove test entry from cf7 submission table.
 			add_action(
 				'cfdb7_after_save_data',
