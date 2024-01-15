@@ -177,7 +177,7 @@ class Checkview {
 			// Check view Bot IP. Todo.
 			$cv_bot_ip = get_api_ip();
 			// skip if visitor ip not equal to CV Bot IP.
-			if ( $visitor_ip !== $cv_bot_ip ) {
+			if ( $visitor_ip === $cv_bot_ip ) {
 				// if clean talk plugin active whitelist check form API IP. .
 				if ( is_plugin_active( 'cleantalk-spam-protect/cleantalk.php' ) ) {
 					whitelist_api_ip();
@@ -224,8 +224,8 @@ class Checkview {
 					if ( ! defined( 'CV_TEST_ID' ) ) {
 						define( 'CV_TEST_ID', $cv_test_id );
 					}
-					require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
 				}
+				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
 			}
 		}
 		$this->loader = new Checkview_Loader();
