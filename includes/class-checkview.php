@@ -128,6 +128,11 @@ class Checkview {
 		require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
 
 		/**
+		 * The class responsible for defining all actions that occur in the public-facing JWT
+		 * side of the site. Exposes the general functions.
+		 */
+		require_once plugin_dir_path( __DIR__ ) . 'includes/vendor/autoload.php';
+		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site. Exposes the general functions.
 		 */
