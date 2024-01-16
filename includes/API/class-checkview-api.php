@@ -141,7 +141,7 @@ class CheckView_Api {
 			);
 			wp_die();
 		}
-		if ( '' !== $forms_list && null !== $forms_list ) {
+		if ( '' !== $forms_list && null !== $forms_list && false !== $forms_list) {
 			return new WP_REST_Response(
 				array(
 					'status'        => 200,
@@ -376,16 +376,24 @@ class CheckView_Api {
 				}
 			}
 		}
-		if ( $forms && ! empty( $forms ) ) {
+		if ( $forms && ! empty( $forms ) && false !== $forms && '' !== $forms ) {
 			set_transient( 'checkview_forms_list_transient', $forms, 12 * HOUR_IN_SECONDS );
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the forms list.', 'checkview' ),
+					'body_response' => $forms,
+				)
+			);
+		} else {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'No forms to show.', 'checkview' ),
+					'body_response' => $forms,
+				)
+			);
 		}
-		return new WP_REST_Response(
-			array(
-				'status'        => 200,
-				'response'      => esc_html__( 'Successfully retrieved the forms list.', 'checkview' ),
-				'body_response' => $forms,
-			)
-		);
 		wp_die();
 	}
 
