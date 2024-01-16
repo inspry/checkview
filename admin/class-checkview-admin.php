@@ -219,7 +219,9 @@ class Checkview_Admin {
 			$referer_url_query = wp_parse_url( $referrer_url, PHP_URL_QUERY );
 			$qry_str           = array();
 			parse_str( $referer_url_query, $qry_str );
-			$cv_test_id = $qry_str['checkview_test_id'];
+			if ( isset( $qry_str['checkview_test_id'] ) ) {
+				$cv_test_id = $qry_str['checkview_test_id'];
+			}
 		}
 
 		$cv_session = get_cv_session( $visitor_ip, $cv_test_id );
