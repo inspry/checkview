@@ -333,6 +333,14 @@ class Checkview {
 				$plugin_settings,
 				'checkview_admin_notices'
 			);
+
+			$this->loader->add_action(
+				'save_post',
+				$plugin_settings,
+				'checkview_update_cache_non_ajax',
+				11,
+				3
+			);
 		}
 		$this->loader->add_filter(
 			'option_active_plugins',
