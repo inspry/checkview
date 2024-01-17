@@ -151,6 +151,15 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
+	 * Ajax function to sync cache.
+	 *
+	 * @since 1.0.0
+	 */
+	public function checkview_update_cache_non_ajax() {
+		checkview_reset_cache( true );
+	}
+
+	/**
 	 * Add plugin's menu.
 	 *
 	 * @since 1.0.0
