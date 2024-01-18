@@ -123,8 +123,233 @@ class CheckView_Api {
 				),
 			)
 		);
-	} // end checkview_register_rest_route
 
+		register_rest_route(
+			'checkview/v1',
+			'/store/orders',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'checkview_get_available_orders' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/products',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'checkview_get_available_products' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
+	} // end checkview_register_rest_route
+	/**
+	 * Retrieves the available forms.
+	 *
+	 * @return WP_REST_Response/json
+	 */
+	public function checkview_get_available_orders( WP_REST_Request $request ) {
+		global $wpdb;
+		$orders                 = get_transient( 'checkview_store_orders_transient' );
+		$checkview_keyword      = $request->get_param( 'checkview_keyword' );
+		$checkview_product_type = $request->get_param( 'checkview_product_type' );
+		$checkview_keyword      = isset( $checkview_keyword ) ? sanitize_text_field( $checkview_keyword ) : null;
+		$checkview_product_type = isset( $checkview_product_type ) ? sanitize_text_field( $checkview_product_type ) : null;
+		if ( null !== $this->$jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->$jwt_error )
+			);
+			wp_die();
+		}
+		if ( '' !== $orders && null !== $orders && false !== $orders ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the orders.', 'checkview' ),
+					'body_response' => $orders,
+				)
+			);
+			wp_die();
+		}
+		$orders = array();
+		if ( ! is_admin() ) {
+			include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		$args = array(
+			'post_type'           => 'product',
+			'post_status'         => 'publish',
+			'ignore_sticky_posts' => 1,
+			'posts_per_page'      => -1,
+			'meta_key'            => 'total_sales',
+			'orderby'             => 'meta_value_num',
+			'order'               => 'DESC',
+		);
+		if ( ! empty( $checkview_keyword ) ) {
+
+			$args['s'] = $checkview_keyword;
+
+		}
+
+		if ( ! empty( $checkview_product_type ) ) {
+
+			$args['tax_query'] = array(
+				array(
+					'taxonomy' => 'product_type',
+					'field'    => 'slug',
+					'terms'    => $checkview_keyword,
+				),
+			);
+
+		}
+		$loop = new WP_Query( $args );
+
+					$products = array();
+
+		if ( ! empty( $loop->posts ) ) {
+
+			foreach ( $loop->posts as $post ) {
+
+				$products[] = array(
+					'id'        => $post->ID,
+					'name'      => $post->post_title,
+					'slug'      => $post->post_name,
+					'url'       => get_permalink( $post->ID ),
+					'thumb_url' => get_the_post_thumbnail_url( $post->ID ),
+				);
+
+			}
+		}
+		if ( $orders && ! empty( $orders ) && false !== $orders && '' !== $orders ) {
+			set_transient( 'checkview_store_orders_transient', $orders, 12 * HOUR_IN_SECONDS );
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the orders.', 'checkview' ),
+					'body_response' => $orders,
+				)
+			);
+		} else {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'No orders to show.', 'checkview' ),
+					'body_response' => $orders,
+				)
+			);
+		}
+		wp_die();
+	}
+	/**
+	 * Retrieves the available forms.
+	 *
+	 * @return WP_REST_Response/json
+	 */
+	public function checkview_get_available_products( WP_REST_Request $request ) {
+		global $wpdb;
+		$products               = get_transient( 'checkview_store_products_transient' );
+		$checkview_keyword      = $request->get_param( 'checkview_keyword' );
+		$checkview_product_type = $request->get_param( 'checkview_product_type' );
+		$checkview_keyword      = isset( $checkview_keyword ) ? sanitize_text_field( $checkview_keyword ) : null;
+		$checkview_product_type = isset( $checkview_product_type ) ? sanitize_text_field( $checkview_product_type ) : null;
+		if ( null !== $this->$jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->$jwt_error )
+			);
+			wp_die();
+		}
+		if ( '' !== $products && null !== $products && false !== $products ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the orders.', 'checkview' ),
+					'body_response' => $products,
+				)
+			);
+			wp_die();
+		}
+		$products = array();
+		if ( ! is_admin() ) {
+			include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		$args = array(
+			'post_type'           => 'product',
+			'post_status'         => 'publish',
+			'ignore_sticky_posts' => 1,
+			'posts_per_page'      => -1,
+			'meta_key'            => 'total_sales',
+			'orderby'             => 'meta_value_num',
+			'order'               => 'DESC',
+		);
+		if ( ! empty( $checkview_keyword ) ) {
+
+			$args['s'] = $checkview_keyword;
+
+		}
+
+		if ( ! empty( $checkview_product_type ) ) {
+
+			$args['tax_query'] = array(
+				array(
+					'taxonomy' => 'product_type',
+					'field'    => 'slug',
+					'terms'    => $checkview_keyword,
+				),
+			);
+
+		}
+		$loop = new WP_Query( $args );
+
+		$products = array();
+
+		if ( ! empty( $loop->posts ) ) {
+
+			foreach ( $loop->posts as $post ) {
+
+				$products[] = array(
+					'id'        => $post->ID,
+					'name'      => $post->post_title,
+					'slug'      => $post->post_name,
+					'url'       => get_permalink( $post->ID ),
+					'thumb_url' => get_the_post_thumbnail_url( $post->ID ),
+				);
+
+			}
+		}
+		if ( $products && ! empty( $products ) && false !== $products && '' !== $products ) {
+			set_transient( 'checkview_store_products_transient', $products, 12 * HOUR_IN_SECONDS );
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the products.', 'checkview' ),
+					'body_response' => $products,
+				)
+			);
+		} else {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'No products to show.', 'checkview' ),
+					'body_response' => $products,
+				)
+			);
+		}
+		wp_die();
+	}
 	/**
 	 * Retrieves the available forms.
 	 *
@@ -141,7 +366,7 @@ class CheckView_Api {
 			);
 			wp_die();
 		}
-		if ( '' !== $forms_list && null !== $forms_list && false !== $forms_list) {
+		if ( '' !== $forms_list && null !== $forms_list && false !== $forms_list ) {
 			return new WP_REST_Response(
 				array(
 					'status'        => 200,
