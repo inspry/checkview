@@ -132,8 +132,20 @@ class CheckView_Api {
 				'callback'            => array( $this, 'checkview_get_available_orders' ),
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
-					'_checkview_token' => array(
+					'_checkview_token'                    => array(
 						'required' => true,
+					),
+					'checkview_order_last_modified_since' => array(
+						'required' => false,
+					),
+					'checkview_order_last_modified_until' => array(
+						'required' => false,
+					),
+					'checkview_order_id_after'            => array(
+						'required' => false,
+					),
+					'checkview_order_id_before'           => array(
+						'required' => false,
 					),
 				),
 			)
@@ -147,8 +159,14 @@ class CheckView_Api {
 				'callback'            => array( $this, 'checkview_get_available_products' ),
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
-					'_checkview_token' => array(
+					'_checkview_token'       => array(
 						'required' => true,
+					),
+					'checkview_keyword'      => array(
+						'required' => fasle,
+					),
+					'checkview_product_type' => array(
+						'required' => fasle,
 					),
 				),
 			)
@@ -157,15 +175,23 @@ class CheckView_Api {
 	/**
 	 * Retrieves the available forms.
 	 *
+	 * @param WP_REST_Request $request wp request object.
 	 * @return WP_REST_Response/json
 	 */
 	public function checkview_get_available_orders( WP_REST_Request $request ) {
 		global $wpdb;
-		$orders                 = get_transient( 'checkview_store_orders_transient' );
-		$checkview_keyword      = $request->get_param( 'checkview_keyword' );
-		$checkview_product_type = $request->get_param( 'checkview_product_type' );
-		$checkview_keyword      = isset( $checkview_keyword ) ? sanitize_text_field( $checkview_keyword ) : null;
-		$checkview_product_type = isset( $checkview_product_type ) ? sanitize_text_field( $checkview_product_type ) : null;
+		$orders                              = get_transient( 'checkview_store_orders_transient' );
+		$checkview_order_last_modified_since = $request->get_param( 'checkview_order_last_modified_since' );
+		$checkview_order_last_modified_since = isset( $checkview_order_last_modified_since ) ? sanitize_text_field( $checkview_order_last_modified_since ) : '';
+
+		$checkview_order_last_modified_until = $request->get_param( 'checkview_order_last_modified_until' );
+		$checkview_order_last_modified_until = isset( $checkview_order_last_modified_until ) ? sanitize_text_field( $checkview_order_last_modified_until ) : '';
+
+		$checkview_order_id_after = $request->get_param( 'checkview_order_id_after' );
+		$checkview_order_id_after = isset( $checkview_order_id_after ) ? sanitize_text_field( $checkview_order_id_after ) : '';
+
+		$checkview_order_id_before = $request->get_param( 'checkview_order_id_before' );
+		$checkview_order_id_before = isset( $checkview_order_id_before ) ? sanitize_text_field( $checkview_order_id_before ) : '';
 		if ( null !== $this->$jwt_error ) {
 			return new WP_Error(
 				400,
@@ -188,57 +214,80 @@ class CheckView_Api {
 		if ( ! is_admin() ) {
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
-		$args = array(
-			'post_type'           => 'product',
-			'post_status'         => 'publish',
-			'ignore_sticky_posts' => 1,
-			'posts_per_page'      => -1,
-			'meta_key'            => 'total_sales',
-			'orderby'             => 'meta_value_num',
-			'order'               => 'DESC',
+
+		$per_page = 500;
+
+		$params = array();
+
+		$sql = "SELECT p.ID AS orderId, DATE_FORMAT(p.post_date_gmt, '%%Y-%%m-%%dT%%TZ') AS orderDate, 
+			DATE_FORMAT(p.post_modified_gmt, '%%Y-%%m-%%dT%%TZ') AS lastModifiedOn, p.post_status AS status, 
+			pm2.meta_value AS orderTotal, pm3.meta_value AS currency 
+			FROM {$wpdb->prefix}posts as p
+			LEFT JOIN {$wpdb->prefix}postmeta AS pm ON (p.id = pm.post_id AND pm.meta_key = '_payment_method') 
+			LEFT JOIN {$wpdb->prefix}postmeta AS pm2 ON (p.id = pm2.post_id AND pm2.meta_key = '_order_total') 
+			LEFT JOIN {$wpdb->prefix}postmeta AS pm3 ON (p.id = pm3.post_id AND pm3.meta_key = '_order_currency') 
+			WHERE p.post_type = 'shop_order'
+			AND p.post_status IN ('wc-processing', 'wc-completed', 'wc-failed', 'wc-cancelled') 
+			AND pm.meta_value <> 'checkview' ";
+
+		if ( ! empty( $checkview_order_last_modified_since ) ) {
+
+			$sql     .= ' AND p.post_modified_gmt >= %s ';
+			$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_since ) );
+
+		}
+
+		if ( ! empty( $checkview_order_last_modified_until ) ) {
+
+			$sql     .= ' AND p.post_modified_gmt <= %s ';
+			$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_until ) );
+
+		}
+
+		if ( ! empty( $checkview_order_id_after ) && ! empty( $checkview_order_last_modified_since ) ) {
+
+			$sql     .= ' AND (p.post_modified_gmt != %s OR p.ID > %s) ';
+			$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_since ) );
+			$params[] = $checkview_order_id_after;
+
+		}
+
+		if ( ! empty( $checkview_order_id_before ) && ! empty( $checkview_order_last_modified_until ) ) {
+
+			$sql     .= ' AND (p.post_modified_gmt != %s OR p.ID < %s) ';
+			$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_until ) );
+			$params[] = $checkview_order_id_before;
+
+		}
+
+		// To make sure we don't get incomplete batches of orders.
+		if ( ! empty( $checkview_order_last_modified_since ) ) {
+			$sql .= ' AND p.post_modified_gmt < (NOW() - interval 2 second) ';
+		}
+
+		if ( ! empty( $checkview_order_last_modified_until ) ) {
+			$sql .= ' ORDER BY p.post_modified_gmt DESC, p.ID DESC 
+					        	LIMIT ' . $per_page;
+		} else {
+			$sql .= ' ORDER BY p.post_modified_gmt ASC, p.ID ASC 
+					        	LIMIT ' . $per_page;
+		}
+
+		$psql   = $wpdb->prepare( $sql, $params );
+		$orders = $wpdb->get_results( $psql );
+
+		$output = array(
+			'perPage' => $per_page,
+			'num'     => count( $orders ),
+			'orders'  => $orders,
 		);
-		if ( ! empty( $checkview_keyword ) ) {
-
-			$args['s'] = $checkview_keyword;
-
-		}
-
-		if ( ! empty( $checkview_product_type ) ) {
-
-			$args['tax_query'] = array(
-				array(
-					'taxonomy' => 'product_type',
-					'field'    => 'slug',
-					'terms'    => $checkview_keyword,
-				),
-			);
-
-		}
-		$loop = new WP_Query( $args );
-
-					$products = array();
-
-		if ( ! empty( $loop->posts ) ) {
-
-			foreach ( $loop->posts as $post ) {
-
-				$products[] = array(
-					'id'        => $post->ID,
-					'name'      => $post->post_title,
-					'slug'      => $post->post_name,
-					'url'       => get_permalink( $post->ID ),
-					'thumb_url' => get_the_post_thumbnail_url( $post->ID ),
-				);
-
-			}
-		}
-		if ( $orders && ! empty( $orders ) && false !== $orders && '' !== $orders ) {
-			set_transient( 'checkview_store_orders_transient', $orders, 12 * HOUR_IN_SECONDS );
+		if ( $output && ! empty( $output ) && false !== $output && '' !== $output ) {
+			set_transient( 'checkview_store_orders_transient', $output, 12 * HOUR_IN_SECONDS );
 			return new WP_REST_Response(
 				array(
 					'status'        => 200,
 					'response'      => esc_html__( 'Successfully retrieved the orders.', 'checkview' ),
-					'body_response' => $orders,
+					'body_response' => $output,
 				)
 			);
 		} else {
@@ -255,9 +304,19 @@ class CheckView_Api {
 	/**
 	 * Retrieves the available forms.
 	 *
+	 * @param WP_REST_Request $request wp request object.
 	 * @return WP_REST_Response/json
 	 */
 	public function checkview_get_available_products( WP_REST_Request $request ) {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
 		global $wpdb;
 		$products               = get_transient( 'checkview_store_products_transient' );
 		$checkview_keyword      = $request->get_param( 'checkview_keyword' );
@@ -295,13 +354,13 @@ class CheckView_Api {
 			'orderby'             => 'meta_value_num',
 			'order'               => 'DESC',
 		);
-		if ( ! empty( $checkview_keyword ) ) {
+		if ( ! empty( $checkview_keyword ) && null !== $checkview_keyword ) {
 
 			$args['s'] = $checkview_keyword;
 
 		}
 
-		if ( ! empty( $checkview_product_type ) ) {
+		if ( ! empty( $checkview_product_type ) && null !== $checkview_product_type ) {
 
 			$args['tax_query'] = array(
 				array(
@@ -331,6 +390,10 @@ class CheckView_Api {
 			}
 		}
 		if ( $products && ! empty( $products ) && false !== $products && '' !== $products ) {
+			$products['store_url']     = wc_get_page_permalink( 'shop' );
+			$products['cart_url']      = wc_get_cart_url();
+			$products['checkout_url']  = wc_get_checkout_url();
+			$products['myaccount_url'] = wc_get_page_permalink( 'myaccount' );
 			set_transient( 'checkview_store_products_transient', $products, 12 * HOUR_IN_SECONDS );
 			return new WP_REST_Response(
 				array(
