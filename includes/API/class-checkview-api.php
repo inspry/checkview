@@ -141,7 +141,7 @@ class CheckView_Api {
 			);
 			wp_die();
 		}
-		if ( '' !== $forms_list && null !== $forms_list && false !== $forms_list) {
+		if ( '' !== $forms_list && null !== $forms_list && false !== $forms_list ) {
 			return new WP_REST_Response(
 				array(
 					'status'        => 200,
@@ -423,7 +423,7 @@ class CheckView_Api {
 			wp_die();
 		} else {
 			$tests_transients = get_transient( 'checkview_forms_test_transient' );
-			if ( '' !== $tests_transients && null !== $tests_transients ) {
+			if ( '' !== $tests_transients && null !== $tests_transients && fasle !== $tests_transients ) {
 				return new WP_REST_Response(
 					array(
 						'status'        => 200,
@@ -434,9 +434,9 @@ class CheckView_Api {
 				wp_die();
 			}
 			$tablename = $wpdb->prefix . 'cv_entry';
-			$result    = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%d', $uid ) );
+			$result    = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s', $uid ) );
 			$tablename = $wpdb->prefix . 'cv_entry_meta';
-			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%d order by id ASC', $uid ) );
+			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s order by id ASC', $uid ) );
 			if ( $rows ) {
 				foreach ( $rows as $row ) {
 					if ( strtolower( 'gravityforms' === $result->form_type ) ) {
@@ -463,14 +463,22 @@ class CheckView_Api {
 						);
 					}
 				}
-				set_transient( 'checkview_forms_test_transient', $results, 12 * HOUR_IN_SECONDS );
-				return new WP_REST_Response(
-					array(
-						'status'        => 200,
-						'response'      => esc_html__( 'Successfully retrieved the results.', 'checkview' ),
-						'body_response' => $results,
-					)
-				);
+				if ( ! empty( $results ) && false !== $results ) {
+					set_transient( 'checkview_forms_test_transient', $results, 12 * HOUR_IN_SECONDS );
+					return new WP_REST_Response(
+						array(
+							'status'        => 200,
+							'response'      => esc_html__( 'Successfully retrieved the results.', 'checkview' ),
+							'body_response' => $results,
+						)
+					);
+				} else {
+					return new WP_Error(
+						400,
+						esc_html__( 'Failed to retrieve the results.', 'checkview' ),
+						$error
+					);
+				}
 				wp_die();
 			} else {
 				return new WP_Error(
@@ -547,7 +555,7 @@ class CheckView_Api {
 			'message' => esc_html__( 'No Result Found', 'checkview' ),
 		);
 		$results = array();
-		if ( '' === $uid || null === $uid ) {
+		if ( '' === $uid || null === $uid || fasle === $uid ) {
 			return new WP_Error(
 				400,
 				esc_html__( 'Empty UID.', 'checkview' ),
@@ -556,9 +564,9 @@ class CheckView_Api {
 			wp_die();
 		} else {
 			$tablename = $wpdb->prefix . 'cv_entry';
-			$result    = $wpdb->get_results( $wpdb->prepare( 'DELETE * from %s where uid=%d', $tablename, $uid ) );
+			$result    = $wpdb->get_results( $wpdb->prepare( 'DELETE * from ' . $tablename . ' where uid=%s', $uid ) );
 			$tablename = $wpdb->prefix . 'cv_entry_meta';
-			$rows      = $wpdb->get_results( $wpdb->prepare( 'DELETE * from %s where uid=%d order by id ASC', $tablename, $uid ) );
+			$rows      = $wpdb->get_results( $wpdb->prepare( 'DELETE * from ' . $tablename . ' where uid=%s order by id ASC', $uid ) );
 			if ( $rows ) {
 				return new WP_REST_Response(
 					array(
