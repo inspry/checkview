@@ -182,7 +182,7 @@ class Checkview {
 			// Check view Bot IP. Todo.
 			$cv_bot_ip = get_api_ip();
 			// skip if visitor ip not equal to CV Bot IP.
-			if ( $visitor_ip === $cv_bot_ip ) {
+			if ( $visitor_ip == $cv_bot_ip ) {
 				// if clean talk plugin active whitelist check form API IP. .
 				if ( is_plugin_active( 'cleantalk-spam-protect/cleantalk.php' ) ) {
 					whitelist_api_ip();

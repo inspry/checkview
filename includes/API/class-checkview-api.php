@@ -233,7 +233,7 @@ class CheckView_Api {
 		} // FLUENT FORMS
 		if ( is_plugin_active( 'ninja-forms/ninja-forms.php' ) ) {
 			$tablename = $wpdb->prefix . 'nf3_forms';
-			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . 'order by ID ASC' ) );
+			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' order by ID ASC' ) );
 			if ( $results ) {
 				foreach ( $results as $row ) {
 					$forms['NinjaForms'][ $row->id ] = array(

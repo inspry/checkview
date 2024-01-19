@@ -195,7 +195,7 @@ class Checkview_Admin {
 		// Check view Bot IP. Todo.
 		$cv_bot_ip = get_api_ip();
 		// skip if visitor ip not equal to CV Bot IP.
-		if ( $visitor_ip !== $cv_bot_ip ) {
+		if ( $visitor_ip != $cv_bot_ip ) {
 			return;
 		}
 
