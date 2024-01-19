@@ -423,7 +423,7 @@ class CheckView_Api {
 			wp_die();
 		} else {
 			$tests_transients = get_transient( 'checkview_forms_test_transient' );
-			if ( '' !== $tests_transients && null !== $tests_transients && fasle !== $tests_transients ) {
+			if ( '' !== $tests_transients && null !== $tests_transients && false !== $tests_transients ) {
 				return new WP_REST_Response(
 					array(
 						'status'        => 200,
@@ -555,7 +555,7 @@ class CheckView_Api {
 			'message' => esc_html__( 'No Result Found', 'checkview' ),
 		);
 		$results = array();
-		if ( '' === $uid || null === $uid || fasle === $uid ) {
+		if ( '' === $uid || null === $uid || false === $uid ) {
 			return new WP_Error(
 				400,
 				esc_html__( 'Empty UID.', 'checkview' ),
