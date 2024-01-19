@@ -229,6 +229,7 @@ class Checkview {
 					if ( ! defined( 'CV_TEST_ID' ) ) {
 						define( 'CV_TEST_ID', $cv_test_id );
 					}
+					delete_transient( 'checkview_forms_test_transient' );
 				}
 				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
 			}
