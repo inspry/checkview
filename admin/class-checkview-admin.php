@@ -195,8 +195,8 @@ class Checkview_Admin {
 		// Check view Bot IP. Todo.
 		$cv_bot_ip = get_api_ip();
 		// skip if visitor ip not equal to CV Bot IP.
-		if ( $visitor_ip !== $cv_bot_ip ) {
-			return;
+		if ( $visitor_ip != $cv_bot_ip ) {
+			//return;
 		}
 
 		// if clean talk plugin active whitelist check form API IP.
@@ -249,6 +249,7 @@ class Checkview_Admin {
 			if ( ! defined( 'CV_TEST_ID' ) ) {
 				define( 'CV_TEST_ID', $cv_test_id );
 			}
+			delete_transient( 'checkview_forms_test_transient' );
 			if ( is_plugin_active( 'gravityforms/gravityforms.php' ) ) {
 				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-gforms-helper.php';
 			}
