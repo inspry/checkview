@@ -133,11 +133,11 @@ class CheckView_Api {
 	public function checkview_get_available_forms_list() {
 		global $wpdb;
 		$forms_list = get_transient( 'checkview_forms_list_transient' );
-		if ( null !== $this->$jwt_error ) {
+		if ( null !== $this->jwt_error ) {
 			return new WP_Error(
 				400,
 				esc_html__( 'Use a valid JWT token.', 'checkview' ),
-				esc_html( $this->$jwt_error )
+				esc_html( $this->jwt_error )
 			);
 			wp_die();
 		}
@@ -439,7 +439,7 @@ class CheckView_Api {
 			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s order by id ASC', $uid ) );
 			if ( $rows ) {
 				foreach ( $rows as $row ) {
-					if ( strtolower( 'gravityforms' === $result->form_type ) ) {
+					if ( 'gravityforms' === strtolower( $result->form_type ) ) {
 						$results[] = array(
 							'field_id'    => 'input_' . $row->form_id . '_' . str_replace( '.', '_', $row->meta_key ),
 							'field_value' => $row->meta_value,
@@ -609,7 +609,7 @@ class CheckView_Api {
 		}
 		$valid_token = validate_jwt_token( $jwt_token );
 		if ( true !== $valid_token ) {
-			$this->$jwt_error = $valid_token;
+			$this->jwt_error = $valid_token;
 			return new WP_Error(
 				400,
 				esc_html__( 'Invalid Token.', 'checkview' ),
