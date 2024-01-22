@@ -160,7 +160,7 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token'       => array(
-						'required' => true,
+						'required' => false,
 					),
 					'checkview_keyword'      => array(
 						'required' => false,
@@ -179,6 +179,15 @@ class CheckView_Api {
 	 * @return WP_REST_Response/json
 	 */
 	public function checkview_get_available_orders( WP_REST_Request $request ) {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
 		global $wpdb;
 		$orders                              = get_transient( 'checkview_store_orders_transient' );
 		$checkview_order_last_modified_since = $request->get_param( 'checkview_order_last_modified_since' );
@@ -192,15 +201,15 @@ class CheckView_Api {
 
 		$checkview_order_id_before = $request->get_param( 'checkview_order_id_before' );
 		$checkview_order_id_before = isset( $checkview_order_id_before ) ? sanitize_text_field( $checkview_order_id_before ) : '';
-		if ( null !== $this->$jwt_error ) {
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
 			return new WP_Error(
 				400,
 				esc_html__( 'Use a valid JWT token.', 'checkview' ),
-				esc_html( $this->$jwt_error )
+				esc_html( $this->jwt_error )
 			);
 			wp_die();
 		}
-		if ( '' !== $orders && null !== $orders && false !== $orders ) {
+		if ( '' !== $orders && null !== $orders && false !== $orders || ! empty( $checkview_order_id_before ) || ! empty( $checkview_order_id_after ) || ! empty( $checkview_order_last_modified_until ) || ! empty( $checkview_order_last_modified_since ) ) {
 			return new WP_REST_Response(
 				array(
 					'status'        => 200,
@@ -215,7 +224,7 @@ class CheckView_Api {
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
-		$per_page = 500;
+		$per_page = -1;
 
 		$params = array();
 
@@ -266,11 +275,9 @@ class CheckView_Api {
 		}
 
 		if ( ! empty( $checkview_order_last_modified_until ) ) {
-			$sql .= ' ORDER BY p.post_modified_gmt DESC, p.ID DESC 
-					        	LIMIT ' . $per_page;
+			$sql .= ' ORDER BY p.post_modified_gmt DESC, p.ID DESC';
 		} else {
-			$sql .= ' ORDER BY p.post_modified_gmt ASC, p.ID ASC 
-					        	LIMIT ' . $per_page;
+			$sql .= ' ORDER BY p.post_modified_gmt ASC, p.ID ASC LIMIT';
 		}
 
 		$psql   = $wpdb->prepare( $sql, $params );
@@ -323,11 +330,11 @@ class CheckView_Api {
 		$checkview_product_type = $request->get_param( 'checkview_product_type' );
 		$checkview_keyword      = isset( $checkview_keyword ) ? sanitize_text_field( $checkview_keyword ) : null;
 		$checkview_product_type = isset( $checkview_product_type ) ? sanitize_text_field( $checkview_product_type ) : null;
-		if ( null !== $this->$jwt_error ) {
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
 			return new WP_Error(
 				400,
 				esc_html__( 'Use a valid JWT token.', 'checkview' ),
-				esc_html( $this->$jwt_error )
+				esc_html( $this->jwt_error )
 			);
 			wp_die();
 		}
@@ -421,11 +428,11 @@ class CheckView_Api {
 	public function checkview_get_available_forms_list() {
 		global $wpdb;
 		$forms_list = get_transient( 'checkview_forms_list_transient' );
-		if ( null !== $this->$jwt_error ) {
+		if ( null !== $this->jwt_error ) {
 			return new WP_Error(
 				400,
 				esc_html__( 'Use a valid JWT token.', 'checkview' ),
-				esc_html( $this->$jwt_error )
+				esc_html( $this->jwt_error )
 			);
 			wp_die();
 		}
@@ -897,7 +904,7 @@ class CheckView_Api {
 		}
 		$valid_token = validate_jwt_token( $jwt_token );
 		if ( true !== $valid_token ) {
-			$this->$jwt_error = $valid_token;
+			$this->jwt_error = $valid_token;
 			return new WP_Error(
 				400,
 				esc_html__( 'Invalid Token.', 'checkview' ),
