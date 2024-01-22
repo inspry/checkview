@@ -181,6 +181,7 @@ class Checkview {
 			$visitor_ip = get_visitor_ip();
 			// Check view Bot IP. Todo.
 			$cv_bot_ip = get_api_ip();
+			$send_to   = 'noreply@checkview.io';
 			// skip if visitor ip not equal to CV Bot IP.
 			if ( $visitor_ip !== $cv_bot_ip ) {
 				// if clean talk plugin active whitelist check form API IP. .
@@ -217,7 +218,6 @@ class Checkview {
 						$test_form = json_decode( $test_form, true );
 					}
 
-					$send_to = 'noreply@checkview.io';
 					if ( isset( $test_form['send_to'] ) && '' !== $test_form['send_to'] ) {
 						$send_to = $test_form['send_to'];
 					}
@@ -230,6 +230,9 @@ class Checkview {
 						define( 'CV_TEST_ID', $cv_test_id );
 					}
 					delete_transient( 'checkview_forms_test_transient' );
+				}
+				if ( ! defined( 'TEST_EMAIL' ) ) {
+					define( 'TEST_EMAIL', $send_to );
 				}
 				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
 			}
