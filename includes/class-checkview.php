@@ -234,6 +234,31 @@ class Checkview {
 				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
 			}
 		}
+		if ( ! empty( $_SERVER['HTTP_SHOPWARDEN_KEY'] ) && class_exists( 'woocommerce' ) ) {
+
+			$secret = get_option( 'wg_secret' );
+
+			if ( $_SERVER['HTTP_SHOPWARDEN_KEY'] == $secret ) {
+
+				// Init payment gateway.
+				$this->checkview_init_payment_gateway();
+
+				// Load payment gateway.
+				require_once CHECKVIEW_INC_DIR . 'woocommercehelper/class-checkview-payment-gateway.php';
+
+				// Add fake payment gateway for shopwarden tests.
+				$this->loader->add_filter(
+					'woocommerce_payment_gateways',
+					$this,
+					'checkview_add_payment_gateway',
+					11,
+					1
+				);
+				// Init payment gateway.
+				$this->checkview_init_payment_gateway();
+
+			}
+		}
 		$this->loader = new Checkview_Loader();
 		$this->loader->add_filter(
 			'plugin_action_links_' . CHECKVIEW_BASE_DIR,
@@ -342,6 +367,15 @@ class Checkview {
 				11,
 				3
 			);
+			// Delete orders on backend page load if crons are disabled.
+			if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
+				$this->loader->add_action(
+					'admin_init',
+					'',
+					'delete_orders_from_backend',
+					10,
+				);
+			}
 		}
 		$this->loader->add_filter(
 			'option_active_plugins',
@@ -397,8 +431,110 @@ class Checkview {
 				'checkview_whitelist_saas_ip_addresses'
 			);
 		}
+		if ( class_exists( 'woocommerce' ) ) {
+			$this->loader->add_filter(
+				'woocommerce_webhook_should_deliver',
+				$this,
+				'checkview_filter_webhooks',
+				10,
+				3
+			);
+
+			$this->loader->add_filter(
+				'woocommerce_email_recipient_new_order',
+				$this,
+				'checkview_filter_admin_emails',
+				10,
+				2
+			);
+
+			$this->loader->add_filter(
+				'checkview_delete_orders_action',
+				'',
+				'checkview_delete_orders',
+				10,
+				1
+			);
+		}
 	}
 
+	/**
+	 * Disable admin notifications on checkview checks.
+	 *
+	 * @param string   $recipient recipient.
+	 * @param Wc_order $order WooCommerce order.
+	 * @return string
+	 */
+	public function checkview_filter_admin_emails( $recipient, $order ) {
+
+		$payment_method = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
+
+		if ( 'checkview' === $payment_method ) {
+			return false;
+		}
+
+		return $recipient;
+	}
+
+
+	/**
+	 * Disable webhooks on checkview checks.
+	 *
+	 * @param bool   $should_deliver delivery status.
+	 * @param object $webhook_object wenhook object.
+	 * @param array  $arg args to support.
+	 * @return bool
+	 */
+	public function checkview_filter_webhooks( $should_deliver, $webhook_object, $arg ) {
+
+		$topic = $webhook_object->get_topic();
+
+		if ( ! empty( $topic ) && ! empty( $arg ) && 'order.' === substr( $topic, 0, 6 ) ) {
+
+			$order = wc_get_order( $arg );
+
+			if ( ! empty( $order ) ) {
+				$payment_method = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
+
+				if ( $payment_method && 'checkview' === $payment_method ) {
+					return false;
+				}
+			}
+		} elseif ( ! empty( $topic ) && ! empty( $arg ) && 'subscription.' === substr( $topic, 0, 13 ) ) {
+
+			$order = wc_get_order( $arg );
+
+			if ( ! empty( $order ) ) {
+				$payment_method = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
+
+				if ( $payment_method && 'checkview' === $payment_method ) {
+					return false;
+				}
+			}
+		}
+
+		return $should_deliver;
+	}
+	/**
+	 * Initiates the Checkview payment gateway.
+	 *
+	 * @return void
+	 */
+	public function checkview_init_payment_gateway() {
+
+		add_action( 'woocommerce_update_options_payment_gateways_shopwarden', array( 'Checkview_Payment_Gateway', 'process_admin_options' ) );
+	}
+
+	/**
+	 * Adds checkview payment gateway to WooCommerce.
+	 *
+	 * @param string $methods methods to add payments.
+	 * @return array $methods
+	 */
+	public function checkview_add_payment_gateway( $methods ) {
+		$methods[] = 'Checkview_Payment_Gateway';
+		return $methods;
+	}
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.
 	 *

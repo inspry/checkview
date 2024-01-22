@@ -209,7 +209,7 @@ class CheckView_Api {
 			);
 			wp_die();
 		}
-		if ( '' !== $orders && null !== $orders && false !== $orders || ! empty( $checkview_order_id_before ) || ! empty( $checkview_order_id_after ) || ! empty( $checkview_order_last_modified_until ) || ! empty( $checkview_order_last_modified_since ) ) {
+		if ( '' !== $orders && null !== $orders && false !== $orders || empty( $checkview_order_id_before ) || empty( $checkview_order_id_after ) || empty( $checkview_order_last_modified_until ) || empty( $checkview_order_last_modified_since ) ) {
 			return new WP_REST_Response(
 				array(
 					'status'        => 200,

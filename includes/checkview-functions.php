@@ -375,3 +375,75 @@ if ( ! function_exists( 'checkview_whitelist_saas_ip_addresses' ) ) {
 		}
 	}
 }
+
+/**
+ * Sets a crone job to delete orders made by checkview.
+ *
+ * @param integer $order_id WooCommerce order id.
+ * @return void
+ */
+function checkview_schedule_delete_orders( $order_id ) {
+	wp_schedule_single_event( time() + 5, 'checkview_delete_orders_action', array( $order_id ) );
+}
+
+/**
+ * Directly deletes orders.
+ *
+ * @return void
+ */
+function delete_orders_from_backend() {
+
+	// don't run on ajax calls.
+	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+		return;
+	}
+	checkview_delete_orders();
+}
+
+/**
+ * Deletes Woocommerce orders.
+ *
+ * @param integer $order_id Woocommerce Order Id.
+ * @return void
+ */
+function checkview_delete_orders( $order_id = '' ) {
+
+	global $wpdb;
+	// Get all checkview orders.
+	$orders = $wpdb->get_results(
+		"SELECT p.id
+		FROM {$wpdb->prefix}posts as p
+		LEFT JOIN {$wpdb->prefix}postmeta AS pm ON (p.id = pm.post_id AND pm.meta_key = '_payment_method')
+		WHERE meta_value = 'checkview' "
+	);
+
+	// Delete orders.
+	if ( ! empty( $orders ) ) {
+		foreach ( $orders as $order ) {
+
+			try {
+				$order_object = new WC_Order( $order->id );
+				$customer_id  = $order_object->get_customer_id();
+
+				// Delete order.
+				if ( $order_object ) {
+					$order_object->delete( true );
+				}
+				$order_object = null;
+
+				// Delete customer if available.
+				if ( $customer_id ) {
+					$customer = new WC_Customer( $customer_id );
+
+					if ( ! function_exists( 'wp_delete_user' ) ) {
+						require_once ABSPATH . 'wp-admin/includes/user.php';
+					}
+
+					$res      = $customer->delete( true );
+					$customer = null;
+				}
+			} catch ( \Exception $e ) {
+			}
+		}
+	}
+}
