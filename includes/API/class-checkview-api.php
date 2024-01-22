@@ -422,7 +422,7 @@ class CheckView_Api {
 			);
 			wp_die();
 		} else {
-			$tests_transients = get_transient( 'checkview_forms_test_transient' );
+			$tests_transients = '';// get_transient( 'checkview_forms_test_transient' );
 			if ( '' !== $tests_transients && null !== $tests_transients && false !== $tests_transients ) {
 				return new WP_REST_Response(
 					array(
@@ -434,7 +434,7 @@ class CheckView_Api {
 				wp_die();
 			}
 			$tablename = $wpdb->prefix . 'cv_entry';
-			$result    = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s', $uid ) );
+			$result    = $wpdb->get_row( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s', $uid ) );
 			$tablename = $wpdb->prefix . 'cv_entry_meta';
 			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s order by id ASC', $uid ) );
 			if ( $rows ) {
