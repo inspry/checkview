@@ -422,7 +422,7 @@ class CheckView_Api {
 			);
 			wp_die();
 		} else {
-			$tests_transients = '';// get_transient( 'checkview_forms_test_transient' );
+			$tests_transients = get_transient( 'checkview_forms_test_transient' );
 			if ( '' !== $tests_transients && null !== $tests_transients && false !== $tests_transients ) {
 				return new WP_REST_Response(
 					array(
