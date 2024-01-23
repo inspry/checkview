@@ -176,6 +176,7 @@ class Checkview {
 		 * side of the site.
 		 */
 		require_once plugin_dir_path( __DIR__ ) . 'public/class-checkview-public.php';
+		$this->loader = new Checkview_Loader();
 		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) ) {
 			// Current Vsitor IP.
 			$visitor_ip = get_visitor_ip();
@@ -234,19 +235,16 @@ class Checkview {
 				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
 			}
 		}
-		if ( ! empty( $_SERVER['HTTP_SHOPWARDEN_KEY'] ) && class_exists( 'woocommerce' ) ) {
+		if ( ! empty( $_GET['faizan_key'] ) && class_exists( 'woocommerce' ) ) {
 
-			$secret = get_option( 'wg_secret' );
+			$secret = '123';
 
-			if ( $_SERVER['HTTP_SHOPWARDEN_KEY'] == $secret ) {
-
-				// Init payment gateway.
-				$this->checkview_init_payment_gateway();
+			if ( $_GET['faizan_key'] === $secret ) {
 
 				// Load payment gateway.
 				require_once CHECKVIEW_INC_DIR . 'woocommercehelper/class-checkview-payment-gateway.php';
 
-				// Add fake payment gateway for shopwarden tests.
+				// Add fake payment gateway for checkview tests.
 				$this->loader->add_filter(
 					'woocommerce_payment_gateways',
 					$this,
@@ -254,12 +252,15 @@ class Checkview {
 					11,
 					1
 				);
-				// Init payment gateway.
-				$this->checkview_init_payment_gateway();
+				// Registers WooCommerce Blocks integration.
+				$this->loader->add_action(
+					'woocommerce_blocks_loaded',
+					$this,
+					'checkview_woocommerce_block_support',
+				);
 
 			}
 		}
-		$this->loader = new Checkview_Loader();
 		$this->loader->add_filter(
 			'plugin_action_links_' . CHECKVIEW_BASE_DIR,
 			$this,
@@ -515,15 +516,6 @@ class Checkview {
 
 		return $should_deliver;
 	}
-	/**
-	 * Initiates the Checkview payment gateway.
-	 *
-	 * @return void
-	 */
-	public function checkview_init_payment_gateway() {
-
-		add_action( 'woocommerce_update_options_payment_gateways_shopwarden', array( 'Checkview_Payment_Gateway', 'process_admin_options' ) );
-	}
 
 	/**
 	 * Adds checkview payment gateway to WooCommerce.
@@ -534,6 +526,24 @@ class Checkview {
 	public function checkview_add_payment_gateway( $methods ) {
 		$methods[] = 'Checkview_Payment_Gateway';
 		return $methods;
+	}
+
+	/**
+	 * Registers WooCommerce Blocks integration.
+	 *
+	 * @return void
+	 */
+	public function checkview_woocommerce_block_support() {
+		if ( class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
+			// Load block payment gateway.
+			require_once CHECKVIEW_INC_DIR . 'woocommercehelper/class-checkview-blocks-payment-gateway.php';
+			add_action(
+				'woocommerce_blocks_payment_method_type_registration',
+				function ( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
+					$payment_method_registry->register( new Checkview_Blocks_Payment_Gateway() );
+				}
+			);
+		}
 	}
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.

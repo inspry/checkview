@@ -28,8 +28,8 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) {
 		public function __construct() {
 
 			$this->id          = 'checkview';
-			$this->title       = 'Shopwarden Payments';
-			$this->description = 'Pay with Shopwarden test gateway';
+			$this->title       = 'Checkview Payments';
+			$this->description = 'Pay with Checkview test gateway';
 			$this->enabled     = 'yes';
 			$this->supports[]  = 'products';
 			$this->supports[]  = 'subscriptions';
@@ -39,6 +39,8 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) {
 			$this->supports[]  = 'payment_method_change';
 			$this->supports[]  = 'payment_method_change_customer';
 			$this->supports[]  = 'payment_method_change_admin';
+			$this->init_settings();
+			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 		}
 
 		/**
@@ -48,16 +50,38 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) {
 		 */
 		public function init_settings() {
 			parent::init_settings();
+			$this->init_form_fields();
 			$this->enabled = 'yes';
 		}
+		public function init_form_fields() {
+			$this->form_fields = array(
+				'enabled' => array(
+					'title'   => 'Enable/Disable',
+					'type'    => 'checkbox',
+					'label'   => 'Enable CheckView Gateway',
+					'default' => 'no',
+				),
+				'title'   => array(
+					'title'       => 'Title',
+					'type'        => 'text',
+					'description' => 'This controls the title that the user sees during checkout.',
+					'default'     => 'CheckView',
+					'desc_tip'    => true,
+				),
+				// Add other settings as needed.
+			);
+		}
 
+		public function payment_fields() {
+			echo '<p>' . esc_html( $this->description ) . '</p>';
+		}
 		/**
 		 * Processes payment.
 		 *
 		 * @param integer $order_id WooCommerce order id.
 		 * @return array
 		 */
-		function process_payment( $order_id ) {
+		public function process_payment( $order_id ) {
 
 			global $woocommerce;
 
