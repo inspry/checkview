@@ -50,28 +50,14 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) {
 		 */
 		public function init_settings() {
 			parent::init_settings();
-			$this->init_form_fields();
 			$this->enabled = 'yes';
 		}
-		public function init_form_fields() {
-			$this->form_fields = array(
-				'enabled' => array(
-					'title'   => 'Enable/Disable',
-					'type'    => 'checkbox',
-					'label'   => 'Enable CheckView Gateway',
-					'default' => 'no',
-				),
-				'title'   => array(
-					'title'       => 'Title',
-					'type'        => 'text',
-					'description' => 'This controls the title that the user sees during checkout.',
-					'default'     => 'CheckView',
-					'desc_tip'    => true,
-				),
-				// Add other settings as needed.
-			);
-		}
 
+		/**
+		 * Renders payments fields.
+		 *
+		 * @return void
+		 */
 		public function payment_fields() {
 			echo '<p>' . esc_html( $this->description ) . '</p>';
 		}
@@ -120,7 +106,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) {
 			$woocommerce->cart->empty_cart();
 
 			// Schedule order deletion.
-			checkview_schedule_delete_orders( $order_id );
+			//checkview_schedule_delete_orders( $order_id );
 
 			// Return thankyou redirect.
 			return array(

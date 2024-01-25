@@ -328,6 +328,8 @@ if ( ! function_exists( 'checkview_reset_cache' ) ) {
 		delete_transient( 'checkview_saas_ip_address' );
 		delete_transient( 'checkview_forms_list_transient' );
 		delete_transient( 'checkview_forms_test_transient' );
+		delete_transient( 'checkview_store_orders_transient' );
+		delete_transient( 'checkview_store_products_transient' );
 		$sync = true;
 		return $sync;
 	}
@@ -416,7 +418,14 @@ function checkview_delete_orders( $order_id = '' ) {
 		LEFT JOIN {$wpdb->prefix}postmeta AS pm ON (p.id = pm.post_id AND pm.meta_key = '_payment_method')
 		WHERE meta_value = 'checkview' "
 	);
+	if ( empty( $orders ) ) {
+		$args = array(
+			'payment_method' => 'checkview',
+			'posts_per_page' => -1,
+		);
 
+		$orders = wc_get_orders( $args );
+	}
 	// Delete orders.
 	if ( ! empty( $orders ) ) {
 		foreach ( $orders as $order ) {
@@ -429,10 +438,11 @@ function checkview_delete_orders( $order_id = '' ) {
 				if ( $order_object ) {
 					$order_object->delete( true );
 				}
-				$order_object = null;
 
+				$order_object = null;
+				$current_user = get_user_by( 'id', $customer_id );
 				// Delete customer if available.
-				if ( $customer_id ) {
+				if ( $customer_id && isset( $current_user->roles ) && ! in_array( 'administrator', $current_user->roles ) ) {
 					$customer = new WC_Customer( $customer_id );
 
 					if ( ! function_exists( 'wp_delete_user' ) ) {
@@ -443,6 +453,13 @@ function checkview_delete_orders( $order_id = '' ) {
 					$customer = null;
 				}
 			} catch ( \Exception $e ) {
+				if ( ! class_exists( 'Checkview_Admin_Logs' ) ) {
+					/**
+					 * The class responsible for defining all actions that occur in the admin area.
+					 */
+					require_once CHECKVIEW_ADMIN_DIR . '/class-checkview-admin-logs.php';
+				}
+				Checkview_Admin_Logs::add( 'cron-logs', 'Crone job failed.' );
 			}
 		}
 	}

@@ -282,7 +282,28 @@ class CheckView_Api {
 
 		$psql   = $wpdb->prepare( $sql, $params );
 		$orders = $wpdb->get_results( $psql );
+		$args   = array(
+			'payment_method' => 'checkview',
+			'posts_per_page' => $per_page,
+		);
+		if ( empty( $orders ) && ! empty( $checkview_order_last_modified_until ) && ! empty( $checkview_order_last_modified_since ) ) {
 
+			$args['date_before'] = $checkview_order_last_modified_until;
+			$args['date_after']  = $checkview_order_last_modified_since;
+
+		}
+
+		if ( empty( $orders ) && ! empty( $checkview_order_id_before ) ) {
+			$args['date_before'] = $checkview_order_id_before;
+		}
+
+		if ( empty( $orders ) && ! empty( $checkview_order_id_after ) ) {
+			$args['date_after'] = $checkview_order_id_after;
+		}
+
+		if ( empty( $orders ) ) {
+			$orders = wc_get_orders( $args );
+		}
 		$output = array(
 			'perPage' => $per_page,
 			'num'     => count( $orders ),

@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-01-23T20:16:45+00:00\n"
+"POT-Creation-Date: 2024-01-24T16:47:07+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "language-team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -254,7 +254,7 @@ msgstr ""
 msgid "Token Expired"
 msgstr ""
 
-#: includes/class-checkview.php:306
+#: includes/class-checkview.php:299
 msgid "Settings"
 msgstr ""
 

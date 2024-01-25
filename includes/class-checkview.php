@@ -235,23 +235,24 @@ class Checkview {
 				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
 			}
 		}
-		if ( ! empty( $_GET['faizan_key'] ) && class_exists( 'woocommerce' ) ) {
+		if ( ! is_admin() && class_exists( 'woocommerce' ) ) {
+			// Load payment gateway.
+			require_once CHECKVIEW_INC_DIR . 'woocommercehelper/class-checkview-payment-gateway.php';
+
+			// Add fake payment gateway for checkview tests.
+			$this->loader->add_filter(
+				'woocommerce_payment_gateways',
+				$this,
+				'checkview_add_payment_gateway',
+				11,
+				1
+			);
+		}
+		if ( isset( $_GET['faizan_key'] ) && class_exists( 'woocommerce' ) ) {
 
 			$secret = '123';
 
-			if ( $_GET['faizan_key'] === $secret ) {
-
-				// Load payment gateway.
-				require_once CHECKVIEW_INC_DIR . 'woocommercehelper/class-checkview-payment-gateway.php';
-
-				// Add fake payment gateway for checkview tests.
-				$this->loader->add_filter(
-					'woocommerce_payment_gateways',
-					$this,
-					'checkview_add_payment_gateway',
-					11,
-					1
-				);
+			if ( $_GET['faizan_key'] == $secret ) {
 				// Registers WooCommerce Blocks integration.
 				$this->loader->add_action(
 					'woocommerce_blocks_loaded',
@@ -374,9 +375,33 @@ class Checkview {
 					'admin_init',
 					'',
 					'delete_orders_from_backend',
-					10,
 				);
 			}
+		}
+		if ( class_exists( 'woocommerce' ) ) {
+			$this->loader->add_filter(
+				'woocommerce_webhook_should_deliver',
+				$this,
+				'checkview_filter_webhooks',
+				10,
+				3
+			);
+
+			$this->loader->add_filter(
+				'woocommerce_email_recipient_new_order',
+				$this,
+				'checkview_filter_admin_emails',
+				10,
+				2
+			);
+
+			$this->loader->add_action(
+				'checkview_delete_orders_action',
+				'',
+				'checkview_delete_orders',
+				10,
+				1
+			);
 		}
 		$this->loader->add_filter(
 			'option_active_plugins',
@@ -430,31 +455,6 @@ class Checkview {
 				'pre_option_require_name_email',
 				'',
 				'checkview_whitelist_saas_ip_addresses'
-			);
-		}
-		if ( class_exists( 'woocommerce' ) ) {
-			$this->loader->add_filter(
-				'woocommerce_webhook_should_deliver',
-				$this,
-				'checkview_filter_webhooks',
-				10,
-				3
-			);
-
-			$this->loader->add_filter(
-				'woocommerce_email_recipient_new_order',
-				$this,
-				'checkview_filter_admin_emails',
-				10,
-				2
-			);
-
-			$this->loader->add_filter(
-				'checkview_delete_orders_action',
-				'',
-				'checkview_delete_orders',
-				10,
-				1
 			);
 		}
 	}
