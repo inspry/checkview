@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-01-24T16:47:07+00:00\n"
+"POT-Creation-Date: 2024-01-26T19:01:01+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "language-team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -165,84 +165,83 @@ msgid "See Log File"
 msgstr ""
 
 #: includes/API/class-checkview-api.php:186
-#: includes/API/class-checkview-api.php:322
+#: includes/API/class-checkview-api.php:349
 msgid "WooCommerce not found."
 msgstr ""
 
 #: includes/API/class-checkview-api.php:207
-#: includes/API/class-checkview-api.php:336
-#: includes/API/class-checkview-api.php:434
+#: includes/API/class-checkview-api.php:363
+#: includes/API/class-checkview-api.php:461
 msgid "Use a valid JWT token."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:216
-#: includes/API/class-checkview-api.php:296
-#: includes/API/class-checkview-api.php:345
+#: includes/API/class-checkview-api.php:323
+#: includes/API/class-checkview-api.php:372
 msgid "Successfully retrieved the orders."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:304
+#: includes/API/class-checkview-api.php:331
 msgid "No orders to show."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:408
+#: includes/API/class-checkview-api.php:435
 msgid "Successfully retrieved the products."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:416
+#: includes/API/class-checkview-api.php:443
 msgid "No products to show."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:443
-#: includes/API/class-checkview-api.php:679
+#: includes/API/class-checkview-api.php:470
+#: includes/API/class-checkview-api.php:706
 msgid "Successfully retrieved the forms list."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:687
+#: includes/API/class-checkview-api.php:714
 msgid "No forms to show."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:709
-#: includes/API/class-checkview-api.php:850
+#: includes/API/class-checkview-api.php:736
+#: includes/API/class-checkview-api.php:877
 msgid "No Result Found"
 msgstr ""
 
-#: includes/API/class-checkview-api.php:715
-#: includes/API/class-checkview-api.php:856
+#: includes/API/class-checkview-api.php:742
+#: includes/API/class-checkview-api.php:883
 msgid "Empty UID."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:725
+#: includes/API/class-checkview-api.php:752
 msgid "Successfully retrieved the test results."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:766
+#: includes/API/class-checkview-api.php:793
 msgid "Successfully retrieved the results."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:773
-#: includes/API/class-checkview-api.php:781
+#: includes/API/class-checkview-api.php:800
+#: includes/API/class-checkview-api.php:808
 msgid "Failed to retrieve the results."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:816
+#: includes/API/class-checkview-api.php:843
 msgid "Check Form Test Successfully Added"
 msgstr ""
 
-#: includes/API/class-checkview-api.php:829
+#: includes/API/class-checkview-api.php:856
 msgid "Details to register form test are not correct."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:869
+#: includes/API/class-checkview-api.php:896
 msgid "Successfully removed the results."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:877
+#: includes/API/class-checkview-api.php:904
 msgid "Failed to remove the results."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:900
-#: includes/API/class-checkview-api.php:910
+#: includes/API/class-checkview-api.php:927
+#: includes/API/class-checkview-api.php:937
 msgid "Invalid Token."
 msgstr ""
 
@@ -254,7 +253,7 @@ msgstr ""
 msgid "Token Expired"
 msgstr ""
 
-#: includes/class-checkview.php:299
+#: includes/class-checkview.php:300
 msgid "Settings"
 msgstr ""
 

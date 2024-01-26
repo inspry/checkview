@@ -130,7 +130,7 @@ class CheckView_Api {
 			array(
 				'methods'             => 'GET',
 				'callback'            => array( $this, 'checkview_get_available_orders' ),
-				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				//'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token'                    => array(
 						'required' => true,
@@ -210,14 +210,14 @@ class CheckView_Api {
 			wp_die();
 		}
 		if ( '' !== $orders && null !== $orders && false !== $orders || empty( $checkview_order_id_before ) || empty( $checkview_order_id_after ) || empty( $checkview_order_last_modified_until ) || empty( $checkview_order_last_modified_since ) ) {
-			return new WP_REST_Response(
-				array(
-					'status'        => 200,
-					'response'      => esc_html__( 'Successfully retrieved the orders.', 'checkview' ),
-					'body_response' => $orders,
-				)
-			);
-			wp_die();
+			// return new WP_REST_Response(
+			// array(
+			// 'status'        => 200,
+			// 'response'      => esc_html__( 'Successfully retrieved the orders.', 'checkview' ),
+			// 'body_response' => $orders,
+			// )
+			// );
+			// wp_die();
 		}
 		$orders = array();
 		if ( ! is_admin() ) {
@@ -302,20 +302,26 @@ class CheckView_Api {
 		}
 
 		if ( empty( $orders ) ) {
-			$orders = wc_get_orders( $args );
+			$wc_orders = wc_get_orders( $args );
+			$orders    = array();
+			if ( $wc_orders ) {
+				foreach ( $wc_orders as $order ) {
+					$order_object                 = new WC_Order( $order->id );
+					$order_details['order_id']    = $order->id;
+					$order_details['customer_id'] = $order_object->get_customer_id();
+					$orders[]                     = $order_details;
+
+				}
+			}
 		}
-		$output = array(
-			'perPage' => $per_page,
-			'num'     => count( $orders ),
-			'orders'  => $orders,
-		);
-		if ( $output && ! empty( $output ) && false !== $output && '' !== $output ) {
-			set_transient( 'checkview_store_orders_transient', $output, 12 * HOUR_IN_SECONDS );
+
+		if ( $orders && ! empty( $orders ) && false !== $orders && '' !== $orders ) {
+			set_transient( 'checkview_store_orders_transient', $orders, 12 * HOUR_IN_SECONDS );
 			return new WP_REST_Response(
 				array(
 					'status'        => 200,
 					'response'      => esc_html__( 'Successfully retrieved the orders.', 'checkview' ),
-					'body_response' => $output,
+					'body_response' => $orders,
 				)
 			);
 		} else {
