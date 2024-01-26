@@ -880,9 +880,9 @@ class CheckView_Api {
 			wp_die();
 		} else {
 			$tablename = $wpdb->prefix . 'cv_entry';
-			$result    = $wpdb->get_results( $wpdb->prepare( 'DELETE * from ' . $tablename . ' where uid=%s', $uid ) );
+			$result    = $wpdb->delete( $tablename, array( 'uid' => $uid ) );
 			$tablename = $wpdb->prefix . 'cv_entry_meta';
-			$rows      = $wpdb->get_results( $wpdb->prepare( 'DELETE * from ' . $tablename . ' where uid=%s order by id ASC', $uid ) );
+			$rows      = $wpdb->delete( $tablename, array( 'uid' => $uid ) );
 			if ( $rows ) {
 				return new WP_REST_Response(
 					array(
