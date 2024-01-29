@@ -139,12 +139,6 @@ class Checkview {
 		require_once plugin_dir_path( __DIR__ ) . 'includes/checkview-functions.php';
 
 		/**
-		 * The class responsible for defining all actions that occur in the public-facing
-		 * side of the site. Exposes the API end points.
-		 */
-		require_once plugin_dir_path( __DIR__ ) . 'includes/API/class-checkview-api.php';
-
-		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
@@ -235,6 +229,8 @@ class Checkview {
 				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
 			}
 		}
+		add_action( 'woocommerce_checkout_update_order_meta', 'wp_kama_woocommerce_checkout_update_order_meta_action', 10, 2 );
+
 		if ( ! is_admin() && class_exists( 'woocommerce' ) ) {
 			// Load payment gateway.
 			require_once CHECKVIEW_INC_DIR . 'woocommercehelper/class-checkview-payment-gateway.php';
@@ -247,7 +243,23 @@ class Checkview {
 				11,
 				1
 			);
+
+			$this->loader->add_action(
+				'woocommerce_order_status_changed',
+				'',
+				'checkview_add_custom_fields_after_purchase',
+				10,
+				3
+			);
+
 		}
+		$this->loader->add_filter(
+			'woocommerce_order_data_store_cpt_get_orders_query',
+			'',
+			'checkview_add_custom_var_to_query',
+			10,
+			2
+		);
 		if ( isset( $_GET['faizan_key'] ) && class_exists( 'woocommerce' ) ) {
 
 			$secret = '123';
@@ -267,6 +279,11 @@ class Checkview {
 			$this,
 			'checkview_settings_link'
 		);
+		/**
+		 * The class responsible for defining all actions that occur in the public-facing
+		 * side of the site. Exposes the API end points.
+		 */
+		require_once plugin_dir_path( __DIR__ ) . 'includes/API/class-checkview-api.php';
 	}
 
 	/**

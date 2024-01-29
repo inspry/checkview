@@ -106,7 +106,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) {
 			$woocommerce->cart->empty_cart();
 
 			// Schedule order deletion.
-			//checkview_schedule_delete_orders( $order_id );
+			// checkview_schedule_delete_orders( $order_id );
 
 			// Return thankyou redirect.
 			return array(

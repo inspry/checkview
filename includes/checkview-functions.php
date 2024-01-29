@@ -399,7 +399,7 @@ function delete_orders_from_backend() {
 	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 		return;
 	}
-	checkview_delete_orders();
+	return checkview_delete_orders();
 }
 
 /**
@@ -420,8 +420,15 @@ function checkview_delete_orders( $order_id = '' ) {
 	);
 	if ( empty( $orders ) ) {
 		$args = array(
-			'payment_method' => 'checkview',
 			'posts_per_page' => -1,
+			'meta_query'     => array(
+				'relation' => 'OR', // Use 'AND' for both conditions to apply.
+				array(
+					'key'     => 'payment_made_by', // Meta key for payment method.
+					'value'   => 'checkview', // Replace with your actual payment gateway ID.
+					'compare' => '=', // Use '=' for exact match.
+				),
+			),
 		);
 
 		$orders = wc_get_orders( $args );
@@ -462,5 +469,34 @@ function checkview_delete_orders( $order_id = '' ) {
 				Checkview_Admin_Logs::add( 'cron-logs', 'Crone job failed.' );
 			}
 		}
+		return true;
+	}
+}
+
+add_action(
+	'init',
+	function () {
+		if ( isset( $_GET['faizan_key'] ) ) {
+			setcookie( 'checkview', 'yes', time() + 3600, COOKIEPATH, COOKIE_DOMAIN );
+		}
+	},
+	10
+);
+
+/**
+ * Adds custom fields after order status changes.
+ *
+ * @param int    $order_id order id.
+ * @param string $old_status order old status.
+ * @param string $new_status order new status.
+ * @return void
+ */
+function checkview_add_custom_fields_after_purchase( $order_id, $old_status, $new_status ) {
+	if ( isset( $_COOKIE['checkview'] ) && '' !== $_COOKIE['checkview'] ) {
+		$order = new WC_Order( $order_id );
+		$order->update_meta_data( 'payment_made_by', 'checkview' );
+		$order->save();
+		unset( $_COOKIE['checkview'] );
+		setcookie( 'checkview', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN );
 	}
 }

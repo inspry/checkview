@@ -128,10 +128,10 @@ class CheckView_Api {
 			'checkview/v1',
 			'/store/orders',
 			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'checkview_get_available_orders' ),
-				//'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'                => array(
+				'methods'  => 'GET',
+				'callback' => array( $this, 'checkview_get_available_orders' ),
+				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'     => array(
 					'_checkview_token'                    => array(
 						'required' => true,
 					),
@@ -167,6 +167,21 @@ class CheckView_Api {
 					),
 					'checkview_product_type' => array(
 						'required' => false,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/deleteorders',
+			array(
+				'methods'  => array( 'DELETE', 'PUT', "GET" ),
+				'callback' => array( $this, 'checkview_delete_orders' ),
+				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'     => array(
+					'_checkview_token' => array(
+						'required' => true,
 					),
 				),
 			)
@@ -283,8 +298,15 @@ class CheckView_Api {
 		$psql   = $wpdb->prepare( $sql, $params );
 		$orders = $wpdb->get_results( $psql );
 		$args   = array(
-			'payment_method' => 'checkview',
 			'posts_per_page' => $per_page,
+			'meta_query'     => array(
+				'relation' => 'OR', // Use 'AND' for both conditions to apply.
+				array(
+					'key'     => 'payment_made_by', // Meta key for payment method.
+					'value'   => 'checkview', // Replace with your actual payment gateway ID.
+					'compare' => '=', // Use '=' for exact match.
+				),
+			),
 		);
 		if ( empty( $orders ) && ! empty( $checkview_order_last_modified_until ) && ! empty( $checkview_order_last_modified_since ) ) {
 
@@ -446,6 +468,39 @@ class CheckView_Api {
 			);
 		}
 		wp_die();
+	}
+
+	/**
+	 * Deletes all the avaiable test results for forms.
+	 *
+	 * @param WP_REST_Request $request the request param with the API call.
+	 * @return WP_REST_Response/WP_Error/json
+	 */
+	public function checkview_delete_orders( WP_REST_Request $request ) {
+		global $wpdb;
+		$error   = array(
+			'status'  => 'error',
+			'code'    => 400,
+			'message' => esc_html__( 'No Result Found', 'checkview' ),
+		);
+		$results = delete_orders_from_backend();
+
+		if ( $results ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully removed the results.', 'checkview' ),
+				)
+			);
+			wp_die();
+		} else {
+			return new WP_Error(
+				400,
+				esc_html__( 'Failed to remove the results.', 'checkview' ),
+				$error
+			);
+			wp_die();
+		}
 	}
 	/**
 	 * Retrieves the available forms.
