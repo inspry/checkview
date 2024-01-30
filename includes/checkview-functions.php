@@ -377,126 +377,149 @@ if ( ! function_exists( 'checkview_whitelist_saas_ip_addresses' ) ) {
 		}
 	}
 }
-
-/**
- * Sets a crone job to delete orders made by checkview.
- *
- * @param integer $order_id WooCommerce order id.
- * @return void
- */
-function checkview_schedule_delete_orders( $order_id ) {
-	wp_schedule_single_event( time() + 5, 'checkview_delete_orders_action', array( $order_id ) );
-}
-
-/**
- * Directly deletes orders.
- *
- * @return void
- */
-function delete_orders_from_backend() {
-
-	// don't run on ajax calls.
-	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-		return;
+if ( ! function_exists( 'checkview_schedule_delete_orders' ) ) {
+	/**
+	 * Sets a crone job to delete orders made by checkview.
+	 *
+	 * @param integer $order_id WooCommerce order id.
+	 * @return void
+	 */
+	function checkview_schedule_delete_orders( $order_id ) {
+		wp_schedule_single_event( time() + 5, 'checkview_delete_orders_action', array( $order_id ) );
 	}
-	return checkview_delete_orders();
 }
 
-/**
- * Deletes Woocommerce orders.
- *
- * @param integer $order_id Woocommerce Order Id.
- * @return void
- */
-function checkview_delete_orders( $order_id = '' ) {
+if ( ! function_exists( 'delete_orders_from_backend' ) ) {
+	/**
+	 * Directly deletes orders.
+	 *
+	 * @return void
+	 */
+	function delete_orders_from_backend() {
 
-	global $wpdb;
-	// Get all checkview orders.
-	$orders = $wpdb->get_results(
-		"SELECT p.id
+		// don't run on ajax calls.
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			return;
+		}
+		return checkview_delete_orders();
+	}
+}
+
+if ( ! function_exists( 'checkview_delete_orders' ) ) {
+	/**
+	 * Deletes Woocommerce orders.
+	 *
+	 * @param integer $order_id Woocommerce Order Id.
+	 * @return bool
+	 */
+	function checkview_delete_orders( $order_id = '' ) {
+
+		global $wpdb;
+		// Get all checkview orders.
+		$orders = $wpdb->get_results(
+			"SELECT p.id
 		FROM {$wpdb->prefix}posts as p
 		LEFT JOIN {$wpdb->prefix}postmeta AS pm ON (p.id = pm.post_id AND pm.meta_key = '_payment_method')
 		WHERE meta_value = 'checkview' "
-	);
-	if ( empty( $orders ) ) {
-		$args = array(
-			'posts_per_page' => -1,
-			'meta_query'     => array(
-				'relation' => 'OR', // Use 'AND' for both conditions to apply.
-				array(
-					'key'     => 'payment_made_by', // Meta key for payment method.
-					'value'   => 'checkview', // Replace with your actual payment gateway ID.
-					'compare' => '=', // Use '=' for exact match.
-				),
-			),
 		);
+		if ( empty( $orders ) ) {
+			$args = array(
+				'posts_per_page' => -1,
+				'meta_query'     => array(
+					'relation' => 'OR', // Use 'AND' for both conditions to apply.
+					array(
+						'key'     => 'payment_made_by', // Meta key for payment method.
+						'value'   => 'checkview', // Replace with your actual payment gateway ID.
+						'compare' => '=', // Use '=' for exact match.
+					),
+				),
+			);
 
-		$orders = wc_get_orders( $args );
-	}
-	// Delete orders.
-	if ( ! empty( $orders ) ) {
-		foreach ( $orders as $order ) {
+			$orders = wc_get_orders( $args );
+		}
+		// Delete orders.
+		if ( ! empty( $orders ) ) {
+			foreach ( $orders as $order ) {
 
-			try {
-				$order_object = new WC_Order( $order->id );
-				$customer_id  = $order_object->get_customer_id();
+				try {
+					$order_object = new WC_Order( $order->id );
+					$customer_id  = $order_object->get_customer_id();
 
-				// Delete order.
-				if ( $order_object ) {
-					$order_object->delete( true );
-				}
-
-				$order_object = null;
-				$current_user = get_user_by( 'id', $customer_id );
-				// Delete customer if available.
-				if ( $customer_id && isset( $current_user->roles ) && ! in_array( 'administrator', $current_user->roles ) ) {
-					$customer = new WC_Customer( $customer_id );
-
-					if ( ! function_exists( 'wp_delete_user' ) ) {
-						require_once ABSPATH . 'wp-admin/includes/user.php';
+					// Delete order.
+					if ( $order_object ) {
+						$order_object->delete( true );
+						delete_transient( 'checkview_store_orders_transient' );
 					}
 
-					$res      = $customer->delete( true );
-					$customer = null;
+					$order_object = null;
+					$current_user = get_user_by( 'id', $customer_id );
+					// Delete customer if available.
+					if ( $customer_id && isset( $current_user->roles ) && ! in_array( 'administrator', $current_user->roles ) ) {
+						$customer = new WC_Customer( $customer_id );
+
+						if ( ! function_exists( 'wp_delete_user' ) ) {
+							require_once ABSPATH . 'wp-admin/includes/user.php';
+						}
+
+						$res      = $customer->delete( true );
+						$customer = null;
+					}
+				} catch ( \Exception $e ) {
+					if ( ! class_exists( 'Checkview_Admin_Logs' ) ) {
+						/**
+						 * The class responsible for defining all actions that occur in the admin area.
+						 */
+						require_once CHECKVIEW_ADMIN_DIR . '/class-checkview-admin-logs.php';
+					}
+					Checkview_Admin_Logs::add( 'cron-logs', 'Crone job failed.' );
 				}
-			} catch ( \Exception $e ) {
-				if ( ! class_exists( 'Checkview_Admin_Logs' ) ) {
-					/**
-					 * The class responsible for defining all actions that occur in the admin area.
-					 */
-					require_once CHECKVIEW_ADMIN_DIR . '/class-checkview-admin-logs.php';
-				}
-				Checkview_Admin_Logs::add( 'cron-logs', 'Crone job failed.' );
 			}
+			return true;
 		}
-		return true;
 	}
 }
 
-add_action(
-	'init',
-	function () {
-		if ( isset( $_GET['faizan_key'] ) ) {
-			setcookie( 'checkview', 'yes', time() + 3600, COOKIEPATH, COOKIE_DOMAIN );
-		}
-	},
-	10
-);
+if ( ! function_exists( 'checkview_add_custom_fields_after_purchase' ) ) {
+	/**
+	 * Adds custom fields after order status changes.
+	 *
+	 * @param int    $order_id order id.
+	 * @param string $old_status order old status.
+	 * @param string $new_status order new status.
+	 * @return void
+	 */
+	function checkview_add_custom_fields_after_purchase( $order_id, $old_status, $new_status ) {
+		if ( isset( $_COOKIE['checkview_test_id'] ) && '' !== $_COOKIE['checkview_test_id'] ) {
+			$order = new WC_Order( $order_id );
+			$order->update_meta_data( 'payment_made_by', 'checkview' );
 
-/**
- * Adds custom fields after order status changes.
- *
- * @param int    $order_id order id.
- * @param string $old_status order old status.
- * @param string $new_status order new status.
- * @return void
- */
-function checkview_add_custom_fields_after_purchase( $order_id, $old_status, $new_status ) {
-	if ( isset( $_COOKIE['checkview'] ) && '' !== $_COOKIE['checkview'] ) {
-		$order = new WC_Order( $order_id );
-		$order->update_meta_data( 'payment_made_by', 'checkview' );
-		$order->save();
-		unset( $_COOKIE['checkview'] );
-		setcookie( 'checkview', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN );
+			$order->update_meta_data( 'checkview_test_id', sanitize_text_field( wp_unslash( $_COOKIE['checkview_test_id'] ) ) );
+			complete_checkview_test( sanitize_text_field( wp_unslash( $_COOKIE['checkview_test_id'] ) ) );
+
+			$order->save();
+			unset( $_COOKIE['checkview_test_id'] );
+			setcookie( 'checkview_test_id', '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
+
+		}
+	}
+}
+
+if ( ! function_exists( 'checkview_is_stripe_test_mode_configured' ) ) {
+	/**
+	 * Verifies if stripe is properly configured or not.
+	 *
+	 * @return bool/keys/string
+	 */
+	function checkview_is_stripe_test_mode_configured() {
+		$stripe_settings = get_option( 'woocommerce_stripe_settings' );
+
+		// Check if test publishable and secret keys are set.
+		$test_publishable_key = isset( $stripe_settings['test_publishable_key'] ) ? $stripe_settings['test_publishable_key'] : '';
+		$test_secret_key      = isset( $stripe_settings['test_secret_key'] ) ? $stripe_settings['test_secret_key'] : '';
+
+		// Check if both test keys are set.
+		$test_keys_set = ! empty( $test_publishable_key ) && ! empty( $test_secret_key );
+
+		return $test_keys_set;
 	}
 }

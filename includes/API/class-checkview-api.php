@@ -176,7 +176,7 @@ class CheckView_Api {
 			'checkview/v1',
 			'/store/deleteorders',
 			array(
-				'methods'  => array( 'DELETE', 'PUT', "GET" ),
+				'methods'  => array( 'DELETE', 'PUT', 'GET' ),
 				'callback' => array( $this, 'checkview_delete_orders' ),
 				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'     => array(
@@ -224,15 +224,16 @@ class CheckView_Api {
 			);
 			wp_die();
 		}
-		if ( '' !== $orders && null !== $orders && false !== $orders || empty( $checkview_order_id_before ) || empty( $checkview_order_id_after ) || empty( $checkview_order_last_modified_until ) || empty( $checkview_order_last_modified_since ) ) {
-			// return new WP_REST_Response(
-			// array(
-			// 'status'        => 200,
-			// 'response'      => esc_html__( 'Successfully retrieved the orders.', 'checkview' ),
-			// 'body_response' => $orders,
-			// )
-			// );
-			// wp_die();
+
+		if ( '' !== $orders && null !== $orders && false !== $orders && empty( $checkview_order_id_before ) && empty( $checkview_order_id_after ) && empty( $checkview_order_last_modified_until ) && empty( $checkview_order_last_modified_since ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the orders.', 'checkview' ),
+					'body_response' => $orders,
+				)
+			);
+			wp_die();
 		}
 		$orders = array();
 		if ( ! is_admin() ) {
@@ -488,8 +489,8 @@ class CheckView_Api {
 		if ( $results ) {
 			return new WP_REST_Response(
 				array(
-					'status'        => 200,
-					'response'      => esc_html__( 'Successfully removed the results.', 'checkview' ),
+					'status'   => 200,
+					'response' => esc_html__( 'Successfully removed the results.', 'checkview' ),
 				)
 			);
 			wp_die();

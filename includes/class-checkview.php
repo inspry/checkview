@@ -229,8 +229,6 @@ class Checkview {
 				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
 			}
 		}
-		add_action( 'woocommerce_checkout_update_order_meta', 'wp_kama_woocommerce_checkout_update_order_meta_action', 10, 2 );
-
 		if ( ! is_admin() && class_exists( 'woocommerce' ) ) {
 			// Load payment gateway.
 			require_once CHECKVIEW_INC_DIR . 'woocommercehelper/class-checkview-payment-gateway.php';
@@ -253,26 +251,24 @@ class Checkview {
 			);
 
 		}
-		$this->loader->add_filter(
-			'woocommerce_order_data_store_cpt_get_orders_query',
-			'',
-			'checkview_add_custom_var_to_query',
-			10,
-			2
-		);
-		if ( isset( $_GET['faizan_key'] ) && class_exists( 'woocommerce' ) ) {
+		if ( isset( $_GET['checkview_test_id'] ) && class_exists( 'woocommerce' ) ) {
 
-			$secret = '123';
+			// Registers WooCommerce Blocks integration.
+			$this->loader->add_action(
+				'woocommerce_blocks_loaded',
+				$this,
+				'checkview_woocommerce_block_support',
+			);
+			// $stripe_settings = get_option( 'woocommerce_stripe_settings' );
 
-			if ( $_GET['faizan_key'] == $secret ) {
-				// Registers WooCommerce Blocks integration.
-				$this->loader->add_action(
-					'woocommerce_blocks_loaded',
-					$this,
-					'checkview_woocommerce_block_support',
-				);
+			// // Check if Stripe settings exist.
+			// if ( $stripe_settings && isset( $_GET['checkview_use_stripe'] ) ) {
+			// 	// Update the 'testmode' option to enable sandbox mode.
+			// 	$stripe_settings['testmode'] = 'yes';
 
-			}
+			// 	// Save the updated settings.
+			// 	update_option( 'woocommerce_stripe_settings', $stripe_settings );
+			// }
 		}
 		$this->loader->add_filter(
 			'plugin_action_links_' . CHECKVIEW_BASE_DIR,
@@ -485,9 +481,9 @@ class Checkview {
 	 */
 	public function checkview_filter_admin_emails( $recipient, $order ) {
 
-		$payment_method = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
-
-		if ( 'checkview' === $payment_method ) {
+		$payment_method  = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
+		$payment_made_by = $order->get_meta( 'payment_made_by' );
+		if ( 'checkview' === $payment_method || 'checkview' === $payment_made_by ) {
 			return false;
 		}
 
