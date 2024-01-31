@@ -160,13 +160,28 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token'       => array(
-						'required' => false,
+						'required' => true,
 					),
 					'checkview_keyword'      => array(
 						'required' => false,
 					),
 					'checkview_product_type' => array(
 						'required' => false,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/shippingdetails',
+			array(
+				'methods'  => 'GET',
+				'callback' => array( $this, 'checkview_get_available_shipping_details' ),
+				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'     => array(
+					'_checkview_token' => array(
+						'required' => true,
 					),
 				),
 			)
@@ -472,12 +487,145 @@ class CheckView_Api {
 	}
 
 	/**
+	 * Retrieves shipping details.
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function checkview_get_available_shipping_details() {
+
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		global $wpdb;
+		$shipping_details = get_transient( 'checkview_store_shipping_transient' );
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+		if ( '' !== $shipping_details && null !== $shipping_details && false !== $shipping_details ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the shipping details.', 'checkview' ),
+					'body_response' => $shipping_details,
+				)
+			);
+			wp_die();
+		}
+		$country_class                   = new WC_Countries();
+		$country_list                    = $country_class->get_shipping_countries();
+		$default_zone                    = new WC_Shipping_Zone( 0 );
+		$default_zone_formatted_location = $default_zone->get_formatted_location();
+		$default_zone_shipping_methods   = $default_zone->get_shipping_methods();
+
+		$shipping_details = array(
+			'default_methods' => array(),
+			'zones'           => array(),
+		);
+
+		if ( ! empty( $default_zone_shipping_methods ) ) {
+			foreach ( $default_zone_shipping_methods as $method ) {
+				if ( 'yes' === $method->enabled ) {
+					$shipping_details['default_methods'][] = $method->id;
+				}
+			}
+		}
+
+		$shipping_zones = new WC_Shipping_Zones();
+		$zones          = $shipping_zones->get_zones();
+
+		if ( ! empty( $zones ) ) {
+			foreach ( $zones as $zone ) {
+
+				$obj = array(
+					'countries'   => array(),
+					'postalCodes' => array(),
+					'states'      => array(),
+					'methods'     => array(),
+				);
+
+				if ( ! empty( $zone['zone_locations'] ) ) {
+					foreach ( $zone['zone_locations'] as $location ) {
+						if ( 'country' === $location->type ) {
+							$obj['countries'][] = $location->code;
+						} elseif ( 'postcode' === $location->type ) {
+							$obj['postalCodes'][] = $location->code;
+						} elseif ( 'state' === $location->type ) {
+							$p               = explode( ':', $location->code );
+							$obj['states'][] = array(
+								'country' => $p[0],
+								'state'   => $p[1],
+							);
+						}
+					}
+				}
+
+				if ( ! empty( $zone['shipping_methods'] ) ) {
+					foreach ( $zone['shipping_methods'] as $method ) {
+						if ( 'yes' === $method->enabled ) {
+							$obj['methods'][] = $method->id;
+						}
+					}
+				}
+
+				if ( ! empty( $obj['methods'] ) ) {
+					$shipping_details['zones'][] = $obj;
+				}
+			}
+		}
+		if ( $shipping_details && ( isset( $shipping_details['methods'] ) || isset( $shipping_details['zones'] ) ) ) {
+			set_transient( 'checkview_store_shipping_transient', $shipping_details, 12 * HOUR_IN_SECONDS );
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the shipping details.', 'checkview' ),
+					'body_response' => $shipping_details,
+				)
+			);
+		} else {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'No shipping details to show.', 'checkview' ),
+					'body_response' => $shipping_details,
+				)
+			);
+		}
+		wp_die();
+	}
+	/**
 	 * Deletes all the avaiable test results for forms.
 	 *
-	 * @param WP_REST_Request $request the request param with the API call.
 	 * @return WP_REST_Response/WP_Error/json
 	 */
-	public function checkview_delete_orders( WP_REST_Request $request ) {
+	public function checkview_delete_orders() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
 		global $wpdb;
 		$error   = array(
 			'status'  => 'error',

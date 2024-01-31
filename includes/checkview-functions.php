@@ -330,6 +330,7 @@ if ( ! function_exists( 'checkview_reset_cache' ) ) {
 		delete_transient( 'checkview_forms_test_transient' );
 		delete_transient( 'checkview_store_orders_transient' );
 		delete_transient( 'checkview_store_products_transient' );
+		delete_transient( 'checkview_store_shipping_transient' );
 		$sync = true;
 		return $sync;
 	}

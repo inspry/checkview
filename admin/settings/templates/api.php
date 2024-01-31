@@ -92,6 +92,20 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 
 				<tr valign="top">
 					<th scope="row" >
+						<label for="checkview_get_shipping_details">
+							<?php esc_html_e( 'Retrieves shipping details from store', 'checkview' ); ?>
+						</label>
+						<p class="make-lib-description"><?php esc_html_e( 'Use this endpoint to get all shipping details.', 'checkview' ); ?></p>
+					</th>
+					<td class="checkview-make-library-box">
+					<label  for="checkview_get_shipping_details">
+						<p class="make-lib-description"><?php echo esc_url_raw( get_rest_url() . 'checkview/v1/store/shippingdetails' ); ?></p>
+					</label>
+					</td>
+				</tr>
+
+				<tr valign="top">
+					<th scope="row" >
 						<label for="checkview_delete_orders">
 							<?php esc_html_e( 'Delete orders', 'checkview' ); ?>
 						</label>
