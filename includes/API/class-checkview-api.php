@@ -960,12 +960,12 @@ class CheckView_Api {
 				wp_die();
 			}
 			$tablename = $wpdb->prefix . 'cv_entry';
-			$result    = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s', $uid ) );
+			$result    = $wpdb->get_row( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s', $uid ) );
 			$tablename = $wpdb->prefix . 'cv_entry_meta';
 			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s order by id ASC', $uid ) );
 			if ( $rows ) {
 				foreach ( $rows as $row ) {
-					if ( strtolower( 'gravityforms' === $result->form_type ) ) {
+					if ( 'gravityforms' === strtolower( $result->form_type ) ) {
 						$results[] = array(
 							'field_id'    => 'input_' . $row->form_id . '_' . str_replace( '.', '_', $row->meta_key ),
 							'field_value' => $row->meta_value,
