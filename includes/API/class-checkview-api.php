@@ -133,15 +133,15 @@ class CheckView_Api {
 	public function checkview_get_available_forms_list() {
 		global $wpdb;
 		$forms_list = get_transient( 'checkview_forms_list_transient' );
-		if ( null !== $this->$jwt_error ) {
+		if ( null !== $this->jwt_error ) {
 			return new WP_Error(
 				400,
 				esc_html__( 'Use a valid JWT token.', 'checkview' ),
-				esc_html( $this->$jwt_error )
+				esc_html( $this->jwt_error )
 			);
 			wp_die();
 		}
-		if ( '' !== $forms_list && null !== $forms_list ) {
+		if ( '' !== $forms_list && null !== $forms_list && false !== $forms_list ) {
 			return new WP_REST_Response(
 				array(
 					'status'        => 200,
@@ -157,7 +157,7 @@ class CheckView_Api {
 		}
 		if ( is_plugin_active( 'gravityforms/gravityforms.php' ) ) {
 			$tablename = $wpdb->prefix . 'gf_form';
-			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where is_active=%d and is_trash=%d order by ID ASC', $tablename, 1, 0 ) );
+			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where is_active=%d and is_trash=%d order by ID ASC', 1, 0 ) );
 			if ( $results ) {
 				foreach ( $results as $row ) {
 					$forms['GravityForms'][ $row->id ] = array(
@@ -165,7 +165,7 @@ class CheckView_Api {
 						'Name' => $row->title,
 					);
 					$tablename                         = $wpdb->prefix . 'gf_addon_feed';
-					$addons                            = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where is_active=%d and form_id=%d', $tablename, 1, $row->id ) );
+					$addons                            = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where is_active=%d and form_id=%d', 1, $row->id ) );
 					foreach ( $addons as $addon ) {
 						$forms['GravityForms'][ $row->id ]['addons'][] = $addon->addon_slug;
 					}
@@ -199,7 +199,7 @@ class CheckView_Api {
 
 		if ( is_plugin_active( 'fluentform/fluentform.php' ) ) {
 			$tablename = $wpdb->prefix . 'fluentform_forms';
-			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where status=%s order by ID ASC', $tablename, 'published' ) );
+			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where status=%s order by ID ASC', 'published' ) );
 			if ( $results ) {
 				foreach ( $results as $row ) {
 					$forms['FluentForms'][ $row->id ] = array(
@@ -233,7 +233,7 @@ class CheckView_Api {
 		} // FLUENT FORMS
 		if ( is_plugin_active( 'ninja-forms/ninja-forms.php' ) ) {
 			$tablename = $wpdb->prefix . 'nf3_forms';
-			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from %s order by ID ASC', $tablename ) );
+			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' order by ID ASC' ) );
 			if ( $results ) {
 				foreach ( $results as $row ) {
 					$forms['NinjaForms'][ $row->id ] = array(
@@ -296,7 +296,7 @@ class CheckView_Api {
 
 		if ( is_plugin_active( 'formidable/formidable.php' ) ) {
 			$tablename = $wpdb->prefix . 'frm_forms';
-			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where 1=%d and status=%s', $tablename, 1, 'published' ) );
+			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where 1=%d and status=%s', 1, 'published' ) );
 			if ( $results ) {
 				foreach ( $results as $row ) {
 					$forms['Formidable'][ $row->id ] = array(
@@ -376,16 +376,24 @@ class CheckView_Api {
 				}
 			}
 		}
-		if ( $forms && ! empty( $forms ) ) {
+		if ( $forms && ! empty( $forms ) && false !== $forms && '' !== $forms ) {
 			set_transient( 'checkview_forms_list_transient', $forms, 12 * HOUR_IN_SECONDS );
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the forms list.', 'checkview' ),
+					'body_response' => $forms,
+				)
+			);
+		} else {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'No forms to show.', 'checkview' ),
+					'body_response' => $forms,
+				)
+			);
 		}
-		return new WP_REST_Response(
-			array(
-				'status'        => 200,
-				'response'      => esc_html__( 'Successfully retrieved the forms list.', 'checkview' ),
-				'body_response' => $forms,
-			)
-		);
 		wp_die();
 	}
 
@@ -415,7 +423,7 @@ class CheckView_Api {
 			wp_die();
 		} else {
 			$tests_transients = get_transient( 'checkview_forms_test_transient' );
-			if ( '' !== $tests_transients && null !== $tests_transients ) {
+			if ( '' !== $tests_transients && null !== $tests_transients && false !== $tests_transients ) {
 				return new WP_REST_Response(
 					array(
 						'status'        => 200,
@@ -426,12 +434,12 @@ class CheckView_Api {
 				wp_die();
 			}
 			$tablename = $wpdb->prefix . 'cv_entry';
-			$result    = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where uid=%d', $tablename, $uid ) );
+			$result    = $wpdb->get_row( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s', $uid ) );
 			$tablename = $wpdb->prefix . 'cv_entry_meta';
-			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where uid=%d order by id ASC', $tablename, $uid ) );
+			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s order by id ASC', $uid ) );
 			if ( $rows ) {
 				foreach ( $rows as $row ) {
-					if ( strtolower( 'gravityforms' === $result->form_type ) ) {
+					if ( 'gravityforms' === strtolower( $result->form_type ) ) {
 						$results[] = array(
 							'field_id'    => 'input_' . $row->form_id . '_' . str_replace( '.', '_', $row->meta_key ),
 							'field_value' => $row->meta_value,
@@ -455,14 +463,22 @@ class CheckView_Api {
 						);
 					}
 				}
-				set_transient( 'checkview_forms_test_transient', $results, 12 * HOUR_IN_SECONDS );
-				return new WP_REST_Response(
-					array(
-						'status'        => 200,
-						'response'      => esc_html__( 'Successfully retrieved the results.', 'checkview' ),
-						'body_response' => $results,
-					)
-				);
+				if ( ! empty( $results ) && false !== $results ) {
+					set_transient( 'checkview_forms_test_transient', $results, 12 * HOUR_IN_SECONDS );
+					return new WP_REST_Response(
+						array(
+							'status'        => 200,
+							'response'      => esc_html__( 'Successfully retrieved the results.', 'checkview' ),
+							'body_response' => $results,
+						)
+					);
+				} else {
+					return new WP_Error(
+						400,
+						esc_html__( 'Failed to retrieve the results.', 'checkview' ),
+						$error
+					);
+				}
 				wp_die();
 			} else {
 				return new WP_Error(
@@ -539,7 +555,7 @@ class CheckView_Api {
 			'message' => esc_html__( 'No Result Found', 'checkview' ),
 		);
 		$results = array();
-		if ( '' === $uid || null === $uid ) {
+		if ( '' === $uid || null === $uid || false === $uid ) {
 			return new WP_Error(
 				400,
 				esc_html__( 'Empty UID.', 'checkview' ),
@@ -548,9 +564,9 @@ class CheckView_Api {
 			wp_die();
 		} else {
 			$tablename = $wpdb->prefix . 'cv_entry';
-			$result    = $wpdb->get_results( $wpdb->prepare( 'DELETE * from %s where uid=%d', $tablename, $uid ) );
+			$result    = $wpdb->delete( $tablename, array( 'uid' => $uid ) );
 			$tablename = $wpdb->prefix . 'cv_entry_meta';
-			$rows      = $wpdb->get_results( $wpdb->prepare( 'DELETE * from %s where uid=%d order by id ASC', $tablename, $uid ) );
+			$rows      = $wpdb->delete( $tablename, array( 'uid' => $uid ) );
 			if ( $rows ) {
 				return new WP_REST_Response(
 					array(
@@ -593,7 +609,7 @@ class CheckView_Api {
 		}
 		$valid_token = validate_jwt_token( $jwt_token );
 		if ( true !== $valid_token ) {
-			$this->$jwt_error = $valid_token;
+			$this->jwt_error = $valid_token;
 			return new WP_Error(
 				400,
 				esc_html__( 'Invalid Token.', 'checkview' ),

@@ -40,19 +40,23 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			$this->loader = new Checkview_Loader();
 			if ( defined( 'TEST_EMAIL' ) ) {
 				// update email to our test email.
-				$this->loader->add_filter(
+				add_filter(
 					'frm_to_email',
-					$this,
-					'checkview_inject_email',
+					array(
+						$this,
+						'checkview_inject_email',
+					),
 					99,
 					1
 				);
 			}
 
-			$this->loader->add_action(
+			add_action(
 				'frm_after_create_entry',
-				$this,
-				'checkview_log_form_test_entry',
+				array(
+					$this,
+					'checkview_log_form_test_entry',
+				),
 				99,
 				2
 			);
@@ -102,7 +106,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			$entry_meta_table = $wpdb->prefix . 'cv_entry_meta';
 			$fields           = $this->get_form_fields( $form_id );
 			$tablename        = $wpdb->prefix . 'frm_item_metas';
-			$form_fields      = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where item_id=%d', $tablename, $entry_id ) );
+			$form_fields      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where item_id=%d', $entry_id ) );
 			foreach ( $form_fields as $field ) {
 
 				if ( 'name' === $fields[ $field->field_id ]['type'] ) {
@@ -217,7 +221,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 
 			$fields      = array();
 			$tablename   = $wpdb->prefix . 'frm_fields';
-			$fields_data = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where form_id=%d', $tablename, $form_id ) );
+			$fields_data = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where form_id=%d', $form_id ) );
 			if ( $fields_data ) {
 				foreach ( $fields_data as $field ) {
 					$type     = $field->type;

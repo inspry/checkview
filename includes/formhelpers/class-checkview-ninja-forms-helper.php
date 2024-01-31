@@ -39,18 +39,22 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
-			$this->loader->add_action(
+			add_action(
 				'ninja_forms_after_submission',
-				$this,
-				'checkview_clone_entry',
+				array(
+					$this,
+					'checkview_clone_entry',
+				),
 				99,
 				1
 			);
 			if ( defined( 'TEST_EMAIL' ) ) {
-				$this->loader->add_filter(
+				add_filter(
 					'ninja_forms_action_email_send',
-					$this,
-					'checkview_inject_email',
+					array(
+						$this,
+						'checkview_inject_email',
+					),
 					99,
 					5
 				);
@@ -106,7 +110,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 			$entry_meta_table = $wpdb->prefix . 'cv_entry_meta';
 			$field_id_prefix  = 'nf';
 			$tablename        = $wpdb->prefix . 'postmeta';
-			$form_fields      = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where post_id=%d', $tablename, $entry_id ) );
+			$form_fields      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where post_id=%d', $entry_id ) );
 			foreach ( $form_fields as $field ) {
 				if ( ! in_array( $field->meta_key, array( '_form_id', '_seq_num' ) ) ) {
 					$entry_metadata = array(

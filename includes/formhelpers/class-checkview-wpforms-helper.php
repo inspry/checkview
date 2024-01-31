@@ -43,24 +43,24 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 				include_once ABSPATH . 'wp-admin/includes/plugin.php';
 			}
 			// Disable reCAPTCHA assets and initialisation on the frontend.
-			$this->loader->add_filter(
+			add_filter(
 				'wpforms_frontend_recaptcha_disable',
-				'',
 				'__return_true',
 				99
 			);
 			// Disable validation and verification on the backend.
-			$this->loader->add_filter(
+			add_filter(
 				'wpforms_process_bypass_captcha',
-				'',
 				'__return_true',
 				99
 			);
 
-			$this->loader->add_action(
+			add_action(
 				'wpforms_process_complete',
-				$this,
-				'checkview_log_wpform_test_entry',
+				array(
+					$this,
+					'checkview_log_wpform_test_entry',
+				),
 				99,
 				4
 			);
@@ -71,18 +71,19 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 			 * @link  https://wpforms.com/developers/how-to-disable-the-email-suggestion-on-the-email-form-field/
 			 */
 
-			$this->loader->add_filter(
+			add_filter(
 				'wpforms_mailcheck_enabled',
-				'',
 				'__return_false'
 			);
 
 			if ( defined( 'TEST_EMAIL' ) ) {
 				// change email to send to our test account.
-				$this->loader->add_filter(
+				add_filter(
 					'wpforms_entry_email_atts',
-					$this,
-					'checkview_inject_email',
+					array(
+						$this,
+						'checkview_inject_email',
+					),
 					99,
 					1
 				);
@@ -113,7 +114,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 		 */
 		public function checkview_log_wpform_test_entry( $form_fields, $entry, $form_data, $entry_id ) {
 			global $wpdb;
-			if ( ! is_admin() ) {
+			if ( ! function_exists( 'is_plugin_active' ) ) {
 				include_once ABSPATH . 'wp-admin/includes/plugin.php';
 			}
 

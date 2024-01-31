@@ -41,19 +41,23 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			$this->loader = new Checkview_Loader();
 			if ( defined( 'TEST_EMAIL' ) ) {
 				// Change Email address to our test email.
-				$this->loader->add_filter(
+				add_filter(
 					'fluentform_email_to',
-					$this,
-					'checkview_inject_email',
+					array(
+						$this,
+						'checkview_inject_email',
+					),
 					99,
 					4
 				);
 			}
 			// clone entry after submission complete.
-			$this->loader->add_action(
+			add_action(
 				'fluentform_submission_inserted',
-				$this,
-				'checkview_clone_fluentform_entry',
+				array(
+					$this,
+					'checkview_clone_fluentform_entry',
+				),
 				99,
 				3
 			);
@@ -91,7 +95,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 
 			// clone entry to check view tables.
 			$tablename = $wpdb->prefix . 'fluentform_entry_details';
-			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from %s where submission_id=%d and form_id=%d order by id ASC', $tablename, $entry_id, $form_id ) );
+			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where submission_id=%d and form_id=%d order by id ASC', $entry_id, $form_id ) );
 			foreach ( $rows as $row ) {
 				$meta_key = 'ff_' . $form_id . '_' . $row->field_name;
 				if ( '' !== $row->sub_field_name ) {
@@ -108,7 +112,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				$wpdb->insert( $table, $data );
 			}
 			$tablename = $wpdb->prefix . 'fluentform_submissions';
-			$row       = $wpdb->get_row( $wpdb->prepare( 'Select * from %s where id=%d and form_id=%d LIMIT 1', $tablename, $entry_id, $form_id ), ARRAY_A );
+			$row       = $wpdb->get_row( $wpdb->prepare( 'Select * from ' . $tablename . ' where id=%d and form_id=%d LIMIT 1', $entry_id, $form_id ), ARRAY_A );
 			$table1    = $wpdb->prefix . 'cv_entry';
 			$data      = array(
 				'uid'            => $checkview_test_id,

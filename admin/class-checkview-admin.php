@@ -186,7 +186,7 @@ class Checkview_Admin {
 	 */
 	public function checkview_init_current_test() {
 
-		if ( ! is_admin() ) {
+		if ( ! function_exists( 'is_plugin_active' ) ) {
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
@@ -195,8 +195,8 @@ class Checkview_Admin {
 		// Check view Bot IP. Todo.
 		$cv_bot_ip = get_api_ip();
 		// skip if visitor ip not equal to CV Bot IP.
-		if ( $visitor_ip !== $cv_bot_ip ) {
-			return;
+		if ( $visitor_ip != $cv_bot_ip ) {
+			//return;
 		}
 
 		// if clean talk plugin active whitelist check form API IP.
@@ -208,7 +208,7 @@ class Checkview_Admin {
 
 		$referrer_url = sanitize_url( wp_get_raw_referer(), array( 'http', 'https' ) );
 
-		// If Ajax submission and found test_id.
+		// If not Ajax submission and found test_id.
 		if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'admin-ajax.php' ) === false && '' !== $cv_test_id ) {
 			// Create session for later use when form submit VIA AJAX.
 			create_cv_session( $visitor_ip, $cv_test_id );
@@ -219,12 +219,14 @@ class Checkview_Admin {
 			$referer_url_query = wp_parse_url( $referrer_url, PHP_URL_QUERY );
 			$qry_str           = array();
 			parse_str( $referer_url_query, $qry_str );
-			$cv_test_id = $qry_str['checkview_test_id'];
+			if ( isset( $qry_str['checkview_test_id'] ) ) {
+				$cv_test_id = $qry_str['checkview_test_id'];
+			}
 		}
 
 		$cv_session = get_cv_session( $visitor_ip, $cv_test_id );
 
-		// top if session not found.
+		// stop if session not found.
 		if ( ! empty( $cv_session ) ) {
 
 			$test_key = $cv_session[0]['test_key'];
@@ -247,6 +249,7 @@ class Checkview_Admin {
 			if ( ! defined( 'CV_TEST_ID' ) ) {
 				define( 'CV_TEST_ID', $cv_test_id );
 			}
+			delete_transient( 'checkview_forms_test_transient' );
 			if ( is_plugin_active( 'gravityforms/gravityforms.php' ) ) {
 				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-gforms-helper.php';
 			}
@@ -261,9 +264,6 @@ class Checkview_Admin {
 			}
 			if ( is_plugin_active( 'formidable/formidable.php' ) ) {
 				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-formidable-helper.php';
-			}
-			if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) ) {
-				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
 			}
 		}
 	}
