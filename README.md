@@ -476,6 +476,11 @@ curl -X GET "https://your-api-domain.com/checkview/v1/permissions/check?_checkvi
     }
   }
   ```
+## To build the WooCommerce payment gateway block.
+- nvm use
+- npm install
+- npm run packages-update
+- npm run build
 
 ## Notes
 
