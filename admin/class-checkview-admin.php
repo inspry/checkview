@@ -196,7 +196,7 @@ class Checkview_Admin {
 		$cv_bot_ip = get_api_ip();
 		// skip if visitor ip not equal to CV Bot IP.
 		if ( $visitor_ip != $cv_bot_ip ) {
-			//return;
+			// return;
 		}
 
 		// if clean talk plugin active whitelist check form API IP.
@@ -222,6 +222,9 @@ class Checkview_Admin {
 			if ( isset( $qry_str['checkview_test_id'] ) ) {
 				$cv_test_id = $qry_str['checkview_test_id'];
 			}
+		}
+		if ( $cv_test_id && '' !== $cv_test_id ) {
+			setcookie( 'checkview_test_id', $cv_test_id, time() + 6600, COOKIEPATH, COOKIE_DOMAIN );
 		}
 
 		$cv_session = get_cv_session( $visitor_ip, $cv_test_id );
@@ -250,6 +253,7 @@ class Checkview_Admin {
 				define( 'CV_TEST_ID', $cv_test_id );
 			}
 			delete_transient( 'checkview_forms_test_transient' );
+			delete_transient( 'checkview_store_orders_transient' );
 			if ( is_plugin_active( 'gravityforms/gravityforms.php' ) ) {
 				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-gforms-helper.php';
 			}

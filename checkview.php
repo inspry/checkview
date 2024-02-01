@@ -62,6 +62,14 @@ if ( ! defined( 'CHECKVIEW_ADMIN_ASSETS' ) ) {
 	define( 'CHECKVIEW_ADMIN_ASSETS', trailingslashit( plugin_dir_url( __FILE__ ) ) . 'admin/assets/' );
 }
 
+if ( ! defined( 'CHECKVIEW_PUBLIC_ASSETS' ) ) {
+	define( 'CHECKVIEW_PUBLIC_ASSETS', trailingslashit( plugin_dir_url( __FILE__ ) ) . 'public/assets/' );
+}
+
+if ( ! defined( 'CHECKVIEW_URI' ) ) {
+	define( 'CHECKVIEW_URI', trailingslashit( plugin_dir_url( __FILE__ ) ) );
+}
+
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-checkview-activator.php
@@ -99,8 +107,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-checkview.php';
  * @since    1.0.0
  */
 function run_checkview() {
-
 	$plugin = Checkview::get_instance();
 	$plugin->run();
 }
-add_action( 'plugins_loaded', 'run_checkview', '999' );
+add_action( 'plugins_loaded', 'run_checkview', '10' );

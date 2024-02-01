@@ -123,8 +123,534 @@ class CheckView_Api {
 				),
 			)
 		);
-	} // end checkview_register_rest_route
 
+		register_rest_route(
+			'checkview/v1',
+			'/store/orders',
+			array(
+				'methods'  => 'GET',
+				'callback' => array( $this, 'checkview_get_available_orders' ),
+				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'     => array(
+					'_checkview_token'                    => array(
+						'required' => true,
+					),
+					'checkview_order_last_modified_since' => array(
+						'required' => false,
+					),
+					'checkview_order_last_modified_until' => array(
+						'required' => false,
+					),
+					'checkview_order_id_after'            => array(
+						'required' => false,
+					),
+					'checkview_order_id_before'           => array(
+						'required' => false,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/products',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'checkview_get_available_products' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token'       => array(
+						'required' => true,
+					),
+					'checkview_keyword'      => array(
+						'required' => false,
+					),
+					'checkview_product_type' => array(
+						'required' => false,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/shippingdetails',
+			array(
+				'methods'  => 'GET',
+				'callback' => array( $this, 'checkview_get_available_shipping_details' ),
+				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'     => array(
+					'_checkview_token' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/deleteorders',
+			array(
+				'methods'  => array( 'DELETE', 'PUT', 'GET' ),
+				'callback' => array( $this, 'checkview_delete_orders' ),
+				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'     => array(
+					'_checkview_token' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
+	} // end checkview_register_rest_route
+	/**
+	 * Retrieves the available forms.
+	 *
+	 * @param WP_REST_Request $request wp request object.
+	 * @return WP_REST_Response/json
+	 */
+	public function checkview_get_available_orders( WP_REST_Request $request ) {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		global $wpdb;
+		$orders                              = get_transient( 'checkview_store_orders_transient' );
+		$checkview_order_last_modified_since = $request->get_param( 'checkview_order_last_modified_since' );
+		$checkview_order_last_modified_since = isset( $checkview_order_last_modified_since ) ? sanitize_text_field( $checkview_order_last_modified_since ) : '';
+
+		$checkview_order_last_modified_until = $request->get_param( 'checkview_order_last_modified_until' );
+		$checkview_order_last_modified_until = isset( $checkview_order_last_modified_until ) ? sanitize_text_field( $checkview_order_last_modified_until ) : '';
+
+		$checkview_order_id_after = $request->get_param( 'checkview_order_id_after' );
+		$checkview_order_id_after = isset( $checkview_order_id_after ) ? sanitize_text_field( $checkview_order_id_after ) : '';
+
+		$checkview_order_id_before = $request->get_param( 'checkview_order_id_before' );
+		$checkview_order_id_before = isset( $checkview_order_id_before ) ? sanitize_text_field( $checkview_order_id_before ) : '';
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+
+		if ( '' !== $orders && null !== $orders && false !== $orders && empty( $checkview_order_id_before ) && empty( $checkview_order_id_after ) && empty( $checkview_order_last_modified_until ) && empty( $checkview_order_last_modified_since ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the orders.', 'checkview' ),
+					'body_response' => $orders,
+				)
+			);
+			wp_die();
+		}
+		$orders = array();
+		if ( ! is_admin() ) {
+			include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$per_page = -1;
+
+		$params = array();
+
+		$sql = "SELECT p.ID AS orderId, DATE_FORMAT(p.post_date_gmt, '%%Y-%%m-%%dT%%TZ') AS orderDate, 
+			DATE_FORMAT(p.post_modified_gmt, '%%Y-%%m-%%dT%%TZ') AS lastModifiedOn, p.post_status AS status, 
+			pm2.meta_value AS orderTotal, pm3.meta_value AS currency 
+			FROM {$wpdb->prefix}posts as p
+			LEFT JOIN {$wpdb->prefix}postmeta AS pm ON (p.id = pm.post_id AND pm.meta_key = '_payment_method') 
+			LEFT JOIN {$wpdb->prefix}postmeta AS pm2 ON (p.id = pm2.post_id AND pm2.meta_key = '_order_total') 
+			LEFT JOIN {$wpdb->prefix}postmeta AS pm3 ON (p.id = pm3.post_id AND pm3.meta_key = '_order_currency') 
+			WHERE p.post_type = 'shop_order'
+			AND p.post_status IN ('wc-processing', 'wc-completed', 'wc-failed', 'wc-cancelled') 
+			AND pm.meta_value <> 'checkview' ";
+
+		if ( ! empty( $checkview_order_last_modified_since ) ) {
+
+			$sql     .= ' AND p.post_modified_gmt >= %s ';
+			$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_since ) );
+
+		}
+
+		if ( ! empty( $checkview_order_last_modified_until ) ) {
+
+			$sql     .= ' AND p.post_modified_gmt <= %s ';
+			$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_until ) );
+
+		}
+
+		if ( ! empty( $checkview_order_id_after ) && ! empty( $checkview_order_last_modified_since ) ) {
+
+			$sql     .= ' AND (p.post_modified_gmt != %s OR p.ID > %s) ';
+			$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_since ) );
+			$params[] = $checkview_order_id_after;
+
+		}
+
+		if ( ! empty( $checkview_order_id_before ) && ! empty( $checkview_order_last_modified_until ) ) {
+
+			$sql     .= ' AND (p.post_modified_gmt != %s OR p.ID < %s) ';
+			$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_until ) );
+			$params[] = $checkview_order_id_before;
+
+		}
+
+		// To make sure we don't get incomplete batches of orders.
+		if ( ! empty( $checkview_order_last_modified_since ) ) {
+			$sql .= ' AND p.post_modified_gmt < (NOW() - interval 2 second) ';
+		}
+
+		if ( ! empty( $checkview_order_last_modified_until ) ) {
+			$sql .= ' ORDER BY p.post_modified_gmt DESC, p.ID DESC';
+		} else {
+			$sql .= ' ORDER BY p.post_modified_gmt ASC, p.ID ASC LIMIT';
+		}
+
+		$psql   = $wpdb->prepare( $sql, $params );
+		$orders = $wpdb->get_results( $psql );
+		$args   = array(
+			'posts_per_page' => $per_page,
+			'meta_query'     => array(
+				'relation' => 'OR', // Use 'AND' for both conditions to apply.
+				array(
+					'key'     => 'payment_made_by', // Meta key for payment method.
+					'value'   => 'checkview', // Replace with your actual payment gateway ID.
+					'compare' => '=', // Use '=' for exact match.
+				),
+			),
+		);
+		if ( empty( $orders ) && ! empty( $checkview_order_last_modified_until ) && ! empty( $checkview_order_last_modified_since ) ) {
+
+			$args['date_before'] = $checkview_order_last_modified_until;
+			$args['date_after']  = $checkview_order_last_modified_since;
+
+		}
+
+		if ( empty( $orders ) && ! empty( $checkview_order_id_before ) ) {
+			$args['date_before'] = $checkview_order_id_before;
+		}
+
+		if ( empty( $orders ) && ! empty( $checkview_order_id_after ) ) {
+			$args['date_after'] = $checkview_order_id_after;
+		}
+
+		if ( empty( $orders ) ) {
+			$wc_orders = wc_get_orders( $args );
+			$orders    = array();
+			if ( $wc_orders ) {
+				foreach ( $wc_orders as $order ) {
+					$order_object                 = new WC_Order( $order->id );
+					$order_details['order_id']    = $order->id;
+					$order_details['customer_id'] = $order_object->get_customer_id();
+					$orders[]                     = $order_details;
+
+				}
+			}
+		}
+
+		if ( $orders && ! empty( $orders ) && false !== $orders && '' !== $orders ) {
+			set_transient( 'checkview_store_orders_transient', $orders, 12 * HOUR_IN_SECONDS );
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the orders.', 'checkview' ),
+					'body_response' => $orders,
+				)
+			);
+		} else {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'No orders to show.', 'checkview' ),
+					'body_response' => $orders,
+				)
+			);
+		}
+		wp_die();
+	}
+	/**
+	 * Retrieves the available forms.
+	 *
+	 * @param WP_REST_Request $request wp request object.
+	 * @return WP_REST_Response/json
+	 */
+	public function checkview_get_available_products( WP_REST_Request $request ) {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		global $wpdb;
+		$products               = get_transient( 'checkview_store_products_transient' );
+		$checkview_keyword      = $request->get_param( 'checkview_keyword' );
+		$checkview_product_type = $request->get_param( 'checkview_product_type' );
+		$checkview_keyword      = isset( $checkview_keyword ) ? sanitize_text_field( $checkview_keyword ) : null;
+		$checkview_product_type = isset( $checkview_product_type ) ? sanitize_text_field( $checkview_product_type ) : null;
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+		if ( '' !== $products && null !== $products && false !== $products ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the orders.', 'checkview' ),
+					'body_response' => $products,
+				)
+			);
+			wp_die();
+		}
+		$products = array();
+		if ( ! is_admin() ) {
+			include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		$args = array(
+			'post_type'           => 'product',
+			'post_status'         => 'publish',
+			'ignore_sticky_posts' => 1,
+			'posts_per_page'      => -1,
+			'meta_key'            => 'total_sales',
+			'orderby'             => 'meta_value_num',
+			'order'               => 'DESC',
+		);
+		if ( ! empty( $checkview_keyword ) && null !== $checkview_keyword ) {
+
+			$args['s'] = $checkview_keyword;
+
+		}
+
+		if ( ! empty( $checkview_product_type ) && null !== $checkview_product_type ) {
+
+			$args['tax_query'] = array(
+				array(
+					'taxonomy' => 'product_type',
+					'field'    => 'slug',
+					'terms'    => $checkview_keyword,
+				),
+			);
+
+		}
+		$loop = new WP_Query( $args );
+
+		$products = array();
+
+		if ( ! empty( $loop->posts ) ) {
+
+			foreach ( $loop->posts as $post ) {
+
+				$products[] = array(
+					'id'        => $post->ID,
+					'name'      => $post->post_title,
+					'slug'      => $post->post_name,
+					'url'       => get_permalink( $post->ID ),
+					'thumb_url' => get_the_post_thumbnail_url( $post->ID ),
+				);
+
+			}
+		}
+		if ( $products && ! empty( $products ) && false !== $products && '' !== $products ) {
+			$products['store_url']     = wc_get_page_permalink( 'shop' );
+			$products['cart_url']      = wc_get_cart_url();
+			$products['checkout_url']  = wc_get_checkout_url();
+			$products['myaccount_url'] = wc_get_page_permalink( 'myaccount' );
+			set_transient( 'checkview_store_products_transient', $products, 12 * HOUR_IN_SECONDS );
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the products.', 'checkview' ),
+					'body_response' => $products,
+				)
+			);
+		} else {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'No products to show.', 'checkview' ),
+					'body_response' => $products,
+				)
+			);
+		}
+		wp_die();
+	}
+
+	/**
+	 * Retrieves shipping details.
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function checkview_get_available_shipping_details() {
+
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		global $wpdb;
+		$shipping_details = get_transient( 'checkview_store_shipping_transient' );
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+		if ( '' !== $shipping_details && null !== $shipping_details && false !== $shipping_details ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the shipping details.', 'checkview' ),
+					'body_response' => $shipping_details,
+				)
+			);
+			wp_die();
+		}
+		$country_class                   = new WC_Countries();
+		$country_list                    = $country_class->get_shipping_countries();
+		$default_zone                    = new WC_Shipping_Zone( 0 );
+		$default_zone_formatted_location = $default_zone->get_formatted_location();
+		$default_zone_shipping_methods   = $default_zone->get_shipping_methods();
+
+		$shipping_details = array(
+			'default_methods' => array(),
+			'zones'           => array(),
+		);
+
+		if ( ! empty( $default_zone_shipping_methods ) ) {
+			foreach ( $default_zone_shipping_methods as $method ) {
+				if ( 'yes' === $method->enabled ) {
+					$shipping_details['default_methods'][] = $method->id;
+				}
+			}
+		}
+
+		$shipping_zones = new WC_Shipping_Zones();
+		$zones          = $shipping_zones->get_zones();
+
+		if ( ! empty( $zones ) ) {
+			foreach ( $zones as $zone ) {
+
+				$obj = array(
+					'countries'   => array(),
+					'postalCodes' => array(),
+					'states'      => array(),
+					'methods'     => array(),
+				);
+
+				if ( ! empty( $zone['zone_locations'] ) ) {
+					foreach ( $zone['zone_locations'] as $location ) {
+						if ( 'country' === $location->type ) {
+							$obj['countries'][] = $location->code;
+						} elseif ( 'postcode' === $location->type ) {
+							$obj['postalCodes'][] = $location->code;
+						} elseif ( 'state' === $location->type ) {
+							$p               = explode( ':', $location->code );
+							$obj['states'][] = array(
+								'country' => $p[0],
+								'state'   => $p[1],
+							);
+						}
+					}
+				}
+
+				if ( ! empty( $zone['shipping_methods'] ) ) {
+					foreach ( $zone['shipping_methods'] as $method ) {
+						if ( 'yes' === $method->enabled ) {
+							$obj['methods'][] = $method->id;
+						}
+					}
+				}
+
+				if ( ! empty( $obj['methods'] ) ) {
+					$shipping_details['zones'][] = $obj;
+				}
+			}
+		}
+		if ( $shipping_details && ( isset( $shipping_details['methods'] ) || isset( $shipping_details['zones'] ) ) ) {
+			set_transient( 'checkview_store_shipping_transient', $shipping_details, 12 * HOUR_IN_SECONDS );
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the shipping details.', 'checkview' ),
+					'body_response' => $shipping_details,
+				)
+			);
+		} else {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'No shipping details to show.', 'checkview' ),
+					'body_response' => $shipping_details,
+				)
+			);
+		}
+		wp_die();
+	}
+	/**
+	 * Deletes all the avaiable test results for forms.
+	 *
+	 * @return WP_REST_Response/WP_Error/json
+	 */
+	public function checkview_delete_orders() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+		global $wpdb;
+		$error   = array(
+			'status'  => 'error',
+			'code'    => 400,
+			'message' => esc_html__( 'No Result Found', 'checkview' ),
+		);
+		$results = delete_orders_from_backend();
+
+		if ( $results ) {
+			return new WP_REST_Response(
+				array(
+					'status'   => 200,
+					'response' => esc_html__( 'Successfully removed the results.', 'checkview' ),
+				)
+			);
+			wp_die();
+		} else {
+			return new WP_Error(
+				400,
+				esc_html__( 'Failed to remove the results.', 'checkview' ),
+				$error
+			);
+			wp_die();
+		}
+	}
 	/**
 	 * Retrieves the available forms.
 	 *
