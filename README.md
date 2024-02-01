@@ -227,6 +227,262 @@ if ( is_wp_error( $valid_token ) ) {
     // Proceed with the API call.
 }
 ```
+Certainly! Here is the documentation in `README.md` format:
+
+---
+
+## Overview
+
+The Checkview API provides endpoints to retrieve information about orders, products, shipping details, and to delete orders. It requires a valid JWT token for authentication.
+
+## Endpoints
+
+### 1. Get Available Orders
+
+#### Endpoint
+
+```plaintext
+GET /checkview/v1/store/orders
+```
+
+#### Parameters
+
+- `_checkview_token` (required): JWT token for authentication.
+- `checkview_order_last_modified_since` (optional): Retrieve orders modified since this date.
+- `checkview_order_last_modified_until` (optional): Retrieve orders modified until this date.
+- `checkview_order_id_after` (optional): Retrieve orders with IDs greater than this value.
+- `checkview_order_id_before` (optional): Retrieve orders with IDs less than this value.
+
+#### Usage
+
+```bash
+curl -X GET "https://your-api-domain.com/checkview/v1/store/orders?_checkview_token=your-jwt-token"
+```
+
+#### Returns
+
+- **Status 200:** Successfully retrieved the orders.
+  ```json
+  {
+    "status": 200,
+    "response": "Successfully retrieved the orders.",
+    "body_response": [orders_data]
+  }
+  ```
+
+- **Status 200:** No orders to show.
+  ```json
+  {
+    "status": 200,
+    "response": "No orders to show.",
+    "body_response": []
+  }
+  ```
+
+### 2. Get Available Products
+
+#### Endpoint
+
+```plaintext
+GET /checkview/v1/store/products
+```
+
+#### Parameters
+
+- `_checkview_token` (required): JWT token for authentication.
+- `checkview_keyword` (optional): Keyword to search for products.
+- `checkview_product_type` (optional): Product type to filter results.
+
+#### Usage
+
+```bash
+curl -X GET "https://your-api-domain.com/checkview/v1/store/products?_checkview_token=your-jwt-token"
+```
+
+#### Returns
+
+- **Status 200:** Successfully retrieved the products.
+  ```json
+  {
+    "status": 200,
+    "response": "Successfully retrieved the products.",
+    "body_response": [products_data]
+  }
+  ```
+
+- **Status 200:** No products to show.
+  ```json
+  {
+    "status": 200,
+    "response": "No products to show.",
+    "body_response": []
+  }
+  ```
+
+### 3. Get Available Shipping Details
+
+#### Endpoint
+
+```plaintext
+GET /checkview/v1/store/shippingdetails
+```
+
+#### Parameters
+
+- `_checkview_token` (required): JWT token for authentication.
+
+#### Usage
+
+```bash
+curl -X GET "https://your-api-domain.com/checkview/v1/store/shippingdetails?_checkview_token=your-jwt-token"
+```
+
+#### Returns
+
+- **Status 200:** Successfully retrieved the shipping details.
+  ```json
+  {
+    "status": 200,
+    "response": "Successfully retrieved the shipping details.",
+    "body_response": [shipping_details_data]
+  }
+  ```
+
+- **Status 200:** No shipping details to show.
+  ```json
+  {
+    "status": 200,
+    "response": "No shipping details to show.",
+    "body_response": []
+  }
+  ```
+
+### 4. Delete Orders
+
+#### Endpoint
+
+```plaintext
+DELETE /checkview/v1/store/deleteorders
+```
+
+#### Parameters
+
+- `_checkview_token` (required): JWT token for authentication.
+
+#### Usage
+
+```bash
+curl -X DELETE "https://your-api-domain.com/checkview/v1/store/deleteorders?_checkview_token=your-jwt-token"
+```
+
+#### Returns
+
+- **Status 200:** Successfully removed the results.
+  ```json
+  {
+    "status": 200,
+    "response": "Successfully removed the results."
+  }
+  ```
+
+- **Status 400:** Failed to remove the results.
+  ```json
+  {
+    "status": 400,
+    "response": "Failed to remove the results."
+  }
+  ```
+
+## Validation
+
+### Validate Token
+
+#### Endpoint
+
+```plaintext
+GET /checkview/v1/validate/token
+```
+
+#### Parameters
+
+- `_checkview_token` (required): JWT token for validation.
+
+#### Usage
+
+```bash
+curl -X GET "https://your-api-domain.com/checkview/v1/validate/token?_checkview_token=your-jwt-token"
+```
+
+#### Returns
+
+- **Status 200:** Valid token.
+  ```json
+  {
+    "code": "jwt_auth_valid_token",
+    "data": {
+      "status": 200
+    }
+  }
+  ```
+
+- **Status 400:** Invalid token.
+  ```json
+  {
+    "code": "jwt_auth_invalid_token",
+    "data": {
+      "status": 400
+    }
+  }
+  ```
+
+## Permissions Check
+
+### Checkview Get Items Permissions Check
+
+#### Endpoint
+
+```plaintext
+GET /checkview/v1/permissions/check
+```
+
+#### Parameters
+
+- `_checkview_token` (required): JWT token for validation.
+
+#### Usage
+
+```bash
+curl -X GET "https://your-api-domain.com/checkview/v1/permissions/check?_checkview_token=your-jwt-token"
+```
+
+#### Returns
+
+- **Status 200:** Valid token.
+  ```json
+  {
+    "code": "jwt_auth_valid_token",
+    "data": {
+      "status": 200
+    }
+  }
+  ```
+
+- **Status 400:** Invalid token.
+  ```json
+  {
+    "code": "jwt_auth_invalid_token",
+    "data": {
+      "status": 400
+    }
+  }
+  ```
+
+## Notes
+
+- JWT authentication is required for all endpoints.
+- Results are cached for 12 hours to improve performance.
+
+
 ## Notes
 - The API responses and examples provided are for illustrative purposes. Make sure to replace placeholder values such as `Your_JWT_Token`, form IDs, page IDs, etc., with actual values.
 - This documentation assumes the implementation of the JWT authentication mechanism and the functions `validate_jwt_token` and `must_ssl_url`, which are referenced in the provided code. Ensure that these functions are defined and functional in your implementation.
