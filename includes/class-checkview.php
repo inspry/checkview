@@ -171,14 +171,15 @@ class Checkview {
 		 */
 		require_once plugin_dir_path( __DIR__ ) . 'public/class-checkview-public.php';
 		$this->loader = new Checkview_Loader();
+		// Current Vsitor IP.
+		$visitor_ip = get_visitor_ip();
+		// Check view Bot IP. Todo.
+		$cv_bot_ip = get_api_ip();
+		//$visitor_ip = $cv_bot_ip;
 		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) ) {
-			// Current Vsitor IP.
-			$visitor_ip = get_visitor_ip();
-			// Check view Bot IP. Todo.
-			$cv_bot_ip = get_api_ip();
-			$send_to   = 'noreply@checkview.io';
+			$send_to = 'noreply@checkview.io';
 			// skip if visitor ip not equal to CV Bot IP.
-			if ( $visitor_ip !== $cv_bot_ip ) {
+			if ( $visitor_ip === $cv_bot_ip ) {
 				// if clean talk plugin active whitelist check form API IP. .
 				if ( is_plugin_active( 'cleantalk-spam-protect/cleantalk.php' ) ) {
 					whitelist_api_ip();
@@ -232,7 +233,7 @@ class Checkview {
 				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
 			}
 		}
-		if ( ! is_admin() && class_exists( 'woocommerce' ) ) {
+		if ( ! is_admin() && class_exists( 'woocommerce' ) && $visitor_ip === $cv_bot_ip ) {
 			// Load payment gateway.
 			require_once CHECKVIEW_INC_DIR . 'woocommercehelper/class-checkview-payment-gateway.php';
 
@@ -266,11 +267,11 @@ class Checkview {
 
 			// // Check if Stripe settings exist.
 			// if ( $stripe_settings && isset( $_GET['checkview_use_stripe'] ) ) {
-			// 	// Update the 'testmode' option to enable sandbox mode.
-			// 	$stripe_settings['testmode'] = 'yes';
+			// Update the 'testmode' option to enable sandbox mode.
+			// $stripe_settings['testmode'] = 'yes';
 
-			// 	// Save the updated settings.
-			// 	update_option( 'woocommerce_stripe_settings', $stripe_settings );
+			// Save the updated settings.
+			// update_option( 'woocommerce_stripe_settings', $stripe_settings );
 			// }
 		}
 		$this->loader->add_filter(

@@ -128,10 +128,10 @@ class CheckView_Api {
 			'checkview/v1',
 			'/store/orders',
 			array(
-				'methods'  => 'GET',
-				'callback' => array( $this, 'checkview_get_available_orders' ),
-				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'     => array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'checkview_get_available_orders' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
 					'_checkview_token'                    => array(
 						'required' => true,
 					),
@@ -176,10 +176,10 @@ class CheckView_Api {
 			'checkview/v1',
 			'/store/shippingdetails',
 			array(
-				'methods'  => 'GET',
-				'callback' => array( $this, 'checkview_get_available_shipping_details' ),
-				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'     => array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'checkview_get_available_shipping_details' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
 					'_checkview_token' => array(
 						'required' => true,
 					),
@@ -191,10 +191,10 @@ class CheckView_Api {
 			'checkview/v1',
 			'/store/deleteorders',
 			array(
-				'methods'  => array( 'DELETE', 'PUT', 'GET' ),
-				'callback' => array( $this, 'checkview_delete_orders' ),
-				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'     => array(
+				'methods'             => array( 'DELETE', 'PUT', 'GET' ),
+				'callback'            => array( $this, 'checkview_delete_orders' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
 					'_checkview_token' => array(
 						'required' => true,
 					),
