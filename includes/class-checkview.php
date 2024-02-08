@@ -175,65 +175,65 @@ class Checkview {
 		$visitor_ip = get_visitor_ip();
 		// Check view Bot IP. Todo.
 		$cv_bot_ip = get_api_ip();
-		//$visitor_ip = $cv_bot_ip;
-		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) ) {
+		// $visitor_ip = $cv_bot_ip;
+		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) && isset( $_REQUEST['checkview_test_id'] ) ) {
 			$send_to = 'noreply@checkview.io';
 			// skip if visitor ip not equal to CV Bot IP.
-			if ( $visitor_ip === $cv_bot_ip ) {
-				// if clean talk plugin active whitelist check form API IP. .
-				if ( is_plugin_active( 'cleantalk-spam-protect/cleantalk.php' ) ) {
-					whitelist_api_ip();
-				}
 
-				$cv_test_id = isset( $_REQUEST['checkview_test_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) : '';
+			// if clean talk plugin active whitelist check form API IP. .
+			if ( is_plugin_active( 'cleantalk-spam-protect/cleantalk.php' ) ) {
+				whitelist_api_ip();
+			}
 
-				$referrer_url = sanitize_url( wp_get_raw_referer(), array( 'http', 'https' ) );
+			$cv_test_id = isset( $_REQUEST['checkview_test_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) : '';
+
+			$referrer_url = sanitize_url( wp_get_raw_referer(), array( 'http', 'https' ) );
 				// If not Ajax submission and found test_id.
-				if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'admin-ajax.php' ) === false && '' !== $cv_test_id ) {
-					// Create session for later use when form submit VIA AJAX.
-					create_cv_session( $visitor_ip, $cv_test_id );
-				}
+			if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'admin-ajax.php' ) === false && '' !== $cv_test_id ) {
+				// Create session for later use when form submit VIA AJAX.
+				create_cv_session( $visitor_ip, $cv_test_id );
+			}
 				// If submit VIA AJAX.
-				if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'admin-ajax.php' ) !== false ) {
-					$referer_url_query = wp_parse_url( $referrer_url, PHP_URL_QUERY );
-					$qry_str           = array();
-					parse_str( $referer_url_query, $qry_str );
-					$cv_test_id = $qry_str['checkview_test_id'];
+			if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'admin-ajax.php' ) !== false ) {
+				$referer_url_query = wp_parse_url( $referrer_url, PHP_URL_QUERY );
+				$qry_str           = array();
+				parse_str( $referer_url_query, $qry_str );
+				$cv_test_id = $qry_str['checkview_test_id'];
+			}
+
+			$cv_session = get_cv_session( $visitor_ip, $cv_test_id );
+
+			// stop if session not found.
+			if ( ! empty( $cv_session ) ) {
+
+				$test_key = $cv_session[0]['test_key'];
+
+				$test_form = get_option( $test_key, '' );
+
+				if ( ! empty( $test_form ) ) {
+					$test_form = json_decode( $test_form, true );
 				}
 
-				$cv_session = get_cv_session( $visitor_ip, $cv_test_id );
-
-				// stop if session not found.
-				if ( ! empty( $cv_session ) ) {
-
-					$test_key = $cv_session[0]['test_key'];
-
-					$test_form = get_option( $test_key, '' );
-
-					if ( ! empty( $test_form ) ) {
-						$test_form = json_decode( $test_form, true );
-					}
-
-					if ( isset( $test_form['send_to'] ) && '' !== $test_form['send_to'] ) {
-						$send_to = $test_form['send_to'];
-					}
-
-					if ( ! defined( 'TEST_EMAIL' ) ) {
-						define( 'TEST_EMAIL', $send_to );
-					}
-
-					if ( ! defined( 'CV_TEST_ID' ) ) {
-						define( 'CV_TEST_ID', $cv_test_id );
-					}
-					delete_transient( 'checkview_forms_test_transient' );
+				if ( isset( $test_form['send_to'] ) && '' !== $test_form['send_to'] ) {
+					$send_to = $test_form['send_to'];
 				}
+
 				if ( ! defined( 'TEST_EMAIL' ) ) {
 					define( 'TEST_EMAIL', $send_to );
 				}
-				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
+
+				if ( ! defined( 'CV_TEST_ID' ) ) {
+					define( 'CV_TEST_ID', $cv_test_id );
+				}
+				delete_transient( 'checkview_forms_test_transient' );
 			}
+			if ( ! defined( 'TEST_EMAIL' ) ) {
+				define( 'TEST_EMAIL', $send_to );
+			}
+			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
 		}
-		if ( ! is_admin() && class_exists( 'woocommerce' ) && $visitor_ip === $cv_bot_ip ) {
+
+		if ( ! is_admin() && class_exists( 'woocommerce' ) && isset( $_GET['checkview_test_id'] ) ) {
 			// Load payment gateway.
 			require_once CHECKVIEW_INC_DIR . 'woocommercehelper/class-checkview-payment-gateway.php';
 
