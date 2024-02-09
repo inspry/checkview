@@ -109,7 +109,7 @@ if ( ! function_exists( 'get_publickey' ) ) {
 		// Todo.
 		if ( null === $public_key || '' === $public_key || empty( $public_key ) ) {
 			$response   = wp_remote_get(
-				'https://app-dev.checkview.io/api/helper/public_key',
+				'https://app.checkview.io/api/helper/public_key',
 				array(
 					'method'  => 'GET',
 					'timeout' => 500,
@@ -134,7 +134,7 @@ if ( ! function_exists( 'get_api_ip' ) ) {
 		$ip_address = get_transient( 'checkview_saas_ip_address' );
 		if ( null === $ip_address || '' === $ip_address || empty( $ip_address ) ) {
 			$request = wp_remote_get(
-				'https://app-dev.checkview.io/api/helper/container_ip',
+				'https://app.checkview.io/api/helper/container_ip',
 				array(
 					'method'  => 'GET',
 					'timeout' => 500,
