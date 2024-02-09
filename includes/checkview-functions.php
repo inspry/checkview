@@ -94,6 +94,7 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 				'test_id'    => CV_TEST_ID,
 			)
 		);
+		delete_option( $visitor_ip );
 	}
 }
 if ( ! function_exists( 'get_publickey' ) ) {
