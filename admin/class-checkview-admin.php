@@ -196,7 +196,7 @@ class Checkview_Admin {
 		$cv_bot_ip = get_api_ip();
 		// $visitor_ip = $cv_bot_ip;
 		// skip if visitor ip not equal to CV Bot IP.
-		if ( 'checkview-saas' !== get_option( $visitor_ip ) ) {
+		if ( $visitor_ip !== $cv_bot_ip && 'checkview-saas' !== get_option( $visitor_ip ) && ! isset( $_REQUEST['checkview_test_id'] ) ) {
 			return;
 		}
 
