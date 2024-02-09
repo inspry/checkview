@@ -196,8 +196,8 @@ class Checkview_Admin {
 		$cv_bot_ip = get_api_ip();
 		// $visitor_ip = $cv_bot_ip;
 		// skip if visitor ip not equal to CV Bot IP.
-		if ( $visitor_ip !== $cv_bot_ip ) {
-			// return;
+		if ( 'checkview-saas' !== get_option( $visitor_ip ) ) {
+			return;
 		}
 
 		// if clean talk plugin active whitelist check form API IP.
@@ -213,6 +213,7 @@ class Checkview_Admin {
 		if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'admin-ajax.php' ) === false && '' !== $cv_test_id ) {
 			// Create session for later use when form submit VIA AJAX.
 			create_cv_session( $visitor_ip, $cv_test_id );
+			update_option( $visitor_ip, 'checkview-saas', true );
 		}
 
 		// If submit VIA AJAX.

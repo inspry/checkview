@@ -175,8 +175,9 @@ class Checkview {
 		$visitor_ip = get_visitor_ip();
 		// Check view Bot IP. Todo.
 		$cv_bot_ip = get_api_ip();
+		
 		// $visitor_ip = $cv_bot_ip;
-		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) && isset( $_REQUEST['checkview_test_id'] ) ) {
+		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) && 'checkview-saas' === get_option( $visitor_ip ) ) {
 			$send_to = 'noreply@checkview.io';
 			// skip if visitor ip not equal to CV Bot IP.
 
@@ -192,6 +193,7 @@ class Checkview {
 			if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'admin-ajax.php' ) === false && '' !== $cv_test_id ) {
 				// Create session for later use when form submit VIA AJAX.
 				create_cv_session( $visitor_ip, $cv_test_id );
+				update_option( $visitor_ip, 'checkview-saas', true );
 			}
 				// If submit VIA AJAX.
 			if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'admin-ajax.php' ) !== false ) {
@@ -233,7 +235,7 @@ class Checkview {
 			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
 		}
 
-		if ( ! is_admin() && class_exists( 'woocommerce' ) && isset( $_GET['checkview_test_id'] ) ) {
+		if ( ! is_admin() && class_exists( 'woocommerce' ) && 'checkview-saas' === get_option( $visitor_ip ) ) {
 			// Load payment gateway.
 			require_once CHECKVIEW_INC_DIR . 'woocommercehelper/class-checkview-payment-gateway.php';
 
