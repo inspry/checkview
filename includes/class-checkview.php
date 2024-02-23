@@ -255,6 +255,16 @@ class Checkview {
 				10,
 				3
 			);
+			// Always use Stripe test mode when on dev or staging.
+			add_filter(
+				'option_woocommerce_stripe_settings',
+				function ( $value ) {
+
+					$value['testmode'] = 'yes';
+
+					return $value;
+				}
+			);
 
 		}
 		if ( isset( $_GET['checkview_test_id'] ) && class_exists( 'woocommerce' ) ) {
@@ -275,20 +285,8 @@ class Checkview {
 			// Save the updated settings.
 			// update_option( 'woocommerce_stripe_settings', $stripe_settings );
 			// }
-			// Always use Stripe test mode when on dev or staging.
-			add_filter(
-				'option_woocommerce_stripe_settings',
-				function ( $value ) {
-					if ( ! isset( $_GET['checkview_test_id'] ) ) {
-						return $value;
-					}
-
-					$value['testmode'] = 'yes';
-
-					return $value;
-				}
-			);
 		}
+		
 		$this->loader->add_filter(
 			'plugin_action_links_' . CHECKVIEW_BASE_DIR,
 			$this,
