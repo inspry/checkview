@@ -201,6 +201,21 @@ class CheckView_Api {
 				),
 			)
 		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/activtegateways',
+			array(
+				'methods'             => array( 'PUT', 'GET' ),
+				'callback'            => array( $this, 'checkview_get_active_payment_gateways' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
 	} // end checkview_register_rest_route
 	/**
 	 * Retrieves the available forms.
@@ -646,6 +661,49 @@ class CheckView_Api {
 			return new WP_Error(
 				400,
 				esc_html__( 'Failed to remove the results.', 'checkview' ),
+				$error
+			);
+			wp_die();
+		}
+	}
+
+	/**
+	 * List active payment gateways.
+	 *
+	 * @return WP_REST_Response/WP_Error/json
+	 */
+	public function checkview_get_active_payment_gateways() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+		$active_gateways = get_active_payment_gateways();
+		if ( $active_gateways ) {
+			return new WP_REST_Response(
+				array(
+					'status'   => 200,
+					'response' => esc_html__( 'Successfully retrieved the results.', 'checkview' ),
+					'body'     => $active_gateways,
+				)
+			);
+			wp_die();
+		} else {
+			return new WP_Error(
+				400,
+				esc_html__( 'No active payment gateways.', 'checkview' ),
 				$error
 			);
 			wp_die();

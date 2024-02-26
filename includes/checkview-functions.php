@@ -525,3 +525,21 @@ if ( ! function_exists( 'checkview_is_stripe_test_mode_configured' ) ) {
 		return $test_keys_set;
 	}
 }
+
+if ( ! function_exists( 'get_active_payment_gateways' ) ) {
+	/**
+	 * Retrieve active payment gateways for stripe.
+	 *
+	 * @return array
+	 */
+	function get_active_payment_gateways() {
+		$active_gateways  = array();
+		$payment_gateways = WC_Payment_Gateways::instance()->payment_gateways();
+		foreach ( $payment_gateways as $gateway ) {
+			if ( $gateway->settings['enabled'] == 'yes' ) {
+				$active_gateways[ $gateway->id ] = $gateway->title;
+			}
+		}
+		return $active_gateways;
+	}
+}
