@@ -204,10 +204,55 @@ class CheckView_Api {
 
 		register_rest_route(
 			'checkview/v1',
-			'/store/activtegateways',
+			'/store/activegateways',
 			array(
 				'methods'             => array( 'PUT', 'GET' ),
 				'callback'            => array( $this, 'checkview_get_active_payment_gateways' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/cartdetails',
+			array(
+				'methods'             => array( 'PUT', 'GET' ),
+				'callback'            => array( $this, 'checkview_get_cart_details' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/createtestcustomer',
+			array(
+				'methods'             => array( 'POST' ),
+				'callback'            => array( $this, 'checkview_create_test_customer' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/gettestcustomer',
+			array(
+				'methods'             => array( 'POST' ),
+				'callback'            => array( $this, 'checkview_get_test_customer' ),
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token' => array(
@@ -668,6 +713,85 @@ class CheckView_Api {
 	}
 
 	/**
+	 * List Cart details.
+	 *
+	 * @return WP_REST_Response/WP_Error/json
+	 */
+	public function checkview_get_cart_details() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		$error = array(
+			'status'  => 'error',
+			'code'    => 400,
+			'message' => esc_html__( 'No Result Found', 'checkview' ),
+		);
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+		$url = home_url( 'wp-json/wc/store/v1/cart' ); // WooCommerce cart endpoint.
+		$url = get_rest_url() . 'wc/store/v1/cart';
+		// Retrieve the current cookies.
+		$cookies = array();
+		foreach ( $_COOKIE as $name => $value ) {
+			$cookies[] = $name . '=' . $value;
+		}
+		// Add the cookies to the request headers.
+		if ( ! empty( $cookies ) ) {
+			$headers['Cookie'] = implode( '; ', $cookies );
+		}
+		// Make the remote GET request.
+		$response = wp_remote_get(
+			$url,
+			array(
+				'headers' => $headers,
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			$error_message = $response->get_error_message();
+			return new WP_Error(
+				400,
+				esc_html( $error_message ),
+				$error
+			);
+			wp_die();
+		} else {
+			$body         = wp_remote_retrieve_body( $response );
+			$cart_details = json_decode( $body );
+			// Do something with $cart_details.
+		}
+		if ( $cart_details ) {
+			return new WP_REST_Response(
+				array(
+					'status'   => 200,
+					'response' => esc_html__( 'Successfully retrieved the results.', 'checkview' ),
+					'body'     => $cart_details,
+				)
+			);
+			wp_die();
+		} else {
+			return new WP_Error(
+				400,
+				esc_html__( 'No data found.', 'checkview' ),
+				$error
+			);
+			wp_die();
+		}
+	}
+
+	/**
 	 * List active payment gateways.
 	 *
 	 * @return WP_REST_Response/WP_Error/json
@@ -690,6 +814,11 @@ class CheckView_Api {
 			);
 			wp_die();
 		}
+		$error           = array(
+			'status'  => 'error',
+			'code'    => 400,
+			'message' => esc_html__( 'No Result Found', 'checkview' ),
+		);
 		$active_gateways = get_active_payment_gateways();
 		if ( $active_gateways ) {
 			return new WP_REST_Response(
@@ -704,6 +833,102 @@ class CheckView_Api {
 			return new WP_Error(
 				400,
 				esc_html__( 'No active payment gateways.', 'checkview' ),
+				$error
+			);
+			wp_die();
+		}
+	}
+
+	/**
+	 * Creates the test customer.
+	 *
+	 * @return WP_REST_Response/WP_Error/json
+	 */
+	public function checkview_create_test_customer() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+		$error    = array(
+			'status'  => 'error',
+			'code'    => 400,
+			'message' => esc_html__( 'Failed to create the customer. Try again.', 'checkview' ),
+		);
+		$customer = checkview_create_test_customer();
+		if ( $customer ) {
+			return new WP_REST_Response(
+				array(
+					'status'   => 200,
+					'response' => esc_html__( 'Successfully created the customer.', 'checkview' ),
+					'body'     => 'Credentials will be provided on request',
+				)
+			);
+			wp_die();
+		} else {
+			return new WP_Error(
+				400,
+				esc_html__( 'Failed.', 'checkview' ),
+				$error
+			);
+			wp_die();
+		}
+	}
+
+	/**
+	 * Creates the test customer.
+	 *
+	 * @return WP_REST_Response/WP_Error/json
+	 */
+	public function checkview_get_test_customer_credentials() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+		$error    = array(
+			'status'  => 'error',
+			'code'    => 400,
+			'message' => esc_html__( 'Failed to retrieve the customer. Try again.', 'checkview' ),
+		);
+		$customer = checkview_get_test_credentials();
+		if ( $customer ) {
+			return new WP_REST_Response(
+				array(
+					'status'   => 200,
+					'response' => esc_html__( 'Successfully retrieved the customer.', 'checkview' ),
+					'body'     => $customer,
+				)
+			);
+			wp_die();
+		} else {
+			return new WP_Error(
+				400,
+				esc_html__( 'Failed.', 'checkview' ),
 				$error
 			);
 			wp_die();

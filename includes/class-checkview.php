@@ -286,7 +286,7 @@ class Checkview {
 			// update_option( 'woocommerce_stripe_settings', $stripe_settings );
 			// }
 		}
-		
+
 		$this->loader->add_filter(
 			'plugin_action_links_' . CHECKVIEW_BASE_DIR,
 			$this,
@@ -432,6 +432,21 @@ class Checkview {
 				10,
 				1
 			);
+			$this->loader->add_action(
+				'checkview_rotate_user_credentials',
+				'',
+				'checkview_rotate_test_user_credentials',
+				10,
+			);
+
+			$this->loader->add_filter(
+				'woocommerce_registration_errors',
+				'',
+				'checkview_stop_registration_errors',
+				15,
+				3
+			);
+
 		}
 		$this->loader->add_filter(
 			'option_active_plugins',
