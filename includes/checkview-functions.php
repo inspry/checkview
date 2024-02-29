@@ -544,157 +544,171 @@ if ( ! function_exists( 'get_active_payment_gateways' ) ) {
 		return $active_gateways;
 	}
 }
+if ( ! function_exists( 'checkview_create_test_customer' ) ) {
+	/**
+	 * Creates a new test customer if one does not exist. Avoids flooding the DB with test customers.
+	 *
+	 * @return WC_Customer
+	 */
+	function checkview_create_test_customer() {
+		$customer = checkview_get_test_customer();
 
-/**
- * Creates a new test customer if one does not exist. Avoids flooding the DB with test customers.
- *
- * @return WC_Customer
- */
-function checkview_create_test_customer() {
-	$customer = checkview_get_test_customer();
+		if ( false === $customer ) {
+			$customer = new WC_Customer();
+			$customer->set_username( uniqid( 'checkview_wc_automated_testing_' ) );
+			$customer->set_password( wp_generate_password() );
+			$customer->set_email( 'noreply@checkview.io' );
+			$customer->set_display_name( 'CheckView WooCommerce Automated Testing User' );
 
-	if ( false === $customer ) {
-		$customer = new WC_Customer();
-		$customer->set_username( uniqid( 'checkview_wc_automated_testing_' ) );
-		$customer->set_password( wp_generate_password() );
-		$customer->set_email( 'noreply@checkview.io' );
-		$customer->set_display_name( 'CheckView WooCommerce Automated Testing User' );
+			$customer_id = $customer->save();
 
-		$customer_id = $customer->save();
-
-		update_option( 'checkview_test_user', $customer_id );
-	}
-
-	return $customer;
-}
-
-/**
- * Retrieve the test customer.
- *
- * If the test user does not yet exist, return false.
- *
- * @return WC_Customer|false
- */
-function checkview_get_test_customer() {
-	$customer_id = get_option( 'checkview_test_user', false );
-
-	if ( $customer_id ) {
-		$customer = new WC_Customer( $customer_id );
-
-		// WC_Customer will return a new customer with an ID of 0 if
-		// one could not be found with the given ID.
-		if ( is_a( $customer, 'WC_Customer' ) && 0 !== $customer->get_id() ) {
-			return $customer;
+			update_option( 'checkview_test_user', $customer_id );
 		}
-	}
 
-	return false;
+		return $customer;
+	}
+}
+if ( ! function_exists( 'checkview_get_test_customer' ) ) {
+	/**
+	 * Retrieve the test customer.
+	 *
+	 * If the test user does not yet exist, return false.
+	 *
+	 * @return WC_Customer|false
+	 */
+	function checkview_get_test_customer() {
+		$customer_id = get_option( 'checkview_test_user', false );
+
+		if ( $customer_id ) {
+			$customer = new WC_Customer( $customer_id );
+
+			// WC_Customer will return a new customer with an ID of 0 if
+			// one could not be found with the given ID.
+			if ( is_a( $customer, 'WC_Customer' ) && 0 !== $customer->get_id() ) {
+				return $customer;
+			}
+		}
+
+		return false;
+	}
 }
 
-
-/**
- * Prevent registration errors on WooCommerce registration.
- * This serves to prevent captcha-related errors that break the test-user creation for WCAT.
- *
- * @param WP_Error $errors   Registration errors.
- * @param string   $username Username for the registration.
- * @param string   $email    Email for the registration.
- *
- * @return WP_Error
- */
-function checkview_stop_registration_errors( $errors, $username, $email ) {
-	// Check for our WCAT username and email.
-	if ( false !== strpos( $username, 'checkview_wc_automated_testing_' )
+if ( ! function_exists( 'checkview_stop_registration_errors' ) ) {
+	/**
+	 * Prevent registration errors on WooCommerce registration.
+	 * This serves to prevent captcha-related errors that break the test-user creation for WCAT.
+	 *
+	 * @param WP_Error $errors   Registration errors.
+	 * @param string   $username Username for the registration.
+	 * @param string   $email    Email for the registration.
+	 *
+	 * @return WP_Error
+	 */
+	function checkview_stop_registration_errors( $errors, $username, $email ) {
+		// Check for our WCAT username and email.
+		if ( false !== strpos( $username, 'checkview_wc_automated_testing_' )
 		&& false !== strpos( $email, 'noreply@checkview.io' ) ) {
 			// The default value for this in WC is a WP_Error object, so just reset it.
 			$errors = new WP_Error();
+		}
+		return $errors;
 	}
-	return $errors;
+}
+if ( ! function_exists( 'checkview_get_test_credentials' ) ) {
+	/**
+	 * Get credentials for the test user.
+	 *
+	 * It's important to note that every time this method is called the password for the test user
+	 * will be reset. This is to prevent passwords from being stored in plain-text anywhere.
+	 *
+	 * @return string[] Credentials for the test user.
+	 *
+	 * @type string $email    The test user's email address.
+	 * @type string $username The test user's username.
+	 * @type string $password The newly-generated password for the test user.
+	 */
+	function checkview_get_test_credentials() {
+		add_filter( 'pre_wp_mail', '__return_false', PHP_INT_MAX );
+
+		$password = wp_generate_password();
+		$customer = checkview_get_test_customer();
+
+		if ( ! $customer ) {
+			$customer = checkview_create_test_customer();
+		}
+
+		$customer->set_password( $password );
+		$customer->save();
+
+		// Schedule the password to be rotated 15min from now.
+		checkview_rotate_password_cron();
+
+		return array(
+			'email'    => $customer->get_email(),
+			'username' => $customer->get_username(),
+			'password' => $password,
+		);
+	}
 }
 
-/**
- * Get credentials for the test user.
- *
- * It's important to note that every time this method is called the password for the test user
- * will be reset. This is to prevent passwords from being stored in plain-text anywhere.
- *
- * @return string[] Credentials for the test user.
- *
- * @type string $email    The test user's email address.
- * @type string $username The test user's username.
- * @type string $password The newly-generated password for the test user.
- */
-function checkview_get_test_credentials() {
-	add_filter( 'pre_wp_mail', '__return_false', PHP_INT_MAX );
+if ( ! function_exists( 'checkview_rotate_test_user_credentials' ) ) {
+	/**
+	 * Rotate the credentials for the test customer.
+	 *
+	 * This method should be called some amount of time after credentials have been shared with the
+	 * test runner.
+	 */
+	function checkview_rotate_test_user_credentials() {
+		add_filter( 'pre_wp_mail', '__return_false', PHP_INT_MAX );
 
-	$password = wp_generate_password();
-	$customer = checkview_get_test_customer();
+		$customer = checkview_get_test_customer();
 
-	if ( ! $customer ) {
-		$customer = checkview_create_test_customer();
+		if ( ! $customer ) {
+			return;
+		}
+
+		$customer->set_password( wp_generate_password() );
+		$customer->save();
 	}
-
-	$customer->set_password( $password );
-	$customer->save();
-
-	// Schedule the password to be rotated 15min from now.
-	checkview_rotate_password_cron();
-
-	return array(
-		'email'    => $customer->get_email(),
-		'username' => $customer->get_username(),
-		'password' => $password,
-	);
 }
 
-/**
- * Rotate the credentials for the test customer.
- *
- * This method should be called some amount of time after credentials have been shared with the
- * test runner.
- */
-function checkview_rotate_test_user_credentials() {
-	add_filter( 'pre_wp_mail', '__return_false', PHP_INT_MAX );
-
-	$customer = checkview_get_test_customer();
-
-	if ( ! $customer ) {
-		return;
+if ( ! function_exists( 'checkview_rotate_password_cron' ) ) {
+	/**
+	 * Schedules Cron for 15 minutes to update the User Password.
+	 *
+	 * @return void
+	 */
+	function checkview_rotate_password_cron() {
+		wp_schedule_single_event( time() + 15 * MINUTE_IN_SECONDS, 'checkview_rotate_user_credentials' );
 	}
-
-	$customer->set_password( wp_generate_password() );
-	$customer->save();
 }
+if ( ! function_exists( 'get_woocommerce_cart_details' ) ) {
+	/**
+	 * Return cart details.
+	 *
+	 * @return bool/array
+	 */
+	function get_woocommerce_cart_details() {
+		$url             = get_rest_url() . 'wc/v3/cart';
+		$consumer_key    = 'ck_c0e08bbe91c3b0b85940b3005fd62782a7d91e67';
+		$consumer_secret = 'cs_7e077b6af86eb443b9d2f0d6ca5f1fa986be7ee6';
 
-/**
- * Schedules Cron for 15 minutes to update the User Password.
- *
- * @return void
- */
-function checkview_rotate_password_cron() {
-	wp_schedule_single_event( time() + 15 * MINUTE_IN_SECONDS, 'checkview_rotate_user_credentials' );
-}
+		$response = wp_remote_get(
+			$url,
+			array(
+				'headers' => array(
+					'Authorization' => 'Basic ' . base64_encode( $consumer_key . ':' . $consumer_secret ),
+				),
+			)
+		);
 
-function get_woocommerce_cart_details() {
-	$url             = get_rest_url() . 'wc/v3/cart';
-	$consumer_key    = 'ck_c0e08bbe91c3b0b85940b3005fd62782a7d91e67';
-	$consumer_secret = 'cs_7e077b6af86eb443b9d2f0d6ca5f1fa986be7ee6';
+		if ( is_wp_error( $response ) ) {
+			return false; // Error occurred.
+		}
 
-	$response = wp_remote_get(
-		$url,
-		array(
-			'headers' => array(
-				'Authorization' => 'Basic ' . base64_encode( $consumer_key . ':' . $consumer_secret ),
-			),
-		)
-	);
+		$body         = wp_remote_retrieve_body( $response );
+		$cart_details = json_decode( $body, true );
 
-	if ( is_wp_error( $response ) ) {
-		return false; // Error occurred
+		return $cart_details;
 	}
-
-	$body         = wp_remote_retrieve_body( $response );
-	$cart_details = json_decode( $body, true );
-
-	return $cart_details;
 }

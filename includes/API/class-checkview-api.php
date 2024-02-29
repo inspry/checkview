@@ -261,6 +261,21 @@ class CheckView_Api {
 				),
 			)
 		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/getstorelocations',
+			array(
+				'methods'             => array( 'GET' ),
+				'callback'            => array( $this, 'checkview_get_store_locations' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
 	} // end checkview_register_rest_route
 	/**
 	 * Retrieves the available forms.
@@ -934,6 +949,60 @@ class CheckView_Api {
 			wp_die();
 		}
 	}
+
+	/**
+	 * Retrieves the store locations.
+	 *
+	 * @return WP_REST_Response/json
+	 */
+	public function checkview_get_store_locations() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+		$error             = array(
+			'status'  => 'error',
+			'code'    => 400,
+			'message' => esc_html__( 'Failed to retrieve the customer. Try again.', 'checkview' ),
+		);
+		$selling_locations = WC()->countries->get_allowed_countries();
+
+		// Get selling locations.
+		$shipping_locations                    = WC()->countries->get_shipping_countries();
+		$store_locations['selling_locations']  = $selling_locations;
+		$store_locations['shipping_locations'] = $shipping_locations;
+		if ( ! empty( $selling_locations_options ) || ! empty( $shipping_locations ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'   => 200,
+					'response' => esc_html__( 'Successfully retrieved the store locations.', 'checkview' ),
+					'body'     => $store_locations,
+				)
+			);
+			wp_die();
+		} else {
+			return new WP_Error(
+				400,
+				esc_html__( 'Failed to retrieve the store locations.', 'checkview' ),
+				$error
+			);
+			wp_die();
+		}
+	}
+
 	/**
 	 * Retrieves the available forms.
 	 *

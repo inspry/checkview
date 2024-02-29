@@ -173,7 +173,20 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 					</label>
 					</td>
 				</tr>
-				
+
+				<tr valign="top">
+					<th scope="row" >
+						<label for="checkview_get_store_locations">
+							<?php esc_html_e( 'Get store locations', 'checkview' ); ?>
+						</label>
+						<p class="make-lib-description"><?php esc_html_e( 'Use this endpoint to get store locations.', 'checkview' ); ?></p>
+					</th>
+					<td class="checkview-make-library-box">
+					<label  for="checkview_get_store_locations">
+						<p class="make-lib-description"><?php echo esc_url_raw( get_rest_url() . 'checkview/v1/store/getstorelocations' ); ?></p>
+					</label>
+					</td>
+				</tr>
 				<?php do_action( 'checkview_api_settings', $checkview_options ); ?>
 			</tbody>
 		</table>
