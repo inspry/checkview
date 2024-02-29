@@ -216,6 +216,12 @@ class Checkview_Admin {
 			update_option( $visitor_ip, 'checkview-saas', true );
 		}
 
+		if ( isset( $_REQUEST['checkview_use_stripe'] ) ) {
+			update_option( $visitor_ip . 'use_stripe', 'yes', true );
+		} else {
+			update_option( $visitor_ip . 'use_stripe', 'no', true );
+		}
+
 		// If submit VIA AJAX.
 		if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'admin-ajax.php' ) !== false ) {
 			$referer_url_query = wp_parse_url( $referrer_url, PHP_URL_QUERY );

@@ -236,18 +236,30 @@ class Checkview {
 		}
 
 		if ( ! is_admin() && class_exists( 'woocommerce' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) ) {
-			// Load payment gateway.
-			require_once CHECKVIEW_INC_DIR . 'woocommercehelper/class-checkview-payment-gateway.php';
+			if ( 'yes' === get_option( $visitor_ip . 'use_stripe' ) || isset( $_GET['checkview_use_stripe'] ) ) {
+				// Always use Stripe test mode when on dev or staging.
+				add_filter(
+					'option_woocommerce_stripe_settings',
+					function ( $value ) {
 
-			// Add fake payment gateway for checkview tests.
-			$this->loader->add_filter(
-				'woocommerce_payment_gateways',
-				$this,
-				'checkview_add_payment_gateway',
-				11,
-				1
-			);
+						$value['testmode'] = 'yes';
 
+						return $value;
+					}
+				);
+			} else {
+				// Load payment gateway.
+				require_once CHECKVIEW_INC_DIR . 'woocommercehelper/class-checkview-payment-gateway.php';
+
+				// Add fake payment gateway for checkview tests.
+				$this->loader->add_filter(
+					'woocommerce_payment_gateways',
+					$this,
+					'checkview_add_payment_gateway',
+					11,
+					1
+				);
+			}
 			$this->loader->add_action(
 				'woocommerce_order_status_changed',
 				'',
@@ -255,19 +267,8 @@ class Checkview {
 				10,
 				3
 			);
-			// Always use Stripe test mode when on dev or staging.
-			add_filter(
-				'option_woocommerce_stripe_settings',
-				function ( $value ) {
-
-					$value['testmode'] = 'yes';
-
-					return $value;
-				}
-			);
-
 		}
-		if ( isset( $_GET['checkview_test_id'] ) && class_exists( 'woocommerce' ) ) {
+		if ( isset( $_GET['checkview_test_id'] ) && ! isset( $_GET['checkview_use_stripe'] ) && class_exists( 'woocommerce' ) ) {
 
 			// Registers WooCommerce Blocks integration.
 			$this->loader->add_action(

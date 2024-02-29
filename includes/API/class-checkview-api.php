@@ -236,12 +236,12 @@ class CheckView_Api {
 			'checkview/v1',
 			'/store/createtestcustomer',
 			array(
-				'methods'  => array( 'POST' ),
-				'callback' => array( $this, 'checkview_create_test_customer' ),
-				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'     => array(
+				'methods'             => array( 'POST' ),
+				'callback'            => array( $this, 'checkview_create_test_customer' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
 					'_checkview_token' => array(
-						// 'required' => true,
+						'required' => true,
 					),
 				),
 			)

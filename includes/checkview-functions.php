@@ -95,6 +95,7 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 			)
 		);
 		delete_option( $visitor_ip );
+		delete_option( $visitor_ip . 'use_stripe' );
 	}
 }
 if ( ! function_exists( 'get_publickey' ) ) {
