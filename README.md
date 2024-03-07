@@ -393,9 +393,9 @@ curl -X DELETE "https://your-api-domain.com/checkview/v1/store/deleteorders?_che
   }
   ```
 
-### 5. `checkview_register_rest_route`
+### 5. `checkview_get_available_shipping_details`
 
-Registers REST API routes for forms and related data.
+Get shipping details and related data.
 
 - **Endpoint**: `/checkview/v1/store/shippingdetails`
 - **HTTP Method**: GET
