@@ -233,7 +233,7 @@ Certainly! Here is the documentation in `README.md` format:
 
 ## Overview
 
-The Checkview API provides endpoints to retrieve information about orders, products, shipping details, and to delete orders. It requires a valid JWT token for authentication.
+The Checkview API provides endpoints to retrieve information about orders, products, shipping details, and to delete orders. It requires a valid JWT token for authentication. You will have to provide these two params in url checkview_use_stripe & checkview_test_id. If checkview_use_stripe param is set it will turn stripe test mod on otherwise checkview custom payment gateway will be visible.
 
 ## Endpoints
 
@@ -515,13 +515,7 @@ Retrieves store locations.
   - **Status 200**: Successfully retrieved store locations.
   - **Status 400**: Failed to retrieve store locations.
 ```json
-  {
-    "status": 200,
-    "response": "Successfully retrieved store locations.",
-    "body_response": {
-                    "AL": "Albania"
-                  }
-  }
+  {"status":200,"response":"Successfully retrieved the store locations.","body":{"selling_locations":{"AL":"Albania","AS":"American Samoa"},"shipping_locations":{"AL":"Albania","AS":"American Samoa"}}}
   ```
 ### Validate Token
 
