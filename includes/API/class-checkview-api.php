@@ -276,6 +276,21 @@ class CheckView_Api {
 				),
 			)
 		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/getstoretestproduct',
+			array(
+				'methods'             => array( 'GET' ),
+				'callback'            => array( $this, 'checkview_get_store_test_product' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
 	} // end checkview_register_rest_route
 	/**
 	 * Retrieves the available forms.
@@ -997,6 +1012,55 @@ class CheckView_Api {
 			return new WP_Error(
 				400,
 				esc_html__( 'Failed to retrieve the store locations.', 'checkview' ),
+				$error
+			);
+			wp_die();
+		}
+	}
+
+	/**
+	 * Retrieves the store's test product details.
+	 *
+	 * @return WP_REST_Response/json
+	 */
+	public function checkview_get_store_test_product() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+		$error                                = array(
+			'status'  => 'error',
+			'code'    => 400,
+			'message' => esc_html__( 'Failed to retrieve the test product. Try again.', 'checkview' ),
+		);
+		$product                              = checkview_get_test_product();
+		$product_details['checkview_product'] = $product ? get_permalink( $product->get_id() ) : false;
+		if ( ! empty( $product_details ) && false !== $product_details['checkview_product'] ) {
+			return new WP_REST_Response(
+				array(
+					'status'   => 200,
+					'response' => esc_html__( 'Successfully retrieved the test product.', 'checkview' ),
+					'body'     => $product_details,
+				)
+			);
+			wp_die();
+		} else {
+			return new WP_Error(
+				400,
+				esc_html__( 'Failed to retrieve the test product.', 'checkview' ),
 				$error
 			);
 			wp_die();

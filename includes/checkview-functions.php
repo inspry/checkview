@@ -712,3 +712,136 @@ if ( ! function_exists( 'get_woocommerce_cart_details' ) ) {
 		return $cart_details;
 	}
 }
+if ( ! function_exists( 'checkview_get_test_product' ) ) {
+	/**
+	 * Retrieves details for test product.
+	 *
+	 * @return WC_Product/bool
+	 */
+	function checkview_get_test_product() {
+		$product_id = get_option( 'checkview_woo_product_id' );
+
+		if ( $product_id ) {
+			try {
+				$product = new WC_Product( $product_id );
+
+				// In case WC_Product returns a new customer with an ID of 0 if
+				// one could not be found with the given ID.
+				if ( is_a( $product, 'WC_Product' ) && 0 !== $product->get_id() ) {
+					return $product;
+				}
+			// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			} catch ( \Exception $e ) {
+				// The given test product was not valid, so we should fallback to the
+				// default response if one was not found in the first place.
+			}
+		}
+
+		return false;
+	}
+}
+if ( ! function_exists( 'checkview_create_test_product' ) ) {
+	/**
+	 * Creates test product if one does not exist. Avoids flooding the DB with test products.
+	 *
+	 * @return WC_Product
+	 */
+	function checkview_create_test_product() {
+		$product = checkview_get_test_product();
+
+		if ( ! $product ) {
+			$product = new WC_Product();
+			$product->set_status( 'publish' );
+			$product->set_name( 'WooCommerce Automated Testing Product' );
+			$product->set_short_description( 'An example product for automated testing.' );
+			$product->set_description( 'This is a placeholder product used for automatically testing your WooCommerce store. It\'s designed to be hidden from all customers.' );
+			$product->set_regular_price( '1.00' );
+			$product->set_price( '1.00' );
+			$product->set_stock_status( 'instock' );
+			$product->set_stock_quantity( 5 );
+			$product->set_catalog_visibility( 'hidden' );
+
+			// This filter is added here to prevent the WCAT test product from being publicized on creation.
+			add_filter( 'publicize_should_publicize_published_post', '__return_false' );
+
+			$product_id = $product->save();
+			update_option( 'checkview_woo_product_id', $product_id, true );
+		}
+
+		return $product;
+	}
+}
+
+if ( ! function_exists( 'checkview_seo_hide_product_from_sitemap' ) ) {
+	/**
+	 * Hide test product from Yoast sitemap. Takes $excluded_post_ids if any set, adds our $product_id to the array and
+	 * returns the array.
+	 *
+	 * @param array $excluded_posts_ids post id's to be excluded.
+	 *
+	 * @return array[]
+	 */
+	function checkview_seo_hide_product_from_sitemap( $excluded_posts_ids = array() ) {
+		$product_id = get_option( 'checkview_woo_product_id' );
+
+		if ( $product_id ) {
+			array_push( $excluded_posts_ids, $product_id );
+		}
+
+		return $excluded_posts_ids;
+	}
+}
+
+if ( ! function_exists( 'checkview_hide_product_from_sitemap' ) ) {
+	/**
+	 * Hide test product from WordPress' sitemap.
+	 *
+	 * @param array $args Query args.
+	 *
+	 * @return array
+	 */
+	function checkview_hide_product_from_sitemap( $args ) {
+		$product_id = get_option( 'checkview_woo_product_id' );
+
+		if ( $product_id ) {
+			$args['post__not_in']   = isset( $args['post__not_in'] ) ? $args['post__not_in'] : array();
+			$args['post__not_in'][] = $product_id;
+		}
+
+		return $args;
+	}
+}
+
+if ( ! function_exists( 'checkview_seo_hide_product_from_jetpack' ) ) {
+	/**
+	 * Hide test product from JetPack's Publicize module and from Jetpack Social.
+	 *
+	 * @param bool     $should_publicize bool type.
+	 * @param \WP_Post $post WordPress post object.
+	 *
+	 * @return bool|array
+	 */
+	function checkview_seo_hide_product_from_jetpack( $should_publicize, $post ) {
+		if ( $post ) {
+			$product_id = get_option( 'checkview_woo_product_id' );
+
+			if ( $product_id === $post->ID ) {
+				return false;
+			}
+		}
+
+		return $should_publicize;
+	}
+}
+if ( ! function_exists( 'checkview_no_index_for_test_product' ) ) {
+	/**
+	 * Add noindex to the test product.
+	 */
+	function checkview_no_index_for_test_product() {
+		$product_id = get_option( 'checkview_woo_product_id' );
+
+		if ( is_int( $product_id ) && 0 !== $product_id && is_single( $product_id ) ) {
+			echo '<meta name="robots" content="noindex, nofollow"/>';
+		}
+	}
+}

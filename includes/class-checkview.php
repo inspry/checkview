@@ -461,6 +461,36 @@ class Checkview {
 			$plugin_admin,
 			'checkview_init_current_test'
 		);
+		// woocommerce.
+		$this->loader->add_action(
+			'init',
+			'',
+			'checkview_create_test_product',
+		);
+
+		$this->loader->add_action(
+			'wp_head',
+			'',
+			'checkview_create_test_product',
+		);
+
+		$this->loader->add_filter(
+			'wpseo_exclude_from_sitemap_by_post_ids',
+			'',
+			'checkview_seo_hide_product_from_sitemap',
+		);
+
+		$this->loader->add_filter(
+			'wp_sitemaps_posts_query_args',
+			'',
+			'checkview_hide_product_from_sitemap',
+		);
+
+		$this->loader->add_filter(
+			'publicize_should_publicize_published_post',
+			'',
+			'checkview_seo_hide_product_from_jetpack',
+		);
 	}
 
 	/**
