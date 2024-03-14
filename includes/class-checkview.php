@@ -260,6 +260,21 @@ class Checkview {
 					1
 				);
 			}
+			// Make the test product visible in the catalog.
+			add_filter(
+				'woocommerce_product_is_visible',
+				function ( $visible, $product_id ) {
+					$product = checkview_get_test_product();
+
+					if ( ! $product ) {
+						return false;
+					}
+
+					return $product_id === $product->get_id() ? true : $visible;
+				},
+				PHP_INT_MAX,
+				2
+			);
 			$this->loader->add_action(
 				'woocommerce_order_status_changed',
 				'',
@@ -471,7 +486,7 @@ class Checkview {
 		$this->loader->add_action(
 			'wp_head',
 			'',
-			'checkview_create_test_product',
+			'checkview_no_index_for_test_product',
 		);
 
 		$this->loader->add_filter(
