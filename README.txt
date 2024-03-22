@@ -14,37 +14,43 @@ CheckView is the friendly WordPress automated testing platform for everyone, fro
 == Description ==
 CheckView is the leading fully automated testing platform  to swiftly identify and resolve any issues with your WordPress forms and WooCommerce checkout. Enjoy the peace of mind that comes with knowing your WordPress site is always optimized for maximum sales performance.
 
-* = Comprehensive Testing: =
-    Utilize real browser testing on your site's forms and Woo checkout processes, ensuring you do not lose sales from broken forms or checkouts.
+= Comprehensive Testing: =
 
-* = Automated Scheduling: =
-    Customize test schedules to fit your needs and stay informed with notifications through various channels, including detailed video recordings of tests and pinpointing where and why failures occur.
+   * Utilize real browser testing on your site's forms and Woo checkout processes, ensuring you do not lose sales from broken forms or checkouts.
 
-* = One-Click Integration: =
-    Effortlessly connect CheckView to your WordPress or WooCommerce with a single click with no manual steps to setup or Chrome extensions to install.
+= Automated Scheduling: =
 
-* = Customizable Test Flows: =
-    Tailor your testing to match the specifics of your WordPress form plugin or WooCommerce setup, including what URLs to test and custom theme adjustments.
+   * Customize test schedules to fit your needs and stay informed with notifications through various channels, including detailed video recordings of tests and pinpointing where and why failures occur.
 
-* = Privacy-Focused: =
-    After each test, CheckView ensures any collected data is immediately purged, preserving the integrity of your form submissions and order data.
+= One-Click Integration: =
 
-* = Account and Pricing: =
-    Currently in beta, CheckView invites agencies and website owners to join for free with detailed pricing to be announced soon.
+   * Effortlessly connect CheckView to your WordPress or WooCommerce with a single click with no manual steps to setup or Chrome extensions to install.
+
+= Customizable Test Flows: =
+
+   * Tailor your testing to match the specifics of your WordPress form plugin or WooCommerce setup, including what URLs to test and custom theme adjustments.
+
+= Privacy-Focused: =
+
+   * After each test, CheckView ensures any collected data is immediately  purged, preserving the integrity of your form submissions and order data.
+
+= Account and Pricing: =
+
+   * Currently in beta, CheckView invites agencies and website owners to join for free with detailed pricing to be announced soon.
 
     Requires a separate account at checkview.io for full platform access.
 
-* = Data Sharing Commitment: =
+= Data Sharing Commitment: = 
 
-    - Upon integrating your account, CheckView is dedicated to handling the  following data with the highest standards of privacy and security:
+   *  Upon integrating your account, CheckView is dedicated to handling the  following data with the highest standards of privacy and security:
 
-    - General WordPress installation details and plugin inventory.
+       -  General WordPress installation details and plugin inventory.
 
-    - Metadata for orders, carts, and forms, ensuring no personal data is compromised.
+       -  Metadata for orders, carts, and forms, ensuring no personal data is compromised.
 
-    - Product names and images, used solely for enhancing checkout testing accuracy.
+       -  Product names and images, used solely for enhancing checkout testing accuracy.
 
-    - Embrace a new standard of WordPress testing with CheckView, where cutting-edge technology meets user-friendly WordPress integration.
+       - Embrace a new standard of WordPress testing with CheckView, where cutting-edge technology meets user-friendly WordPress integration.
 
 == Installation ==
 
@@ -61,8 +67,8 @@ e.g.
 
 == Screenshots ==
 
-1. CheckView settings.
-2. CheckView API endpoints.
+1. CheckView test flow.
+2. CheckView test flow results.
 3. CheckView API logs.
 
 == Changelog ==
