@@ -1,10 +1,11 @@
 === CheckView Automated WordPress Testing ===
 Contributors:
 Donate link: https://checkview.io/
-Tags: forms, automatted testing, ninja-froms,wp-forms,cf7,gforms
+Tags: forms, automatted-testing, ninja-forms,wp-forms,cf7,gforms
 Requires at least: 5.0.1
 Tested up to: 6.5
 Stable tag: 1.0.0
+Requires PHP: 7.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
