@@ -153,6 +153,24 @@ class CheckView_Api {
 
 		register_rest_route(
 			'checkview/v1',
+			'/store/order',
+			array(
+				'methods'  => 'GET',
+				'callback' => array( $this, 'checkview_get_available_order_details' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'     => array(
+					'_checkview_token'   => array(
+						'required' => false,
+					),
+					'checkview_order_id' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'checkview/v1',
 			'/store/products',
 			array(
 				'methods'             => 'GET',
@@ -293,7 +311,7 @@ class CheckView_Api {
 		);
 	} // end checkview_register_rest_route
 	/**
-	 * Retrieves the available forms.
+	 * Retrieves the available orders.
 	 *
 	 * @param WP_REST_Request $request wp request object.
 	 * @return WP_REST_Response/json
@@ -458,6 +476,190 @@ class CheckView_Api {
 					'status'        => 200,
 					'response'      => esc_html__( 'No orders to show.', 'checkview' ),
 					'body_response' => $orders,
+				)
+			);
+		}
+		wp_die();
+	}
+
+	/**
+	 * Retrieves the available order details bby id.
+	 *
+	 * @param WP_REST_Request $request wp request object.
+	 * @return WP_REST_Response/json
+	 */
+	public function checkview_get_available_order_details( WP_REST_Request $request ) {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		global $wpdb;
+		$checkview_order_id = $request->get_param( 'checkview_order_id' );
+		$checkview_order_id = isset( $checkview_order_id ) ? intval( $checkview_order_id ) : '';
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+
+		$order_details = array();
+		if ( ! is_admin() ) {
+			include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		// Get the order object.
+		$order = wc_get_order( $checkview_order_id );
+
+		$order_details = array();
+
+		if ( $order ) {
+			// Get order key.
+			$order_details['order_key'] = $order->get_order_key();
+
+			// Get Order Totals.
+			$order_details['formatted_order_total']   = $order->get_formatted_order_total();
+			$order_details['cart_tax']                = $order->get_cart_tax();
+			$order_details['currency']                = $order->get_currency();
+			$order_details['discount_tax']            = $order->get_discount_tax();
+			$order_details['discount_to_display']     = $order->get_discount_to_display();
+			$order_details['discount_total']          = $order->get_discount_total();
+			$order_details['total_fees']              = $order->get_total_fees();
+			$order_details['shipping_tax']            = $order->get_shipping_tax();
+			$order_details['shipping_total']          = $order->get_shipping_total();
+			$order_details['subtotal']                = $order->get_subtotal();
+			$order_details['subtotal_to_display']     = $order->get_subtotal_to_display();
+			$order_details['tax_totals']              = $order->get_tax_totals();
+			$order_details['taxes']                   = $order->get_taxes();
+			$order_details['total']                   = $order->get_total();
+			$order_details['total_discount']          = $order->get_total_discount();
+			$order_details['total_tax']               = $order->get_total_tax();
+			$order_details['total_refunded']          = $order->get_total_refunded();
+			$order_details['total_tax_refunded']      = $order->get_total_tax_refunded();
+			$order_details['total_shipping_refunded'] = $order->get_total_shipping_refunded();
+			$order_details['item_count_refunded']     = $order->get_item_count_refunded();
+
+			// Get and Loop Over Order Items.
+			foreach ( $order->get_items() as $item_id => $item ) {
+				$product_id      = $item->get_product_id();
+				$variation_id    = $item->get_variation_id();
+				$product         = $item->get_product(); // see link above to get $product info.
+				$product_name    = $item->get_name();
+				$quantity        = $item->get_quantity();
+				$subtotal        = $item->get_subtotal();
+				$total           = $item->get_total();
+				$tax             = $item->get_subtotal_tax();
+				$tax_class       = $item->get_tax_class();
+				$tax_status      = $item->get_tax_status();
+				$allmeta         = $item->get_meta_data();
+				$somemeta        = $item->get_meta( '_whatever', true );
+				$item_type       = $item->get_type(); // e.g. "line_item", "fee".
+				$items_details[] = array(
+					'product_id'   => $product_id,
+					'variation_id' => $variation_id,
+					'product_name' => $product_name,
+					'quantity'     => $quantity,
+					'subtotal'     => $subtotal,
+					'total'        => $total,
+					'tax'          => $tax,
+					'tax_class'    => $tax_class,
+					'tax_status'   => $tax_status,
+					'allmeta'      => $allmeta,
+					'somemeta'     => $somemeta,
+					'item_type'    => $item_type,
+				);
+			}
+			$order_details['items']              = $items_details;
+			$order_details['downloadable_items'] = $order->get_downloadable_items();
+			$order_details['coupon_codes']       = $order->get_coupon_codes();
+			// Get Order Shipping.
+			$order_details['shipping_method']     = $order->get_shipping_method();
+			$order_details['shipping_methods']    = $order->get_shipping_methods();
+			$order_details['shipping_to_display'] = $order->get_shipping_to_display();
+
+			// Get Order Dates.
+			$order_details['date_created']   = $order->get_date_created();
+			$order_details['date_modified']  = $order->get_date_modified();
+			$order_details['date_completed'] = $order->get_date_completed();
+			$order_details['date_paid']      = $order->get_date_paid();
+
+			// Get Order User, Billing & Shipping Addresses.
+			$order_details['customer_id']                  = $order->get_customer_id();
+			$order_details['user_id']                      = $order->get_user_id();
+			$order_details['user']                         = $order->get_user();
+			$order_details['customer_ip_address']          = $order->get_customer_ip_address();
+			$order_details['customer_user_agent']          = $order->get_customer_user_agent();
+			$order_details['created_via']                  = $order->get_created_via();
+			$order_details['customer_note']                = $order->get_customer_note();
+			$order_details['billing_first_name']           = $order->get_billing_first_name();
+			$order_details['billing_last_name']            = $order->get_billing_last_name();
+			$order_details['billing_company']              = $order->get_billing_company();
+			$order_details['billing_address_1']            = $order->get_billing_address_1();
+			$order_details['billing_address_2']            = $order->get_billing_address_2();
+			$order_details['billing_city']                 = $order->get_billing_city();
+			$order_details['billing_state']                = $order->get_billing_state();
+			$order_details['billing_postcode']             = $order->get_billing_postcode();
+			$order_details['billing_country']              = $order->get_billing_country();
+			$order_details['billing_email']                = $order->get_billing_email();
+			$order_details['billing_phone']                = $order->get_billing_phone();
+			$order_details['shipping_first_name']          = $order->get_shipping_first_name();
+			$order_details['shipping_last_name']           = $order->get_shipping_last_name();
+			$order_details['shipping_company']             = $order->get_shipping_company();
+			$order_details['shipping_address_1']           = $order->get_shipping_address_1();
+			$order_details['shipping_address_2']           = $order->get_shipping_address_2();
+			$order_details['shipping_city']                = $order->get_shipping_city();
+			$order_details['shipping_state']               = $order->get_shipping_state();
+			$order_details['shipping_postcode']            = $order->get_shipping_postcode();
+			$order_details['shipping_country']             = $order->get_shipping_country();
+			$order_details['address']                      = $order->get_address();
+			$order_details['shipping_address_map_url']     = $order->get_shipping_address_map_url();
+			$order_details['formatted_billing_full_name']  = $order->get_formatted_billing_full_name();
+			$order_details['formatted_shipping_full_name'] = $order->get_formatted_shipping_full_name();
+			$order_details['formatted_billing_address']    = $order->get_formatted_billing_address();
+			$order_details['formatted_shipping_address']   = $order->get_formatted_shipping_address();
+
+			// Get Order Payment Details.
+			$order_details['payment_method']       = $order->get_payment_method();
+			$order_details['payment_method_title'] = $order->get_payment_method_title();
+			$order_details['transaction_id']       = $order->get_transaction_id();
+
+			// Get Order URLs.
+			$order_details['checkout_payment_url']        = $order->get_checkout_payment_url();
+			$order_details['checkout_order_received_url'] = $order->get_checkout_order_received_url();
+			$order_details['cancel_order_url']            = $order->get_cancel_order_url();
+			$order_details['cancel_order_url_raw']        = $order->get_cancel_order_url_raw();
+			$order_details['cancel_endpoint']             = $order->get_cancel_endpoint();
+			$order_details['view_order_url']              = $order->get_view_order_url();
+			$order_details['edit_order_url']              = $order->get_edit_order_url();
+
+			// Get Order Status.
+			$order_details['status'] = $order->get_status();
+
+			// Get Thank You Page URL.
+			$order_details['thank_you_page_url'] = $order->get_checkout_order_received_url();
+		}
+
+		if ( $order_details && ! empty( $order_details ) && false !== $order_details && '' !== $order_details ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the order details.', 'checkview' ),
+					'body_response' => $order_details,
+				)
+			);
+		} else {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'No order details to show.', 'checkview' ),
+					'body_response' => $order_details,
 				)
 			);
 		}

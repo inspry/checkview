@@ -483,6 +483,13 @@ class Checkview {
 			'checkview_create_test_product',
 		);
 
+		// woocommerce.
+		$this->loader->add_action(
+			'init',
+			'',
+			'checkview_create_test_customer',
+		);
+
 		$this->loader->add_action(
 			'wp_head',
 			'',
