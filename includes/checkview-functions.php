@@ -845,3 +845,33 @@ if ( ! function_exists( 'checkview_no_index_for_test_product' ) ) {
 		}
 	}
 }
+
+if ( ! function_exists( 'add_states_to_locations' ) ) {
+	/**
+	 * Function to add states to each country in a given locations array.
+	 *
+	 * @param [array] $locations countries.
+	 * @return array
+	 */
+	function checkview_add_states_to_locations( $locations ) {
+		$locations_with_states = array();
+		foreach ( $locations as $country_code => $country_name ) {
+			// Get states for the country.
+			$states = WC()->countries->get_states( $country_code );
+			if ( ! empty( $states ) ) {
+				// If states exist, add them under the country.
+				$locations_with_states[ $country_code ] = array(
+					'name'   => $country_name,
+					'states' => $states,
+				);
+			} else {
+				// If no states, just add the country name.
+				$locations_with_states[ $country_code ] = array(
+					'name'   => $country_name,
+					'states' => new stdClass(), // Use stdClass to represent an empty object.
+				);
+			}
+		}
+		return $locations_with_states;
+	}
+}

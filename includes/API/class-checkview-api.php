@@ -155,10 +155,10 @@ class CheckView_Api {
 			'checkview/v1',
 			'/store/order',
 			array(
-				'methods'  => 'GET',
-				'callback' => array( $this, 'checkview_get_available_order_details' ),
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'checkview_get_available_order_details' ),
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'     => array(
+				'args'                => array(
 					'_checkview_token'   => array(
 						'required' => false,
 					),
@@ -284,12 +284,12 @@ class CheckView_Api {
 			'checkview/v1',
 			'/store/getstorelocations',
 			array(
-				'methods'             => array( 'GET' ),
-				'callback'            => array( $this, 'checkview_get_store_locations' ),
-				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'                => array(
+				'methods'  => array( 'GET' ),
+				'callback' => array( $this, 'checkview_get_store_locations' ),
+				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'     => array(
 					'_checkview_token' => array(
-						'required' => true,
+						'required' => false,
 					),
 				),
 			)
@@ -1195,13 +1195,27 @@ class CheckView_Api {
 			'code'    => 400,
 			'message' => esc_html__( 'Failed to retrieve the customer. Try again.', 'checkview' ),
 		);
-		$selling_locations = WC()->countries->get_allowed_countries();
+		$selling_locations = array();
 
-		// Get selling locations.
-		$shipping_locations                    = WC()->countries->get_shipping_countries();
-		$store_locations['selling_locations']  = $selling_locations;
-		$store_locations['shipping_locations'] = $shipping_locations;
-		if ( ! empty( $selling_locations_options ) || ! empty( $shipping_locations ) ) {
+		// Get selling and shipping countries.
+		$selling_locations  = WC()->countries->get_allowed_countries();
+		$shipping_locations = WC()->countries->get_shipping_countries();
+
+		// Initialize final array to store countries with states.
+		$locations_with_states = array();
+
+		// Add states to selling locations.
+		$selling_locations_with_states = checkview_add_states_to_locations( $selling_locations );
+
+		// Add states to shipping locations.
+		$shipping_locations_with_states = checkview_add_states_to_locations( $shipping_locations );
+
+		// If you want to merge both selling and shipping locations:.
+		$store_locations['selling_locations']  = $selling_locations_with_states;
+		$store_locations['shipping_locations'] = $shipping_locations_with_states;
+		// Output or return your final array as needed.
+		// For example, to print:.
+		if ( ! empty( $selling_locations ) || ! empty( $shipping_locations ) ) {
 			return new WP_REST_Response(
 				array(
 					'status'   => 200,
