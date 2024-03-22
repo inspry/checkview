@@ -78,7 +78,7 @@ class Checkview_Admin {
 			$this->plugin_name,
 			CHECKVIEW_ADMIN_ASSETS . 'css/checkview-admin.css',
 			array(),
-			$this->version,
+			$this->version. '_' . rand(2,200),
 			'all'
 		);
 
@@ -125,7 +125,7 @@ class Checkview_Admin {
 			$this->plugin_name,
 			CHECKVIEW_ADMIN_ASSETS . 'js/checkview-admin.js',
 			array( 'jquery' ),
-			$this->version,
+			$this->version . rand(1,100),
 			false
 		);
 
