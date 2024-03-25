@@ -186,22 +186,8 @@ class Checkview_Admin_Settings {
 			<div class="inner-header">
 				<div class="checkview-settings-wrapper d-flex align-items-center">
 					<div class="d-flex align-items-center">
-						<img src="<?php echo esc_html( CHECKVIEW_ADMIN_ASSETS ); ?>images/logo.svg" class="img-fluid main-logo" />
-						<h1><?php esc_html_e( 'Checkview Settings', 'checkview' ); ?></h1>
-					</div>
-					<div class="ml-auto">
-					<a href="https://inspry.com" class="inline-link">
-						<?php esc_html_e( 'About this plugin', 'checkview' ); ?>
-						<span class="icon ml-1">
-							<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13">
-								<g id="info_round" transform="translate(0.5 0.5)">
-									<circle id="Oval_35" data-name="Oval 35" cx="0.857" cy="0.857" r="0.857" transform="translate(5.143 2.571)"/>
-									<path id="Rectangle_65" data-name="Rectangle 65" d="M.429,0A.429.429,0,0,1,.857.429V3.857a.429.429,0,1,1-.857,0V.429A.429.429,0,0,1,.429,0Z" transform="translate(5.571 5.143)"/>
-									<path id="Oval_50" data-name="Oval 50" d="M0,6a6,6,0,1,1,6,6A6,6,0,0,1,0,6Z" fill="none" stroke="#0a263d" stroke-width="1"/>
-								</g>
-							</svg>
-						</span>
-						</a>
+						<a href="https://checkview.io" target="_blank"><img src="<?php echo esc_html( CHECKVIEW_ADMIN_ASSETS ); ?>images/logo.svg" class="img-fluid main-logo" /></a>
+						<h1><?php esc_html_e( 'CheckView Settings', 'checkview' ); ?></h1>
 					</div>
 				</div>
 			</div>

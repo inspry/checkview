@@ -66,24 +66,6 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 					</td>
 				</tr>
 
-				<tr valign="top">
-					<th scope="row" >
-						<label for="checkview_allowed_extensions">
-							<?php esc_html_e( 'Allowed 3rd party integration', 'checkview' ); ?>
-						</label>
-						<p class="make-lib-description"><?php esc_html_e( 'Warning! If checked it will allow 3rd parties to access Core functions.', 'checkview' ); ?></p>
-					</th>
-					<td class="checkview-make-cache-box">
-					<label class="switch" for="checkview_allowed_extensions">
-						<input type="checkbox" name="checkview_allowed_extensions" class="checkview-allow-extension" id="checkview_allowed_extensions"
-						<?php
-						if ( 'on' === $allow_dev ) {
-							?>
-							checked="checked" <?php } ?> />
-						<div class="slider round"></div>
-					</label>
-					</td>
-				</tr>
 				<?php do_action( 'checkview_advance_settings', $checkview_options ); ?>
 			</tbody>
 		</table>
