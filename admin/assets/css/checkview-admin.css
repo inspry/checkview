@@ -151,7 +151,6 @@ body {
 .checkview-tab-innerbox .form-table tr,
 .checkview-tab-box .form-table tr {
   border-bottom: 1px solid #e8e8e8 !important;
-  display: flex !important;
   align-items: center !important;
 }
 
