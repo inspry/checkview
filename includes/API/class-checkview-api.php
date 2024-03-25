@@ -65,7 +65,7 @@ class CheckView_Api {
 			'checkview/v1',
 			'/forms/registerformtest',
 			array(
-				'methods'             => 'PUT',
+				'methods'             => array( 'PUT', 'POST', 'GET' ),
 				'callback'            => array( $this, 'checkview_register_form_test' ),
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
