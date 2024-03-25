@@ -187,7 +187,6 @@ class Checkview_Admin_Settings {
 				<div class="checkview-settings-wrapper d-flex align-items-center">
 					<div class="d-flex align-items-center">
 						<a href="https://checkview.io" target="_blank"><img src="<?php echo esc_html( CHECKVIEW_ADMIN_ASSETS ); ?>images/logo.svg" class="img-fluid main-logo" /></a>
-						<h1><?php esc_html_e( 'CheckView Settings', 'checkview' ); ?></h1>
 					</div>
 				</div>
 			</div>
