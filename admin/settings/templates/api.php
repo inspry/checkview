@@ -24,7 +24,7 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 				<tr valign="top">
 					<th scope="row" >
 						<label for="checkview_get_forms">
-							<?php esc_html_e( 'Get Forms', 'checkview' ); ?>
+							<?php esc_html_e( 'Get forms', 'checkview' ); ?>
 						</label>
 						<p class="make-lib-description"><?php esc_html_e( 'Endpoint for fetching available forms from supported form plugins.', 'checkview' ); ?></p>
 					</th>
