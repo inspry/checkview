@@ -274,15 +274,9 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 1. CheckView test flow.
 
-
-
 2. CheckView test flow results.
 
-
-
-3. CheckView API logs.
-
-4. CheckView general settings.
+3. CheckView general settings.
 
 
 
