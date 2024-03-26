@@ -284,10 +284,10 @@ class CheckView_Api {
 			'checkview/v1',
 			'/store/getstorelocations',
 			array(
-				'methods'  => array( 'GET' ),
-				'callback' => array( $this, 'checkview_get_store_locations' ),
-				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'     => array(
+				'methods'             => array( 'GET' ),
+				'callback'            => array( $this, 'checkview_get_store_locations' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
 					'_checkview_token' => array(
 						'required' => false,
 					),
@@ -714,9 +714,6 @@ class CheckView_Api {
 			'post_status'         => 'publish',
 			'ignore_sticky_posts' => 1,
 			'posts_per_page'      => -1,
-			'meta_key'            => 'total_sales',
-			'orderby'             => 'meta_value_num',
-			'order'               => 'DESC',
 		);
 		if ( ! empty( $checkview_keyword ) && null !== $checkview_keyword ) {
 
@@ -742,13 +739,32 @@ class CheckView_Api {
 		if ( ! empty( $loop->posts ) ) {
 
 			foreach ( $loop->posts as $post ) {
+				// Initialize an array to store variations.
+				$variations = array();
 
+				// Get product object.
+				$product = wc_get_product( $post );
+				// Check if the product is variable.
+				if ( $product && $product->is_type( 'variable' ) ) {
+					// Get variations.
+					$product_variations = $product->get_available_variations();
+
+					foreach ( $product_variations as $variation ) {
+						// Collect variation data.
+						$variations[] = array(
+							'id'         => $variation['variation_id'],
+							'attributes' => $variation['attributes'],
+							// You can add more variation data here if needed.
+						);
+					}
+				}
 				$products[] = array(
-					'id'        => $post->ID,
-					'name'      => $post->post_title,
-					'slug'      => $post->post_name,
-					'url'       => get_permalink( $post->ID ),
-					'thumb_url' => get_the_post_thumbnail_url( $post->ID ),
+					'id'         => $post->ID,
+					'name'       => $post->post_title,
+					'slug'       => $post->post_name,
+					'url'        => get_permalink( $post->ID ),
+					'thumb_url'  => get_the_post_thumbnail_url( $post->ID ),
+					'variations' => $variations,
 				);
 
 			}
