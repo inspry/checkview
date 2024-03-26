@@ -24,9 +24,9 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 				<tr valign="top">
 					<th scope="row" >
 						<label for="checkview_get_forms">
-							<?php esc_html_e( 'Get Forms', 'checkview' ); ?>
+							<?php esc_html_e( 'Get forms', 'checkview' ); ?>
 						</label>
-						<p class="make-lib-description"><?php esc_html_e( 'Use this field to white label admin menu title.', 'checkview' ); ?></p>
+						<p class="make-lib-description"><?php esc_html_e( 'Endpoint for fetching available forms from supported form plugins.', 'checkview' ); ?></p>
 					</th>
 					<td class="checkview-make-library-box">
 					<label  for="checkview_get_forms">
@@ -37,9 +37,9 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 				<tr valign="top">
 					<th scope="row" >
 						<label for="checkview_register_forms_test">
-							<?php esc_html_e( 'Registers forms test', 'checkview' ); ?>
+							<?php esc_html_e( 'Register test', 'checkview' ); ?>
 						</label>
-						<p class="make-lib-description"><?php esc_html_e( 'Use this field to register form test.', 'checkview' ); ?></p>
+						<p class="make-lib-description"><?php esc_html_e( 'Endpoint to initiate the registration of a new form or checkout test.', 'checkview' ); ?></p>
 					</th>
 					<td class="checkview-make-library-box">
 					<label  for="checkview_register_forms_test">
@@ -51,9 +51,9 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 				<tr valign="top">
 					<th scope="row" >
 						<label for="checkview_get_forms_test">
-							<?php esc_html_e( 'Get forms test', 'checkview' ); ?>
+							<?php esc_html_e( 'Get test', 'checkview' ); ?>
 						</label>
-						<p class="make-lib-description"><?php esc_html_e( 'Use this field to get form test.', 'checkview' ); ?></p>
+						<p class="make-lib-description"><?php esc_html_e( 'Endpoint for fetching the form test details.', 'checkview' ); ?></p>
 					</th>
 					<td class="checkview-make-library-box">
 					<label  for="checkview_get_forms_test">
@@ -65,9 +65,9 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 				<tr valign="top">
 					<th scope="row" >
 						<label for="checkview_get_products">
-							<?php esc_html_e( 'Retrieves products from store', 'checkview' ); ?>
+							<?php esc_html_e( 'Get products', 'checkview' ); ?>
 						</label>
-						<p class="make-lib-description"><?php esc_html_e( 'Use this endpoint to get all store products.', 'checkview' ); ?></p>
+						<p class="make-lib-description"><?php esc_html_e( 'Endpoint for fetching available Woo products.', 'checkview' ); ?></p>
 					</th>
 					<td class="checkview-make-library-box">
 					<label  for="checkview_get_products">
@@ -79,9 +79,9 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 				<tr valign="top">
 					<th scope="row" >
 						<label for="checkview_get_orders">
-							<?php esc_html_e( 'Retrieves checkview orders from store', 'checkview' ); ?>
+							<?php esc_html_e( 'Get orders', 'checkview' ); ?>
 						</label>
-						<p class="make-lib-description"><?php esc_html_e( 'Use this endpoint to get all store orders created by checkview.', 'checkview' ); ?></p>
+						<p class="make-lib-description"><?php esc_html_e( 'Endpoint for fetching available test orders.', 'checkview' ); ?></p>
 					</th>
 					<td class="checkview-make-library-box">
 					<label  for="checkview_get_orders">
@@ -93,9 +93,9 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 				<tr valign="top">
 					<th scope="row" >
 						<label for="checkview_get_shipping_details">
-							<?php esc_html_e( 'Retrieves shipping details from store', 'checkview' ); ?>
+							<?php esc_html_e( 'Get shipping details', 'checkview' ); ?>
 						</label>
-						<p class="make-lib-description"><?php esc_html_e( 'Use this endpoint to get all shipping details.', 'checkview' ); ?></p>
+						<p class="make-lib-description"><?php esc_html_e( 'Endpoint for fetching the Woo store shipping details.', 'checkview' ); ?></p>
 					</th>
 					<td class="checkview-make-library-box">
 					<label  for="checkview_get_shipping_details">
@@ -107,9 +107,9 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 				<tr valign="top">
 					<th scope="row" >
 						<label for="checkview_delete_orders">
-							<?php esc_html_e( 'Delete orders', 'checkview' ); ?>
+							<?php esc_html_e( 'Delete test orders', 'checkview' ); ?>
 						</label>
-						<p class="make-lib-description"><?php esc_html_e( 'Use this field to delete orders created by checkview.', 'checkview' ); ?></p>
+						<p class="make-lib-description"><?php esc_html_e( 'Endpoint for deleting the Woo store test orders.', 'checkview' ); ?></p>
 					</th>
 					<td class="checkview-make-library-box">
 					<label  for="checkview_delete_orders">

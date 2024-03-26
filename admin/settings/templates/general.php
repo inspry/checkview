@@ -26,7 +26,7 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 						<label for="checkview_admin_menu_title">
 							<?php esc_html_e( 'Admin menu title', 'th-checkview-server-custom-template-tab' ); ?>
 						</label>
-						<p class="make-lib-description"><?php esc_html_e( 'Use this field to white label admin menu title.', 'checkview' ); ?></p>
+						<p class="make-lib-description"><?php esc_html_e( 'Customize the admin menu title using this field.', 'checkview' ); ?></p>
 					</th>
 					<td class="checkview-make-cache-box">
 					<label  for="checkview_admin_menu_title">
@@ -39,7 +39,7 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 						<label for="checkview_delete_data">
 							<?php esc_html_e( 'Delete data on uninstall', 'checkview' ); ?>
 						</label>
-						<p class="make-lib-description"><?php esc_html_e( 'If checked It Will Delete All The Data On Uninstall.', 'checkview' ); ?></p>
+						<p class="make-lib-description"><?php esc_html_e( 'When selected, this option will remove all data associated with the plugin from WordPress upon uninstallation, without affecting the CheckView platform.', 'checkview' ); ?></p>
 					</th>
 					<td class="checkview-make-cache-box">
 					<label class="switch" for="checkview_delete_data">
@@ -57,7 +57,7 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 						<label for="checkview_update_cache">
 							<?php esc_html_e( 'Update Cache', 'checkview' ); ?>
 						</label>
-						<p class="make-lib-description"><?php esc_html_e( 'Checkvie Cache automatically updates on a daily basis. You can also manually update it by clicking on the update cache button.', 'checkview' ); ?></p>
+						<p class="make-lib-description"><?php esc_html_e( 'The CheckView Cache refreshes daily automatically. To update it manually, simply click the "Update Cache" button.', 'checkview' ); ?></p>
 					</th>
 					<td class="checkview-make-cache-box">
 						<label class="" for="checkview_update_cache">
