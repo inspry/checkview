@@ -201,6 +201,21 @@ class CheckView_Api {
 				),
 			)
 		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/registeradminuser',
+			array(
+				'methods'             => array( 'POST', 'GET' ),
+				'callback'            => array( $this, 'checkview_register_admin_user' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
 	} // end checkview_register_rest_route
 	/**
 	 * Retrieves the available forms.
@@ -651,6 +666,56 @@ class CheckView_Api {
 			wp_die();
 		}
 	}
+
+	/**
+	 * Creates admin user.
+	 *
+	 * @param WP_REST_Request $request the request param with the API call.
+	 * @return WP_REST_Response/WP_Error/json
+	 */
+	public function checkview_register_admin_user( WP_REST_Request $request ) {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+		global $wpdb;
+		$error   = array(
+			'status'  => 'error',
+			'code'    => 400,
+			'message' => esc_html__( 'No Result Found', 'checkview' ),
+		);
+		$results = checkview_create_admin_user();
+		if ( $results ) {
+			return new WP_REST_Response(
+				array(
+					'status'   => 200,
+					'response' => esc_html__( 'Successfully removed the results.', 'checkview' ),
+				)
+			);
+			wp_die();
+		} else {
+			return new WP_Error(
+				400,
+				esc_html__( 'Failed to remove the results.', 'checkview' ),
+				$error
+			);
+			wp_die();
+		}
+	}
+
 	/**
 	 * Retrieves the available forms.
 	 *
