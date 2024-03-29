@@ -418,7 +418,7 @@ if ( ! function_exists( 'checkview_delete_orders' ) ) {
 	function checkview_delete_orders( $order_id = '' ) {
 
 		global $wpdb;
-		// Get all checkview orders.
+		// Get all checkview orders from wp tables legacy.
 		$orders = $wpdb->get_results(
 			"SELECT p.id
 		FROM {$wpdb->prefix}posts as p
