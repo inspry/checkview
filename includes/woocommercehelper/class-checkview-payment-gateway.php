@@ -73,35 +73,11 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) {
 
 			// Get an instance of the order object.
 			$order = new WC_Order( $order_id );
-
 			if ( $order ) {
+				$order->update_status( 'completed' );
 
-				// Iterating though each order items.
-				foreach ( $order->get_items() as $item_id => $item_values ) {
-
-					$product_id = $item_values['variation_id'];
-					if ( 0 === $product_id || empty( $product_id ) ) {
-						$product_id = $item_values['product_id'];
-					}
-
-					if ( $product_id ) {
-
-						$product = wc_get_product( $product_id );
-
-						if ( $product->managing_stock() ) {
-
-							// Increase stock with one to make this test order neutral to stock.
-							wc_update_product_stock( $product, 1, 'increase' );
-
-						}
-					}
-				}
+				$order->payment_complete();
 			}
-
-			$order->update_status( 'completed' );
-
-			$order->payment_complete();
-
 			// Remove cart.
 			$woocommerce->cart->empty_cart();
 

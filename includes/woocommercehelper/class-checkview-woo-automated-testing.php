@@ -142,6 +142,22 @@ class Checkview_Woo_Automated_Testing {
 					'delete_orders_from_backend',
 				);
 			}
+
+			$this->loader->add_filter(
+				'woocommerce_can_reduce_order_stock',
+				$this,
+				'checkview_maybe_not_reduce_stock',
+				10,
+				2
+			);
+
+			$this->loader->add_filter(
+				'woocommerce_prevent_adjust_line_item_product_stock',
+				$this,
+				'checkview_woocommerce_prevent_adjust_line_item_product_stock',
+				10,
+				3
+			);
 		}
 		$this->checkview_test_mode();
 	}
@@ -571,9 +587,9 @@ class Checkview_Woo_Automated_Testing {
 			$order = wc_get_order( $arg );
 
 			if ( ! empty( $order ) ) {
-				$payment_method = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
-
-				if ( $payment_method && 'checkview' === $payment_method ) {
+				$payment_method  = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
+				$payment_made_by = $order->get_meta( 'payment_made_by' );
+				if ( ( $payment_method && 'checkview' === $payment_method ) || ( 'checkview' === $payment_made_by ) ) {
 					return false;
 				}
 			}
@@ -582,9 +598,9 @@ class Checkview_Woo_Automated_Testing {
 			$order = wc_get_order( $arg );
 
 			if ( ! empty( $order ) ) {
-				$payment_method = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
-
-				if ( $payment_method && 'checkview' === $payment_method ) {
+				$payment_method  = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
+				$payment_made_by = $order->get_meta( 'payment_made_by' );
+				if ( ( $payment_method && 'checkview' === $payment_method ) || ( 'checkview' === $payment_made_by ) ) {
 					return false;
 				}
 			}
@@ -748,5 +764,56 @@ class Checkview_Woo_Automated_Testing {
 		$test_keys_set = ! empty( $test_publishable_key ) && ! empty( $test_secret_key );
 
 		return $test_keys_set;
+	}
+
+	/**
+	 * Make sure we don't reduce the stock levels of products for test orders.
+	 *
+	 * @since 1.5.2
+	 * @param bool     $reduce_stock true/false.
+	 * @param WP_Order $order wc order.
+	 * @return bool
+	 */
+	public static function checkview_maybe_not_reduce_stock( $reduce_stock, $order ) {
+		if ( $reduce_stock && is_object( $order ) && $order->get_billing_email() ) {
+			$billing_email = $order->get_billing_email();
+
+			if ( preg_match( '/store[\+]guest[\-](\d+)[\@]checkview.io/', $billing_email ) || preg_match( '/store[\+](\d+)[\@]checkview.io/', $billing_email ) ) {
+				$reduce_stock = false;
+			}
+
+			$payment_method  = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
+			$payment_made_by = $order->get_meta( 'payment_made_by' );
+			if ( ( $payment_method && 'checkview' === $payment_method ) || ( 'checkview' === $payment_made_by ) ) {
+				$reduce_stock = false;
+			}
+		}
+
+		return $reduce_stock;
+	}
+
+	/**
+	 * Prevent adjust line item
+	 *
+	 * @param [bool]  $prevent bool true/false.
+	 * @param wc_itme $item item in order.
+	 * @param int     $quantity quaniity if item.
+	 */
+	public function filter_woocommerce_prevent_adjust_line_item_product_stock( $prevent, $item, $quantity ) {
+		// Get order.
+		$order         = $item->get_order();
+		$billing_email = $order->get_billing_email();
+
+		if ( preg_match( '/store[\+]guest[\-](\d+)[\@]checkview.io/', $billing_email ) || preg_match( '/store[\+](\d+)[\@]checkview.io/', $billing_email ) ) {
+			$prevent = true;
+		}
+
+		$payment_method  = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
+		$payment_made_by = $order->get_meta( 'payment_made_by' );
+		if ( ( $payment_method && 'checkview' === $payment_method ) || ( 'checkview' === $payment_made_by ) ) {
+			$prevent = true;
+		}
+
+		return $prevent;
 	}
 }
