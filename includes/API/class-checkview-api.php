@@ -20,7 +20,32 @@
  * @author     CheckView <checkview> https://checkview.io/
  */
 class CheckView_Api {
+	/**
+	 * The ID of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $plugin_name    The ID of this plugin.
+	 */
+	private $plugin_name;
 
+	/**
+	 * The version of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $version    The current version of this plugin.
+	 */
+	private $version;
+
+	/**
+	 * The woohelper of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      bool/class    $woo_helper    The woo helper of this plugin.
+	 */
+	private $woo_helper;
 	/**
 	 * Store errors to display if the JWT Token is wrong
 	 *
@@ -31,13 +56,15 @@ class CheckView_Api {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string $plugin_name       The name of the plugin.
-	 * @param      string $version    The version of this plugin.
+	 * @param    string $plugin_name       The name of the plugin.
+	 * @param    string $version    The version of this plugin.
+	 * @param    class  $woo_helper The woohelper class.
 	 */
-	public function __construct( $plugin_name, $version ) {
+	public function __construct( $plugin_name, $version, $woo_helper ) {
 
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
+		$this->woo_helper  = $woo_helper;
 	}
 	/**
 	 * Registers the rest api routes for our forms and related data.
@@ -940,7 +967,7 @@ class CheckView_Api {
 			'code'    => 400,
 			'message' => esc_html__( 'No Result Found', 'checkview' ),
 		);
-		$results = delete_orders_from_backend();
+		$results = $this->woo_helper->delete_orders_from_backend();
 
 		if ( $results ) {
 			return new WP_REST_Response(
@@ -1067,7 +1094,7 @@ class CheckView_Api {
 			'code'    => 400,
 			'message' => esc_html__( 'No Result Found', 'checkview' ),
 		);
-		$active_gateways = get_active_payment_gateways();
+		$active_gateways = $this->woo_helper->get_active_payment_gateways();
 		if ( $active_gateways ) {
 			return new WP_REST_Response(
 				array(
@@ -1115,7 +1142,7 @@ class CheckView_Api {
 			'code'    => 400,
 			'message' => esc_html__( 'Failed to create the customer. Try again.', 'checkview' ),
 		);
-		$customer = checkview_create_test_customer();
+		$customer = $this->woo_helper->checkview_create_test_customer();
 		if ( $customer ) {
 			return new WP_REST_Response(
 				array(
@@ -1163,7 +1190,7 @@ class CheckView_Api {
 			'code'    => 400,
 			'message' => esc_html__( 'Failed to retrieve the customer. Try again.', 'checkview' ),
 		);
-		$customer = checkview_get_test_credentials();
+		$customer = $this->woo_helper->checkview_get_test_credentials();
 		if ( $customer ) {
 			return new WP_REST_Response(
 				array(
@@ -1278,7 +1305,7 @@ class CheckView_Api {
 			'code'    => 400,
 			'message' => esc_html__( 'Failed to retrieve the test product. Try again.', 'checkview' ),
 		);
-		$product                              = checkview_get_test_product();
+		$product                              = $this->woo_helper->checkview_get_test_product();
 		$product_details['checkview_product'] = $product ? get_permalink( $product->get_id() ) : false;
 		if ( ! empty( $product_details ) && false !== $product_details['checkview_product'] ) {
 			return new WP_REST_Response(

@@ -9,12 +9,6 @@
  * @subpackage CheckView/includes/woocommercehelper
  */
 
-use WC_Customer;
-use WC_Data_Store;
-use WC_Order;
-use WC_Product;
-use WP_Error;
-
 /**
  * Integration for the WooCommerce Automated Testing system.
  */
@@ -62,37 +56,116 @@ class Checkview_Woo_Automated_Testing {
 		if ( $this->loader ) {
 			$this->loader->add_action(
 				'init',
-				'',
+				$this,
 				'checkview_create_test_product',
+			);
+			$this->loader->add_action(
+				'init',
+				$this,
+				'checkview_create_test_customer',
+			);
+			$this->loader->add_action(
+				'wp_loaded',
+				$this,
+				'checkview_empty_woocommerce_cart_if_parameter',
 			);
 
 			$this->loader->add_action(
 				'wp_head',
-				'',
+				$this,
 				'checkview_no_index_for_test_product',
 			);
 
 			$this->loader->add_filter(
 				'wpseo_exclude_from_sitemap_by_post_ids',
-				'',
+				$this,
 				'checkview_seo_hide_product_from_sitemap',
 			);
 
 			$this->loader->add_filter(
 				'wp_sitemaps_posts_query_args',
-				'',
+				$this,
 				'checkview_hide_product_from_sitemap',
 			);
 
 			$this->loader->add_filter(
 				'publicize_should_publicize_published_post',
-				'',
+				$this,
 				'checkview_seo_hide_product_from_jetpack',
 			);
+			if ( class_exists( 'woocommerce' ) ) {
+				$this->loader->add_filter(
+					'woocommerce_webhook_should_deliver',
+					$this,
+					'checkview_filter_webhooks',
+					10,
+					3
+				);
+
+				$this->loader->add_filter(
+					'woocommerce_email_recipient_new_order',
+					$this,
+					'checkview_filter_admin_emails',
+					10,
+					2
+				);
+
+				$this->loader->add_action(
+					'checkview_delete_orders_action',
+					$this,
+					'checkview_delete_orders',
+					10,
+					1
+				);
+				$this->loader->add_action(
+					'checkview_rotate_user_credentials',
+					$this,
+					'checkview_rotate_test_user_credentials',
+					10,
+				);
+
+				$this->loader->add_filter(
+					'woocommerce_registration_errors',
+					$this,
+					'checkview_stop_registration_errors',
+					15,
+					3
+				);
+
+			}
+
+			// Delete orders on backend page load if crons are disabled.
+			if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
+				$this->loader->add_action(
+					'admin_init',
+					$this,
+					'delete_orders_from_backend',
+				);
+			}
 		}
+		$this->checkview_test_mode();
 	}
 
-
+	/**
+	 * Empties the Cart before sessions inits.
+	 *
+	 * @return void
+	 */
+	public function checkview_empty_woocommerce_cart_if_parameter() {
+		// Check if WooCommerce is active.
+		if ( class_exists( 'WooCommerce' ) ) {
+			// Check if the parameter exists in the URL.
+			if ( isset( $_GET['checkview_empty_cart'] ) && 'true' === $_GET['checkview_empty_cart'] && checkview_better_is_cart() ) {
+				// Get WooCommerce cart instance.
+				$woocommerce_instance = WC();
+				// Check if the cart is not empty.
+				if ( ! $woocommerce_instance->cart->is_empty() ) {
+					// Clear the cart.
+					$woocommerce_instance->cart->empty_cart();
+				}
+			}
+		}
+	}
 	/**
 	 * Retrieve active payment gateways for stripe.
 	 *
@@ -190,26 +263,26 @@ class Checkview_Woo_Automated_Testing {
 	 * @type string $password The newly-generated password for the test user.
 	 */
 	public function checkview_get_test_credentials() {
-			add_filter( 'pre_wp_mail', '__return_false', PHP_INT_MAX );
+		add_filter( 'pre_wp_mail', '__return_false', PHP_INT_MAX );
 
-			$password = wp_generate_password();
-			$customer = $this->checkview_get_test_customer();
+		$password = wp_generate_password();
+		$customer = $this->checkview_get_test_customer();
 
 		if ( ! $customer ) {
 			$customer = $this->checkview_create_test_customer();
 		}
 
-			$customer->set_password( $password );
-			$customer->save();
+		$customer->set_password( $password );
+		$customer->save();
 
-			// Schedule the password to be rotated 15min from now.
-			$this->checkview_rotate_password_cron();
+		// Schedule the password to be rotated 15min from now.
+		$this->checkview_rotate_password_cron();
 
-			return array(
-				'email'    => $customer->get_email(),
-				'username' => $customer->get_username(),
-				'password' => $password,
-			);
+		return array(
+			'email'    => $customer->get_email(),
+			'username' => $customer->get_username(),
+			'password' => $password,
+		);
 	}
 
 	/**
@@ -303,7 +376,6 @@ class Checkview_Woo_Automated_Testing {
 	 */
 	public function checkview_create_test_product() {
 		$product = $this->checkview_get_test_product();
-
 		if ( ! $product ) {
 			$product = new WC_Product();
 			$product->set_status( 'publish' );
@@ -391,5 +463,290 @@ class Checkview_Woo_Automated_Testing {
 		if ( is_int( $product_id ) && 0 !== $product_id && is_single( $product_id ) ) {
 			echo '<meta name="robots" content="noindex, nofollow"/>';
 		}
+	}
+
+	/**
+	 * Turns test mode on.
+	 *
+	 * @return void
+	 */
+	public function checkview_test_mode() {
+
+		// Current Vsitor IP.
+		$visitor_ip = get_visitor_ip();
+		// Check view Bot IP. Todo.
+		$cv_bot_ip = get_api_ip();
+		if ( ! is_admin() && class_exists( 'woocommerce' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) ) {
+			if ( ( isset( $_GET['checkview_use_stripe'] ) && 'yes' === sanitize_text_field( wp_unslash( $_GET['checkview_use_stripe'] ) ) ) || 'yes' === get_option( $visitor_ip . 'use_stripe' ) ) {
+				// Always use Stripe test mode when on dev or staging.
+				add_filter(
+					'option_woocommerce_stripe_settings',
+					function ( $value ) {
+
+						$value['testmode'] = 'yes';
+
+						return $value;
+					}
+				);
+			} elseif ( ( isset( $_GET['checkview_use_stripe'] ) && 'no' === sanitize_text_field( wp_unslash( $_GET['checkview_use_stripe'] ) ) ) || 'no' === get_option( $visitor_ip . 'use_stripe' ) ) {
+				// Load payment gateway.
+				require_once CHECKVIEW_INC_DIR . 'woocommercehelper/class-checkview-payment-gateway.php';
+
+				// Add fake payment gateway for checkview tests.
+				$this->loader->add_filter(
+					'woocommerce_payment_gateways',
+					$this,
+					'checkview_add_payment_gateway',
+					11,
+					1
+				);
+
+				if ( isset( $_REQUEST['checkview_test_id'] ) ) {
+					// Registers WooCommerce Blocks integration.
+					$this->loader->add_action(
+						'woocommerce_blocks_loaded',
+						$this,
+						'checkview_woocommerce_block_support',
+					);
+				}
+			}
+			// Make the test product visible in the catalog.
+			add_filter(
+				'woocommerce_product_is_visible',
+				function ( $visible, $product_id ) {
+					$product = $this->checkview_get_test_product();
+
+					if ( ! $product ) {
+						return false;
+					}
+
+					return $product_id === $product->get_id() ? true : $visible;
+				},
+				9999,
+				2
+			);
+			$this->loader->add_action(
+				'woocommerce_order_status_changed',
+				$this,
+				'checkview_add_custom_fields_after_purchase',
+				10,
+				3
+			);
+		}
+	}
+
+	/**
+	 * Disable admin notifications on checkview checks.
+	 *
+	 * @param string   $recipient recipient.
+	 * @param Wc_order $order WooCommerce order.
+	 * @return string
+	 */
+	public function checkview_filter_admin_emails( $recipient, $order ) {
+
+		$payment_method  = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
+		$payment_made_by = $order->get_meta( 'payment_made_by' );
+		if ( 'checkview' === $payment_method || 'checkview' === $payment_made_by ) {
+			return false;
+		}
+
+		return $recipient;
+	}
+
+
+	/**
+	 * Disable webhooks on checkview checks.
+	 *
+	 * @param bool   $should_deliver delivery status.
+	 * @param object $webhook_object wenhook object.
+	 * @param array  $arg args to support.
+	 * @return bool
+	 */
+	public function checkview_filter_webhooks( $should_deliver, $webhook_object, $arg ) {
+
+		$topic = $webhook_object->get_topic();
+
+		if ( ! empty( $topic ) && ! empty( $arg ) && 'order.' === substr( $topic, 0, 6 ) ) {
+
+			$order = wc_get_order( $arg );
+
+			if ( ! empty( $order ) ) {
+				$payment_method = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
+
+				if ( $payment_method && 'checkview' === $payment_method ) {
+					return false;
+				}
+			}
+		} elseif ( ! empty( $topic ) && ! empty( $arg ) && 'subscription.' === substr( $topic, 0, 13 ) ) {
+
+			$order = wc_get_order( $arg );
+
+			if ( ! empty( $order ) ) {
+				$payment_method = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
+
+				if ( $payment_method && 'checkview' === $payment_method ) {
+					return false;
+				}
+			}
+		}
+
+		return $should_deliver;
+	}
+
+	/**
+	 * Adds checkview payment gateway to WooCommerce.
+	 *
+	 * @param string $methods methods to add payments.
+	 * @return array $methods
+	 */
+	public function checkview_add_payment_gateway( $methods ) {
+		$methods[] = 'Checkview_Payment_Gateway';
+		return $methods;
+	}
+
+	/**
+	 * Registers WooCommerce Blocks integration.
+	 *
+	 * @return void
+	 */
+	public function checkview_woocommerce_block_support() {
+		if ( class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
+			// Load block payment gateway.
+			require_once CHECKVIEW_INC_DIR . 'woocommercehelper/class-checkview-blocks-payment-gateway.php';
+			add_action(
+				'woocommerce_blocks_payment_method_type_registration',
+				function ( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
+					$payment_method_registry->register( new Checkview_Blocks_Payment_Gateway() );
+				}
+			);
+		}
+	}
+
+
+	/**
+	 * Directly deletes orders.
+	 *
+	 * @return void
+	 */
+	public function delete_orders_from_backend() {
+
+		// don't run on ajax calls.
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			return;
+		}
+		return $this->checkview_delete_orders();
+	}
+
+	/**
+	 * Deletes Woocommerce orders.
+	 *
+	 * @param integer $order_id Woocommerce Order Id.
+	 * @return bool
+	 */
+	public function checkview_delete_orders( $order_id = '' ) {
+
+		global $wpdb;
+		// Get all checkview orders from wp tables legacy.
+		$orders = $wpdb->get_results(
+			"SELECT p.id
+			FROM {$wpdb->prefix}posts as p
+			LEFT JOIN {$wpdb->prefix}postmeta AS pm ON (p.id = pm.post_id AND pm.meta_key = '_payment_method')
+			WHERE meta_value = 'checkview' "
+		);
+		if ( empty( $orders ) ) {
+			$args = array(
+				'posts_per_page' => -1,
+				'meta_query'     => array(
+					'relation' => 'OR', // Use 'AND' for both conditions to apply.
+					array(
+						'key'     => 'payment_made_by', // Meta key for payment method.
+						'value'   => 'checkview', // Replace with your actual payment gateway ID.
+						'compare' => '=', // Use '=' for exact match.
+					),
+				),
+			);
+
+			$orders = wc_get_orders( $args );
+		}
+		// Delete orders.
+		if ( ! empty( $orders ) ) {
+			foreach ( $orders as $order ) {
+
+				try {
+					$order_object = new WC_Order( $order->id );
+					$customer_id  = $order_object->get_customer_id();
+
+					// Delete order.
+					if ( $order_object ) {
+						$order_object->delete( true );
+						delete_transient( 'checkview_store_orders_transient' );
+					}
+
+					$order_object = null;
+					$current_user = get_user_by( 'id', $customer_id );
+					// Delete customer if available.
+					if ( $customer_id && isset( $current_user->roles ) && ! in_array( 'administrator', $current_user->roles ) ) {
+						$customer = new WC_Customer( $customer_id );
+
+						if ( ! function_exists( 'wp_delete_user' ) ) {
+							require_once ABSPATH . 'wp-admin/includes/user.php';
+						}
+
+						$res      = $customer->delete( true );
+						$customer = null;
+					}
+				} catch ( \Exception $e ) {
+					if ( ! class_exists( 'Checkview_Admin_Logs' ) ) {
+						/**
+						 * The class responsible for defining all actions that occur in the admin area.
+						 */
+						require_once CHECKVIEW_ADMIN_DIR . '/class-checkview-admin-logs.php';
+					}
+					Checkview_Admin_Logs::add( 'cron-logs', 'Crone job failed.' );
+				}
+			}
+			return true;
+		}
+	}
+
+	/**
+	 * Adds custom fields after order status changes.
+	 *
+	 * @param int    $order_id order id.
+	 * @param string $old_status order old status.
+	 * @param string $new_status order new status.
+	 * @return void
+	 */
+	public function checkview_add_custom_fields_after_purchase( $order_id, $old_status, $new_status ) {
+		if ( isset( $_COOKIE['checkview_test_id'] ) && '' !== $_COOKIE['checkview_test_id'] ) {
+			$order = new WC_Order( $order_id );
+			$order->update_meta_data( 'payment_made_by', 'checkview' );
+
+			$order->update_meta_data( 'checkview_test_id', sanitize_text_field( wp_unslash( $_COOKIE['checkview_test_id'] ) ) );
+			complete_checkview_test( sanitize_text_field( wp_unslash( $_COOKIE['checkview_test_id'] ) ) );
+
+			$order->save();
+			unset( $_COOKIE['checkview_test_id'] );
+			setcookie( 'checkview_test_id', '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
+
+		}
+	}
+
+	/**
+	 * Verifies if stripe is properly configured or not.
+	 *
+	 * @return bool/keys/string
+	 */
+	public function checkview_is_stripe_test_mode_configured() {
+		$stripe_settings = get_option( 'woocommerce_stripe_settings' );
+
+		// Check if test publishable and secret keys are set.
+		$test_publishable_key = isset( $stripe_settings['test_publishable_key'] ) ? $stripe_settings['test_publishable_key'] : '';
+		$test_secret_key      = isset( $stripe_settings['test_secret_key'] ) ? $stripe_settings['test_secret_key'] : '';
+
+		// Check if both test keys are set.
+		$test_keys_set = ! empty( $test_publishable_key ) && ! empty( $test_secret_key );
+
+		return $test_keys_set;
 	}
 }
