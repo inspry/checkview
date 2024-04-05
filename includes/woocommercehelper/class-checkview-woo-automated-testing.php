@@ -65,7 +65,7 @@ class Checkview_Woo_Automated_Testing {
 				'checkview_create_test_customer',
 			);
 			$this->loader->add_action(
-				'wp_loaded',
+				'template_redirect',
 				$this,
 				'checkview_empty_woocommerce_cart_if_parameter',
 			);
@@ -171,7 +171,7 @@ class Checkview_Woo_Automated_Testing {
 		// Check if WooCommerce is active.
 		if ( class_exists( 'WooCommerce' ) ) {
 			// Check if the parameter exists in the URL.
-			if ( isset( $_GET['checkview_empty_cart'] ) && 'true' === $_GET['checkview_empty_cart'] && checkview_better_is_cart() ) {
+			if ( isset( $_GET['checkview_empty_cart'] ) && 'true' === $_GET['checkview_empty_cart'] && ( is_product() || is_shop() ) ) {
 				// Get WooCommerce cart instance.
 				$woocommerce_instance = WC();
 				// Check if the cart is not empty.
@@ -395,7 +395,7 @@ class Checkview_Woo_Automated_Testing {
 		if ( ! $product ) {
 			$product = new WC_Product();
 			$product->set_status( 'publish' );
-			$product->set_name( 'WooCommerce Automated Testing Product' );
+			$product->set_name( 'CheckVew Testing Product' );
 			$product->set_short_description( 'An example product for automated testing.' );
 			$product->set_description( 'This is a placeholder product used for automatically testing your WooCommerce store. It\'s designed to be hidden from all customers.' );
 			$product->set_regular_price( '1.00' );
