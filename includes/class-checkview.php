@@ -170,6 +170,12 @@ class Checkview {
 		 * side of the site.
 		 */
 		require_once plugin_dir_path( __DIR__ ) . 'public/class-checkview-public.php';
+
+		/**
+		 * The class responsible for defining all actions that occur in the public-facing
+		 * side of the site.
+		 */
+		require_once CHECKVIEW_INC_DIR . 'monitoring/class-checkview-monitoring.php';
 		$this->loader = new Checkview_Loader();
 		// Current Vsitor IP.
 		$visitor_ip = get_visitor_ip();
@@ -329,9 +335,10 @@ class Checkview {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin    = new Checkview_Admin( $this->get_plugin_name(), $this->get_version() );
-		$plugin_settings = new Checkview_Admin_Settings( $this->get_plugin_name(), $this->get_version() );
-		$plugin_logs     = new Checkview_Admin_Logs();
+		$plugin_admin      = new Checkview_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_monitoring = new Checkview_Monitoring( $this->loader );
+		$plugin_settings   = new Checkview_Admin_Settings( $this->get_plugin_name(), $this->get_version() );
+		$plugin_logs       = new Checkview_Admin_Logs();
 		if ( is_admin() ) {
 			// load backend hooks.
 			$this->loader->add_action(

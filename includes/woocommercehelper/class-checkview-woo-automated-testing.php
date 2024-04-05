@@ -750,28 +750,3 @@ class Checkview_Woo_Automated_Testing {
 		return $test_keys_set;
 	}
 }
-// Get all log files
-$log_files = WC_Log_Handler_File::get_log_files();
-// Get the log directory
-$log_directory = WC_LOG_DIR;
-// Loop through each log file
-foreach ($log_files as $log_key => $log_file) {
-    // Get the log file path
-    // Construct the log file path
-    $log_file_path = $log_directory . $log_file;
-    // Check if the log file exists
-    if (file_exists($log_file_path)) {
-        // Read the contents of the log file
-        $log_content = file_get_contents($log_file_path);
-
-        // Output the log file name
-        echo "Log File: $log_file\n";
-
-        // Output the log content
-        echo $log_content;
-        echo "<br>";
-    } else {
-        echo "Log file not found: $log_file\n";
-        echo "<br>";
-    }
-}

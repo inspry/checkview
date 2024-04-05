@@ -9,17 +9,16 @@
  * @subpackage CheckView/includes/monitoring
  */
 
-
-	/**
-	 * Fired to inject custom payment gateway to WooCommerce.
-	 *
-	 * This class defines all code necessary to run for handling CheckView WooCommerce Operations.
-	 *
-	 * @since      1.0.0
-	 * @package    CheckView
-	 * @subpackage CheckView/includes/woocommercehelper
-	 * @author     CheckView <checkview> https://checkview.io/
-	 */
+/**
+ * Fired to inject custom payment gateway to WooCommerce.
+ *
+ * This class defines all code necessary to run for handling CheckView WooCommerce Operations.
+ *
+ * @since      1.0.0
+ * @package    CheckView
+ * @subpackage CheckView/includes/woocommercehelper
+ * @author     CheckView <checkview> https://checkview.io/
+ */
 class Checkview_Monitoring {
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -187,9 +186,10 @@ class Checkview_Monitoring {
 		if ( 'update' === $options['action'] ) {
 			switch ( $options['type'] ) {
 				case 'plugin':
-					$plugin_info      = $upgrader_object->plugin_info(); // Get updated plugin info.
-					$previous_version = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_info['destination_name'] )['Version'];
-					if ( $previous_version !== $plugin_info['Version'] ) {
+					$plugin_info      = $upgrader_object->plugin_info();
+					$plugin_info      = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_info );
+					$previous_version = $plugin_info['Version'];
+					if ( $previous_version !== $options['version'] ) {
 						$update_required = true;
 					}
 					break;
@@ -209,21 +209,30 @@ class Checkview_Monitoring {
 
 			// If update occurred, send alert to SaaS via API.
 			if ( $update_required ) {
-				wp_remote_post(
-					'https://checkview.io/version_changes',
-					array(
-						'body'    => wp_json_encode(
-							array(
-								'type'    => $options['type'],
-								'action'  => $options['action'],
-								'name'    => isset( $plugin_info ) ? $plugin_info['plugin'] : ( isset( $options['theme'] ) ? $options['theme'] : 'WordPress' ),
-								'version' => isset( $plugin_info ) ? $plugin_info['Version'] : $options['version'],
-								'time'    => $current_time,
-							)
-						),
-						'headers' => array( 'Content-Type' => 'application/json; charset=utf-8' ),
-					)
+
+				$options = array(
+					'type'    => $options['type'],
+					'action'  => $options['action'],
+					'name'    => isset( $plugin_info ) ? $plugin_info['Name'] : ( isset( $options['theme'] ) ? $options['theme'] : 'WordPress' ),
+					'version' => isset( $plugin_info ) ? $plugin_info['Version'] : $options['version'],
+					'time'    => $current_time,
 				);
+
+						// wp_remote_post(
+						// 'https://checkview.io/version_changes',
+						// array(
+						// 'body'    => wp_json_encode(
+						// array(
+						// 'type'    => $options['type'],
+						// 'action'  => $options['action'],
+						// 'name'    => isset( $plugin_info ) ? $plugin_info['plugin'] : ( isset( $options['theme'] ) ? $options['theme'] : 'WordPress' ),
+						// 'version' => isset( $plugin_info ) ? $plugin_info['Version'] : $options['version'],
+						// 'time'    => $current_time,
+						// )
+						// ),
+						// 'headers' => array( 'Content-Type' => 'application/json; charset=utf-8' ),
+						// )
+						// );.
 			}
 		}
 	}
@@ -232,7 +241,7 @@ class Checkview_Monitoring {
 	 * Check for WP-Config files updates.
 	 *
 	 * @param bool   $allowed allowed or not.
-	 * @param string $file_path file path,
+	 * @param string $file_path file path.
 	 * @return bool$
 	 */
 	public function checkview_check_wp_config_changes( $allowed, $file_path ) {
@@ -241,9 +250,9 @@ class Checkview_Monitoring {
 			wp_remote_post(
 				'https://example.com/api/wp_config_change_alert',
 				array(
-					'body'    => json_encode(
+					'body'    => wp_json_encode(
 						array(
-							'time' => date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ), // Convert timestamp to a readable date-time format.
+							'time' => gmdate( 'Y-m-d H:i:s', current_time( 'timestamp' ) ), // Convert timestamp to a readable date-time format.
 						)
 					),
 					'headers' => array( 'Content-Type' => 'application/json; charset=utf-8' ),
