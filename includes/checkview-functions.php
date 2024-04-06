@@ -624,41 +624,55 @@ function format_line( string $line, int $line_number ): string {
 		)
 	);
 }
-$FileController   = new FileController();
-$file_args        = array(
-	'source'   => 'fatal-errors',
-	'per_page' => 20,
-	'offset'   => 0,
-	'order'    => 'desc',
-	'orderby'  => 'modified',
-);
-$fatal_error_logs = $FileController->get_files( $file_args, false );
 
-// Take the first item as the latest log after sorting
-$latest_fatal_error_log = reset( $fatal_error_logs );
-$file                   = $FileController->get_file_by_id( $latest_fatal_error_log->get_file_id() );
-$stream                 = $file->get_stream();
-$line_number            = 1;
-while ( ! feof( $stream ) ) :
 
-	$line = fgets( $stream );
-	if ( is_string( $line ) ) {
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- format_line does the escaping.
-		//echo $line_number;
-		//echo format_line( $line, $line_number );
-		++$line_number;
+function checkview_report_wc_logger( $log_type = 'fatal-errors' ) {
+	$file_controller = new FileController();
+	$file_args       = array(
+		'source'         => $log_type, // Use the log type parameter here.
+		'per_page'       => 1,
+		'offset'         => 0,
+		'order'          => 'desc',
+		'orderby'        => 'modified',
+		'posts_per_page' => 1,
+	);
+	$logs            = $file_controller->get_files( $file_args, false );
+	if ( ! is_array( $logs ) || empty( $logs ) ) {
+		return;
 	}
+	// Take the first item as the latest log after sorting.
+	$latest_log = reset( $logs );
+	$file_id    = $latest_log->get_file_id();
 
-endwhile;
-// Define the log directory
-$log_directory = WC_LOG_DIR;
+	// Update the regular expression to match the log type dynamically.
+	if ( preg_match( '/' . preg_quote( $log_type, '/' ) . '-(\d{4}-\d{2}-\d{2})/', $file_id, $matches ) ) {
+		$date = $matches[1]; // The first captured group, which is the date.
+		// Get the current date in the site's timezone in 'Y-m-d' format.
+		$today = current_time( 'Y-m-d' );
+		if ( $date !== $today ) {
+			return;
+		}
+	}
+	$file        = $file_controller->get_file_by_id( $latest_log->get_file_id() );
+	$stream      = $file->get_stream();
+	$line_number = 1;
+	$errors      = array();
+	$logged      = get_option( $latest_log->get_file_id() );
+	while ( ! feof( $stream ) ) {
+		$line = fgets( $stream );
+		if ( is_string( $line ) ) {
+			if ( $logged && $line_number >= $logged ) {
+				$errors[] = format_line( $line, $line_number );
+			} elseif ( ! $logged || empty( $logged ) ) {
+				$errors[] = format_line( $line, $line_number );
+			}
+			++$line_number;
+		}
+	}
+	update_option( $latest_log->get_file_id(), $line_number, true );
+	update_option( $log_type . '_errors_tracked', $errors ); // Prefix the option name with the log type.
+}
 
-// Construct the path for the latest log file
-
-// if ( file_exists( $log_file_path ) ) {
-// Read the content of the latest log file
-// $log_content = file_get_contents( $log_file_path );
-// echo $log_content;
-// } else {
-// echo "Latest fatal error log file not found.\n";
-// }
+// Example usage:
+// checkview_report_wc_logger('fatal-errors'); // For fatal errors
+// checkview_report_wc_logger('block-editor-errors'); // For block editor errors.
