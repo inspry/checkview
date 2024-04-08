@@ -189,7 +189,6 @@ class Checkview_Admin {
 		if ( ! function_exists( 'is_plugin_active' ) ) {
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
-
 		// Current Vsitor IP.
 		$visitor_ip = get_visitor_ip();
 		// Check view Bot IP. Todo.
@@ -214,6 +213,12 @@ class Checkview_Admin {
 			// Create session for later use when form submit VIA AJAX.
 			create_cv_session( $visitor_ip, $cv_test_id );
 			update_option( $visitor_ip, 'checkview-saas', true );
+		}
+
+		if ( isset( $_GET['checkview_use_stripe'] ) && 'yes' === sanitize_text_field( wp_unslash( $_GET['checkview_use_stripe'] ) ) ) {
+			update_option( $visitor_ip . 'use_stripe', 'yes', true );
+		} elseif ( isset( $_GET['checkview_use_stripe'] ) && 'no' === sanitize_text_field( wp_unslash( $_GET['checkview_use_stripe'] ) ) ) {
+			update_option( $visitor_ip . 'use_stripe', 'no', true );
 		}
 
 		// If submit VIA AJAX.

@@ -61,7 +61,7 @@ Handles Froms API functions for the CheckView plugin.
 
 ## Overview
 
-This class defines the code necessary for handling CheckView Form API CRUD operations. It includes methods for registering REST API routes, retrieving available forms, registering form tests, and managing test results.
+This class defines the code necessary for handling CheckView Form API CRUD operations. It includes methods for registering REST API routes, retrieving available forms, registering form tests, managing test results, cart details, payment gateways, customer creation, and store locations.
 
 ## Requirements
 
@@ -233,7 +233,7 @@ Certainly! Here is the documentation in `README.md` format:
 
 ## Overview
 
-The Checkview API provides endpoints to retrieve information about orders, products, shipping details, and to delete orders. It requires a valid JWT token for authentication.
+The Checkview API provides endpoints to retrieve information about orders, products, shipping details, and to delete orders. It requires a valid JWT token for authentication. You will have to provide these two params in url checkview_use_stripe & checkview_test_id. If checkview_use_stripe param is set it will turn stripe test mod on otherwise checkview custom payment gateway will be visible.
 
 ## Endpoints
 
@@ -393,8 +393,130 @@ curl -X DELETE "https://your-api-domain.com/checkview/v1/store/deleteorders?_che
   }
   ```
 
-## Validation
+### 5. `checkview_get_available_shipping_details`
 
+Get shipping details and related data.
+
+- **Endpoint**: `/checkview/v1/store/shippingdetails`
+- **HTTP Method**: GET
+- **Parameters**:
+  - `_checkview_token` (required): JWT token for authentication.
+- **Usage**:
+  ```bash
+  curl -X GET "https://your-wordpress-site.com/checkview/v1/store/shippingdetails?_checkview_token=your-jwt-token"
+  ```
+- **Returns**:
+  - **Status 200**: Successfully retrieved the shipping details.
+  - **Status 400**: Failed to retrieve shipping details.
+
+### 6. `checkview_get_cart_details`
+
+Lists cart details.
+
+- **Endpoint**: `/checkview/v1/store/cartdetails`
+- **HTTP Method**: GET
+- **Parameters**:
+  - `_checkview_token` (required): JWT token for authentication.
+  - `cookie` (required): cookies from the browser.
+- **Usage**:
+  ```bash
+  curl -X GET "https://your-wordpress-site.com/checkview/v1/store/cartdetails?_checkview_token=your-jwt-token"
+  ```
+- **Returns**:
+  - **Status 200**: Successfully retrieved the cart details.
+  - **Status 400**: Failed to retrieve cart details.
+  ```json
+  {
+    "status": 200,
+    "response": "Successfully retrieved active payment gateways.",
+      "body_response": {
+        "items":[{"key":"b6d767d2f8ed5d21a44b0e5886680cb9", "id":22,"type":"simple","quantity":2,"quantity_limits":{"minimum":1,"maximum":9999,"multiple_of":1,"editable":true},"name":"awesome","short_description":"","description":"<p>jhhjhjjh<\/p>","sku":"awesome","low_stock_remaining":null,"backorders_allowed":false,"show_backorder_badge":false,"sold_individually":false,"permalink":"http:\/\/inspry-test-site.local\/product\/awesome\/","images":[],"variation":[],"item_data":[],"prices":{"price":"100","regular_price":"900000","sale_price":"100","price_range":null,"currency_code":"EUR","currency_symbol":"\u20ac","currency_minor_unit":2,"currency_decimal_separator":",","currency_thousand_separator":"","currency_prefix":"","currency_suffix":" \u20ac","raw_prices":{"precision":6,"price":"1000000","regular_price":"9000000000","sale_price":"1000000"}},"totals":{"line_subtotal":"200","line_subtotal_tax":"0","line_total":"200","line_total_tax":"0","currency_code":"EUR","currency_symbol":"\u20ac","currency_minor_unit":2,"currency_decimal_separator":",","currency_thousand_separator":"","currency_prefix":"","currency_suffix":" \u20ac"},"catalog_visibility":"visible","extensions":{}}],"coupons":[],"fees":[],"totals":{"total_items":"200","total_items_tax":"0","total_fees":"0","total_fees_tax":"0","total_discount":"0","total_discount_tax":"0","total_shipping":"0","total_shipping_tax":"0","total_price":"200","total_tax":"0","tax_lines":[],"currency_code":"EUR","currency_symbol":"\u20ac","currency_minor_unit":2,"currency_decimal_separator":",","currency_thousand_separator":"","currency_prefix":"","currency_suffix":" \u20ac"},"shipping_address":{"first_name":"Faizan","last_name":"g","company":"","address_1":"R silva","address_2":"","city":"MAIA","state":"","postcode":"4457-451","country":"PT","phone":""},"billing_address":{"first_name":"Faizan","last_name":"g","company":"","address_1":"R silva","address_2":"","city":"MAIA","state":"","postcode":"4457-451","country":"PT","email":"faizan@inspry.com","phone":""},"needs_payment":true,"needs_shipping":true,"payment_requirements":["products"],"has_calculated_shipping":true,"shipping_rates":[{"package_id":0,"name":"Shipment 1","destination":{"address_1":"R silva","address_2":"","city":"MAIA","state":"","postcode":"4457-451","country":"PT"},"items":[{"key":"b6d767d2f8ed5d21a44b0e5886680cb9","name":"awesome","quantity":2}],"shipping_rates":[{"rate_id":"free_shipping:1","name":"Free shipping","description":"","delivery_time":"","price":"0","taxes":"0","instance_id":1,"method_id":"free_shipping","meta_data":[{"key":"Items","value":"awesome &times; 2"}],"selected":true,"currency_code":"EUR","currency_symbol":"\u20ac","currency_minor_unit":2,"currency_decimal_separator":",","currency_thousand_separator":"","currency_prefix":"","currency_suffix":" \u20ac"}]}],"items_count":2,"items_weight":0,"cross_sells":[],"errors":[],"payment_methods":["cod","checkview"],"extensions":{}}
+  }
+  ```
+### 7. `checkview_get_active_payment_gateways`
+
+Lists active payment gateways.
+
+- **Endpoint**: `/checkview/v1/store/activegateways`
+- **HTTP Method**: PUT, GET
+- **Parameters**:
+  - `_checkview_token` (required): JWT token for authentication.
+- **Usage**:
+  ```bash
+  curl -X PUT "https://your-wordpress-site.com/checkview/v1/store/activegateways?_checkview_token=your-jwt-token"
+  ```
+- **Returns**:
+  - **Status 200**: Successfully retrieved active payment gateways.
+  - **Status 400**: Failed to retrieve active payment gateways.
+```json
+  {
+    "status": 200,
+    "response": "Successfully retrieved active payment gateways.",
+    "body_response": {
+                    "stripe": "Stripe",
+                  }
+  }
+  ```
+### 8. `checkview_create_test_customer`
+
+Creates a test customer.
+
+- **Endpoint**: `/checkview/v1/store/createtestcustomer`
+- **HTTP Method**: POST
+- **Parameters**:
+  - `_checkview_token` (required): JWT token for authentication.
+- **Usage**:
+  ```bash
+  curl -X POST "https://your-wordpress-site.com/checkview/v1/store/createtestcustomer?_checkview_token=your-jwt-token"
+  ```
+- **Returns**:
+  - **Status 200**: Successfully created the test customer.
+  - **Status 400**: Failed to create the test customer.
+
+### 9. `checkview_get_test_customer_credentials`
+
+Retrieves test customer credentials.
+
+- **Endpoint**: `/checkview/v1/store/gettestcustomer`
+- **HTTP Method**: GET
+- **Parameters**:
+  - `_checkview_token` (required): JWT token for authentication.
+- **Usage**:
+  ```bash
+  curl -X GET "https://your-wordpress-site.com/checkview/v1/store/gettestcustomer?_checkview_token=your-jwt-token"
+  ```
+- **Returns**:
+  - **Status 200**: Successfully retrieved test customer credentials.
+  - **Status 400**: Failed to retrieve test customer credentials.
+```json
+  {
+    "status": 200,
+    "response": "Successfully retrieved test customer credentials.",
+    "body_response": {
+                    "email": "customer_email@example.com",
+                    "username": "customer_username",
+                    "password": "customer_password"
+                  }
+  }
+  ```
+### 10. `checkview_get_store_locations`
+
+Retrieves store locations.
+
+- **Endpoint**: `/checkview/v1/store/getstorelocations`
+- **HTTP Method**: GET
+- **Parameters**:
+  - `_checkview_token` (required): JWT token for authentication.
+- **Usage**:
+  ```bash
+  curl -X GET "https://your-wordpress-site.com/checkview/v1/store/getstorelocations?_checkview_token=your-jwt-token"
+  ```
+- **Returns**:
+  - **Status 200**: Successfully retrieved store locations.
+  - **Status 400**: Failed to retrieve store locations.
+```json
+  {"status":200,"response":"Successfully retrieved the store locations.","body":{"selling_locations":{"AL":"Albania","AS":"American Samoa"},"shipping_locations":{"AL":"Albania","AS":"American Samoa"}}}
+  ```
 ### Validate Token
 
 #### Endpoint

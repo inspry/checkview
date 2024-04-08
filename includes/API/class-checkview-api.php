@@ -20,7 +20,32 @@
  * @author     CheckView <checkview> https://checkview.io/
  */
 class CheckView_Api {
+	/**
+	 * The ID of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $plugin_name    The ID of this plugin.
+	 */
+	private $plugin_name;
 
+	/**
+	 * The version of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $version    The current version of this plugin.
+	 */
+	private $version;
+
+	/**
+	 * The woohelper of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      bool/class    $woo_helper    The woo helper of this plugin.
+	 */
+	private $woo_helper;
 	/**
 	 * Store errors to display if the JWT Token is wrong
 	 *
@@ -31,13 +56,15 @@ class CheckView_Api {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string $plugin_name       The name of the plugin.
-	 * @param      string $version    The version of this plugin.
+	 * @param    string $plugin_name       The name of the plugin.
+	 * @param    string $version    The version of this plugin.
+	 * @param    class  $woo_helper The woohelper class.
 	 */
-	public function __construct( $plugin_name, $version ) {
+	public function __construct( $plugin_name, $version, $woo_helper ) {
 
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
+		$this->woo_helper  = $woo_helper;
 	}
 	/**
 	 * Registers the rest api routes for our forms and related data.
@@ -153,6 +180,24 @@ class CheckView_Api {
 
 		register_rest_route(
 			'checkview/v1',
+			'/store/order',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'checkview_get_available_order_details' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token'   => array(
+						'required' => false,
+					),
+					'checkview_order_id' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'checkview/v1',
 			'/store/products',
 			array(
 				'methods'             => 'GET',
@@ -201,9 +246,99 @@ class CheckView_Api {
 				),
 			)
 		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/activegateways',
+			array(
+				'methods'             => array( 'PUT', 'GET' ),
+				'callback'            => array( $this, 'checkview_get_active_payment_gateways' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/cartdetails',
+			array(
+				'methods'             => array( 'GET' ),
+				'callback'            => array( $this, 'checkview_get_cart_details' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/createtestcustomer',
+			array(
+				'methods'             => array( 'POST' ),
+				'callback'            => array( $this, 'checkview_create_test_customer' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/gettestcustomer',
+			array(
+				'methods'             => array( 'GET' ),
+				'callback'            => array( $this, 'checkview_get_test_customer_credentials' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/getstorelocations',
+			array(
+				'methods'             => array( 'GET' ),
+				'callback'            => array( $this, 'checkview_get_store_locations' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token' => array(
+						'required' => false,
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/store/getstoretestproduct',
+			array(
+				'methods'             => array( 'GET' ),
+				'callback'            => array( $this, 'checkview_get_store_test_product' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
 	} // end checkview_register_rest_route
 	/**
-	 * Retrieves the available forms.
+	 * Retrieves the available orders.
 	 *
 	 * @param WP_REST_Request $request wp request object.
 	 * @return WP_REST_Response/json
@@ -373,6 +508,190 @@ class CheckView_Api {
 		}
 		wp_die();
 	}
+
+	/**
+	 * Retrieves the available order details bby id.
+	 *
+	 * @param WP_REST_Request $request wp request object.
+	 * @return WP_REST_Response/json
+	 */
+	public function checkview_get_available_order_details( WP_REST_Request $request ) {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		global $wpdb;
+		$checkview_order_id = $request->get_param( 'checkview_order_id' );
+		$checkview_order_id = isset( $checkview_order_id ) ? intval( $checkview_order_id ) : '';
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+
+		$order_details = array();
+		if ( ! is_admin() ) {
+			include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		// Get the order object.
+		$order = wc_get_order( $checkview_order_id );
+
+		$order_details = array();
+
+		if ( $order ) {
+			// Get order key.
+			$order_details['order_key'] = $order->get_order_key();
+
+			// Get Order Totals.
+			$order_details['formatted_order_total']   = $order->get_formatted_order_total();
+			$order_details['cart_tax']                = $order->get_cart_tax();
+			$order_details['currency']                = $order->get_currency();
+			$order_details['discount_tax']            = $order->get_discount_tax();
+			$order_details['discount_to_display']     = $order->get_discount_to_display();
+			$order_details['discount_total']          = $order->get_discount_total();
+			$order_details['total_fees']              = $order->get_total_fees();
+			$order_details['shipping_tax']            = $order->get_shipping_tax();
+			$order_details['shipping_total']          = $order->get_shipping_total();
+			$order_details['subtotal']                = $order->get_subtotal();
+			$order_details['subtotal_to_display']     = $order->get_subtotal_to_display();
+			$order_details['tax_totals']              = $order->get_tax_totals();
+			$order_details['taxes']                   = $order->get_taxes();
+			$order_details['total']                   = $order->get_total();
+			$order_details['total_discount']          = $order->get_total_discount();
+			$order_details['total_tax']               = $order->get_total_tax();
+			$order_details['total_refunded']          = $order->get_total_refunded();
+			$order_details['total_tax_refunded']      = $order->get_total_tax_refunded();
+			$order_details['total_shipping_refunded'] = $order->get_total_shipping_refunded();
+			$order_details['item_count_refunded']     = $order->get_item_count_refunded();
+
+			// Get and Loop Over Order Items.
+			foreach ( $order->get_items() as $item_id => $item ) {
+				$product_id      = $item->get_product_id();
+				$variation_id    = $item->get_variation_id();
+				$product         = $item->get_product(); // see link above to get $product info.
+				$product_name    = $item->get_name();
+				$quantity        = $item->get_quantity();
+				$subtotal        = $item->get_subtotal();
+				$total           = $item->get_total();
+				$tax             = $item->get_subtotal_tax();
+				$tax_class       = $item->get_tax_class();
+				$tax_status      = $item->get_tax_status();
+				$allmeta         = $item->get_meta_data();
+				$somemeta        = $item->get_meta( '_whatever', true );
+				$item_type       = $item->get_type(); // e.g. "line_item", "fee".
+				$items_details[] = array(
+					'product_id'   => $product_id,
+					'variation_id' => $variation_id,
+					'product_name' => $product_name,
+					'quantity'     => $quantity,
+					'subtotal'     => $subtotal,
+					'total'        => $total,
+					'tax'          => $tax,
+					'tax_class'    => $tax_class,
+					'tax_status'   => $tax_status,
+					'allmeta'      => $allmeta,
+					'somemeta'     => $somemeta,
+					'item_type'    => $item_type,
+				);
+			}
+			$order_details['items']              = $items_details;
+			$order_details['downloadable_items'] = $order->get_downloadable_items();
+			$order_details['coupon_codes']       = $order->get_coupon_codes();
+			// Get Order Shipping.
+			$order_details['shipping_method']     = $order->get_shipping_method();
+			$order_details['shipping_methods']    = $order->get_shipping_methods();
+			$order_details['shipping_to_display'] = $order->get_shipping_to_display();
+
+			// Get Order Dates.
+			$order_details['date_created']   = $order->get_date_created();
+			$order_details['date_modified']  = $order->get_date_modified();
+			$order_details['date_completed'] = $order->get_date_completed();
+			$order_details['date_paid']      = $order->get_date_paid();
+
+			// Get Order User, Billing & Shipping Addresses.
+			$order_details['customer_id']                  = $order->get_customer_id();
+			$order_details['user_id']                      = $order->get_user_id();
+			$order_details['user']                         = $order->get_user();
+			$order_details['customer_ip_address']          = $order->get_customer_ip_address();
+			$order_details['customer_user_agent']          = $order->get_customer_user_agent();
+			$order_details['created_via']                  = $order->get_created_via();
+			$order_details['customer_note']                = $order->get_customer_note();
+			$order_details['billing_first_name']           = $order->get_billing_first_name();
+			$order_details['billing_last_name']            = $order->get_billing_last_name();
+			$order_details['billing_company']              = $order->get_billing_company();
+			$order_details['billing_address_1']            = $order->get_billing_address_1();
+			$order_details['billing_address_2']            = $order->get_billing_address_2();
+			$order_details['billing_city']                 = $order->get_billing_city();
+			$order_details['billing_state']                = $order->get_billing_state();
+			$order_details['billing_postcode']             = $order->get_billing_postcode();
+			$order_details['billing_country']              = $order->get_billing_country();
+			$order_details['billing_email']                = $order->get_billing_email();
+			$order_details['billing_phone']                = $order->get_billing_phone();
+			$order_details['shipping_first_name']          = $order->get_shipping_first_name();
+			$order_details['shipping_last_name']           = $order->get_shipping_last_name();
+			$order_details['shipping_company']             = $order->get_shipping_company();
+			$order_details['shipping_address_1']           = $order->get_shipping_address_1();
+			$order_details['shipping_address_2']           = $order->get_shipping_address_2();
+			$order_details['shipping_city']                = $order->get_shipping_city();
+			$order_details['shipping_state']               = $order->get_shipping_state();
+			$order_details['shipping_postcode']            = $order->get_shipping_postcode();
+			$order_details['shipping_country']             = $order->get_shipping_country();
+			$order_details['address']                      = $order->get_address();
+			$order_details['shipping_address_map_url']     = $order->get_shipping_address_map_url();
+			$order_details['formatted_billing_full_name']  = $order->get_formatted_billing_full_name();
+			$order_details['formatted_shipping_full_name'] = $order->get_formatted_shipping_full_name();
+			$order_details['formatted_billing_address']    = $order->get_formatted_billing_address();
+			$order_details['formatted_shipping_address']   = $order->get_formatted_shipping_address();
+
+			// Get Order Payment Details.
+			$order_details['payment_method']       = $order->get_payment_method();
+			$order_details['payment_method_title'] = $order->get_payment_method_title();
+			$order_details['transaction_id']       = $order->get_transaction_id();
+
+			// Get Order URLs.
+			$order_details['checkout_payment_url']        = $order->get_checkout_payment_url();
+			$order_details['checkout_order_received_url'] = $order->get_checkout_order_received_url();
+			$order_details['cancel_order_url']            = $order->get_cancel_order_url();
+			$order_details['cancel_order_url_raw']        = $order->get_cancel_order_url_raw();
+			$order_details['cancel_endpoint']             = $order->get_cancel_endpoint();
+			$order_details['view_order_url']              = $order->get_view_order_url();
+			$order_details['edit_order_url']              = $order->get_edit_order_url();
+
+			// Get Order Status.
+			$order_details['status'] = $order->get_status();
+
+			// Get Thank You Page URL.
+			$order_details['thank_you_page_url'] = $order->get_checkout_order_received_url();
+		}
+
+		if ( $order_details && ! empty( $order_details ) && false !== $order_details && '' !== $order_details ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the order details.', 'checkview' ),
+					'body_response' => $order_details,
+				)
+			);
+		} else {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'No order details to show.', 'checkview' ),
+					'body_response' => $order_details,
+				)
+			);
+		}
+		wp_die();
+	}
 	/**
 	 * Retrieves the available forms.
 	 *
@@ -422,9 +741,6 @@ class CheckView_Api {
 			'post_status'         => 'publish',
 			'ignore_sticky_posts' => 1,
 			'posts_per_page'      => -1,
-			'meta_key'            => 'total_sales',
-			'orderby'             => 'meta_value_num',
-			'order'               => 'DESC',
 		);
 		if ( ! empty( $checkview_keyword ) && null !== $checkview_keyword ) {
 
@@ -450,13 +766,32 @@ class CheckView_Api {
 		if ( ! empty( $loop->posts ) ) {
 
 			foreach ( $loop->posts as $post ) {
+				// Initialize an array to store variations.
+				$variations = array();
 
+				// Get product object.
+				$product = wc_get_product( $post );
+				// Check if the product is variable.
+				if ( $product && $product->is_type( 'variable' ) ) {
+					// Get variations.
+					$product_variations = $product->get_available_variations();
+
+					foreach ( $product_variations as $variation ) {
+						// Collect variation data.
+						$variations[] = array(
+							'id'         => $variation['variation_id'],
+							'attributes' => $variation['attributes'],
+							// You can add more variation data here if needed.
+						);
+					}
+				}
 				$products[] = array(
-					'id'        => $post->ID,
-					'name'      => $post->post_title,
-					'slug'      => $post->post_name,
-					'url'       => get_permalink( $post->ID ),
-					'thumb_url' => get_the_post_thumbnail_url( $post->ID ),
+					'id'         => $post->ID,
+					'name'       => $post->post_title,
+					'slug'       => $post->post_name,
+					'url'        => get_permalink( $post->ID ),
+					'thumb_url'  => get_the_post_thumbnail_url( $post->ID ),
+					'variations' => $variations,
 				);
 
 			}
@@ -632,7 +967,7 @@ class CheckView_Api {
 			'code'    => 400,
 			'message' => esc_html__( 'No Result Found', 'checkview' ),
 		);
-		$results = delete_orders_from_backend();
+		$results = $this->woo_helper->delete_orders_from_backend();
 
 		if ( $results ) {
 			return new WP_REST_Response(
@@ -651,6 +986,346 @@ class CheckView_Api {
 			wp_die();
 		}
 	}
+
+	/**
+	 * List Cart details.
+	 *
+	 * @return WP_REST_Response/WP_Error/json
+	 */
+	public function checkview_get_cart_details() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		$error = array(
+			'status'  => 'error',
+			'code'    => 400,
+			'message' => esc_html__( 'No Result Found', 'checkview' ),
+		);
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+		$url = home_url( 'wp-json/wc/store/v1/cart' ); // WooCommerce cart endpoint.
+		$url = get_rest_url() . 'wc/store/v1/cart';
+		// Retrieve the current cookies.
+		$cookies = array();
+		foreach ( $_COOKIE as $name => $value ) {
+			$cookies[] = $name . '=' . $value;
+		}
+		// Add the cookies to the request headers.
+		if ( ! empty( $cookies ) ) {
+			$headers['Cookie'] = implode( '; ', $cookies );
+		}
+		// Make the remote GET request.
+		$response = wp_remote_get(
+			$url,
+			array(
+				'headers' => $headers,
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			$error_message = $response->get_error_message();
+			return new WP_Error(
+				400,
+				esc_html( $error_message ),
+				$error
+			);
+			wp_die();
+		} else {
+			$body         = wp_remote_retrieve_body( $response );
+			$cart_details = json_decode( $body );
+			// Do something with $cart_details.
+		}
+		if ( $cart_details ) {
+			return new WP_REST_Response(
+				array(
+					'status'   => 200,
+					'response' => esc_html__( 'Successfully retrieved the results.', 'checkview' ),
+					'body'     => $cart_details,
+				)
+			);
+			wp_die();
+		} else {
+			return new WP_Error(
+				400,
+				esc_html__( 'No data found.', 'checkview' ),
+				$error
+			);
+			wp_die();
+		}
+	}
+
+	/**
+	 * List active payment gateways.
+	 *
+	 * @return WP_REST_Response/WP_Error/json
+	 */
+	public function checkview_get_active_payment_gateways() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+		$error           = array(
+			'status'  => 'error',
+			'code'    => 400,
+			'message' => esc_html__( 'No Result Found', 'checkview' ),
+		);
+		$active_gateways = $this->woo_helper->get_active_payment_gateways();
+		if ( $active_gateways ) {
+			return new WP_REST_Response(
+				array(
+					'status'   => 200,
+					'response' => esc_html__( 'Successfully retrieved the results.', 'checkview' ),
+					'body'     => $active_gateways,
+				)
+			);
+			wp_die();
+		} else {
+			return new WP_Error(
+				400,
+				esc_html__( 'No active payment gateways.', 'checkview' ),
+				$error
+			);
+			wp_die();
+		}
+	}
+
+	/**
+	 * Creates the test customer.
+	 *
+	 * @return WP_REST_Response/WP_Error/json
+	 */
+	public function checkview_create_test_customer() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+		$error    = array(
+			'status'  => 'error',
+			'code'    => 400,
+			'message' => esc_html__( 'Failed to create the customer. Try again.', 'checkview' ),
+		);
+		$customer = $this->woo_helper->checkview_create_test_customer();
+		if ( $customer ) {
+			return new WP_REST_Response(
+				array(
+					'status'   => 200,
+					'response' => esc_html__( 'Successfully created the customer.', 'checkview' ),
+					'body'     => 'Credentials will be provided on request',
+				)
+			);
+			wp_die();
+		} else {
+			return new WP_Error(
+				400,
+				esc_html__( 'Failed.', 'checkview' ),
+				$error
+			);
+			wp_die();
+		}
+	}
+
+	/**
+	 * Creates the test customer.
+	 *
+	 * @return WP_REST_Response/WP_Error/json
+	 */
+	public function checkview_get_test_customer_credentials() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+		$error    = array(
+			'status'  => 'error',
+			'code'    => 400,
+			'message' => esc_html__( 'Failed to retrieve the customer. Try again.', 'checkview' ),
+		);
+		$customer = $this->woo_helper->checkview_get_test_credentials();
+		if ( $customer ) {
+			return new WP_REST_Response(
+				array(
+					'status'   => 200,
+					'response' => esc_html__( 'Successfully retrieved the customer.', 'checkview' ),
+					'body'     => $customer,
+				)
+			);
+			wp_die();
+		} else {
+			return new WP_Error(
+				400,
+				esc_html__( 'Failed.', 'checkview' ),
+				$error
+			);
+			wp_die();
+		}
+	}
+
+	/**
+	 * Retrieves the store locations.
+	 *
+	 * @return WP_REST_Response/json
+	 */
+	public function checkview_get_store_locations() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+		$error             = array(
+			'status'  => 'error',
+			'code'    => 400,
+			'message' => esc_html__( 'Failed to retrieve the customer. Try again.', 'checkview' ),
+		);
+		$selling_locations = array();
+
+		// Get selling and shipping countries.
+		$selling_locations  = WC()->countries->get_allowed_countries();
+		$shipping_locations = WC()->countries->get_shipping_countries();
+
+		// Initialize final array to store countries with states.
+		$locations_with_states = array();
+
+		// Add states to selling locations.
+		$selling_locations_with_states = checkview_add_states_to_locations( $selling_locations );
+
+		// Add states to shipping locations.
+		$shipping_locations_with_states = checkview_add_states_to_locations( $shipping_locations );
+
+		// If you want to merge both selling and shipping locations:.
+		$store_locations['selling_locations']  = $selling_locations_with_states;
+		$store_locations['shipping_locations'] = $shipping_locations_with_states;
+		// Output or return your final array as needed.
+		// For example, to print:.
+		if ( ! empty( $selling_locations ) || ! empty( $shipping_locations ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'   => 200,
+					'response' => esc_html__( 'Successfully retrieved the store locations.', 'checkview' ),
+					'body'     => $store_locations,
+				)
+			);
+			wp_die();
+		} else {
+			return new WP_Error(
+				400,
+				esc_html__( 'Failed to retrieve the store locations.', 'checkview' ),
+				$error
+			);
+			wp_die();
+		}
+	}
+
+	/**
+	 * Retrieves the store's test product details.
+	 *
+	 * @return WP_REST_Response/json
+	 */
+	public function checkview_get_store_test_product() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'WooCommerce not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'Use a valid JWT token.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();
+		}
+		$error                                = array(
+			'status'  => 'error',
+			'code'    => 400,
+			'message' => esc_html__( 'Failed to retrieve the test product. Try again.', 'checkview' ),
+		);
+		$product                              = $this->woo_helper->checkview_get_test_product();
+		$product_details['checkview_product'] = $product ? get_permalink( $product->get_id() ) : false;
+		if ( ! empty( $product_details ) && false !== $product_details['checkview_product'] ) {
+			return new WP_REST_Response(
+				array(
+					'status'   => 200,
+					'response' => esc_html__( 'Successfully retrieved the test product.', 'checkview' ),
+					'body'     => $product_details,
+				)
+			);
+			wp_die();
+		} else {
+			return new WP_Error(
+				400,
+				esc_html__( 'Failed to retrieve the test product.', 'checkview' ),
+				$error
+			);
+			wp_die();
+		}
+	}
+
 	/**
 	 * Retrieves the available forms.
 	 *

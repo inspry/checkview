@@ -92,6 +92,20 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 
 				<tr valign="top">
 					<th scope="row" >
+						<label for="checkview_get_order_details">
+							<?php esc_html_e( 'Retrieves checkview order details from store', 'checkview' ); ?>
+						</label>
+						<p class="make-lib-description"><?php esc_html_e( 'Use this endpoint to get specific order details created by checkview.', 'checkview' ); ?></p>
+					</th>
+					<td class="checkview-make-library-box">
+					<label  for="checkview_get_order_details">
+						<p class="make-lib-description"><?php echo esc_url_raw( get_rest_url() . 'checkview/v1/store/order?checkview_order_id=x' ); ?></p>
+					</label>
+					</td>
+				</tr>
+
+				<tr valign="top">
+					<th scope="row" >
 						<label for="checkview_get_shipping_details">
 							<?php esc_html_e( 'Get shipping details', 'checkview' ); ?>
 						</label>
@@ -117,7 +131,76 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 					</label>
 					</td>
 				</tr>
-				
+
+				<tr valign="top">
+					<th scope="row" >
+						<label for="checkview_active_payment_gateways">
+							<?php esc_html_e( 'Active payment gateways', 'checkview' ); ?>
+						</label>
+						<p class="make-lib-description"><?php esc_html_e( 'Use this endpoint to get WooCommerce active payment gateways.', 'checkview' ); ?></p>
+					</th>
+					<td class="checkview-make-library-box">
+					<label  for="checkview_active_payment_gateways">
+						<p class="make-lib-description"><?php echo esc_url_raw( get_rest_url() . 'checkview/v1/store/activegateways' ); ?></p>
+					</label>
+					</td>
+				</tr>
+
+				<tr valign="top">
+					<th scope="row" >
+						<label for="checkview_cart_details">
+							<?php esc_html_e( 'Cart details', 'checkview' ); ?>
+						</label>
+						<p class="make-lib-description"><?php esc_html_e( 'Use this endpoint to get cart details.', 'checkview' ); ?></p>
+					</th>
+					<td class="checkview-make-library-box">
+					<label  for="checkview_cart_details">
+						<p class="make-lib-description"><?php echo esc_url_raw( get_rest_url() . 'checkview/v1/store/cartdetails' ); ?></p>
+					</label>
+					</td>
+				</tr>
+
+				<tr valign="top">
+					<th scope="row" >
+						<label for="checkview_create_customer">
+							<?php esc_html_e( 'Create customer', 'checkview' ); ?>
+						</label>
+						<p class="make-lib-description"><?php esc_html_e( 'Use this endpoint to create test customer for checkview', 'checkview' ); ?></p>
+					</th>
+					<td class="checkview-make-library-box">
+					<label  for="checkview_create_customer">
+						<p class="make-lib-description"><?php echo esc_url_raw( get_rest_url() . 'checkview/v1/store/createtestcustomer' ); ?></p>
+					</label>
+					</td>
+				</tr>
+
+				<tr valign="top">
+					<th scope="row" >
+						<label for="checkview_get_customer">
+							<?php esc_html_e( 'Get customer', 'checkview' ); ?>
+						</label>
+						<p class="make-lib-description"><?php esc_html_e( 'Use this endpoint to get credentials for the test customer created by SaaS.', 'checkview' ); ?></p>
+					</th>
+					<td class="checkview-make-library-box">
+					<label  for="checkview_delete_orders">
+						<p class="make-lib-description"><?php echo esc_url_raw( get_rest_url() . 'checkview/v1/store/gettestcustomer' ); ?></p>
+					</label>
+					</td>
+				</tr>
+
+				<tr valign="top">
+					<th scope="row" >
+						<label for="checkview_get_store_locations">
+							<?php esc_html_e( 'Get store locations', 'checkview' ); ?>
+						</label>
+						<p class="make-lib-description"><?php esc_html_e( 'Use this endpoint to get store locations.', 'checkview' ); ?></p>
+					</th>
+					<td class="checkview-make-library-box">
+					<label  for="checkview_get_store_locations">
+						<p class="make-lib-description"><?php echo esc_url_raw( get_rest_url() . 'checkview/v1/store/getstorelocations' ); ?></p>
+					</label>
+					</td>
+				</tr>
 				<?php do_action( 'checkview_api_settings', $checkview_options ); ?>
 			</tbody>
 		</table>
