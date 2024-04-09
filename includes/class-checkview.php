@@ -79,7 +79,7 @@ class Checkview {
 		if ( defined( 'CHECKVIEW_VERSION' ) ) {
 			$this->version = CHECKVIEW_VERSION;
 		} else {
-			$this->version = '1.1.0';
+			$this->version = '1.1.1';
 		}
 		$this->plugin_name = 'checkview';
 
@@ -234,13 +234,15 @@ class Checkview {
 			}
 			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
 		}
-		/**
-		 * The class responsible for defining all actions that occur in the public-facing
-		 * side of the site. Exposes the API end points.
-		 */
-		require_once plugin_dir_path( __DIR__ ) . 'includes/woocommercehelper/class-checkview-woo-automated-testing.php';
-		$woo_helper    = new Checkview_Woo_Automated_Testing( $this->get_plugin_name(), $this->get_version(), $this->loader );
-		
+		$woo_helper = '';
+		if ( class_exists( 'WooCommerce' ) ) {
+			/**
+			 * The class responsible for defining all actions that occur in the public-facing
+			 * side of the site. Exposes the API end points.
+			 */
+			require_once plugin_dir_path( __DIR__ ) . 'includes/woocommercehelper/class-checkview-woo-automated-testing.php';
+			$woo_helper = new Checkview_Woo_Automated_Testing( $this->get_plugin_name(), $this->get_version(), $this->loader );
+		}
 		$this->loader->add_filter(
 			'plugin_action_links_' . CHECKVIEW_BASE_DIR,
 			$this,
@@ -251,7 +253,7 @@ class Checkview {
 		 * side of the site. Exposes the API end points.
 		 */
 		require_once plugin_dir_path( __DIR__ ) . 'includes/API/class-checkview-api.php';
-		$plugin_api    = new CheckView_Api( $this->get_plugin_name(), $this->get_version(), $woo_helper );
+		$plugin_api = new CheckView_Api( $this->get_plugin_name(), $this->get_version(), $woo_helper );
 		$this->loader->add_action(
 			'rest_api_init',
 			$plugin_api,
@@ -421,7 +423,7 @@ class Checkview {
 	private function define_public_hooks() {
 
 		$plugin_public = new Checkview_Public( $this->get_plugin_name(), $this->get_version() );
-		
+
 		$this->loader->add_action(
 			'wp_enqueue_scripts',
 			$plugin_public,
@@ -434,7 +436,6 @@ class Checkview {
 			'enqueue_scripts'
 		);
 
-		
 		// Current Vsitor IP.
 		$visitor_ip = get_visitor_ip();
 		// Check view Bot IP. Todo.
