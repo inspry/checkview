@@ -104,7 +104,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 = 1.1.0 =
 * Added WooCommerce Automated Testing feature.
-* Shifted WooCommerce Automated Testing functions from function.php to class Checkview_Woo_Automated_Testing.
+* Shifted WooCommerce Automated Testing functions from function.php to class.
 * Updated stock prevention feature.
 * Updated default testing product name.
 
@@ -115,6 +115,6 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 = 1.1.0 =
 * Added WooCommerce Automated Testing feature.
-* Shifted WooCommerce Automated Testing functions from function.php to class Checkview_Woo_Automated_Testing.
+* Shifted WooCommerce Automated Testing functions from function.php to class.
 * Updated stock prevention feature.
 * Updated default testing product name.
