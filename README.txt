@@ -1,114 +1,120 @@
-=== Plugin Name ===
-Contributors: (this should be a list of wordpress.org userid's)
-Donate link: https://checkview.io/
-Tags: comments, spam
-Requires at least: 3.0.1
-Tested up to: 3.4
-Stable tag: 4.3
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+=== CheckView Automated WordPress Testing ===
 
-Here is a short description of the plugin.  This should be no more than 150 characters.  No markup here.
+Contributors: checkview, inspry
+
+Donate link: https://checkview.io/
+
+Tags: testing, monitoring, uptime, tests, woocommerce
+
+Requires at least: 5.0.1
+
+Tested up to: 6.5
+
+Requires PHP: 7.0.0
+
+License: GPLv3
+
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
+
+WC requires at least: 7.0
+
+WC tested up to: 8.3
+
+Stable tag: 1.1.0
+
+[CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
 == Description ==
 
-This is the long description.  No limit, and you can use Markdown (as well as in the following sections).
+[CheckView](https://checkview.io/) is the leading fully automated testing platform  to swiftly identify and resolve any issues with your WordPress forms and WooCommerce checkout. Enjoy the peace of mind that comes with knowing your WordPress site is working, ensuring you never lose sales due to site issues.
 
-For backwards compatibility, if this section is missing, the full length of the short description will be used, and
-Markdown parsed.
+== Important: == 
 
-A few notes about the sections above:
+This plugin is for users with a Checkview.io account.  The plugin will still activate, but requires the [CheckView.io](https://checkview.io/) service to function properly.
 
-*   "Contributors" is a comma separated list of wp.org/wp-plugins.org usernames
-*   "Tags" is a comma separated list of tags that apply to the plugin
-*   "Requires at least" is the lowest version that the plugin will work on
-*   "Tested up to" is the highest version that you've *successfully used to test the plugin*. Note that it might work on
-higher versions... this is just the highest one you've verified.
-*   Stable tag should indicate the Subversion "tag" of the latest stable version, or "trunk," if you use `/trunk/` for
-stable.
+= Comprehensive Testing: =
 
-    Note that the `readme.txt` of the stable tag is the one that is considered the defining one for the plugin, so
-if the `/trunk/readme.txt` file says that the stable tag is `4.3`, then it is `/tags/4.3/readme.txt` that'll be used
-for displaying information about the plugin.  In this situation, the only thing considered from the trunk `readme.txt`
-is the stable tag pointer.  Thus, if you develop in trunk, you can update the trunk `readme.txt` to reflect changes in
-your in-development version, without having that information incorrectly disclosed about the current stable version
-that lacks those changes -- as long as the trunk's `readme.txt` points to the correct stable tag.
+   * Utilize real browser testing on your site's forms and Woo checkout processes, ensuring you do not lose sales from broken forms or checkouts.  WooCommerce testing can use our automated test products or your selected real products.  Forms are verified from submission to email notifications and checkout covers product pages, adding products to the cart along with cart and checkout functionality.
 
-    If no stable tag is provided, it is assumed that trunk is stable, but you should specify "trunk" if that's where
-you put the stable version, in order to eliminate any doubt.
+= Automated Scheduling: =
+
+   * Customize test schedules to fit your needs and stay informed with notifications through various channels, including detailed video recordings of tests and pinpointing where and why failures occur.
+
+= No Code, One-Click Integration: =
+
+   * Effortlessly connect CheckView to your WordPress or WooCommerce with a single click with no Chrome extensions to install, Github repos to setup, or coding skills required.  Save time and money by replacing tedious manual testing of your WordPress forms or WooCommerce checkout with an automated, comprehensive process that runs in the background.
+
+= Customizable Test Flows: =
+
+   * Tailor your testing to match the specifics of your WordPress form plugin or WooCommerce setup, including what URLs to test and custom theme adjustments using our built in test flow step editor.
+
+= Perfect for Multiple Websites or Agencies: =
+
+
+   * CheckView can be ran across multiple websites and their associated forms with ease.  Manage all of your site's statuses and notifications within one easy to use dashboard.  Provide additional value to your clients and complement your existing uptime monitoring.
+
+= Privacy-Focused: =
+
+   * After each test, CheckView ensures any collected data is immediately  purged, preserving the integrity of your form submissions and order data.
+
+= Account and Pricing: =
+
+   * Currently in beta, CheckView invites agencies and website owners to join for free with detailed pricing to be announced soon.
+
+    Requires a separate account at [CheckView.io](https://checkview.io/) for platform access.
+
+= Data Sharing Commitment: = 
+
+   *  Upon integrating your account, CheckView is dedicated to handling the  following data with the highest standards of privacy and security:
+
+       -  General WordPress installation details and plugin inventory.
+
+       -  Metadata for orders, carts, and forms, ensuring no personal data is compromised.
+
+       -  Product names and images, used solely for enhancing checkout testing accuracy.
+
+Embrace a new standard of WordPress testing with CheckView, where cutting-edge technology meets user-friendly WordPress integration.
 
 == Installation ==
 
-This section describes how to install the plugin and get it working.
+1. Upload the checkview plugin into the /wp-content/plugins/ folder on your site.
 
-e.g.
+2. Use the 'Plugins' section in WordPress to enable the plugin.
 
-1. Upload `checkview.php` to the `/wp-content/plugins/` directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Place `<?php do_action('plugin_name_hook'); ?>` in your templates
+3. That's all for setup! Return to CheckView.io to proceed with adding your website to the platform.
 
 == Frequently Asked Questions ==
 
-= A question that someone might have =
+= Is a CheckView account required to utilize this plugin? =
 
-An answer to that question.
-
-= What about foo bar? =
-
-Answer to foo bar dilemma.
+Yes, creating a [CheckView.io](https://checkview.io/) account is required - for further details, [please visit this link](https://checkview.io/) to join our beta. Although the plugin can be installed without the service, automated testing functionalities will not be accessible without linking a [CheckView.io](https://checkview.io/) account.
 
 == Screenshots ==
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
-(or jpg, jpeg, gif).
-2. This is the second screen shot
+1. CheckView test flow.
+
+2. CheckView test flow results.
+
+3. CheckView general settings.
 
 == Changelog ==
 
-= 1.0 =
-* A change since the previous version.
-* Another change.
+= 1.0.0 =
+* Initial release.
 
-= 0.5 =
-* List versions from most recent at top to oldest at bottom.
+= 1.1.0 =
+* Added WooCommerce Automated Testing feature.
+* Shifted WooCommerce Automated Testing functions from function.php to class Checkview_Woo_Automated_Testing.
+* Updated stock prevention feature.
+* Updated default testing product name.
 
 == Upgrade Notice ==
 
-= 1.0 =
-Upgrade notices describe the reason a user should upgrade.  No more than 300 characters.
+= 1.0.0 =
+* Initial release.
 
-= 0.5 =
-This version fixes a security related bug.  Upgrade immediately.
-
-== Arbitrary section ==
-
-You may provide arbitrary sections, in the same format as the ones above.  This may be of use for extremely complicated
-plugins where more information needs to be conveyed that doesn't fit into the categories of "description" or
-"installation."  Arbitrary sections will be shown below the built-in sections outlined above.
-
-== A brief Markdown Example ==
-
-Ordered list:
-
-1. Some feature
-1. Another feature
-1. Something else about the plugin
-
-Unordered list:
-
-* something
-* something else
-* third thing
-
-Here's a link to [WordPress](http://wordpress.org/ "Your favorite software") and one to [Markdown's Syntax Documentation][markdown syntax].
-Titles are optional, naturally.
-
-[markdown syntax]: http://daringfireball.net/projects/markdown/syntax
-            "Markdown is what the parser uses to process much of the readme file"
-
-Markdown uses email style notation for blockquotes and I've been told:
-> Asterisks for *emphasis*. Double it up  for **strong**.
-
-`<?php code(); // goes in backticks ?>`
+= 1.1.0 =
+* Added WooCommerce Automated Testing feature.
+* Shifted WooCommerce Automated Testing functions from function.php to class Checkview_Woo_Automated_Testing.
+* Updated stock prevention feature.
+* Updated default testing product name.
