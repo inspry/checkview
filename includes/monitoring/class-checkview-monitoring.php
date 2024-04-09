@@ -71,8 +71,24 @@ class Checkview_Monitoring {
 		$this->loader->add_action(
 			'init',
 			$this,
-			'checkview_report_wc_logger',
+			'checkview_report_wc_logger_fatal',
 			10,
+		);
+		add_filter(
+			'option_woocommerce_stripe_settings',
+			function ( $value ) {
+
+				$value['logging'] = 'yes';
+
+				return $value;
+			}
+		);
+
+		$this->loader->add_action(
+			'init',
+			$this,
+			'checkview_report_wc_logger_stripe',
+			20,
 		);
 	}
 	/**
@@ -356,7 +372,7 @@ class Checkview_Monitoring {
 	 * @param string $log_type log type.
 	 * @return void
 	 */
-	public function checkview_report_wc_logger( $log_type = 'fatal-errors' ) {
+	private function checkview_report_wc_logger( $log_type = 'fatal-errors' ) {
 		$is_enabled = get_option( 'woocommerce_logs_logging_enabled', '' );
 		if ( empty( $is_enabled ) || 'yes' !== $is_enabled || null === $is_enabled ) {
 			update_option( 'woocommerce_logs_logging_enabled', 'yes', true );
@@ -407,5 +423,22 @@ class Checkview_Monitoring {
 		if ( ! empty( $errors ) ) {
 			update_option( $log_type . '_errors_tracked', $errors ); // Prefix the option name with the log type.
 		}
+	}
+	/**
+	 * Reports Wc_logger latest errors.
+	 *
+	 * @return void
+	 */
+	public function checkview_report_wc_logger_stripe() {
+		$this->checkview_report_wc_logger( 'woocommerce-gateway-stripe' );
+	}
+
+	/**
+	 * Reports Wc_logger latest errors.
+	 *
+	 * @return void
+	 */
+	public function checkview_report_wc_logger_fatal() {
+		$this->checkview_report_wc_logger();
 	}
 }
