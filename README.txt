@@ -20,7 +20,7 @@ WC requires at least: 7.0
 
 WC tested up to: 8.3
 
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -111,6 +111,9 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 = 1.1.1 =
 * Added conditions so WooCommerce Automated Testing feature does not load in the absence of WooCommerce.
 
+= 1.1.2 =
+* Modified deleteformresults api method to incorporate all Request.
+
 == Upgrade Notice ==
 
 = 1.0.0 =
@@ -123,4 +126,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Updated default testing product name.
 
 = 1.1.1 =
+* Added conditions so WooCommerce Automated Testing feature does not load in the absence of WooCommerce.
+
+= 1.1.2 =
 * Added conditions so WooCommerce Automated Testing feature does not load in the absence of WooCommerce.

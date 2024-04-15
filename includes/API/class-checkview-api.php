@@ -60,7 +60,7 @@ class CheckView_Api {
 	 * @param    string $version    The version of this plugin.
 	 * @param    class  $woo_helper The woohelper class.
 	 */
-	public function __construct( $plugin_name, $version, $woo_helper ) {
+	public function __construct( $plugin_name, $version, $woo_helper = '' ) {
 
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
@@ -137,7 +137,7 @@ class CheckView_Api {
 			'checkview/v1',
 			'/forms/deleteformstest',
 			array(
-				'methods'             => 'DELETE',
+				'methods'             => array( 'DELETE', 'PUT', 'GET', 'POST' ),
 				'callback'            => array( $this, 'checkview_delete_forms_test_results' ),
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
