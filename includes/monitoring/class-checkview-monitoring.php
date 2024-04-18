@@ -84,12 +84,12 @@ class Checkview_Monitoring {
 			}
 		);
 
-		$this->loader->add_action(
-			'init',
-			$this,
-			'checkview_report_wc_logger_stripe',
-			20,
-		);
+		// $this->loader->add_action(
+		// 'init',
+		// $this,
+		// 'checkview_report_wc_logger_stripe',
+		// 20,
+		// );
 	}
 	/**
 	 * Tracks version changes and sends to SaaS.
@@ -377,16 +377,23 @@ class Checkview_Monitoring {
 		if ( empty( $is_enabled ) || 'yes' !== $is_enabled || null === $is_enabled ) {
 			update_option( 'woocommerce_logs_logging_enabled', 'yes', true );
 		}
-		$file_controller = new FileController();
-		$file_args       = array(
-			'source'         => $log_type, // Use the log type parameter here.
-			'per_page'       => 1,
-			'offset'         => 0,
+		$file_controller   = new FileController();
+		$current_timestamp = strtotime( current_time( 'mysql' ) );
+		$timestamp         = strtotime( '-1 day' );
+
+		$file_args = array(
 			'order'          => 'desc',
-			'orderby'        => 'modified',
 			'posts_per_page' => 1,
+			'date_start'     => $timestamp,
+			'date_end'       => $current_timestamp,
+			'date_filter'    => 'modified',
 		);
-		$logs            = $file_controller->get_files( $file_args, false );
+		$args      = array(
+			'per_page' => 20,
+		);
+		$logs      = $file_controller->get_files( $file_args, false );
+		$results   = $file_controller->search_within_files( 'critical', $args, $file_args );
+		// print_r( $results );
 		if ( ! is_array( $logs ) || empty( $logs ) ) {
 			return;
 		}
