@@ -79,7 +79,7 @@ class Checkview {
 		if ( defined( 'CHECKVIEW_VERSION' ) ) {
 			$this->version = CHECKVIEW_VERSION;
 		} else {
-			$this->version = '1.1.2';
+			$this->version = '1.1.3';
 		}
 		$this->plugin_name = 'checkview';
 
@@ -374,6 +374,13 @@ class Checkview {
 			$plugin_admin,
 			'checkview_init_current_test'
 		);
+		$this->loader->add_action(
+			'upgrader_process_complete',
+			$this,
+			'checkview_track_updates_notification',
+			10,
+			2,
+		);
 		// woocommerce.
 		// $this->loader->add_action(
 		// 'init',
@@ -449,7 +456,26 @@ class Checkview {
 			);
 		}
 	}
+	/**
+	 * Tracks core version updates.
+	 *
+	 * @param [object] $upgrader_object class upgrader.
+	 * @param [array]  $options array.
+	 * @return void
+	 */
+	public function checkview_track_updates_notification( $upgrader_object, $options ) {
 
+		// If an update has taken place and the updated type is plugins and the plugins element exists.
+		if ( 'update' === $options['action'] && 'plugin' === $options['type'] && isset( $options['plugins'] ) ) {
+			// Iterate through the plugins being updated and check if ours is there.
+			foreach ( $options['plugins'] as $plugin ) {
+				if ( CHECKVIEW_BASE_DIR === $plugin ) {
+					// Your action if it is your plugin.
+					checkview_reset_cache( true );
+				}
+			}
+		}
+	}
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.
 	 *
