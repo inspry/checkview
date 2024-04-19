@@ -79,7 +79,7 @@ class Checkview {
 		if ( defined( 'CHECKVIEW_VERSION' ) ) {
 			$this->version = CHECKVIEW_VERSION;
 		} else {
-			$this->version = '1.1.2';
+			$this->version = '1.1.3';
 		}
 		$this->plugin_name = 'checkview';
 
@@ -465,13 +465,12 @@ class Checkview {
 	 */
 	public function checkview_track_updates_notification( $upgrader_object, $options ) {
 
-		// The path to our plugin's main file.
-		$our_plugin = plugin_basename( __FILE__ );
 		// If an update has taken place and the updated type is plugins and the plugins element exists.
 		if ( 'update' === $options['action'] && 'plugin' === $options['type'] && isset( $options['plugins'] ) ) {
 			// Iterate through the plugins being updated and check if ours is there.
 			foreach ( $options['plugins'] as $plugin ) {
-				if ( $plugin === $our_plugin ) {
+				update_option( 'plugin_no', $plugin );
+				if ( CHECKVIEW_BASE_DIR === $plugin ) {
 					// Your action if it is your plugin.
 					checkview_reset_cache( true );
 				}
