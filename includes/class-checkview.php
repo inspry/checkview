@@ -469,7 +469,6 @@ class Checkview {
 		if ( 'update' === $options['action'] && 'plugin' === $options['type'] && isset( $options['plugins'] ) ) {
 			// Iterate through the plugins being updated and check if ours is there.
 			foreach ( $options['plugins'] as $plugin ) {
-				update_option( 'plugin_no', $plugin );
 				if ( CHECKVIEW_BASE_DIR === $plugin ) {
 					// Your action if it is your plugin.
 					checkview_reset_cache( true );
