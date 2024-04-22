@@ -377,10 +377,13 @@ class Checkview_Monitoring {
 		if ( empty( $is_enabled ) || 'yes' !== $is_enabled || null === $is_enabled ) {
 			update_option( 'woocommerce_logs_logging_enabled', 'yes', true );
 		}
-		$file_controller   = new FileController();
+		$file_controller = new FileController();
+		$timestamp       = get_option( 'checkview_last_checked_time', '' );
+		if ( empty( $timestamp ) || '' === $timestamp ) {
+			$timestamp = strtotime( '-1 day' );
+		}
 		$current_timestamp = strtotime( current_time( 'mysql' ) );
-		$timestamp         = strtotime( '-1 day' );
-
+		update_option( 'checkview_last_checked_time', $current_timestamp, true );
 		$file_args = array(
 			'order'          => 'desc',
 			'posts_per_page' => 1,
@@ -392,8 +395,10 @@ class Checkview_Monitoring {
 			'per_page' => 20,
 		);
 		$logs      = $file_controller->get_files( $file_args, false );
-		$results   = $file_controller->search_within_files( 'critical', $args, $file_args );
-		// print_r( $results );
+		$results   = $file_controller->search_within_files( 'Critical', $args, $file_args );
+		array_merge( $results, $file_controller->search_within_files( 'Emergency', $args, $file_args ) );
+		print_r( $results );
+		return;
 		if ( ! is_array( $logs ) || empty( $logs ) ) {
 			return;
 		}

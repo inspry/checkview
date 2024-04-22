@@ -1,7 +1,5 @@
 === CheckView Automated WordPress Testing ===
 
-
-
 Contributors: checkview, inspry
 
 Donate link: https://checkview.io/
@@ -10,7 +8,7 @@ Tags: testing, monitoring, uptime, tests, woocommerce
 
 Requires at least: 5.0.1
 
-Tested up to: 6.5
+Tested up to: 6.5.2
 
 Requires PHP: 7.0.0
 
