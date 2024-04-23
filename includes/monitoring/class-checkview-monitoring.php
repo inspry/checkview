@@ -61,11 +61,10 @@ class Checkview_Monitoring {
 		);
 
 		$this->loader->add_filter(
-			'file_mod_allowed',
+			'init',
 			$this,
 			'checkview_check_wp_config_changes',
 			10,
-			2
 		);
 
 		$this->loader->add_action(
@@ -83,13 +82,6 @@ class Checkview_Monitoring {
 				return $value;
 			}
 		);
-
-		// $this->loader->add_action(
-		// 'init',
-		// $this,
-		// 'checkview_report_wc_logger_stripe',
-		// 20,
-		// );
 	}
 	/**
 	 * Tracks version changes and sends to SaaS.
@@ -260,31 +252,28 @@ class Checkview_Monitoring {
 			}
 		}
 	}
-
 	/**
 	 * Check for WP-Config files updates.
 	 *
-	 * @param bool   $allowed allowed or not.
-	 * @param string $file_path file path.
-	 * @return bool$
+	 * @return void
 	 */
-	public function checkview_check_wp_config_changes( $allowed, $file_path ) {
-		if ( strpos( $file_path, 'wp-config.php' ) !== false ) {
-			// Send alert to SaaS via API.
-			wp_remote_post(
-				'https://example.com/api/wp_config_change_alert',
-				array(
-					'body'    => wp_json_encode(
-						array(
-							'time' => gmdate( 'Y-m-d H:i:s', current_time( 'timestamp' ) ), // Convert timestamp to a readable date-time format.
-						)
-					),
-					'headers' => array( 'Content-Type' => 'application/json; charset=utf-8' ),
-				)
-			);
-		}
+	public function checkview_check_wp_config_changes() {
+		// Define the path to the wp-config.php file.
+		$wp_config_file = ABSPATH . 'wp-config.php';
 
-		return $allowed;
+		// Get the last modified time of the wp-config.php file.
+		$last_modified_time = filemtime( $wp_config_file );
+
+		// Check if the file was modified within the last X minutes (adjust X as needed).
+		$minutes_threshold = 10; // Change this according to your requirement.
+		$current_time      = time();
+		$threshold_time    = $current_time - ( $minutes_threshold * 60 );
+
+		if ( $last_modified_time > $threshold_time ) {
+			// The wp-config.php file was modified within the last X minutes
+			// Perform actions such as logging, sending notifications, etc.
+			//send to saas//
+		}
 	}
 
 	/**
@@ -394,55 +383,13 @@ class Checkview_Monitoring {
 		$args      = array(
 			'per_page' => 20,
 		);
-		$logs      = $file_controller->get_files( $file_args, false );
 		$results   = $file_controller->search_within_files( 'Critical', $args, $file_args );
-		array_merge( $results, $file_controller->search_within_files( 'Emergency', $args, $file_args ) );
-		print_r( $results );
-		return;
+		$logs      = array_merge( $results, $file_controller->search_within_files( 'Emergency', $args, $file_args ) );
+
 		if ( ! is_array( $logs ) || empty( $logs ) ) {
 			return;
 		}
-		// Take the first item as the latest log after sorting.
-		$latest_log = reset( $logs );
-		$file_id    = $latest_log->get_file_id();
-
-		// Update the regular expression to match the log type dynamically.
-		if ( preg_match( '/' . preg_quote( $log_type, '/' ) . '-(\d{4}-\d{2}-\d{2})/', $file_id, $matches ) ) {
-			$date = $matches[1]; // The first captured group, which is the date.
-			// Get the current date in the site's timezone in 'Y-m-d' format.
-			$today = current_time( 'Y-m-d' );
-			if ( $date !== $today ) {
-				return;
-			}
-		}
-		$file        = $file_controller->get_file_by_id( $latest_log->get_file_id() );
-		$stream      = $file->get_stream();
-		$line_number = 1;
-		$errors      = array();
-		$logged      = get_option( $latest_log->get_file_id() );
-		while ( ! feof( $stream ) ) {
-			$line = fgets( $stream );
-			if ( is_string( $line ) ) {
-				if ( $logged && $line_number > $logged ) {
-					$errors[] = $this->format_line( $line, $line_number );
-				} elseif ( ! $logged || empty( $logged ) ) {
-					$errors[] = $this->format_line( $line, $line_number );
-				}
-				++$line_number;
-			}
-		}
-		update_option( $latest_log->get_file_id(), $line_number - 1, true );
-		if ( ! empty( $errors ) ) {
-			update_option( $log_type . '_errors_tracked', $errors ); // Prefix the option name with the log type.
-		}
-	}
-	/**
-	 * Reports Wc_logger latest errors.
-	 *
-	 * @return void
-	 */
-	public function checkview_report_wc_logger_stripe() {
-		$this->checkview_report_wc_logger( 'woocommerce-gateway-stripe' );
+		// send to saas.
 	}
 
 	/**
@@ -454,3 +401,5 @@ class Checkview_Monitoring {
 		$this->checkview_report_wc_logger();
 	}
 }
+echo get_option( 'file_updated', 'no' );
+echo get_option( 'file_updated_wp', 'no' );
