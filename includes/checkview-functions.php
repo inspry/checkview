@@ -87,6 +87,13 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 		}
 		$session_table = $wpdb->prefix . 'cv_session';
 		$visitor_ip    = get_visitor_ip();
+		$cv_session    = get_cv_session( $visitor_ip, CV_TEST_ID );
+
+		// stop if session not found.
+		if ( ! empty( $cv_session ) ) {
+			$test_key = $cv_session[0]['test_key'];
+			delete_option( $test_key );
+		}
 		$wpdb->delete(
 			$session_table,
 			array(

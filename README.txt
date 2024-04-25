@@ -8,7 +8,7 @@ Tags: testing, monitoring, uptime, tests, woocommerce
 
 Requires at least: 5.0.1
 
-Tested up to: 6.5
+Tested up to: 6.5.2
 
 Requires PHP: 7.0.0
 
@@ -20,7 +20,7 @@ WC requires at least: 7.0
 
 WC tested up to: 8.3
 
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -119,6 +119,10 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Updated testing product name.
 * Added auto cache refresh on plugin's update.
 
+= 1.1.4 =
+* Re-introduced registerformtest endpoint.
+* Updated default emails sending address for [CheckView](https://checkview.io/).
+
 == Upgrade Notice ==
 
 = 1.0.0 =
@@ -140,3 +144,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Removed Cache from getformresults endpoint.
 * Updated testing product name.
 * Added auto cache refresh on plugin's update.
+
+= 1.1.4 =
+* Re-introduced registerformtest endpoint.
+* Updated default emails sending address for [CheckView](https://checkview.io/).

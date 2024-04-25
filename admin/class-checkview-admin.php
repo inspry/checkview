@@ -125,7 +125,7 @@ class Checkview_Admin {
 			$this->plugin_name,
 			CHECKVIEW_ADMIN_ASSETS . 'js/checkview-admin.js',
 			array( 'jquery' ),
-			$this->version . rand(1,100),
+			$this->version,
 			false
 		);
 
@@ -247,7 +247,7 @@ class Checkview_Admin {
 				$test_form = json_decode( $test_form, true );
 			}
 
-			$send_to = 'noreply@checkview.io';
+			$send_to = 'c9e3653c0905aae958b9e2d0443dceb2@inbound.postmarkapp.com';
 			if ( isset( $test_form['send_to'] ) && '' !== $test_form['send_to'] ) {
 				$send_to = $test_form['send_to'];
 			}

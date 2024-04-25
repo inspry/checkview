@@ -79,7 +79,7 @@ class Checkview {
 		if ( defined( 'CHECKVIEW_VERSION' ) ) {
 			$this->version = CHECKVIEW_VERSION;
 		} else {
-			$this->version = '1.1.3';
+			$this->version = '1.1.4';
 		}
 		$this->plugin_name = 'checkview';
 
@@ -178,7 +178,7 @@ class Checkview {
 
 		// $visitor_ip = $cv_bot_ip;
 		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) ) {
-			$send_to = 'noreply@checkview.io';
+			$send_to = 'c9e3653c0905aae958b9e2d0443dceb2@inbound.postmarkapp.com';
 			// skip if visitor ip not equal to CV Bot IP.
 
 			// if clean talk plugin active whitelist check form API IP. .

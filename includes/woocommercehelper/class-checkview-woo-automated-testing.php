@@ -211,7 +211,7 @@ class Checkview_Woo_Automated_Testing {
 			$customer = new WC_Customer();
 			$customer->set_username( uniqid( 'checkview_wc_automated_testing_' ) );
 			$customer->set_password( wp_generate_password() );
-			$customer->set_email( 'noreply@checkview.io' );
+			$customer->set_email( 'c9e3653c0905aae958b9e2d0443dceb2@inbound.postmarkapp.com' );
 			$customer->set_display_name( 'CheckView WooCommerce Automated Testing User' );
 
 			$customer_id = $customer->save();
@@ -259,7 +259,7 @@ class Checkview_Woo_Automated_Testing {
 	public function checkview_stop_registration_errors( $errors, $username, $email ) {
 		// Check for our WCAT username and email.
 		if ( false !== strpos( $username, 'checkview_wc_automated_testing_' )
-		&& false !== strpos( $email, 'noreply@checkview.io' ) ) {
+		&& false !== strpos( $email, 'c9e3653c0905aae958b9e2d0443dceb2@inbound.postmarkapp.com' ) ) {
 			// The default value for this in WC is a WP_Error object, so just reset it.
 			$errors = new WP_Error();
 		}
