@@ -55,6 +55,8 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 				99
 			);
 
+			remove_action( 'wpforms_frontend_output', array( wpforms()->get( 'frontend' ), 'recaptcha' ), 20 );
+
 			add_action(
 				'wpforms_process_complete',
 				array(

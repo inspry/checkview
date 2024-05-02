@@ -206,8 +206,15 @@ class Checkview_Woo_Automated_Testing {
 	 */
 	public function checkview_create_test_customer() {
 		$customer = $this->checkview_get_test_customer();
+		$email    = 'c9e3653c0905aae958b9e2d0443dceb2@inbound.postmarkapp.com';
 
-		if ( false === $customer ) {
+		if ( false === $customer || empty( $customer ) ) {
+			// Get user object by email.
+			$customer = get_user_by( 'email', $email );
+			if ( $customer ) {
+				update_option( 'checkview_test_user', $customer->ID );
+				return $customer;
+			}
 			$customer = new WC_Customer();
 			$customer->set_username( uniqid( 'checkview_wc_automated_testing_' ) );
 			$customer->set_password( wp_generate_password() );
@@ -799,7 +806,7 @@ class Checkview_Woo_Automated_Testing {
 	 * @param wc_itme $item item in order.
 	 * @param int     $quantity quaniity if item.
 	 */
-	public function filter_woocommerce_prevent_adjust_line_item_product_stock( $prevent, $item, $quantity ) {
+	public function checkview_woocommerce_prevent_adjust_line_item_product_stock( $prevent, $item, $quantity ) {
 		// Get order.
 		$order         = $item->get_order();
 		$billing_email = $order->get_billing_email();
