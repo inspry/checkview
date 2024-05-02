@@ -61,6 +61,35 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				99,
 				3
 			);
+			add_filter(
+				'fluentform/has_recaptcha',
+				function ( $isSpamCheck ) {
+					return false;
+				},
+				20,
+				1
+			);
+			add_filter(
+				'fluentform/akismet_check_spam',
+				function ( $isSpamCheck, $form_id, $formData ) {
+					return false;
+				},
+				20,
+				3
+			);
+			add_filter(
+				'fluentform/rendering_form',
+				function ( $form ) {
+					foreach ( $form->fields['fields'] as $index => $field ) {
+						if ( in_array( $field['element'], array( 'recaptcha', 'hcaptcha', 'turnstile', 'captcha' ) ) ) {
+							\FluentForm\Framework\Helpers\ArrayHelper::forget( $form->fields['fields'], $index );
+						}
+					}
+					return $form;
+				},
+				20,
+				1
+			);
 		}
 
 		/**

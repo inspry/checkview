@@ -54,16 +54,16 @@ class Checkview_Woo_Automated_Testing {
 		$this->version     = $version;
 		$this->loader      = $loader;
 		if ( $this->loader ) {
-			$this->loader->add_action(
-				'init',
-				$this,
-				'checkview_create_test_product',
-			);
-			$this->loader->add_action(
-				'init',
-				$this,
-				'checkview_create_test_customer',
-			);
+			// $this->loader->add_action(
+			// 'init',
+			// $this,
+			// 'checkview_create_test_product',
+			// );
+			// $this->loader->add_action(
+			// 'init',
+			// $this,
+			// 'checkview_create_test_customer',
+			// );
 			$this->loader->add_action(
 				'template_redirect',
 				$this,
@@ -93,46 +93,44 @@ class Checkview_Woo_Automated_Testing {
 				$this,
 				'checkview_seo_hide_product_from_jetpack',
 			);
-			if ( class_exists( 'woocommerce' ) ) {
-				$this->loader->add_filter(
-					'woocommerce_webhook_should_deliver',
-					$this,
-					'checkview_filter_webhooks',
-					10,
-					3
-				);
 
-				$this->loader->add_filter(
-					'woocommerce_email_recipient_new_order',
-					$this,
-					'checkview_filter_admin_emails',
-					10,
-					2
-				);
+			$this->loader->add_filter(
+				'woocommerce_webhook_should_deliver',
+				$this,
+				'checkview_filter_webhooks',
+				10,
+				3
+			);
 
-				$this->loader->add_action(
-					'checkview_delete_orders_action',
-					$this,
-					'checkview_delete_orders',
-					10,
-					1
-				);
-				$this->loader->add_action(
-					'checkview_rotate_user_credentials',
-					$this,
-					'checkview_rotate_test_user_credentials',
-					10,
-				);
+			$this->loader->add_filter(
+				'woocommerce_email_recipient_new_order',
+				$this,
+				'checkview_filter_admin_emails',
+				10,
+				2
+			);
 
-				$this->loader->add_filter(
-					'woocommerce_registration_errors',
-					$this,
-					'checkview_stop_registration_errors',
-					15,
-					3
-				);
+			$this->loader->add_action(
+				'checkview_delete_orders_action',
+				$this,
+				'checkview_delete_orders',
+				10,
+				1
+			);
+			$this->loader->add_action(
+				'checkview_rotate_user_credentials',
+				$this,
+				'checkview_rotate_test_user_credentials',
+				10,
+			);
 
-			}
+			$this->loader->add_filter(
+				'woocommerce_registration_errors',
+				$this,
+				'checkview_stop_registration_errors',
+				15,
+				3
+			);
 
 			// Delete orders on backend page load if crons are disabled.
 			if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
@@ -499,7 +497,7 @@ class Checkview_Woo_Automated_Testing {
 		$visitor_ip = get_visitor_ip();
 		// Check view Bot IP. Todo.
 		$cv_bot_ip = get_api_ip();
-		if ( ! is_admin() && class_exists( 'woocommerce' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) ) {
+		if ( ! is_admin() && class_exists( 'WooCommerce' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) ) {
 			if ( ( isset( $_GET['checkview_use_stripe'] ) && 'yes' === sanitize_text_field( wp_unslash( $_GET['checkview_use_stripe'] ) ) ) || 'yes' === get_option( $visitor_ip . 'use_stripe' ) ) {
 				// Always use Stripe test mode when on dev or staging.
 				add_filter(
