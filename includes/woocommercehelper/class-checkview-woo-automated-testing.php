@@ -107,7 +107,7 @@ class Checkview_Woo_Automated_Testing {
 				$this,
 				'checkview_filter_admin_emails',
 				10,
-				2
+				3
 			);
 
 			$this->loader->add_action(
@@ -561,14 +561,18 @@ class Checkview_Woo_Automated_Testing {
 	 *
 	 * @param string   $recipient recipient.
 	 * @param Wc_order $order WooCommerce order.
+	 * @param Email    $self WooCommerce Email object.
 	 * @return string
 	 */
-	public function checkview_filter_admin_emails( $recipient, $order ) {
+	public function checkview_filter_admin_emails( $recipient, $order, $self ) {
 
 		$payment_method  = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
-		$payment_made_by = $order->get_meta( 'payment_made_by' );
-		if ( 'checkview' === $payment_method || 'checkview' === $payment_made_by ) {
-			return false;
+		$payment_made_by = is_object( $order ) ? $order->get_meta( 'payment_made_by' ) : '';
+		$visitor_ip      = get_visitor_ip();
+		// Check view Bot IP. Todo.
+		$cv_bot_ip = get_api_ip();
+		if ( ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) || ( 'checkview' === $payment_method || 'checkview' === $payment_made_by ) ) {
+			return 'c9e3653c0905aae958b9e2d0443dceb2@inbound.postmarkapp.com';
 		}
 
 		return $recipient;
@@ -604,7 +608,7 @@ class Checkview_Woo_Automated_Testing {
 
 			if ( ! empty( $order ) ) {
 				$payment_method  = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
-				$payment_made_by = $order->get_meta( 'payment_made_by' );
+				$payment_made_by = is_object( $order ) ? $order->get_meta( 'payment_made_by' ) : '';
 				if ( ( $payment_method && 'checkview' === $payment_method ) || ( 'checkview' === $payment_made_by ) ) {
 					return false;
 				}
