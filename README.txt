@@ -1,4 +1,4 @@
-=== CheckView Automated WordPress Testing ===
+=== CheckView Automated Testing ===
 Contributors: checkview, inspry
 Donate link: https://checkview.io/
 Tags: testing, monitoring, uptime, tests, woocommerce
