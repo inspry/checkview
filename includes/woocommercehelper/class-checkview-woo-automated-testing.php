@@ -54,16 +54,16 @@ class Checkview_Woo_Automated_Testing {
 		$this->version     = $version;
 		$this->loader      = $loader;
 		if ( $this->loader ) {
-			$this->loader->add_action(
-				'init',
-				$this,
-				'checkview_create_test_product',
-			);
-			$this->loader->add_action(
-				'init',
-				$this,
-				'checkview_create_test_customer',
-			);
+			// $this->loader->add_action(
+			// 'init',
+			// $this,
+			// 'checkview_create_test_product',
+			// );
+			// $this->loader->add_action(
+			// 'init',
+			// $this,
+			// 'checkview_create_test_customer',
+			// );
 			$this->loader->add_action(
 				'template_redirect',
 				$this,
@@ -93,46 +93,44 @@ class Checkview_Woo_Automated_Testing {
 				$this,
 				'checkview_seo_hide_product_from_jetpack',
 			);
-			if ( class_exists( 'woocommerce' ) ) {
-				$this->loader->add_filter(
-					'woocommerce_webhook_should_deliver',
-					$this,
-					'checkview_filter_webhooks',
-					10,
-					3
-				);
 
-				$this->loader->add_filter(
-					'woocommerce_email_recipient_new_order',
-					$this,
-					'checkview_filter_admin_emails',
-					10,
-					2
-				);
+			$this->loader->add_filter(
+				'woocommerce_webhook_should_deliver',
+				$this,
+				'checkview_filter_webhooks',
+				10,
+				3
+			);
 
-				$this->loader->add_action(
-					'checkview_delete_orders_action',
-					$this,
-					'checkview_delete_orders',
-					10,
-					1
-				);
-				$this->loader->add_action(
-					'checkview_rotate_user_credentials',
-					$this,
-					'checkview_rotate_test_user_credentials',
-					10,
-				);
+			$this->loader->add_filter(
+				'woocommerce_email_recipient_new_order',
+				$this,
+				'checkview_filter_admin_emails',
+				10,
+				3
+			);
 
-				$this->loader->add_filter(
-					'woocommerce_registration_errors',
-					$this,
-					'checkview_stop_registration_errors',
-					15,
-					3
-				);
+			$this->loader->add_action(
+				'checkview_delete_orders_action',
+				$this,
+				'checkview_delete_orders',
+				10,
+				1
+			);
+			$this->loader->add_action(
+				'checkview_rotate_user_credentials',
+				$this,
+				'checkview_rotate_test_user_credentials',
+				10,
+			);
 
-			}
+			$this->loader->add_filter(
+				'woocommerce_registration_errors',
+				$this,
+				'checkview_stop_registration_errors',
+				15,
+				3
+			);
 
 			// Delete orders on backend page load if crons are disabled.
 			if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
@@ -206,8 +204,15 @@ class Checkview_Woo_Automated_Testing {
 	 */
 	public function checkview_create_test_customer() {
 		$customer = $this->checkview_get_test_customer();
+		$email    = 'c9e3653c0905aae958b9e2d0443dceb2@inbound.postmarkapp.com';
 
-		if ( false === $customer ) {
+		if ( false === $customer || empty( $customer ) ) {
+			// Get user object by email.
+			$customer = get_user_by( 'email', $email );
+			if ( $customer ) {
+				update_option( 'checkview_test_user', $customer->ID );
+				return $customer;
+			}
 			$customer = new WC_Customer();
 			$customer->set_username( uniqid( 'checkview_wc_automated_testing_' ) );
 			$customer->set_password( wp_generate_password() );
@@ -492,7 +497,7 @@ class Checkview_Woo_Automated_Testing {
 		$visitor_ip = get_visitor_ip();
 		// Check view Bot IP. Todo.
 		$cv_bot_ip = get_api_ip();
-		if ( ! is_admin() && class_exists( 'woocommerce' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) ) {
+		if ( ! is_admin() && class_exists( 'WooCommerce' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) ) {
 			if ( ( isset( $_GET['checkview_use_stripe'] ) && 'yes' === sanitize_text_field( wp_unslash( $_GET['checkview_use_stripe'] ) ) ) || 'yes' === get_option( $visitor_ip . 'use_stripe' ) ) {
 				// Always use Stripe test mode when on dev or staging.
 				add_filter(
@@ -556,14 +561,18 @@ class Checkview_Woo_Automated_Testing {
 	 *
 	 * @param string   $recipient recipient.
 	 * @param Wc_order $order WooCommerce order.
+	 * @param Email    $self WooCommerce Email object.
 	 * @return string
 	 */
-	public function checkview_filter_admin_emails( $recipient, $order ) {
+	public function checkview_filter_admin_emails( $recipient, $order, $self ) {
 
 		$payment_method  = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
-		$payment_made_by = $order->get_meta( 'payment_made_by' );
-		if ( 'checkview' === $payment_method || 'checkview' === $payment_made_by ) {
-			return false;
+		$payment_made_by = is_object( $order ) ? $order->get_meta( 'payment_made_by' ) : '';
+		$visitor_ip      = get_visitor_ip();
+		// Check view Bot IP. Todo.
+		$cv_bot_ip = get_api_ip();
+		if ( ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) || ( 'checkview' === $payment_method || 'checkview' === $payment_made_by ) ) {
+			return 'c9e3653c0905aae958b9e2d0443dceb2@inbound.postmarkapp.com';
 		}
 
 		return $recipient;
@@ -599,7 +608,7 @@ class Checkview_Woo_Automated_Testing {
 
 			if ( ! empty( $order ) ) {
 				$payment_method  = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
-				$payment_made_by = $order->get_meta( 'payment_made_by' );
+				$payment_made_by = is_object( $order ) ? $order->get_meta( 'payment_made_by' ) : '';
 				if ( ( $payment_method && 'checkview' === $payment_method ) || ( 'checkview' === $payment_made_by ) ) {
 					return false;
 				}
@@ -799,7 +808,7 @@ class Checkview_Woo_Automated_Testing {
 	 * @param wc_itme $item item in order.
 	 * @param int     $quantity quaniity if item.
 	 */
-	public function filter_woocommerce_prevent_adjust_line_item_product_stock( $prevent, $item, $quantity ) {
+	public function checkview_woocommerce_prevent_adjust_line_item_product_stock( $prevent, $item, $quantity ) {
 		// Get order.
 		$order         = $item->get_order();
 		$billing_email = $order->get_billing_email();

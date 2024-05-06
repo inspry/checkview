@@ -60,6 +60,26 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 				99,
 				2
 			);
+
+			add_filter(
+				'frm_fields_in_form',
+				array(
+					$this,
+					'remove_recaptcha_field_from_list',
+				),
+				11,
+				2
+			);
+
+			add_filter(
+				'frm_fields_to_validate',
+				array(
+					$this,
+					'remove_recaptcha_field_from_list',
+				),
+				20,
+				2
+			);
 		}
 		/**
 		 * Injects email to Formidableis supported emails.
@@ -318,6 +338,21 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 							);
 							break;
 					}
+				}
+			}
+			return $fields;
+		}
+		/**
+		 * Removes recaptchabmit field from the list of fields.
+		 *
+		 * @param array $fields Array of fields.
+		 * @param form  $form form.
+		 */
+		public function remove_recaptcha_field_from_list( $fields, $form ) {
+
+			foreach ( $fields as $key => $field ) {
+				if ( 'recaptcha' === FrmField::get_field_type( $field ) || 'captcha' === FrmField::get_field_type( $field ) || 'hcaptcha' === FrmField::get_field_type( $field ) || 'turnstile' === FrmField::get_field_type( $field ) ) {
+					unset( $fields[ $key ] );
 				}
 			}
 			return $fields;

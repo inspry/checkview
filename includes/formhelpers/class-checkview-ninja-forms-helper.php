@@ -48,6 +48,23 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 				99,
 				1
 			);
+			add_filter(
+				'ninja_forms_display_fields',
+				array(
+					$this,
+					'checkview_maybe_remove_v2_field',
+				),
+				20
+			);
+
+			add_filter(
+				'ninja_forms_validate_fields',
+				function ( $check, $data ) {
+					return false;
+				},
+				12,
+				2
+			);
 			if ( defined( 'TEST_EMAIL' ) ) {
 				add_filter(
 					'ninja_forms_action_email_send',
@@ -129,6 +146,24 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 
 			// Test completed So Clear sessions.
 			complete_checkview_test();
+		}
+
+		/**
+		 * Remove v2 reCAPTCHA fields if still configured, when using the v3 Action
+		 *
+		 * @param array $fields fields of the form.
+		 *
+		 * @return array
+		 */
+		public function checkview_maybe_remove_v2_field( $fields ) {
+			foreach ( $fields as $key => $field ) {
+				if ( 'recaptcha' === $field['type'] ) {
+					// Remove v2 reCAPTCHA fields if still configured.
+					unset( $fields[ $key ] );
+				}
+			}
+
+			return $fields;
 		}
 	}
 

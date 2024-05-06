@@ -189,6 +189,9 @@ class Checkview_Admin {
 		if ( ! function_exists( 'is_plugin_active' ) ) {
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
+		if ( is_plugin_active( 'fluentform/fluentform.php' ) ) {
+			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-fluent-forms-helper.php';
+		}
 		// Current Vsitor IP.
 		$visitor_ip = get_visitor_ip();
 		// Check view Bot IP. Todo.
