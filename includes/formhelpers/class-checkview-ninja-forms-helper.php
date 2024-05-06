@@ -56,6 +56,15 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 				),
 				20
 			);
+
+			add_filter(
+				'ninja_forms_validate_fields',
+				function ( $check, $data ) {
+					return false;
+				},
+				12,
+				2
+			);
 			if ( defined( 'TEST_EMAIL' ) ) {
 				add_filter(
 					'ninja_forms_action_email_send',

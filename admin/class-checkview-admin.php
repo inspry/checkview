@@ -192,12 +192,6 @@ class Checkview_Admin {
 		if ( is_plugin_active( 'fluentform/fluentform.php' ) ) {
 			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-fluent-forms-helper.php';
 		}
-		if ( is_plugin_active( 'ninja-forms/ninja-forms.php' ) ) {
-			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-ninja-forms-helper.php';
-		}
-		if ( is_plugin_active( 'formidable/formidable.php' ) ) {
-			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-formidable-helper.php';
-		}
 		// Current Vsitor IP.
 		$visitor_ip = get_visitor_ip();
 		// Check view Bot IP. Todo.

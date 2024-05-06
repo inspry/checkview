@@ -79,7 +79,7 @@ class Checkview {
 		if ( defined( 'CHECKVIEW_VERSION' ) ) {
 			$this->version = CHECKVIEW_VERSION;
 		} else {
-			$this->version = '1.1.4';
+			$this->version = '1.1.5';
 		}
 		$this->plugin_name = 'checkview';
 
@@ -381,43 +381,6 @@ class Checkview {
 			10,
 			2,
 		);
-		// woocommerce.
-		// $this->loader->add_action(
-		// 'init',
-		// '',
-		// 'checkview_create_test_product',
-		// );
-
-		// woocommerce.
-		// $this->loader->add_action(
-		// 'init',
-		// '',
-		// 'checkview_create_test_customer',
-		// );
-
-		// $this->loader->add_action(
-		// 'wp_head',
-		// '',
-		// 'checkview_no_index_for_test_product',
-		// );
-
-		// $this->loader->add_filter(
-		// 'wpseo_exclude_from_sitemap_by_post_ids',
-		// '',
-		// 'checkview_seo_hide_product_from_sitemap',
-		// );
-
-		// $this->loader->add_filter(
-		// 'wp_sitemaps_posts_query_args',
-		// '',
-		// 'checkview_hide_product_from_sitemap',
-		// );
-
-		// $this->loader->add_filter(
-		// 'publicize_should_publicize_published_post',
-		// '',
-		// 'checkview_seo_hide_product_from_jetpack',
-		// );
 	}
 
 	/**

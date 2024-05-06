@@ -70,22 +70,14 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 				11,
 				2
 			);
-			wp_dequeue_script( 'captcha-api' );
+
 			add_filter(
-				'frm_show_normal_field_type',
-				/**
-				 * @param bool   $show
-				 * @param string $field_type
-				 * @param string $target_field_type
-				 * @return bool
-				 */
-				function ( $show, $field_type ) {
-					if ( 'captcha' === $field_type || 'recaptcha' === $field_type ) {
-						$show = false;
-					}
-					return $show;
-				},
-				10,
+				'frm_fields_to_validate',
+				array(
+					$this,
+					'remove_recaptcha_field_from_list',
+				),
+				20,
 				2
 			);
 		}

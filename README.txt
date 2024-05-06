@@ -1,26 +1,13 @@
 === CheckView Automated WordPress Testing ===
-
 Contributors: checkview, inspry
-
 Donate link: https://checkview.io/
-
 Tags: testing, monitoring, uptime, tests, woocommerce
-
 Requires at least: 5.0.1
-
 Tested up to: 6.5.2
-
 Requires PHP: 7.0.0
-
 License: GPLv3
-
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-
-WC requires at least: 7.0
-
-WC tested up to: 8.3
-
-Stable tag: 1.1.4
+Stable tag: 1.1.5
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -123,6 +110,12 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Re-introduced registerformtest endpoint.
 * Updated default emails sending address for [CheckView](https://checkview.io/).
 
+= 1.1.5 =
+* Resolved WooCommerce admin emails disbaling issues.
+* Updated dependencies area.
+* Updated default emails sending address for WooCommerceEmails to [CheckView](https://checkview.io/).
+* Added POST call support to delete order endpoint.
+
 == Upgrade Notice ==
 
 = 1.0.0 =
@@ -148,3 +141,9 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 = 1.1.4 =
 * Re-introduced registerformtest endpoint.
 * Updated default emails sending address for [CheckView](https://checkview.io/).
+
+= 1.1.5 =
+* Resolved WooCommerce admin emails disbaling issues.
+* Updated dependencies area.
+* Updated default emails sending address for WooCommerceEmails to [CheckView](https://checkview.io/).
+* Added POST call support to delete order endpoint.
