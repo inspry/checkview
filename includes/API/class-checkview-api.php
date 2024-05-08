@@ -236,7 +236,7 @@ class CheckView_Api {
 			'checkview/v1',
 			'/store/deleteorders',
 			array(
-				'methods'  => array( 'DELETE', 'PUT', 'GET' ),
+				'methods'  => array( 'DELETE', 'PUT', 'GET', 'POST' ),
 				'callback' => array( $this, 'checkview_delete_orders' ),
 				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'     => array(
