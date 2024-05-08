@@ -115,6 +115,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Updated dependencies area.
 * Updated default emails sending address for WooCommerceEmails to [CheckView](https://checkview.io/).
 * Added POST call support to delete order endpoint.
+* Added order id upport to delete order endpoint.
 
 == Upgrade Notice ==
 
@@ -147,3 +148,4 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Updated dependencies area.
 * Updated default emails sending address for WooCommerceEmails to [CheckView](https://checkview.io/).
 * Added POST call support to delete order endpoint.
+* Added order id upport to delete order endpoint.
