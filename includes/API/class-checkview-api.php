@@ -236,12 +236,15 @@ class CheckView_Api {
 			'checkview/v1',
 			'/store/deleteorders',
 			array(
-				'methods'             => array( 'DELETE', 'PUT', 'GET', 'POST' ),
-				'callback'            => array( $this, 'checkview_delete_orders' ),
-				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'                => array(
+				'methods'  => array( 'DELETE', 'PUT', 'GET' ),
+				'callback' => array( $this, 'checkview_delete_orders' ),
+				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'     => array(
 					'_checkview_token' => array(
-						'required' => true,
+						'required' => false,
+					),
+					'order_id'         => array(
+						'required' => false,
 					),
 				),
 			)
@@ -941,9 +944,10 @@ class CheckView_Api {
 	/**
 	 * Deletes all the avaiable test results for forms.
 	 *
+	 * @param WP_REST_Request $request wp request object.
 	 * @return WP_REST_Response/WP_Error/json
 	 */
-	public function checkview_delete_orders() {
+	public function checkview_delete_orders( WP_REST_Request $request ) {
 		if ( ! class_exists( 'WooCommerce' ) ) {
 			return new WP_REST_Response(
 				array(
@@ -962,13 +966,50 @@ class CheckView_Api {
 			wp_die();
 		}
 		global $wpdb;
-		$error   = array(
+		$error    = array(
 			'status'  => 'error',
 			'code'    => 400,
 			'message' => esc_html__( 'No Result Found', 'checkview' ),
 		);
-		$results = $this->woo_helper->delete_orders_from_backend();
+		$order_id = $request->get_param( 'order_id' );
+		$order_id = isset( $order_id ) ? intval( $order_id ) : null;
+		if ( null === $order_id || empty( $order_id ) ) {
+			$results = $this->woo_helper->delete_orders_from_backend();
+		} else {
+			try {
+				$order_object = new WC_Order( $order_id );
+				$customer_id  = $order_object->get_customer_id();
 
+				// Delete order.
+				if ( $order_object ) {
+					$order_object->delete( true );
+					delete_transient( 'checkview_store_orders_transient' );
+				}
+
+				$order_object = null;
+				$current_user = get_user_by( 'id', $customer_id );
+				// Delete customer if available.
+				if ( $customer_id && isset( $current_user->roles ) && ! in_array( 'administrator', $current_user->roles ) ) {
+					$customer = new WC_Customer( $customer_id );
+
+					if ( ! function_exists( 'wp_delete_user' ) ) {
+						require_once ABSPATH . 'wp-admin/includes/user.php';
+					}
+
+					$res      = $customer->delete( true );
+					$customer = null;
+				}
+				$results = true;
+			} catch ( \Exception $e ) {
+				if ( ! class_exists( 'Checkview_Admin_Logs' ) ) {
+					/**
+					 * The class responsible for defining all actions that occur in the admin area.
+					 */
+					require_once CHECKVIEW_ADMIN_DIR . '/class-checkview-admin-logs.php';
+				}
+				Checkview_Admin_Logs::add( 'api-logs', 'API failed to delete.' );
+			}
+		}
 		if ( $results ) {
 			return new WP_REST_Response(
 				array(

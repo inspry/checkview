@@ -54,11 +54,11 @@ class Checkview_Woo_Automated_Testing {
 		$this->version     = $version;
 		$this->loader      = $loader;
 		if ( $this->loader ) {
-			// $this->loader->add_action(
-			// 'init',
-			// $this,
-			// 'checkview_create_test_product',
-			// );
+			$this->loader->add_action(
+				'init',
+				$this,
+				'checkview_create_test_product',
+			);
 			// $this->loader->add_action(
 			// 'init',
 			// $this,
