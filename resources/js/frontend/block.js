@@ -7,7 +7,7 @@ import { getSetting } from '@woocommerce/settings';
 const settings = getSetting('checkview_data', {});
 
 const defaultLabel = __(
-	'Checkview Testing',
+	'CheckView Testing',
 	'woo-gutenberg-products-block'
 );
 

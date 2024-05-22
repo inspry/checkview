@@ -28,8 +28,8 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) {
 		public function __construct() {
 
 			$this->id          = 'checkview';
-			$this->title       = 'Checkview Testing';
-			$this->description = 'Pay with Checkview test gateway';
+			$this->title       = 'CheckView Testing';
+			$this->description = 'Pay with CheckView test gateway';
 			$this->enabled     = 'yes';
 			$this->supports[]  = 'products';
 			$this->supports[]  = 'subscriptions';
