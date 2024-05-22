@@ -7,7 +7,7 @@ Tested up to: 6.5.2
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 1.1.5
+Stable tag: 1.1.6
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -117,6 +117,11 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Added POST call support to delete order endpoint.
 * Added order id upport to delete order endpoint.
 
+= 1.1.6 =
+* Declared compatibility with WooCommerce HPOS.
+* Updated plugin's name.
+* Updated payment gateway name.
+
 == Upgrade Notice ==
 
 = 1.0.0 =
@@ -149,3 +154,8 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Updated default emails sending address for WooCommerce emails to [CheckView](https://checkview.io/).
 * Added POST call support to delete order endpoint.
 * Added order id support to delete order endpoint.
+
+= 1.1.6 =
+* Declared compatibility with WooCommerce HPOS.
+* Updated plugin's name.
+* Updated payment gateway name.
