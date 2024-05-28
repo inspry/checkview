@@ -65,6 +65,12 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 				12,
 				2
 			);
+
+			add_filter(
+				'cfturnstile_whitelisted',
+				'__return_true',
+				999
+			);
 			if ( defined( 'TEST_EMAIL' ) ) {
 				add_filter(
 					'ninja_forms_action_email_send',

@@ -77,6 +77,11 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				20,
 				3
 			);
+			add_filter(
+				'cfturnstile_whitelisted',
+				'__return_true',
+				999
+			);
 			// add_filter(
 			// 	'fluentform/rendering_form',
 			// 	function ( $form ) {

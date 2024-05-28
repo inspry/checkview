@@ -80,6 +80,11 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 				20,
 				2
 			);
+			add_filter(
+				'cfturnstile_whitelisted',
+				'__return_true',
+				999
+			);
 		}
 		/**
 		 * Injects email to Formidableis supported emails.

@@ -42,20 +42,32 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 			if ( ! is_admin() ) {
 				include_once ABSPATH . 'wp-admin/includes/plugin.php';
 			}
-			// Disable reCAPTCHA assets and initialisation on the frontend.
-			add_filter(
-				'wpforms_frontend_recaptcha_disable',
-				'__return_true',
-				99
-			);
-			// Disable validation and verification on the backend.
-			add_filter(
-				'wpforms_process_bypass_captcha',
-				'__return_true',
-				99
-			);
+			$old_settings = (array) get_option( 'wpforms_settings', array() );
+			if ( null !== $old_settings['turnstile-site-key'] && null !== $old_settings['turnstile-secret-key'] ) {
+				if ( '1x00000000000000000000AA' !== $old_settings['turnstile-site-key'] ) {
+					update_option( 'checkview_wpforms_turnstile-site-key', $old_settings['turnstile-site-key'], true );
+					update_option( 'checkview_wpforms_turnstile-secret-key', $old_settings['turnstile-secret-key'], true );
+					$old_settings['turnstile-site-key']   = '1x00000000000000000000AA';
+					$old_settings['turnstile-secret-key'] = '1x0000000000000000000000000000000AA';
+					update_option( 'wpforms_settings', $old_settings );
+				}
+			} else {
+				// Disable reCAPTCHA assets and initialisation on the frontend.
+				add_filter(
+					'wpforms_frontend_recaptcha_disable',
+					'__return_true',
+					99
+				);
 
-			remove_action( 'wpforms_frontend_output', array( wpforms()->get( 'frontend' ), 'recaptcha' ), 20 );
+				// Disable validation and verification on the backend.
+				add_filter(
+					'wpforms_process_bypass_captcha',
+					'__return_true',
+					99
+				);
+
+				remove_action( 'wpforms_frontend_output', array( wpforms()->get( 'frontend' ), 'recaptcha' ), 20 );
+			}
 
 			add_action(
 				'wpforms_process_complete',
@@ -236,7 +248,14 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 					)
 				);
 			}
-
+			$old_settings = (array) get_option( 'wpforms_settings', array() );
+			if ( null !== $old_settings['turnstile-site-key'] && null !== $old_settings['turnstile-secret-key'] ) {
+				if ( '1x00000000000000000000AA' === $old_settings['turnstile-site-key'] ) {
+					$old_settings['turnstile-site-key']   = get_option( 'checkview_wpforms_turnstile-site-key' );
+					$old_settings['turnstile-secret-key'] = get_option( 'checkview_wpforms_turnstile-secret-key' );
+					update_option( 'wpforms_settings', $old_settings );
+				}
+			}
 			// Test completed So Clear sessions.
 			complete_checkview_test();
 		}

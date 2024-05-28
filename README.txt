@@ -111,11 +111,11 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Updated default emails sending address for [CheckView](https://checkview.io/).
 
 = 1.1.5 =
-* Resolved WooCommerce admin emails disbaling issues.
+* Resolved WooCommerce admin emails disabling issues.
 * Updated dependencies area.
-* Updated default emails sending address for WooCommerceEmails to [CheckView](https://checkview.io/).
+* Updated default emails sending address for WooCommerce emails to [CheckView](https://checkview.io/).
 * Added POST call support to delete order endpoint.
-* Added order id upport to delete order endpoint.
+* Added order id support to delete order endpoint.
 
 = 1.1.6 =
 * Declared compatibility with WooCommerce HPOS.
