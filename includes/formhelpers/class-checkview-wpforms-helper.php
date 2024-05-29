@@ -42,6 +42,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 			if ( ! is_admin() ) {
 				include_once ABSPATH . 'wp-admin/includes/plugin.php';
 			}
+			
 			$old_settings = (array) get_option( 'wpforms_settings', array() );
 			if ( null !== $old_settings['turnstile-site-key'] && null !== $old_settings['turnstile-secret-key'] ) {
 				if ( '1x00000000000000000000AA' !== $old_settings['turnstile-site-key'] ) {

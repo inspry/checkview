@@ -82,6 +82,17 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				'__return_true',
 				999
 			);
+
+			$old_settings = (array) get_option( '_fluentform_turnstile_details', array() );
+			if ( null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
+				if ( '1x00000000000000000000AA' !== $old_settings['siteKey'] ) {
+					update_option( 'checkview_ff_turnstile-site-key', $old_settings['siteKey'], true );
+					update_option( 'checkview_ff_turnstile-secret-key', $old_settings['secretKey'], true );
+					$old_settings['siteKey']   = '1x00000000000000000000AA';
+					$old_settings['secretKey'] = '1x0000000000000000000000000000000AA';
+					update_option( '_fluentform_turnstile_details', $old_settings );
+				}
+			}
 			// add_filter(
 			// 	'fluentform/rendering_form',
 			// 	function ( $form ) {
@@ -229,15 +240,22 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			$wpdb->insert( $table1, $data );
 
 			// remove entry from Fluent forms tables.
-			$delete = wpFluent()->table( 'fluentform_submissions' )
+			$delete       = wpFluent()->table( 'fluentform_submissions' )
 			->where( 'form_id', $form_id )
 			->where( 'id', '=', $entry_id )
 			->delete();
-			$delete = wpFluent()->table( 'fluentform_entry_details' )
+			$delete       = wpFluent()->table( 'fluentform_entry_details' )
 			->where( 'form_id', $form_id )
 			->where( 'submission_id', '=', $entry_id )
 			->delete();
-
+			$old_settings = (array) get_option( '_fluentform_turnstile_details', array() );
+			if ( null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
+				if ( '1x00000000000000000000AA' === $old_settings['siteKey'] ) {
+					$old_settings['siteKey']   = get_option( 'checkview_ff_turnstile-site-key' );
+					$old_settings['secretKey'] = get_option( 'checkview_ff_turnstile-secret-key' );
+					update_option( '_fluentform_turnstile_details', $old_settings );
+				}
+			}
 			// Test completed So Clear sessions.
 			complete_checkview_test();
 		}
