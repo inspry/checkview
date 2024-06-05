@@ -62,7 +62,7 @@ if ( ! function_exists( 'get_checkview_test_id' ) ) {
 		if ( ! empty( $cv_test_id ) ) {
 			return $cv_test_id;
 		} else {
-			$referer_url = isset( $_SERVER['HTTP_REFERER'] ) ? sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : '';
+			$referer_url = isset( $_SERVER['HTTP_REFERER'] ) ? sanitize_url( sanitize_text_field( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) ) : '';
 			$referer_url = wp_parse_url( $referer_url, PHP_URL_QUERY );
 			$qry_str     = array();
 			parse_str( $referer_url, $qry_str );

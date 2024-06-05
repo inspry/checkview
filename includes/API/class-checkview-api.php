@@ -187,7 +187,7 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token'   => array(
-						'required' => false,
+						'required' => true,
 					),
 					'checkview_order_id' => array(
 						'required' => true,
