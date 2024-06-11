@@ -269,10 +269,10 @@ class CheckView_Api {
 			'checkview/v1',
 			'/store/cartdetails',
 			array(
-				'methods'             => array( 'GET' ),
-				'callback'            => array( $this, 'checkview_get_cart_details' ),
+				'methods'  => array( 'GET' ),
+				'callback' => array( $this, 'checkview_get_cart_details' ),
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'                => array(
+				'args'     => array(
 					'_checkview_token' => array(
 						'required' => true,
 					),
@@ -1085,7 +1085,10 @@ class CheckView_Api {
 			wp_die();
 		} else {
 			$body         = wp_remote_retrieve_body( $response );
-			$cart_details = json_decode( $body );
+			$cart_details = json_decode( $body, true );
+			foreach ($cart_details['items'] as &$item) {
+				$item['name'] = html_entity_decode($item['name'], ENT_COMPAT, 'UTF-8');
+			}
 			// Do something with $cart_details.
 		}
 		if ( $cart_details ) {
