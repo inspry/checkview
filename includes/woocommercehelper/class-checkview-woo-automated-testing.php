@@ -318,7 +318,7 @@ class Checkview_Woo_Automated_Testing {
 		$customer = $this->checkview_get_test_customer();
 
 		if ( ! $customer ) {
-			return;
+			return false;
 		}
 
 		$customer->set_password( wp_generate_password() );

@@ -1,38 +1,36 @@
 <?php
 /**
- * PHPUnit bootstrap file.
- *
- * @package Checkview
+ * PHPUnit bootstrap file
  */
 
-$_tests_dir = getenv( 'WP_TESTS_DIR' );
+error_reporting( E_ALL & ~E_DEPRECATED );
 
-if ( ! $_tests_dir ) {
-	$_tests_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
-}
+// Composer autoloader must be loaded before WP_PHPUNIT__DIR will be available
+require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 
-// Forward custom PHPUnit Polyfills configuration to PHPUnit bootstrap file.
-$_phpunit_polyfills_path = getenv( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH' );
-if ( false !== $_phpunit_polyfills_path ) {
-	define( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH', $_phpunit_polyfills_path );
-}
-
-if ( ! file_exists( "{$_tests_dir}/includes/functions.php" ) ) {
-	echo "Could not find {$_tests_dir}/includes/functions.php, have you run bin/install-wp-tests.sh ?" . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	exit( 1 );
-}
+// Define plugin paths as constants
+define( 'PLUGIN_DIR', dirname( __DIR__ ) );
+define( 'WC_PLUGIN_DIR', PLUGIN_DIR . '/plugins/woocommerce' );
+define( 'CV_PLUGIN_DIR', PLUGIN_DIR . '/plugins/checkview' );
+// Bootstrap WP_Mock to initialize built-in features
+// (removed commented code)
 
 // Give access to tests_add_filter() function.
-require_once "{$_tests_dir}/includes/functions.php";
+require_once getenv( 'WP_PHPUNIT__DIR' ) . '/includes/functions.php';
 
-/**
- * Manually load the plugin being tested.
- */
-function _manually_load_plugin() {
-	require dirname( dirname( __FILE__ ) ) . '/checkview.php';
-}
+ob_start();
+require_once dirname( __DIR__, 4 ) . '/wp-load.php';
+tests_add_filter(
+	'muplugins_loaded',
+	function () {
 
-tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
+		// require_once WC_PLUGIN_DIR . '/woocommerce.php';
+		//require_once CV_PLUGIN_DIR . '/checkview.php';
+		//
+		 // test set up, plugin activation, etc.
+		//require PLUGIN_DIR . '/example-plugin.php';
+	}
+);
 
 // Start up the WP testing environment.
-require "{$_tests_dir}/includes/bootstrap.php";
+require getenv( 'WP_PHPUNIT__DIR' ) . '/includes/bootstrap.php';

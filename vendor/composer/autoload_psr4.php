@@ -6,9 +6,10 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'PhpParser\\' => array($vendorDir . '/nikic/php-parser/lib/PhpParser'),
+    'WP_Mock\\' => array($vendorDir . '/10up/wp_mock/php/WP_Mock'),
+    'Roots\\Composer\\' => array($vendorDir . '/roots/wordpress-core-installer/src'),
     'Mockery\\' => array($vendorDir . '/mockery/mockery/library/Mockery'),
-    'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
+    'Example\\' => array($baseDir . '/src'),
+    'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
     'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
-    'Brain\\Monkey\\' => array($vendorDir . '/brain/monkey/src'),
 );

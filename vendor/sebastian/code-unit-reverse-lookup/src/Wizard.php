@@ -1,47 +1,42 @@
-<?php declare(strict_types=1);
+<?php
 /*
- * This file is part of sebastian/code-unit-reverse-lookup.
+ * This file is part of code-unit-reverse-lookup.
  *
  * (c) Sebastian Bergmann <sebastian@phpunit.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace SebastianBergmann\CodeUnitReverseLookup;
 
-use function array_merge;
-use function assert;
-use function class_exists;
-use function function_exists;
-use function get_declared_classes;
-use function get_declared_traits;
-use function get_defined_functions;
-use function is_array;
-use function range;
-use function trait_exists;
-use ReflectionClass;
-use ReflectionFunction;
-use ReflectionFunctionAbstract;
-use ReflectionMethod;
-
-final class Wizard
+/**
+ * @since Class available since Release 1.0.0
+ */
+class Wizard
 {
     /**
-     * @psalm-var array<string,array<int,string>>
+     * @var array
      */
-    private array $lookupTable = [];
+    private $lookupTable = [];
 
     /**
-     * @psalm-var array<class-string,true>
+     * @var array
      */
-    private array $processedClasses = [];
+    private $processedClasses = [];
 
     /**
-     * @psalm-var array<string,true>
+     * @var array
      */
-    private array $processedFunctions = [];
+    private $processedFunctions = [];
 
-    public function lookup(string $filename, int $lineNumber): string
+    /**
+     * @param string $filename
+     * @param int    $lineNumber
+     *
+     * @return string
+     */
+    public function lookup($filename, $lineNumber)
     {
         if (!isset($this->lookupTable[$filename][$lineNumber])) {
             $this->updateLookupTable();
@@ -49,32 +44,27 @@ final class Wizard
 
         if (isset($this->lookupTable[$filename][$lineNumber])) {
             return $this->lookupTable[$filename][$lineNumber];
+        } else {
+            return $filename . ':' . $lineNumber;
         }
-
-        return $filename . ':' . $lineNumber;
     }
 
-    private function updateLookupTable(): void
+    private function updateLookupTable()
     {
         $this->processClassesAndTraits();
         $this->processFunctions();
     }
 
-    private function processClassesAndTraits(): void
+    private function processClassesAndTraits()
     {
-        $classes = get_declared_classes();
-        $traits  = get_declared_traits();
-
-        assert(is_array($traits));
-
-        foreach (array_merge($classes, $traits) as $classOrTrait) {
-            assert(class_exists($classOrTrait) || trait_exists($classOrTrait));
-
+        foreach (array_merge(get_declared_classes(), get_declared_traits()) as $classOrTrait) {
             if (isset($this->processedClasses[$classOrTrait])) {
                 continue;
             }
 
-            foreach ((new ReflectionClass($classOrTrait))->getMethods() as $method) {
+            $reflector = new \ReflectionClass($classOrTrait);
+
+            foreach ($reflector->getMethods() as $method) {
                 $this->processFunctionOrMethod($method);
             }
 
@@ -82,22 +72,23 @@ final class Wizard
         }
     }
 
-    private function processFunctions(): void
+    private function processFunctions()
     {
         foreach (get_defined_functions()['user'] as $function) {
-            assert(function_exists($function));
-
             if (isset($this->processedFunctions[$function])) {
                 continue;
             }
 
-            $this->processFunctionOrMethod(new ReflectionFunction($function));
+            $this->processFunctionOrMethod(new \ReflectionFunction($function));
 
             $this->processedFunctions[$function] = true;
         }
     }
 
-    private function processFunctionOrMethod(ReflectionFunctionAbstract $functionOrMethod): void
+    /**
+     * @param \ReflectionFunctionAbstract $functionOrMethod
+     */
+    private function processFunctionOrMethod(\ReflectionFunctionAbstract $functionOrMethod)
     {
         if ($functionOrMethod->isInternal()) {
             return;
@@ -105,7 +96,7 @@ final class Wizard
 
         $name = $functionOrMethod->getName();
 
-        if ($functionOrMethod instanceof ReflectionMethod) {
+        if ($functionOrMethod instanceof \ReflectionMethod) {
             $name = $functionOrMethod->getDeclaringClass()->getName() . '::' . $name;
         }
 

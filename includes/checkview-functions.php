@@ -65,7 +65,9 @@ if ( ! function_exists( 'get_checkview_test_id' ) ) {
 			$referer_url = isset( $_SERVER['HTTP_REFERER'] ) ? sanitize_url( sanitize_text_field( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) ) : '';
 			$referer_url = wp_parse_url( $referer_url, PHP_URL_QUERY );
 			$qry_str     = array();
-			parse_str( $referer_url, $qry_str );
+			if ( $referer_url ) {
+				parse_str( $referer_url, $qry_str );
+			}
 			if ( isset( $qry_str['checkview_test_id'] ) ) {
 				return $qry_str['checkview_test_id'];
 			}
@@ -271,13 +273,16 @@ if ( ! function_exists( 'create_cv_session' ) ) {
 
 		$url         = explode( '?', $current_url );
 		$current_url = $url[0];
+		$page_id     = '';
 		// Retrieve the current post's ID based on its URL.
 		if ( $current_url ) {
 			$page_id = get_page_by_path( $current_url );
 			$page_id = $page_id->ID;
 		} else {
 			global $post;
-			$page_id = $post->ID;
+			if ( $post ) {
+				$page_id = $post->ID;
+			}
 		}
 		$session_table = $wpdb->prefix . 'cv_session';
 
@@ -428,21 +433,4 @@ if ( ! function_exists( 'add_states_to_locations' ) ) {
 		}
 		return $locations_with_states;
 	}
-}
-
-
-/**
- * Checks if cart is the current page.
- *
- * @return boolean
- */
-function checkview_better_is_cart() {
-	$cart_path        = wp_parse_url( wc_get_cart_url(), PHP_URL_PATH );
-	$current_url_path = wp_parse_url( "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]", PHP_URL_PATH );
-
-	return (
-		null !== $cart_path
-		&& null !== $current_url_path
-		&& trailingslashit( $cart_path ) === trailingslashit( $current_url_path )
-	);
 }

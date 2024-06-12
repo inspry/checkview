@@ -51,7 +51,7 @@ class CheckView_Api {
 	 *
 	 * @var WP_Error
 	 */
-	private $jwt_error = null;
+	public $jwt_error = null;
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -397,68 +397,71 @@ class CheckView_Api {
 
 		$params = array();
 
-		$sql = "SELECT p.ID AS orderId, DATE_FORMAT(p.post_date_gmt, '%%Y-%%m-%%dT%%TZ') AS orderDate, 
-			DATE_FORMAT(p.post_modified_gmt, '%%Y-%%m-%%dT%%TZ') AS lastModifiedOn, p.post_status AS status, 
-			pm2.meta_value AS orderTotal, pm3.meta_value AS currency 
-			FROM {$wpdb->prefix}posts as p
-			LEFT JOIN {$wpdb->prefix}postmeta AS pm ON (p.id = pm.post_id AND pm.meta_key = '_payment_method') 
-			LEFT JOIN {$wpdb->prefix}postmeta AS pm2 ON (p.id = pm2.post_id AND pm2.meta_key = '_order_total') 
-			LEFT JOIN {$wpdb->prefix}postmeta AS pm3 ON (p.id = pm3.post_id AND pm3.meta_key = '_order_currency') 
-			WHERE p.post_type = 'shop_order'
-			AND p.post_status IN ('wc-processing', 'wc-completed', 'wc-failed', 'wc-cancelled') 
-			AND pm.meta_value <> 'checkview' ";
+		// $sql = "SELECT p.ID AS orderId, DATE_FORMAT(p.post_date_gmt, '%%Y-%%m-%%dT%%TZ') AS orderDate, 
+		// 	DATE_FORMAT(p.post_modified_gmt, '%%Y-%%m-%%dT%%TZ') AS lastModifiedOn, p.post_status AS status, 
+		// 	pm2.meta_value AS orderTotal, pm3.meta_value AS currency 
+		// 	FROM {$wpdb->prefix}posts as p
+		// 	LEFT JOIN {$wpdb->prefix}postmeta AS pm ON (p.id = pm.post_id AND pm.meta_key = '_payment_method') 
+		// 	LEFT JOIN {$wpdb->prefix}postmeta AS pm2 ON (p.id = pm2.post_id AND pm2.meta_key = '_order_total') 
+		// 	LEFT JOIN {$wpdb->prefix}postmeta AS pm3 ON (p.id = pm3.post_id AND pm3.meta_key = '_order_currency') 
+		// 	WHERE p.post_type = 'shop_order'
+		// 	AND p.post_status IN ('wc-processing', 'wc-completed', 'wc-failed', 'wc-cancelled') 
+		// 	AND pm.meta_value <> 'checkview' ";
 
-		if ( ! empty( $checkview_order_last_modified_since ) ) {
+		// if ( ! empty( $checkview_order_last_modified_since ) ) {
 
-			$sql     .= ' AND p.post_modified_gmt >= %s ';
-			$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_since ) );
+		// 	$sql     .= ' AND p.post_modified_gmt >= %s ';
+		// 	$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_since ) );
 
-		}
+		// }
 
-		if ( ! empty( $checkview_order_last_modified_until ) ) {
+		// if ( ! empty( $checkview_order_last_modified_until ) ) {
 
-			$sql     .= ' AND p.post_modified_gmt <= %s ';
-			$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_until ) );
+		// 	$sql     .= ' AND p.post_modified_gmt <= %s ';
+		// 	$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_until ) );
 
-		}
+		// }
 
-		if ( ! empty( $checkview_order_id_after ) && ! empty( $checkview_order_last_modified_since ) ) {
+		// if ( ! empty( $checkview_order_id_after ) && ! empty( $checkview_order_last_modified_since ) ) {
 
-			$sql     .= ' AND (p.post_modified_gmt != %s OR p.ID > %s) ';
-			$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_since ) );
-			$params[] = $checkview_order_id_after;
+		// 	$sql     .= ' AND (p.post_modified_gmt != %s OR p.ID > %s) ';
+		// 	$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_since ) );
+		// 	$params[] = $checkview_order_id_after;
 
-		}
+		// }
 
-		if ( ! empty( $checkview_order_id_before ) && ! empty( $checkview_order_last_modified_until ) ) {
+		// if ( ! empty( $checkview_order_id_before ) && ! empty( $checkview_order_last_modified_until ) ) {
 
-			$sql     .= ' AND (p.post_modified_gmt != %s OR p.ID < %s) ';
-			$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_until ) );
-			$params[] = $checkview_order_id_before;
+		// 	$sql     .= ' AND (p.post_modified_gmt != %s OR p.ID < %s) ';
+		// 	$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_until ) );
+		// 	$params[] = $checkview_order_id_before;
 
-		}
+		// }
 
-		// To make sure we don't get incomplete batches of orders.
-		if ( ! empty( $checkview_order_last_modified_since ) ) {
-			$sql .= ' AND p.post_modified_gmt < (NOW() - interval 2 second) ';
-		}
+		// // To make sure we don't get incomplete batches of orders.
+		// if ( ! empty( $checkview_order_last_modified_since ) ) {
+		// 	$sql .= ' AND p.post_modified_gmt < (NOW() - interval 2 second) ';
+		// }
 
-		if ( ! empty( $checkview_order_last_modified_until ) ) {
-			$sql .= ' ORDER BY p.post_modified_gmt DESC, p.ID DESC';
-		} else {
-			$sql .= ' ORDER BY p.post_modified_gmt ASC, p.ID ASC LIMIT';
-		}
+		// if ( ! empty( $checkview_order_last_modified_until ) ) {
+		// 	$sql .= ' ORDER BY p.post_modified_gmt DESC, p.ID DESC';
+		// } else {
+		// 	$sql .= ' ORDER BY p.post_modified_gmt ASC, p.ID ASC LIMIT';
+		// }
 
-		$psql   = $wpdb->prepare( $sql, $params );
-		$orders = $wpdb->get_results( $psql );
-		$args   = array(
-			'posts_per_page' => $per_page,
+		// $psql   = $wpdb->prepare( $sql, $params );
+		// $orders = $wpdb->get_results( $psql );
+		$args = array(
+			'limit'          => -1,
+			'payment_method' => 'checkview',
 			'meta_query'     => array(
-				'relation' => 'OR', // Use 'AND' for both conditions to apply.
 				array(
-					'key'     => 'payment_made_by', // Meta key for payment method.
-					'value'   => 'checkview', // Replace with your actual payment gateway ID.
-					'compare' => '=', // Use '=' for exact match.
+					'relation' => 'AND', // Use 'AND' for both conditions to apply.
+					array(
+						'key'     => 'payment_made_by', // Meta key for payment method.
+						'value'   => 'checkview', // Replace with your actual payment gateway ID.
+						'compare' => '=', // Use '=' for exact match.
+					),
 				),
 			),
 		);
