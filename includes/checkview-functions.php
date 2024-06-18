@@ -36,7 +36,7 @@ if ( ! function_exists( 'validate_jwt_token' ) ) {
 		$jwt = (array) $decoded;
 
 		// if url mismatch return false.
-		if ( get_bloginfo( 'url' ) !== $jwt['websiteUrl'] ) {
+		if ( strstr( get_bloginfo( 'url' ), $jwt['websiteUrl'] ) !== false ) {
 			return esc_html__( 'Invalid Token', 'checkview' );
 		}
 
@@ -273,7 +273,6 @@ if ( ! function_exists( 'create_cv_session' ) ) {
 
 		$url         = explode( '?', $current_url );
 		$current_url = $url[0];
-		$page_id     = '';
 		// Retrieve the current post's ID based on its URL.
 		if ( $current_url ) {
 			$page_id = get_page_by_path( $current_url );
