@@ -10,21 +10,21 @@ class Test_Checkview_General extends WP_UnitTestCase {
 		$test_id       = 'test_id_123';
 		$visitor_ip    = get_visitor_ip();
 		$session_table = $wpdb->prefix . 'cv_session';
-
+		$test_key      = 'CF_TEST_' . $test_id;
 		// Create a test session in the database
 		$wpdb->insert(
 			$session_table,
 			array(
 				'visitor_ip' => $visitor_ip,
 				'test_id'    => $test_id,
+				'test_key'   => $test_key,
 			)
 		);
 
 		// Call the function to complete the test
 		complete_checkview_test( $test_id );
-
 		// Assert that the session is deleted from the database
-		$result = $wpdb->get_results( "SELECT * FROM $session_table WHERE visitor_ip = '$visitor_ip' AND test_id = '$test_id'" );
+		$result = $wpdb->get_results( "SELECT * FROM $session_table WHERE visitor_ip = '$visitor_ip' AND test_id = '$test_id' AND test_key = '$test_key'" );
 		$this->assertEmpty( $result );
 	}
 
@@ -50,7 +50,6 @@ class Test_Checkview_General extends WP_UnitTestCase {
 
 		// Call the function to complete the test
 		complete_checkview_test( $test_id );
-
 		// Assert that the test key option is deleted
 		$this->assertFalse( get_option( $test_key ) );
 	}

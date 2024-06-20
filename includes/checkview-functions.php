@@ -100,7 +100,7 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 			$session_table,
 			array(
 				'visitor_ip' => $visitor_ip,
-				'test_id'    => CV_TEST_ID,
+				'test_id'    => $checkview_test_id,
 			)
 		);
 		delete_option( $visitor_ip );
@@ -273,6 +273,7 @@ if ( ! function_exists( 'create_cv_session' ) ) {
 
 		$url         = explode( '?', $current_url );
 		$current_url = $url[0];
+		$page_id     = '';
 		// Retrieve the current post's ID based on its URL.
 		if ( $current_url ) {
 			$page_id = get_page_by_path( $current_url );
