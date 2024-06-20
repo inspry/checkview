@@ -156,5 +156,4 @@ function create_new_admin_user() {
 }
 
 // Hook the function to an action, such as 'init' or a custom one
- //add_action( 'init', 'create_new_admin_user' );
-//
+//add_action( 'init', 'create_new_admin_user' );

@@ -33,7 +33,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		 * @access   protected
 		 * @var      Checkview_Loader    $loader    Maintains and registers all hooks for the plugin.
 		 */
-		protected $loader;
+		public $loader;
 		/**
 		 * Initializes the class constructor.
 		 */
@@ -107,7 +107,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 			global $wpdb;
 
 			$form_id  = $form_data['form_id'];
-			$entry_id = $form_data['actions']['save']['sub_id'];
+			$entry_id = isset( $form_data['actions']['save']['sub_id'] ) ? $form_data['actions']['save']['sub_id'] : 0;
 
 			$checkview_test_id = get_checkview_test_id();
 

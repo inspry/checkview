@@ -3,7 +3,7 @@
         'name' => 'wp-phpunit/example-plugin',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '163346f4aff4744295eb1673cc54123600351216',
+        'reference' => 'ca5a39cbb1421805b57b7e653cc00a20e445be9e',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -349,7 +349,7 @@
         'wp-phpunit/example-plugin' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '163346f4aff4744295eb1673cc54123600351216',
+            'reference' => 'ca5a39cbb1421805b57b7e653cc00a20e445be9e',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
