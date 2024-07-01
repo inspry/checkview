@@ -273,11 +273,10 @@ class Checkview {
 	private function set_locale() {
 
 		$plugin_i18n = new Checkview_i18n();
-
-		$this->loader->add_action(
+		$plugin_i18n->load_plugin_textdomain();
+		add_action(
 			'plugins_loaded',
-			$plugin_i18n,
-			'load_plugin_textdomain'
+			array( $plugin_i18n, 'load_plugin_textdomain' )
 		);
 	}
 
