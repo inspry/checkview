@@ -45,7 +45,7 @@ class Checkview_Activator {
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		$cv_entry_table = $wpdb->prefix . 'cv_entry';
-		if ( $wpdb->get_var( "show tables like '$cv_entry_table'" ) !== $cv_entry_table ) {
+		if ( $wpdb->get_var( $wpdb->prepare( 'show tables like %s', $cv_entry_table ) ) !== $cv_entry_table ) {
 			$sql  = "CREATE TABLE  `$cv_entry_table` (";
 			$sql .= '`id` int(10) unsigned NOT NULL AUTO_INCREMENT,';
 			$sql .= '`form_id` mediumint(10) unsigned NOT NULL,';
@@ -76,7 +76,7 @@ class Checkview_Activator {
 			dbDelta( $sql );
 		}
 		$cv_entry_meta_table = $wpdb->prefix . 'cv_entry_meta';
-		if ( $wpdb->get_var( "show tables like '$cv_entry_meta_table'" ) !== $cv_entry_meta_table ) {
+		if ( $wpdb->get_var( $wpdb->prepare( 'show tables like %s', $cv_entry_meta_table ) ) !== $cv_entry_meta_table ) {
 			$sql  = "CREATE TABLE `$cv_entry_meta_table` (";
 			$sql .= '`id` bigint(10) unsigned NOT NULL AUTO_INCREMENT,';
 			$sql .= '`form_id` mediumint(10) unsigned NOT NULL DEFAULT 0,';
@@ -94,7 +94,7 @@ class Checkview_Activator {
 		}
 
 		$cv_session_table = $wpdb->prefix . 'cv_session';
-		if ( $wpdb->get_var( "show tables like '$cv_session_table'" ) !== $cv_session_table ) {
+		if ( $wpdb->get_var( $wpdb->prepare( 'show tables like %s', $cv_session_table ) ) !== $cv_session_table ) {
 			$sql  = "CREATE TABLE `$cv_session_table` (";
 			$sql .= '`visitor_ip` varchar(255) DEFAULT NULL,';
 			$sql .= '`test_key` varchar(255) DEFAULT NULL,';
