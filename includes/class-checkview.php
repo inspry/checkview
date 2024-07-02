@@ -156,7 +156,7 @@ class Checkview {
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-checkview-admin.php';
 
 		/**
-		 * The class responsible for defining all actions that occur in the admin area .
+		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-checkview-admin-logs.php';
 
