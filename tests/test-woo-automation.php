@@ -47,13 +47,13 @@ class Test_Checkview_Woo_Automated_Testing extends WP_UnitTestCase {
 	}
 
 	public function test_checkview_get_test_product() {
-        $product = $this->instance->checkview_create_test_product();
+		$product = $this->instance->checkview_create_test_product();
 		$product = $this->instance->checkview_get_test_product();
 		$this->assertInstanceOf( 'WC_Product', $product );
 	}
 
-    public function test_checkview_get_test_product_if_not_exists() {
-        //$product = $this->instance->checkview_create_test_product();
+	public function test_checkview_get_test_product_if_not_exists() {
+		// $product = $this->instance->checkview_create_test_product();
 		$product = $this->instance->checkview_get_test_product();
 		$this->assertEquals( false, $product );
 	}
@@ -84,6 +84,6 @@ class Test_Checkview_Woo_Automated_Testing extends WP_UnitTestCase {
 		$_GET['checkview_test_id'] = 'test_id';
 		$this->instance->checkview_test_mode();
 		// Assert that the test mode is enabled
-		$this->assertTrue( isset($_GET['checkview_test_id']) ); // Add a more specific assertion here
+		$this->assertTrue( isset( $_GET['checkview_test_id'] ) ); // Add a more specific assertion here
 	}
 }

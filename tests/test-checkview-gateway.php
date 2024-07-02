@@ -4,7 +4,7 @@ class Checkview_Payment_Gateway_Test extends WP_UnitTestCase {
 
 	public function test_construct() {
 		// Load payment gateway.
-				require_once CHECKVIEW_INC_DIR . 'woocommercehelper/class-checkview-payment-gateway.php';
+		require_once CHECKVIEW_INC_DIR . 'woocommercehelper/class-checkview-payment-gateway.php';
 		$instance = new Checkview_Payment_Gateway();
 		$this->assertInstanceOf( 'Checkview_Payment_Gateway', $instance );
 		$this->assertEquals( 'checkview', $instance->id );
