@@ -73,11 +73,18 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) {
 
 			// Get an instance of the order object.
 			$order = new WC_Order( $order_id );
-			if ( $order ) {
+			if ( $order && $order_id ) {
 				$order->update_status( 'completed' );
 
 				$order->payment_complete();
+			} else {
+				// Return thankyou redirect.
+				return array(
+					'result'   => 'failure',
+					'redirect' => '',
+				);
 			}
+
 			// Remove cart.
 			$woocommerce->cart->empty_cart();
 

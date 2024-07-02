@@ -32,13 +32,13 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 		 * @access   protected
 		 * @var      Checkview_Loader    $loader    Maintains and registers all hooks for the plugin.
 		 */
-		protected $loader;
+		public $loader;
 		/**
 		 * Initializes class constructor.
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
-			if ( defined( 'TEST_EMAIL' ) ) {
+			// if ( defined( 'TEST_EMAIL' ) ) {
 				// change emial address.
 				add_filter(
 					'wpcf7_mail_components',
@@ -49,7 +49,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 					99,
 					1
 				);
-			}
+			// }
 
 			add_action(
 				'wpcf7_before_send_mail',
@@ -125,9 +125,11 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 
 			$time_now = time();
 
-			$submission   = WPCF7_Submission::get_instance();
-			$contact_form = $submission->get_contact_form();
-			$tags_names   = array();
+			$submission = WPCF7_Submission::get_instance();
+			if ( $submission ) {
+				$contact_form = $submission->get_contact_form();
+			}
+			$tags_names = array();
 
 			if ( $submission ) {
 

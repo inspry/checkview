@@ -32,13 +32,15 @@ final class Checkview_Blocks_Payment_Gateway extends AbstractPaymentMethodType {
 	 */
 	protected $name = 'checkview';
 
+	protected $supports = array( 'checkview' );
+
 	/**
 	 * Initializes the payment method type.
 	 */
 	public function initialize() {
 		$this->settings = get_option( 'woocommerce_checkview_settings', array() );
 		$gateways       = WC()->payment_gateways->payment_gateways();
-		$this->gateway  = $gateways[ $this->name ];
+		$this->gateway  = isset( $gateways[ $this->name ] ) ? $gateways[ $this->name ] : null;
 	}
 
 	/**
@@ -90,7 +92,7 @@ final class Checkview_Blocks_Payment_Gateway extends AbstractPaymentMethodType {
 		return array(
 			'title'       => $this->get_setting( 'title' ),
 			'description' => $this->get_setting( 'description' ),
-			'supports'    => array_filter( $this->gateway->supports, array( $this->gateway, 'supports' ) ),
+			'supports'    => isset( $this->gateway->supports ) ? array_filter( $this->gateway->supports, array( $this->gateway, 'supports' ) ) : array(),
 		);
 	}
 }

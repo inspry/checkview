@@ -113,8 +113,10 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				$checkview_test_id = $form_id . gmdate( 'Ymd' );
 			}
 			self::checkview_clone_gf_entry( $entry['id'], $form_id, $checkview_test_id );
-			// Remove entry after submission.
-			GFAPI::delete_entry( $entry['id'] );
+			if ( isset( $entry['id'] ) ) {
+				// Remove entry after submission.
+				GFAPI::delete_entry( $entry['id'] );
+			}
 			// Test completed So Clear sessions.
 			complete_checkview_test();
 		}

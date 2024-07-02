@@ -19,6 +19,7 @@ use function dirname;
 use function explode;
 use function extension_loaded;
 use function file;
+use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
 use function is_array;
@@ -26,69 +27,76 @@ use function is_file;
 use function is_readable;
 use function is_string;
 use function ltrim;
+use function phpversion;
 use function preg_match;
 use function preg_replace;
 use function preg_split;
 use function realpath;
 use function rtrim;
-use function str_contains;
+use function sprintf;
 use function str_replace;
-use function str_starts_with;
 use function strncasecmp;
+use function strpos;
 use function substr;
 use function trim;
 use function unlink;
 use function unserialize;
 use function var_export;
-use PHPUnit\Event\Code\Phpt;
-use PHPUnit\Event\Code\ThrowableBuilder;
-use PHPUnit\Event\Facade as EventFacade;
-use PHPUnit\Event\NoPreviousThrowableException;
+use function version_compare;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\AssertionFailedError;
-use PHPUnit\Framework\ExecutionOrderDependency;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\IncompleteTestError;
-use PHPUnit\Framework\PhptAssertionFailedError;
-use PHPUnit\Framework\Reorderable;
+use PHPUnit\Framework\PHPTAssertionFailedError;
 use PHPUnit\Framework\SelfDescribing;
+use PHPUnit\Framework\SkippedTestError;
+use PHPUnit\Framework\SyntheticSkippedError;
 use PHPUnit\Framework\Test;
-use PHPUnit\TextUI\Configuration\Registry as ConfigurationRegistry;
+use PHPUnit\Framework\TestResult;
 use PHPUnit\Util\PHP\AbstractPhpProcess;
-use SebastianBergmann\CodeCoverage\Data\RawCodeCoverageData;
+use SebastianBergmann\CodeCoverage\CoveredCodeNotExecutedException;
 use SebastianBergmann\CodeCoverage\InvalidArgumentException;
-use SebastianBergmann\CodeCoverage\ReflectionException;
-use SebastianBergmann\CodeCoverage\StaticAnalysisCacheNotConfiguredException;
-use SebastianBergmann\CodeCoverage\Test\TestSize\TestSize;
-use SebastianBergmann\CodeCoverage\Test\TestStatus\TestStatus;
-use SebastianBergmann\CodeCoverage\TestIdMissingException;
+use SebastianBergmann\CodeCoverage\MissingCoversAnnotationException;
+use SebastianBergmann\CodeCoverage\RuntimeException;
 use SebastianBergmann\CodeCoverage\UnintentionallyCoveredCodeException;
-use SebastianBergmann\Template\Template;
+use SebastianBergmann\Timer\Timer;
+use Text_Template;
 use Throwable;
 
 /**
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
-final class PhptTestCase implements Reorderable, SelfDescribing, Test
+final class PhptTestCase implements SelfDescribing, Test
 {
     /**
-     * @psalm-var non-empty-string
+     * @var string
      */
-    private readonly string $filename;
-    private readonly AbstractPhpProcess $phpUtil;
-    private string $output = '';
+    private $filename;
+
+    /**
+     * @var AbstractPhpProcess
+     */
+    private $phpUtil;
+
+    /**
+     * @var string
+     */
+    private $output = '';
 
     /**
      * Constructs a test case with the given filename.
-     *
-     * @psalm-param non-empty-string $filename
      *
      * @throws Exception
      */
     public function __construct(string $filename, ?AbstractPhpProcess $phpUtil = null)
     {
         if (!is_file($filename)) {
-            throw new FileDoesNotExistException($filename);
+            throw new Exception(
+                sprintf(
+                    'File "%s" does not exist.',
+                    $filename
+                )
+            );
         }
 
         $this->filename = $filename;
@@ -106,41 +114,35 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
     /**
      * Runs a test and collects its result in a TestResult instance.
      *
-     * @throws \PHPUnit\Framework\Exception
-     * @throws \SebastianBergmann\Template\InvalidArgumentException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     * @throws CoveredCodeNotExecutedException
      * @throws Exception
      * @throws InvalidArgumentException
-     * @throws NoPreviousThrowableException
-     * @throws ReflectionException
-     * @throws StaticAnalysisCacheNotConfiguredException
-     * @throws TestIdMissingException
+     * @throws MissingCoversAnnotationException
+     * @throws RuntimeException
      * @throws UnintentionallyCoveredCodeException
-     *
-     * @noinspection RepetitiveMethodCallsInspection
      */
-    public function run(): void
+    public function run(?TestResult $result = null): TestResult
     {
-        $emitter = EventFacade::emitter();
-
-        $emitter->testPreparationStarted(
-            $this->valueObjectForEvents(),
-        );
+        if ($result === null) {
+            $result = new TestResult;
+        }
 
         try {
             $sections = $this->parse();
         } catch (Exception $e) {
-            $emitter->testPrepared($this->valueObjectForEvents());
-            $emitter->testErrored($this->valueObjectForEvents(), ThrowableBuilder::from($e));
-            $emitter->testFinished($this->valueObjectForEvents(), 0);
+            $result->startTest($this);
+            $result->addFailure($this, new SkippedTestError($e->getMessage()), 0);
+            $result->endTest($this, 0);
 
-            return;
+            return $result;
         }
 
         $code     = $this->render($sections['FILE']);
         $xfail    = false;
-        $settings = $this->parseIniSection($this->settings(CodeCoverage::instance()->isActive()));
+        $settings = $this->parseIniSection($this->settings($result->getCollectCodeCoverageInformation()));
 
-        $emitter->testPrepared($this->valueObjectForEvents());
+        $result->startTest($this);
 
         if (isset($sections['INI'])) {
             $settings = $this->parseIniSection($sections['INI'], $settings);
@@ -153,8 +155,14 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
 
         $this->phpUtil->setUseStderrRedirection(true);
 
-        if ($this->shouldTestBeSkipped($sections, $settings)) {
-            return;
+        if ($result->enforcesTimeLimit()) {
+            $this->phpUtil->setTimeout($result->getTimeoutForLargeTests());
+        }
+
+        $skip = $this->runSkip($sections, $result, $settings);
+
+        if ($skip) {
+            return $result;
         }
 
         if (isset($sections['XFAIL'])) {
@@ -169,34 +177,18 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
             $this->phpUtil->setArgs($sections['ARGS']);
         }
 
-        if (CodeCoverage::instance()->isActive()) {
-            $codeCoverageCacheDirectory = null;
-
-            if (CodeCoverage::instance()->codeCoverage()->cachesStaticAnalysis()) {
-                $codeCoverageCacheDirectory = CodeCoverage::instance()->codeCoverage()->cacheDirectory();
-            }
-
-            $this->renderForCoverage(
-                $code,
-                CodeCoverage::instance()->codeCoverage()->collectsBranchAndPathCoverage(),
-                $codeCoverageCacheDirectory,
-            );
+        if ($result->getCollectCodeCoverageInformation()) {
+            $this->renderForCoverage($code);
         }
 
+        Timer::start();
+
         $jobResult    = $this->phpUtil->runJob($code, $this->stringifyIni($settings));
+        $time         = Timer::stop();
         $this->output = $jobResult['stdout'] ?? '';
 
-        if (CodeCoverage::instance()->isActive()) {
-            $coverage = $this->cleanupForCoverage();
-
-            CodeCoverage::instance()->codeCoverage()->start($this->filename, TestSize::large());
-
-            CodeCoverage::instance()->codeCoverage()->append(
-                $coverage,
-                $this->filename,
-                true,
-                TestStatus::unknown(),
-            );
+        if ($result->getCollectCodeCoverageInformation() && ($coverage = $this->cleanupForCoverage())) {
+            $result->getCodeCoverage()->append($coverage, $this, true, [], [], true);
         }
 
         try {
@@ -217,28 +209,30 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
 
                 $hint    = $this->getLocationHintFromDiff($diff, $sections);
                 $trace   = array_merge($hint, debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS));
-                $failure = new PhptAssertionFailedError(
+                $failure = new PHPTAssertionFailedError(
                     $e->getMessage(),
                     0,
-                    (string) $trace[0]['file'],
-                    (int) $trace[0]['line'],
+                    $trace[0]['file'],
+                    $trace[0]['line'],
                     $trace,
-                    $comparisonFailure ? $diff : '',
+                    $comparisonFailure ? $diff : ''
                 );
             }
 
-            if ($failure instanceof IncompleteTestError) {
-                $emitter->testMarkedAsIncomplete($this->valueObjectForEvents(), ThrowableBuilder::from($failure));
-            } else {
-                $emitter->testFailed($this->valueObjectForEvents(), ThrowableBuilder::from($failure), null);
-            }
+            $result->addFailure($this, $failure, $time);
         } catch (Throwable $t) {
-            $emitter->testErrored($this->valueObjectForEvents(), ThrowableBuilder::from($t));
+            $result->addError($this, $t, $time);
         }
 
-        $this->runClean($sections, CodeCoverage::instance()->isActive());
+        if ($xfail !== false && $result->allCompletelyImplemented()) {
+            $result->addFailure($this, new IncompleteTestError('XFAIL section but test passes'), $time);
+        }
 
-        $emitter->testFinished($this->valueObjectForEvents(), 1);
+        $this->runClean($sections, $result->getCollectCodeCoverageInformation());
+
+        $result->endTest($this, $time);
+
+        return $result;
     }
 
     /**
@@ -262,12 +256,12 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
         return false;
     }
 
-    public function numberOfAssertionsPerformed(): int
+    public function getNumAssertions(): int
     {
         return 1;
     }
 
-    public function output(): string
+    public function getActualOutput(): string
     {
         return $this->output;
     }
@@ -277,46 +271,19 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
         return !empty($this->output);
     }
 
-    public function sortId(): string
-    {
-        return $this->filename;
-    }
-
-    /**
-     * @psalm-return list<ExecutionOrderDependency>
-     */
-    public function provides(): array
-    {
-        return [];
-    }
-
-    /**
-     * @psalm-return list<ExecutionOrderDependency>
-     */
-    public function requires(): array
-    {
-        return [];
-    }
-
-    /**
-     * @internal This method is not covered by the backward compatibility promise for PHPUnit
-     */
-    public function valueObjectForEvents(): Phpt
-    {
-        return new Phpt($this->filename);
-    }
-
     /**
      * Parse --INI-- section key value pairs and return as array.
+     *
+     * @param array|string
      */
-    private function parseIniSection(array|string $content, array $ini = []): array
+    private function parseIniSection($content, $ini = []): array
     {
         if (is_string($content)) {
             $content = explode("\n", trim($content));
         }
 
         foreach ($content as $setting) {
-            if (!str_contains($setting, '=')) {
+            if (strpos($setting, '=') === false) {
                 continue;
             }
 
@@ -356,6 +323,7 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
     }
 
     /**
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      * @throws Exception
      * @throws ExpectationFailedException
      */
@@ -364,7 +332,7 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
         $assertions = [
             'EXPECT'      => 'assertEquals',
             'EXPECTF'     => 'assertStringMatchesFormat',
-            'EXPECTREGEX' => 'assertMatchesRegularExpression',
+            'EXPECTREGEX' => 'assertRegExp',
         ];
 
         $actual = preg_replace('/\r\n/', "\n", trim($output));
@@ -374,16 +342,23 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
                 $sectionContent = preg_replace('/\r\n/', "\n", trim($sections[$sectionName]));
                 $expected       = $sectionName === 'EXPECTREGEX' ? "/{$sectionContent}/" : $sectionContent;
 
+                if ($expected === null) {
+                    throw new Exception('No PHPT expectation found');
+                }
+
                 Assert::$sectionAssertion($expected, $actual);
 
                 return;
             }
         }
 
-        throw new InvalidPhptFileException;
+        throw new Exception('No PHPT assertion found');
     }
 
-    private function shouldTestBeSkipped(array $sections, array $settings): bool
+    /**
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     */
+    private function runSkip(array &$sections, TestResult $result, array $settings): bool
     {
         if (!isset($sections['SKIPIF'])) {
             return false;
@@ -399,12 +374,14 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
                 $message = substr($skipMatch[1], 2);
             }
 
-            EventFacade::emitter()->testSkipped(
-                $this->valueObjectForEvents(),
-                $message,
+            $hint  = $this->getLocationHint($message, $sections, 'SKIPIF');
+            $trace = array_merge($hint, debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS));
+            $result->addFailure(
+                $this,
+                new SyntheticSkippedError($message, 0, $trace[0]['file'], $trace[0]['line'], $trace),
+                0
             );
-
-            EventFacade::emitter()->testFinished($this->valueObjectForEvents(), 0);
+            $result->endTest($this, 0);
 
             return true;
         }
@@ -412,7 +389,7 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
         return false;
     }
 
-    private function runClean(array $sections, bool $collectCoverage): void
+    private function runClean(array &$sections, bool $collectCoverage): void
     {
         $this->phpUtil->setStdin('');
         $this->phpUtil->setArgs('');
@@ -463,7 +440,7 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
             }
 
             if (empty($section)) {
-                throw new InvalidPhptFileException;
+                throw new Exception('Invalid PHPT file: empty section header');
             }
 
             $sections[$section] .= $line;
@@ -477,12 +454,14 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
         $this->parseExternal($sections);
 
         if (!$this->validate($sections)) {
-            throw new InvalidPhptFileException;
+            throw new Exception('Invalid PHPT file');
         }
 
         foreach ($unsupportedSections as $section) {
             if (isset($sections[$section])) {
-                throw new UnsupportedPhptSectionException($section);
+                throw new Exception(
+                    "PHPUnit does not support PHPT {$section} sections"
+                );
             }
         }
 
@@ -508,9 +487,12 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
 
                 if (!is_file($testDirectory . $externalFilename) ||
                     !is_readable($testDirectory . $externalFilename)) {
-                    throw new PhptExternalFileCannotBeLoadedException(
-                        $section,
-                        $testDirectory . $externalFilename,
+                    throw new Exception(
+                        sprintf(
+                            'Could not load --%s-- %s for PHPT file',
+                            $section . '_EXTERNAL',
+                            $testDirectory . $externalFilename
+                        )
                     );
                 }
 
@@ -519,7 +501,7 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
         }
     }
 
-    private function validate(array $sections): bool
+    private function validate(array &$sections): bool
     {
         $requiredSections = [
             'FILE',
@@ -568,7 +550,7 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
                 "'" . dirname($this->filename) . "'",
                 "'" . $this->filename . "'",
             ],
-            $code,
+            $code
         );
     }
 
@@ -583,15 +565,12 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
         ];
     }
 
-    /**
-     * @throws \SebastianBergmann\Template\InvalidArgumentException
-     */
-    private function renderForCoverage(string &$job, bool $pathCoverage, ?string $codeCoverageCacheDirectory): void
+    private function renderForCoverage(string &$job): void
     {
         $files = $this->getCoverageFiles();
 
-        $template = new Template(
-            __DIR__ . '/../Util/PHP/Template/PhptTestCase.tpl',
+        $template = new Text_Template(
+            __DIR__ . '/../Util/PHP/Template/PhptTestCase.tpl'
         );
 
         $composerAutoload = '\'\'';
@@ -606,51 +585,43 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
             $phar = var_export(__PHPUNIT_PHAR__, true);
         }
 
-        if ($codeCoverageCacheDirectory === null) {
-            $codeCoverageCacheDirectory = 'null';
-        } else {
-            $codeCoverageCacheDirectory = "'" . $codeCoverageCacheDirectory . "'";
-        }
+        $globals = '';
 
-        $bootstrap = '';
-
-        if (ConfigurationRegistry::get()->hasBootstrap()) {
-            $bootstrap = ConfigurationRegistry::get()->bootstrap();
+        if (!empty($GLOBALS['__PHPUNIT_BOOTSTRAP'])) {
+            $globals = '$GLOBALS[\'__PHPUNIT_BOOTSTRAP\'] = ' . var_export(
+                $GLOBALS['__PHPUNIT_BOOTSTRAP'],
+                true
+            ) . ";\n";
         }
 
         $template->setVar(
             [
-                'bootstrap'                  => $bootstrap,
-                'composerAutoload'           => $composerAutoload,
-                'phar'                       => $phar,
-                'job'                        => $files['job'],
-                'coverageFile'               => $files['coverage'],
-                'driverMethod'               => $pathCoverage ? 'forLineAndPathCoverage' : 'forLineCoverage',
-                'codeCoverageCacheDirectory' => $codeCoverageCacheDirectory,
-            ],
+                'composerAutoload' => $composerAutoload,
+                'phar'             => $phar,
+                'globals'          => $globals,
+                'job'              => $files['job'],
+                'coverageFile'     => $files['coverage'],
+            ]
         );
 
         file_put_contents($files['job'], $job);
-
         $job = $template->render();
     }
 
-    private function cleanupForCoverage(): RawCodeCoverageData
+    private function cleanupForCoverage(): array
     {
-        $coverage = RawCodeCoverageData::fromXdebugWithoutPathCoverage([]);
+        $coverage = [];
         $files    = $this->getCoverageFiles();
 
-        $buffer = false;
-
-        if (is_file($files['coverage'])) {
+        if (file_exists($files['coverage'])) {
             $buffer = @file_get_contents($files['coverage']);
-        }
 
-        if ($buffer !== false) {
-            $coverage = @unserialize($buffer);
+            if ($buffer !== false) {
+                $coverage = @unserialize($buffer);
 
-            if ($coverage === false) {
-                $coverage = RawCodeCoverageData::fromXdebugWithoutPathCoverage([]);
+                if ($coverage === false) {
+                    $coverage = [];
+                }
             }
         }
 
@@ -698,13 +669,13 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
             }
 
             if ($block === 'diff') {
-                if (str_starts_with($line, '+')) {
+                if (strpos($line, '+') === 0) {
                     $needle = $this->getCleanDiffLine($previousLine);
 
                     break;
                 }
 
-                if (str_starts_with($line, '-')) {
+                if (strpos($line, '-') === 0) {
                     $needle = $this->getCleanDiffLine($line);
 
                     break;
@@ -728,7 +699,7 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
         return $line;
     }
 
-    private function getLocationHint(string $needle, array $sections): array
+    private function getLocationHint(string $needle, array $sections, ?string $sectionName = null): array
     {
         $needle = trim($needle);
 
@@ -739,12 +710,16 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
             ]];
         }
 
-        $search = [
-            // 'FILE',
-            'EXPECT',
-            'EXPECTF',
-            'EXPECTREGEX',
-        ];
+        if ($sectionName) {
+            $search = [$sectionName];
+        } else {
+            $search = [
+                // 'FILE',
+                'EXPECT',
+                'EXPECTF',
+                'EXPECTREGEX',
+            ];
+        }
 
         foreach ($search as $section) {
             if (!isset($sections[$section])) {
@@ -770,25 +745,29 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
             $offset        = $sectionOffset + 1;
 
             foreach (preg_split('/\r\n|\r|\n/', $sections[$section]) as $line) {
-                if (str_contains($line, $needle)) {
-                    return [
-                        [
-                            'file' => realpath($this->filename),
-                            'line' => $offset,
-                        ],
-                    ];
+                if (strpos($line, $needle) !== false) {
+                    return [[
+                        'file' => realpath($this->filename),
+                        'line' => $offset,
+                    ]];
                 }
-
                 $offset++;
             }
         }
 
-        return [
-            [
+        if ($sectionName) {
+            // String not found in specified section, show user the start of the named section
+            return [[
                 'file' => realpath($this->filename),
-                'line' => 1,
-            ],
-        ];
+                'line' => $sectionOffset,
+            ]];
+        }
+
+        // No section specified, show user start of code
+        return [[
+            'file' => realpath($this->filename),
+            'line' => 1,
+        ]];
     }
 
     /**
@@ -825,10 +804,18 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
         }
 
         if (extension_loaded('xdebug')) {
-            if ($collectCoverage) {
-                $settings[] = 'xdebug.mode=coverage';
+            if (version_compare(phpversion('xdebug'), '3', '>=')) {
+                if ($collectCoverage) {
+                    $settings[] = 'xdebug.mode=coverage';
+                } else {
+                    $settings[] = 'xdebug.mode=off';
+                }
             } else {
-                $settings[] = 'xdebug.mode=off';
+                $settings[] = 'xdebug.default_enable=0';
+
+                if ($collectCoverage) {
+                    $settings[] = 'xdebug.coverage_enable=1';
+                }
             }
         }
 
