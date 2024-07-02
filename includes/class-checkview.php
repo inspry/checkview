@@ -79,7 +79,7 @@ class Checkview {
 		if ( defined( 'CHECKVIEW_VERSION' ) ) {
 			$this->version = CHECKVIEW_VERSION;
 		} else {
-			$this->version = '1.1.6';
+			$this->version = '1.1.7';
 		}
 		$this->plugin_name = 'checkview';
 
@@ -273,11 +273,10 @@ class Checkview {
 	private function set_locale() {
 
 		$plugin_i18n = new Checkview_i18n();
-
-		$this->loader->add_action(
+		$plugin_i18n->load_plugin_textdomain();
+		add_action(
 			'plugins_loaded',
-			$plugin_i18n,
-			'load_plugin_textdomain'
+			array( $plugin_i18n, 'load_plugin_textdomain' )
 		);
 	}
 

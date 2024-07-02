@@ -158,7 +158,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 
 				if ( isset( $field['value'] ) && '' !== $field['value'] ) {
 					$field_value = is_array( $field['value'] ) ? serialize( $field['value'] ) : $field['value'];
-					$type        = $field['type'];
+					$type        = isset( $field['type'] ) ? $field['type'] : '';
 					switch ( $type ) {
 						case 'name':
 							if ( '' === $field['middle'] && '' === $field['last'] ) {

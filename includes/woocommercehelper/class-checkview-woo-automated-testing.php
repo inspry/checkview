@@ -318,7 +318,7 @@ class Checkview_Woo_Automated_Testing {
 		$customer = $this->checkview_get_test_customer();
 
 		if ( ! $customer ) {
-			return;
+			return false;
 		}
 
 		$customer->set_password( wp_generate_password() );
@@ -680,18 +680,22 @@ class Checkview_Woo_Automated_Testing {
 		);
 		if ( empty( $orders ) ) {
 			$args = array(
-				'posts_per_page' => -1,
+				'limit'          => -1,
+				'payment_method' => 'checkview',
 				'meta_query'     => array(
-					'relation' => 'OR', // Use 'AND' for both conditions to apply.
 					array(
-						'key'     => 'payment_made_by', // Meta key for payment method.
-						'value'   => 'checkview', // Replace with your actual payment gateway ID.
-						'compare' => '=', // Use '=' for exact match.
+						'relation' => 'AND', // Use 'AND' for both conditions to apply.
+						array(
+							'key'     => 'payment_made_by', // Meta key for payment method.
+							'value'   => 'checkview', // Replace with your actual payment gateway ID.
+							'compare' => '=', // Use '=' for exact match.
+						),
 					),
 				),
 			);
-
-			$orders = wc_get_orders( $args );
+			if ( function_exists( 'wc_get_orders' ) ) {
+				$orders = wc_get_orders( $args );
+			}
 		}
 		// Delete orders.
 		if ( ! empty( $orders ) ) {

@@ -241,7 +241,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		 * @param int $form_id id of the form.
 		 * @return array
 		 */
-		private function get_form_fields( $form_id ) {
+		public function get_form_fields( $form_id ) {
 			global $wpdb;
 
 			$fields      = array();

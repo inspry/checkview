@@ -32,7 +32,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		 * @access   protected
 		 * @var      Checkview_Loader    $loader    Maintains and registers all hooks for the plugin.
 		 */
-		protected $loader;
+		public $loader;
 
 		/**
 		 * Initializes the class constructor.
@@ -231,8 +231,8 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				'response'       => isset( $row['response'] ) ? $row['response'] : 'n/a',
 				'user_agent'     => isset( $row['browser'] ) ? $row['browser'] : 'n/a',
 				'ip'             => isset( $row['ip'] ) ? $row['ip'] : 'n/a',
-				'date_created'   => $row['created_at'],
-				'date_updated'   => $row['updated_at'],
+				'date_created'   => isset($row['created_at'])? $row['created_at'] : 'n/a',
+				'date_updated'   => isset( $row['updated_at'] ) ? $row['updated_at'] : 'n/a',
 				'payment_status' => isset( $row['payment_status'] ) ? $row['payment_status'] : 'n/a',
 				'payment_method' => isset( $row['payment_method'] ) ? $row['payment_payment'] : 'n/a',
 				'payment_amount' => isset( $row['payment_total'] ) ? $row['payment_total'] : 0,

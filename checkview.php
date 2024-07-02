@@ -9,13 +9,13 @@
  *
  * @link              https://checkview.io
  * @since             1.0.0
- * @package           Checkview
+ * @package           CheckView
  *
  * @wordpress-plugin
  * Plugin Name:       CheckView
  * Plugin URI:        https://checkview.io
  * Description:       CheckView is the #1 fully automated solution to test your WordPress forms and detect form problems fast.  Automatically test your WordPress forms to ensure you never miss a lead again.
- * Version:           1.1.6
+ * Version:           1.1.7
  * Author:            CheckView
  * Author URI:        https://checkview.io/
  * License:           GPL-2.0+
@@ -36,7 +36,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'CHECKVIEW_VERSION', '1.1.6' );
+define( 'CHECKVIEW_VERSION', '1.1.7' );
 
 /**
  * Define constant for plugin settings link

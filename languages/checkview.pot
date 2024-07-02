@@ -2,17 +2,16 @@
 # This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: CheckView 1.1.5\n"
-"Report-Msgid-Bugs-To: https://woocommerce.com/my-account/create-a-ticket/\n"
+"Project-Id-Version: CheckView 1.1.7\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/checkview\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-05-14T10:33:20+00:00\n"
+"POT-Creation-Date: 2024-06-28T19:17:24+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
-"language-team: LANGUAGE <EMAIL@ADDRESS>\n"
 "X-Domain: checkview\n"
 
 #. Plugin Name of the plugin
@@ -208,264 +207,333 @@ msgstr ""
 msgid "See Log File"
 msgstr ""
 
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:354
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:526
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:709
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:838
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:955
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1042
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1124
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1172
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1220
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1268
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1335
 #: includes/API/class-checkview-api.php:354
-#: includes/API/class-checkview-api.php:526
-#: includes/API/class-checkview-api.php:709
-#: includes/API/class-checkview-api.php:838
-#: includes/API/class-checkview-api.php:955
-#: includes/API/class-checkview-api.php:1041
-#: includes/API/class-checkview-api.php:1120
-#: includes/API/class-checkview-api.php:1168
-#: includes/API/class-checkview-api.php:1216
-#: includes/API/class-checkview-api.php:1264
-#: includes/API/class-checkview-api.php:1331
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:351
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:523
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:706
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:835
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:951
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1000
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1079
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1127
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1175
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1223
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1290
+#: includes/API/class-checkview-api.php:529
+#: includes/API/class-checkview-api.php:712
+#: includes/API/class-checkview-api.php:841
+#: includes/API/class-checkview-api.php:958
+#: includes/API/class-checkview-api.php:1044
+#: includes/API/class-checkview-api.php:1126
+#: includes/API/class-checkview-api.php:1174
+#: includes/API/class-checkview-api.php:1222
+#: includes/API/class-checkview-api.php:1270
+#: includes/API/class-checkview-api.php:1337
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:354
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:526
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:709
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:838
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:955
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1041
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1120
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1168
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1216
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1264
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1331
 msgid "WooCommerce not found."
 msgstr ""
 
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:375
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:537
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:723
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:848
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:963
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1055
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1132
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1180
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1228
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1276
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1343
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1385
 #: includes/API/class-checkview-api.php:375
-#: includes/API/class-checkview-api.php:537
-#: includes/API/class-checkview-api.php:723
-#: includes/API/class-checkview-api.php:848
-#: includes/API/class-checkview-api.php:963
-#: includes/API/class-checkview-api.php:1054
-#: includes/API/class-checkview-api.php:1128
-#: includes/API/class-checkview-api.php:1176
-#: includes/API/class-checkview-api.php:1224
-#: includes/API/class-checkview-api.php:1272
-#: includes/API/class-checkview-api.php:1339
-#: includes/API/class-checkview-api.php:1381
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:372
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:534
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:720
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:845
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:959
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1013
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1087
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1135
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1183
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1231
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1298
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1340
+#: includes/API/class-checkview-api.php:540
+#: includes/API/class-checkview-api.php:726
+#: includes/API/class-checkview-api.php:851
+#: includes/API/class-checkview-api.php:966
+#: includes/API/class-checkview-api.php:1057
+#: includes/API/class-checkview-api.php:1134
+#: includes/API/class-checkview-api.php:1182
+#: includes/API/class-checkview-api.php:1230
+#: includes/API/class-checkview-api.php:1278
+#: includes/API/class-checkview-api.php:1345
+#: includes/API/class-checkview-api.php:1387
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:375
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:537
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:723
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:848
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:963
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1054
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1128
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1176
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1224
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1272
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1339
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1381
 msgid "Use a valid JWT token."
 msgstr ""
 
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:385
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:499
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:732
 #: includes/API/class-checkview-api.php:385
-#: includes/API/class-checkview-api.php:499
-#: includes/API/class-checkview-api.php:732
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:382
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:496
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:729
+#: includes/API/class-checkview-api.php:502
+#: includes/API/class-checkview-api.php:735
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:385
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:499
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:732
 msgid "Successfully retrieved the orders."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:507
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:504
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:507
+#: includes/API/class-checkview-api.php:510
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:507
 msgid "No orders to show."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:683
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:680
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:683
+#: includes/API/class-checkview-api.php:686
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:683
 msgid "Successfully retrieved the order details."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:691
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:688
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:691
+#: includes/API/class-checkview-api.php:694
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:691
 msgid "No order details to show."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:811
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:808
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:811
+#: includes/API/class-checkview-api.php:814
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:811
 msgid "Successfully retrieved the products."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:819
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:816
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:819
+#: includes/API/class-checkview-api.php:822
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:819
 msgid "No products to show."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:857
-#: includes/API/class-checkview-api.php:929
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:854
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:926
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:857
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:929
+#: includes/API/class-checkview-api.php:860
+#: includes/API/class-checkview-api.php:932
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:857
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:929
 msgid "Successfully retrieved the shipping details."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:937
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:934
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:937
+#: includes/API/class-checkview-api.php:940
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:937
 msgid "No shipping details to show."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:972
-#: includes/API/class-checkview-api.php:1049
-#: includes/API/class-checkview-api.php:1136
-#: includes/API/class-checkview-api.php:1656
-#: includes/API/class-checkview-api.php:1785
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:968
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1008
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1095
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1615
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1756
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:972
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1050
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1140
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1660
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1789
+#: includes/API/class-checkview-api.php:975
+#: includes/API/class-checkview-api.php:1052
+#: includes/API/class-checkview-api.php:1142
+#: includes/API/class-checkview-api.php:1662
+#: includes/API/class-checkview-api.php:1791
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:972
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1049
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1136
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1656
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1785
 msgid "No Result Found"
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1017
-#: includes/API/class-checkview-api.php:1804
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:976
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1775
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1017
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1808
+#: includes/API/class-checkview-api.php:1020
+#: includes/API/class-checkview-api.php:1810
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1017
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1804
 msgid "Successfully removed the results."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1024
-#: includes/API/class-checkview-api.php:1812
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:983
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1783
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1024
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1816
+#: includes/API/class-checkview-api.php:1027
+#: includes/API/class-checkview-api.php:1818
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1024
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1812
 msgid "Failed to remove the results."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1095
-#: includes/API/class-checkview-api.php:1143
-#: includes/API/class-checkview-api.php:1701
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1054
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1102
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1672
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1099
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1147
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1705
+#: includes/API/class-checkview-api.php:1101
+#: includes/API/class-checkview-api.php:1149
+#: includes/API/class-checkview-api.php:1707
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1095
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1143
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1701
 msgid "Successfully retrieved the results."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1103
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1062
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1107
+#: includes/API/class-checkview-api.php:1109
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1103
 msgid "No data found."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1151
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1110
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1155
+#: includes/API/class-checkview-api.php:1157
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1151
 msgid "No active payment gateways."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1184
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1143
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1188
+#: includes/API/class-checkview-api.php:1190
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1184
 msgid "Failed to create the customer. Try again."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1191
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1150
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1195
+#: includes/API/class-checkview-api.php:1197
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1191
 msgid "Successfully created the customer."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1199
-#: includes/API/class-checkview-api.php:1247
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1158
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1206
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1203
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1251
+#: includes/API/class-checkview-api.php:1205
+#: includes/API/class-checkview-api.php:1253
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1199
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1247
 msgid "Failed."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1232
-#: includes/API/class-checkview-api.php:1280
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1191
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1239
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1236
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1284
+#: includes/API/class-checkview-api.php:1238
+#: includes/API/class-checkview-api.php:1286
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1232
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1280
 msgid "Failed to retrieve the customer. Try again."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1239
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1198
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1243
+#: includes/API/class-checkview-api.php:1245
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1239
 msgid "Successfully retrieved the customer."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1306
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1265
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1310
+#: includes/API/class-checkview-api.php:1312
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1306
 msgid "Successfully retrieved the store locations."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1314
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1273
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1318
+#: includes/API/class-checkview-api.php:1320
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1314
 msgid "Failed to retrieve the store locations."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1347
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1306
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1351
+#: includes/API/class-checkview-api.php:1353
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1347
 msgid "Failed to retrieve the test product. Try again."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1355
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1314
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1359
+#: includes/API/class-checkview-api.php:1361
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1355
 msgid "Successfully retrieved the test product."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1363
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1322
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1367
+#: includes/API/class-checkview-api.php:1369
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1363
 msgid "Failed to retrieve the test product."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1390
-#: includes/API/class-checkview-api.php:1626
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1349
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1585
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1394
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1630
+#: includes/API/class-checkview-api.php:1396
+#: includes/API/class-checkview-api.php:1632
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1390
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1626
 msgid "Successfully retrieved the forms list."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1634
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1593
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1638
+#: includes/API/class-checkview-api.php:1640
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1634
 msgid "No forms to show."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1662
-#: includes/API/class-checkview-api.php:1791
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1621
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1762
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1666
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1795
+#: includes/API/class-checkview-api.php:1668
+#: includes/API/class-checkview-api.php:1797
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1662
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1791
 msgid "Empty UID."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1708
-#: includes/API/class-checkview-api.php:1716
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1679
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1687
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1712
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1720
+#: includes/API/class-checkview-api.php:1714
+#: includes/API/class-checkview-api.php:1722
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1708
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1716
 msgid "Failed to retrieve the results."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1751
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1722
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1755
+#: includes/API/class-checkview-api.php:1757
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1751
 msgid "Check Form Test Successfully Added"
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1764
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1735
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1768
+#: includes/API/class-checkview-api.php:1770
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1764
 msgid "Details to register form test are not correct."
 msgstr ""
 
-#: includes/API/class-checkview-api.php:1835
-#: includes/API/class-checkview-api.php:1845
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1806
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1816
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1839
+#: applications/npujypnnje/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1849
+#: includes/API/class-checkview-api.php:1841
+#: includes/API/class-checkview-api.php:1851
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1835
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/API/class-checkview-api.php:1845
 msgid "Invalid Token."
 msgstr ""
 
 #: includes/checkview-functions.php:40
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/checkview-functions.php:40
 msgid "Invalid Token"
 msgstr ""
 
 #: includes/checkview-functions.php:46
+#: web/el-patio-staging.instawp.xyz/public_html/wp-content/plugins/checkview/includes/checkview-functions.php:46
 msgid "Token Expired"
 msgstr ""
 
-#: includes/class-checkview.php:292
+#: includes/class-checkview.php:288
 msgid "Settings"
 msgstr ""
 
-#: includes/formhelpers/class-checkview-gforms-helper.php:191
-#: includes/formhelpers/class-checkview-gforms-helper.php:222
+#: includes/formhelpers/class-checkview-gforms-helper.php:199
+#: includes/formhelpers/class-checkview-gforms-helper.php:230
 msgid "Check Form Helper"
-msgstr ""
-
-#: wp-content/plugins/checkview/includes/API/class-checkview-api.php:1631
-msgid "Successfully retrieved the test results."
 msgstr ""
