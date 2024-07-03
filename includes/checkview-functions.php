@@ -34,9 +34,8 @@ if ( ! function_exists( 'validate_jwt_token' ) ) {
 			return esc_html( $e->getMessage() );
 		}
 		$jwt = (array) $decoded;
-
 		// if url mismatch return false.
-		if ( strstr( get_bloginfo( 'url' ), $jwt['websiteUrl'] ) !== false ) {
+		if ( str_contains( $jwt['websiteUrl'], get_bloginfo( 'url' ) ) !== true && get_bloginfo( 'url' ) !== $jwt['websiteUrl'] && ! strpos( $jwt['websiteUrl'], get_bloginfo( 'url' ) ) ) {
 			return esc_html__( 'Invalid Token', 'checkview' );
 		}
 
