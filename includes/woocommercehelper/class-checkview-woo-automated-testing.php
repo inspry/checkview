@@ -408,7 +408,11 @@ class Checkview_Woo_Automated_Testing {
 			$product->set_stock_status( 'instock' );
 			$product->set_stock_quantity( 5 );
 			$product->set_catalog_visibility( 'hidden' );
-
+			// Set weight and dimensions.
+			$product->set_weight( '1' ); // 1 ounce in pounds.
+			$product->set_length( '1' ); // Length in store units (e.g., inches, cm).
+			$product->set_width( '1' ); // Width in store units (e.g., inches, cm).
+			$product->set_height( '1' ); // Height in store units (e.g., inches, cm).
 			// This filter is added here to prevent the WCAT test product from being publicized on creation.
 			add_filter( 'publicize_should_publicize_published_post', '__return_false' );
 
