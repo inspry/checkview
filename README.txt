@@ -7,7 +7,7 @@ Tested up to: 6.5.2
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 1.1.9
+Stable tag: 1.1.10
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -132,6 +132,10 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 = 1.1.9 =
 * Added dimensions for Test Product.
 
+= 1.1.10 =
+* Resolved turnsile bypass error with WPForms.
+* Resolved captcha bypass error with FluentForms.
+
 == Upgrade Notice ==
 
 = 1.0.0 =
@@ -180,3 +184,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 = 1.1.9 =
 * Added dimensions for Test Product.
+
+= 1.1.10 =
+* Resolved turnsile bypass error with WPForms.
+* Resolved captcha bypass error with FluentForms.

@@ -557,6 +557,11 @@ class Checkview_Woo_Automated_Testing {
 				10,
 				3
 			);
+			add_filter(
+				'cfturnstile_whitelisted',
+				'__return_true',
+				999
+			);
 		}
 	}
 
