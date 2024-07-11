@@ -42,7 +42,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			if ( defined( 'TEST_EMAIL' ) ) {
 				// Change Email address to our test email.
 				add_filter(
-					'fluentform_email_to',
+					'fluentform/email_to',
 					array(
 						$this,
 						'checkview_inject_email',
@@ -53,7 +53,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			}
 			// clone entry after submission complete.
 			add_action(
-				'fluentform_submission_inserted',
+				'fluentform/submission_inserted',
 				array(
 					$this,
 					'checkview_clone_fluentform_entry',
