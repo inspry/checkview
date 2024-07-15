@@ -48,8 +48,16 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 				99,
 				1
 			);
+
+			// add_filter(
+			// 'ninja_forms_display_fields',
+			// array( $this, 'maybe_remove_v2_field' ),
+			// 99,
+			// 2
+			// );.
+
 			add_filter(
-				'ninja_forms_display_fields',
+				'ninja_forms_form_fields',
 				array(
 					$this,
 					'checkview_maybe_remove_v2_field',
@@ -62,7 +70,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 				function ( $check, $data ) {
 					return false;
 				},
-				12,
+				99,
 				2
 			);
 
@@ -70,6 +78,11 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 				'cfturnstile_whitelisted',
 				'__return_true',
 				999
+			);
+			add_filter(
+				'ninja_forms_action_recaptcha__verify_response',
+				'__return_true',
+				99
 			);
 			if ( defined( 'TEST_EMAIL' ) ) {
 				add_filter(
@@ -86,11 +99,11 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		/**
 		 * Injects email to Ninnja forms supported emails.
 		 *
-		 * @param [type] $sent status of emai.
-		 * @param [type] $action_settings settings for actions.
-		 * @param [type] $message message to be sent.
-		 * @param [type] $headers headers details.
-		 * @param [type] $attachments attachements if any.
+		 * @param string $sent status of emai.
+		 * @param array  $action_settings settings for actions.
+		 * @param string $message message to be sent.
+		 * @param array  $headers headers details.
+		 * @param array  $attachments attachements if any.
 		 * @return bool
 		 */
 		public function checkview_inject_email( $sent, $action_settings, $message, $headers, $attachments ) {
@@ -163,12 +176,29 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		 */
 		public function checkview_maybe_remove_v2_field( $fields ) {
 			foreach ( $fields as $key => $field ) {
-				if ( 'recaptcha' === $field['type'] ) {
+				if ( 'recaptcha' === $field->get_setting( 'type' ) ) {
 					// Remove v2 reCAPTCHA fields if still configured.
 					unset( $fields[ $key ] );
 				}
 			}
 
+			return $fields;
+		}
+
+		/**
+		 * Removes V2 field.
+		 *
+		 * @param array $fields fields.
+		 * @param int   $form_id form id.
+		 * @return fields
+		 */
+		public function maybe_remove_v2_field( $fields, $form_id ) {
+			foreach ( $fields as $key => $field ) {
+				if ( 'recaptcha' === $field['type'] || 'recaptcha_v3' === $field['type'] ) {
+					// Remove v2 reCAPTCHA fields if still configured.
+					unset( $fields[ $key ] );
+				}
+			}
 			return $fields;
 		}
 	}
