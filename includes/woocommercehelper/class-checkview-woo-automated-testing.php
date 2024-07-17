@@ -513,6 +513,11 @@ class Checkview_Woo_Automated_Testing {
 						return $value;
 					}
 				);
+				add_filter(
+					'cfturnstile_whitelisted',
+					'__return_true',
+					999
+				);
 			} elseif ( ( isset( $_GET['checkview_use_stripe'] ) && 'no' === sanitize_text_field( wp_unslash( $_GET['checkview_use_stripe'] ) ) ) || 'no' === get_option( $visitor_ip . 'use_stripe' ) ) {
 				// Load payment gateway.
 				require_once CHECKVIEW_INC_DIR . 'woocommercehelper/class-checkview-payment-gateway.php';
@@ -534,6 +539,11 @@ class Checkview_Woo_Automated_Testing {
 						'checkview_woocommerce_block_support',
 					);
 				}
+				add_filter(
+					'cfturnstile_whitelisted',
+					'__return_true',
+					999
+				);
 			}
 			// Make the test product visible in the catalog.
 			add_filter(
@@ -556,11 +566,6 @@ class Checkview_Woo_Automated_Testing {
 				'checkview_add_custom_fields_after_purchase',
 				10,
 				3
-			);
-			add_filter(
-				'cfturnstile_whitelisted',
-				'__return_true',
-				999
 			);
 		}
 	}

@@ -96,6 +96,49 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				'__return_true',
 				999
 			);
+			add_filter(
+				'gform_pre_render',
+				array( $this, 'maybe_hide_recaptcha' )
+			);
+
+			// Note: when changing choice values, we also need to use the gform_pre_validation so that the new values are available when validating the field.
+			add_filter(
+				'gform_pre_validation',
+				array( $this, 'maybe_hide_recaptcha' )
+			);
+
+			// Note: when changing choice values, we also need to use the gform_admin_pre_render so that the right values are displayed when editing the entry.
+			add_filter(
+				'gform_admin_pre_render',
+				array( $this, 'maybe_hide_recaptcha' )
+			);
+
+			// Note: this will allow for the labels to be used during the submission process in case values are enabled.
+			add_filter(
+				'gform_pre_submission_filter',
+				array( $this, 'maybe_hide_recaptcha' )
+			);
+		}
+		/**
+		 * Bypasses recaptcha .
+		 *
+		 * @param [Ninaja form] $form form object.
+		 * @return form.
+		 */
+		public function maybe_hide_recaptcha( $form ) {
+
+			// Add a placeholder to field id 8, is not used with multi-select or radio, will overwrite placeholder set in form editor.
+			// Replace 8 with your actual field id.
+			$fields = $form['fields'];
+
+			foreach ( $form['fields'] as $key => $field ) {
+				if ( 'captcha' === $field->type || 'hcaptcha' === $field->type || 'turnstile' === $field->type ) {
+					unset( $fields[ $key ] );
+				}
+			}
+
+			$form['fields'] = $fields;
+			return $form;
 		}
 
 		/**
