@@ -9,7 +9,7 @@ class Test_Checkview_Gforms_Helper extends WP_UnitTestCase {
 		if ( is_plugin_active( 'gravityforms/gravityforms.php' ) ) {
 			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-gforms-helper.php';
 		}
-		$send_to = 'c9e3653c0905aae958b9e2d0443dceb2@inbound.postmarkapp.com';
+		$send_to = 'verify@test-mail.checkview.io';
 		if ( isset( $test_form['send_to'] ) && '' !== $test_form['send_to'] ) {
 			$send_to = $test_form['send_to'];
 		}

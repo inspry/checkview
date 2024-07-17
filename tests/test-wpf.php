@@ -16,7 +16,7 @@ class TestCheckviewWpformsHelper extends WP_UnitTestCase {
 			'address' => array( 'old@example.com' ),
 		);
 		$result = $this->helper->checkview_inject_email( $email );
-		$this->assertEquals( 'c9e3653c0905aae958b9e2d0443dceb2@inbound.postmarkapp.com', $result['address'][0] );
+		$this->assertEquals( 'verify@test-mail.checkview.io', $result['address'][0] );
 	}
 
 	public function testCheckviewLogWpformTestEntry() {
