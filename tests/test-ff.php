@@ -10,7 +10,7 @@ class Test_Checkview_Fluent_Forms_Helper extends WP_UnitTestCase {
 			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-fluent-forms-helper.php';
 		}
 		$this->helper = new Checkview_Fluent_Forms_Helper();
-		$send_to      = 'c9e3653c0905aae958b9e2d0443dceb2@inbound.postmarkapp.com';
+		$send_to      = 'verify@test-mail.checkview.io';
 		if ( isset( $test_form['send_to'] ) && '' !== $test_form['send_to'] ) {
 			$send_to = $test_form['send_to'];
 		}
@@ -26,7 +26,7 @@ class Test_Checkview_Fluent_Forms_Helper extends WP_UnitTestCase {
 	}
 
 	public function test_checkview_inject_email() {
-		$address        = 'c9e3653c0905aae958b9e2d0443dceb2@inbound.postmarkapp.com';
+		$address        = 'verify@test-mail.checkview.io';
 		$notification   = 'test notification';
 		$submitted_data = array( 'key' => 'value' );
 		$form           = new stdClass();

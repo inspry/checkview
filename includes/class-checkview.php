@@ -178,7 +178,7 @@ class Checkview {
 
 		// $visitor_ip = $cv_bot_ip;
 		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) ) {
-			$send_to = 'c9e3653c0905aae958b9e2d0443dceb2@inbound.postmarkapp.com';
+			$send_to = 'verify@test-mail.checkview.io';
 			// skip if visitor ip not equal to CV Bot IP.
 
 			// if clean talk plugin active whitelist check form API IP. .
