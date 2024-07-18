@@ -5,7 +5,7 @@ if ( is_plugin_active( 'formidable/formidable.php' ) ) {
 class Test_Checkview_Formidable_Helper extends WP_UnitTestCase {
 
 	public function test_checkview_inject_email() {
-		$send_to = 'c9e3653c0905aae958b9e2d0443dceb2@inbound.postmarkapp.com';
+		$send_to = 'verify@test-mail.checkview.io';
 		if ( isset( $test_form['send_to'] ) && '' !== $test_form['send_to'] ) {
 			$send_to = $test_form['send_to'];
 		}

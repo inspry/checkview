@@ -21,7 +21,7 @@ class Checkview_Cf7_Helper_Test extends WP_UnitTestCase {
 	 */
 	public function test_constructor() {
 		$helper  = new Checkview_Cf7_Helper();
-		$send_to = 'c9e3653c0905aae958b9e2d0443dceb2@inbound.postmarkapp.com';
+		$send_to = 'verify@test-mail.checkview.io';
 		if ( isset( $test_form['send_to'] ) && '' !== $test_form['send_to'] ) {
 			$send_to = $test_form['send_to'];
 		}
@@ -82,9 +82,9 @@ class Checkview_Cf7_Helper_Test extends WP_UnitTestCase {
 	 */
 	public function test_checkview_inject_email() {
 		$helper = new Checkview_Cf7_Helper();
-		$args   = array( 'recipient' => 'c9e3653c0905aae958b9e2d0443dceb2@inbound.postmarkapp.com' );
+		$args   = array( 'recipient' => 'verify@test-mail.checkview.io' );
 		$args   = $helper->checkview_inject_email( $args );
-		$this->assertEquals( 'c9e3653c0905aae958b9e2d0443dceb2@inbound.postmarkapp.com', $args['recipient'] );
+		$this->assertEquals( 'verify@test-mail.checkview.io', $args['recipient'] );
 	}
 
 	/**
