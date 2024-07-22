@@ -38,7 +38,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
-			// if ( defined( 'TEST_EMAIL' ) ) {
+			if ( defined( 'TEST_EMAIL' ) ) {
 				// change emial address.
 				add_filter(
 					'wpcf7_mail_components',
@@ -49,7 +49,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 					99,
 					1
 				);
-			// }
+			}
 
 			add_action(
 				'wpcf7_before_send_mail',
