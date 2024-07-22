@@ -69,6 +69,28 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				20,
 				1
 			);
+
+			add_filter(
+				'fluentform/has_hcaptcha',
+				function ( $status ) {
+					// Do your stuff here.
+
+					return false;
+				},
+				10,
+				1
+			);
+
+			add_filter(
+				'fluentform/has_turnstile',
+				function ( $status ) {
+					// Do your stuff here.
+
+					return false;
+				},
+				10,
+				1
+			);
 			add_filter(
 				'fluentform/akismet_check_spam',
 				function ( $isSpamCheck, $form_id, $formData ) {
