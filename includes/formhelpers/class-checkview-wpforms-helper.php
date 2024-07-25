@@ -107,6 +107,13 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 				'__return_true',
 				999
 			);
+			// bypass hcaptcha.
+			add_filter( 'hcap_activate', '__return_false' );
+			add_filter(
+				'akismet_get_api_key',
+				'__return_null',
+				-10
+			);
 		}
 
 		/**

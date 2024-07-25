@@ -15,7 +15,7 @@
  * Plugin Name:       CheckView
  * Plugin URI:        https://checkview.io
  * Description:       CheckView is the #1 fully automated solution to test your WordPress forms and detect form problems fast.  Automatically test your WordPress forms to ensure you never miss a lead again.
- * Version:           1.1.12
+ * Version:           1.1.13
  * Author:            CheckView
  * Author URI:        https://checkview.io/
  * License:           GPL-2.0+
@@ -36,7 +36,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'CHECKVIEW_VERSION', '1.1.12' );
+define( 'CHECKVIEW_VERSION', '3' );
 
 /**
  * Define constant for plugin settings link
@@ -109,6 +109,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-checkview.php';
  * @since    1.0.0
  */
 function run_checkview() {
+	add_filter( 'hcap_activate', '__return_false' );
 	$plugin = Checkview::get_instance();
 	$plugin->run();
 }
@@ -121,3 +122,19 @@ add_action(
 		}
 	}
 );
+
+/**
+ * Filter hCaptcha activation flag.
+ *
+ * @param bool $activate Activate flag.
+ *
+ * @return bool
+ */
+function checkview_my_hcap_activate( $activate ) {
+	if ( isset( $_REQUEST['checkview_test_id'] ) ) {
+		return false;
+	}
+	return $activate;
+}
+
+add_filter( 'hcap_activate', 'checkview_my_hcap_activate' );
