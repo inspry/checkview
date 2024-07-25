@@ -567,9 +567,13 @@ class Checkview_Woo_Automated_Testing {
 				10,
 				3
 			);
+			// bypass hcaptcha.
+			add_filter( 'hcap_activate', array( $this, '__return_false' ), -999, 1 );
 		}
 	}
-
+	public function __return_false( $activate ) {
+		return false;
+	}
 	/**
 	 * Disable admin notifications on checkview checks.
 	 *

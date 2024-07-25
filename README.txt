@@ -3,11 +3,11 @@ Contributors: checkview, inspry
 Donate link: https://checkview.io/
 Tags: testing, monitoring, uptime, tests, woocommerce
 Requires at least: 5.0.1
-Tested up to: 6.5.2
+Tested up to: 6.6.1
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 1.1.12
+Stable tag: 1.1.13
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -142,11 +142,13 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Updated email action hook for form submission of FluentForms.
 
 = 1.1.12 =
-* Added Google Recaptcha, Hcaptcha and Cloudflare Turnstile bypass in Gravity Forms.
+* Added Google Recaptcha, hCaptcha and Cloudflare Turnstile bypass in Gravity Forms.
 * Added Google Recaptcha V3 bypass in FluentForms.
 * Updated CheckView email address to divert admin notifications accross all forms.
 * Added Cloudflare Turnstile bypass in WooCommerce checkout.
 
+= 1.1.13 =
+* Added spam check bypass in all forms and WooCommerce.
 == Upgrade Notice ==
 
 = 1.0.0 =
@@ -206,7 +208,10 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Updated email action hook for form submission of FluentForms.
 
 = 1.1.12 =
-* Added Google Recaptcha, Hcaptcha and Cloudflare Turnstile bypass in Gravity Forms.
+* Added Google Recaptcha, hCaptcha and Cloudflare Turnstile bypass in Gravity Forms.
 * Added Google Recaptcha V3 bypass in FluentForms.
 * Updated CheckView email address to divert admin notifications accross all forms.
 * Added Cloudflare Turnstile bypass in WooCommerce checkout.
+
+= 1.1.13 =
+* Added spam check bypass in all forms and WooCommerce.

@@ -215,6 +215,13 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				99,
 				1
 			);
+			// bypass hcaptcha.
+			add_filter( 'hcap_activate', '__return_false' );
+			add_filter(
+				'akismet_get_api_key',
+				'__return_null',
+				-10
+			);
 		}
 
 		/**
