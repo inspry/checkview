@@ -1,9 +1,13 @@
-name: InstaWP WordPress Testing
+name: InstaWP WordPress Testing For CheckView
 
+# Define the triggers for the workflow
 on:
-    push:
-      branches:
-        - main
+  push:
+    branches:
+      - main
+  schedule:
+    # Runs at 00:00 UTC every day
+    - cron: '0 0 * * *'
 
 jobs:
   create-wp-for-testing:

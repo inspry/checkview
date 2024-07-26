@@ -7,7 +7,7 @@ Tested up to: 6.6.1
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 1.1.13
+Stable tag: 1.1.14
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -149,6 +149,11 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 = 1.1.13 =
 * Added spam check bypass in all forms and WooCommerce.
+
+= 1.1.14 =
+* Added hCaptcha spam bypass in all forms.
+* Added Google Recaptcha V3 bypass in Gravity Forms.
+
 == Upgrade Notice ==
 
 = 1.0.0 =
@@ -215,3 +220,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 = 1.1.13 =
 * Added spam check bypass in all forms and WooCommerce.
+
+= 1.1.14 =
+* Added hCaptcha spam bypass in all forms.
+* Added Google Recaptcha V3 bypass in Gravity Forms.

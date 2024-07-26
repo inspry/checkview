@@ -15,7 +15,7 @@
  * Plugin Name:       CheckView
  * Plugin URI:        https://checkview.io
  * Description:       CheckView is the #1 fully automated solution to test your WordPress forms and detect form problems fast.  Automatically test your WordPress forms to ensure you never miss a lead again.
- * Version:           1.1.13
+ * Version:           1.1.14
  * Author:            CheckView
  * Author URI:        https://checkview.io/
  * License:           GPL-2.0+
@@ -36,7 +36,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'CHECKVIEW_VERSION', '3' );
+define( 'CHECKVIEW_VERSION', '1.1.14' );
 
 /**
  * Define constant for plugin settings link
@@ -131,10 +131,34 @@ add_action(
  * @return bool
  */
 function checkview_my_hcap_activate( $activate ) {
-	if ( isset( $_REQUEST['checkview_test_id'] ) ) {
+	if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
+		// check ip from share internet.
+		$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ) );
+	} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+		// to check ip is pass from proxy.
+		$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
+	} else {
+		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+	}
+	if ( isset( $_REQUEST['checkview_test_id'] ) || 'checkview-saas' === get_option( $ip ) ) {
 		return false;
 	}
 	return $activate;
 }
 
 add_filter( 'hcap_activate', 'checkview_my_hcap_activate' );
+
+
+/**
+ * Function to remove the specific action.
+ *
+ * @return void
+ */
+function remove_gravityforms_recaptcha_addon() {
+	// Make sure the class exists before trying to remove the action.
+	if ( class_exists( 'GF_RECAPTCHA_Bootstrap' ) && isset( $_REQUEST['checkview_test_id'] ) ) {
+		remove_action( 'gform_loaded', array( 'GF_RECAPTCHA_Bootstrap', 'load_addon' ), 5 );
+	}
+}
+// Use a hook with a priority higher than 5 to ensure the action is removed after it is added.
+add_action( 'gform_loaded', 'remove_gravityforms_recaptcha_addon', 1 );
