@@ -79,7 +79,7 @@ class Checkview {
 		if ( defined( 'CHECKVIEW_VERSION' ) ) {
 			$this->version = CHECKVIEW_VERSION;
 		} else {
-			$this->version = '1.1.7';
+			$this->version = '1.1.14';
 		}
 		$this->plugin_name = 'checkview';
 
@@ -175,7 +175,6 @@ class Checkview {
 		$visitor_ip = get_visitor_ip();
 		// Check view Bot IP. Todo.
 		$cv_bot_ip = get_api_ip();
-
 		// $visitor_ip = $cv_bot_ip;
 		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) ) {
 			$send_to = 'verify@test-mail.checkview.io';
