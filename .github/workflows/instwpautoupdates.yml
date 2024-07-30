@@ -1,101 +1,69 @@
-name: Check Ninja Forms Update
+name: Check WordPress Plugin SVN Updates
 
 on:
-  push:
-    branches:
-      - main
-
   schedule:
-    - cron: '0 0 * * *' # Runs daily at 00:00 UTC
+    - cron: '0 * * * *' # Runs every hour
+
+  workflow_dispatch: # Allow manual trigger
 
 jobs:
-  check-ninja-forms-update:
+  check-svn-updates:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '7.4'
+      - name: Set up SVN
+        run: sudo apt-get install -y subversion
 
-      - name: Install wp-cli
+      - name: Check for latest SVN revision
+        id: check-svn
         run: |
-          curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-          chmod +x wp-cli.phar
-          sudo mv wp-cli.phar /usr/local/bin/wp
+          svn info https://plugins.svn.wordpress.org/ninja-forms/trunk | grep 'Last Changed Rev' | awk '{print $4}' > current_revision.txt
 
-      - name: Download WordPress
-        run: |
-          wp core download --path=wordpress
-
-      - name: Create wp-config.php
-        run: |
-          wp config create --dbname=wordpress --dbuser=example --dbpass=example --dbhost=localhost --path=wordpress
-
-      - name: Install WordPress
-        run: |
-          wp core install --url=http://example.com --title="WordPress Site" --admin_user=admin --admin_password=admin --admin_email=admin@example.com --skip-email --path=wordpress
-
-      - name: Install Ninja Forms
-        run: |
-          wp plugin install ninja-forms --activate --path=wordpress
-
-      - name: Check for Ninja Forms update
-        run: |
-          wp plugin list --path=wordpress --format=json > plugin_list.json
-          ninja_forms=$(jq '.[] | select(.name=="ninja-forms")' plugin_list.json)
-          echo "$ninja_forms" > current_ninja_forms.json
-
-      - name: Get previous Ninja Forms version
+      - name: Get previous SVN revision
         id: get-previous
         run: |
-          if [ -f previous_ninja_forms.json ]; then
-            cat previous_ninja_forms.json
+          if [ -f previous_revision.txt ]; then
+            cat previous_revision.txt
           else
-            echo "{}" > previous_ninja_forms.json
+            echo "0" > previous_revision.txt
           fi
         continue-on-error: true
 
-      - name: Compare versions
-        id: compare-versions
+      - name: Compare revisions
+        id: compare-revisions
         run: |
-          current_version=$(jq -r '.version' current_ninja_forms.json)
-          previous_version=$(jq -r '.version' previous_ninja_forms.json)
+          current_revision=$(cat current_revision.txt)
+          previous_revision=$(cat previous_revision.txt)
 
-          echo "Current version: $current_version"
-          echo "Previous version: $previous_version"
+          echo "Current revision: $current_revision"
+          echo "Previous revision: $previous_revision"
 
-          if [ "$current_version" != "$previous_version" ]; then
+          if [ "$current_revision" -gt "$previous_revision" ]; then
             echo "::set-output name=update_found::true"
-            echo "::set-output name=previous_version::$previous_version"
-            echo "::set-output name=current_version::$current_version"
+            echo "::set-output name=current_revision::$current_revision"
           else
             echo "::set-output name=update_found::false"
           fi
 
-      - name: Save current version as previous version
-        if: steps.compare-versions.outputs.update_found == 'true'
+      - name: Save current revision as previous revision
+        if: steps.compare-revisions.outputs.update_found == 'true'
         run: |
-          cp current_ninja_forms.json previous_ninja_forms.json
+          cp current_revision.txt previous_revision.txt
 
-      - name: Commit updated version file
-        if: steps.compare-versions.outputs.update_found == 'true'
+      - name: Commit updated revision file
+        if: steps.compare-revisions.outputs.update_found == 'true'
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add previous_ninja_forms.json
-          git commit -m 'Update Ninja Forms previous version'
+          git add previous_revision.txt
+          git commit -m 'Update Ninja Forms SVN revision'
           git push
 
-      - name: Create WP for testing
-        if: steps.compare-versions.outputs.update_found == 'true'
-        uses: instawp/wordpress-testing-automation@main
-        with:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          INSTAWP_TOKEN: ${{secrets.INSTAWP_TOKEN}}
-          INSTAWP_TEMPLATE_SLUG: checkview-testing
-          REPO_ID: 509
-          INSTAWP_ACTION: create-site-template
+      - name: Run subsequent actions
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        run: |
+          echo "New revision found, running subsequent actions..."
+          # Place your subsequent actions here, such as deployment or testing.
