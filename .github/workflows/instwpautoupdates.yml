@@ -1,0 +1,85 @@
+name: Check Ninja Forms Update
+
+on:
+  push:
+    branches:
+      - bug-fixes
+
+  schedule:
+    - cron: '0 0 * * *' # Runs daily at 00:00 UTC
+
+jobs:
+  check-ninja-forms-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+
+      - name: Install wp-cli
+        run: |
+          curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+          chmod +x wp-cli.phar
+          sudo mv wp-cli.phar /usr/local/bin/wp
+
+      - name: Check for Ninja Forms update
+        run: |
+          wp plugin list --format=json > plugin_list.json
+          ninja_forms=$(jq '.[] | select(.name=="ninja-forms")' plugin_list.json)
+          echo "$ninja_forms" > current_ninja_forms.json
+
+      - name: Get previous Ninja Forms version
+        id: get-previous
+        run: |
+          if [ -f previous_ninja_forms.json ]; then
+            cat previous_ninja_forms.json
+          else
+            echo "{}" > previous_ninja_forms.json
+          fi
+        continue-on-error: true
+
+      - name: Compare versions
+        id: compare-versions
+        run: |
+          current_version=$(jq -r '.version' current_ninja_forms.json)
+          previous_version=$(jq -r '.version' previous_ninja_forms.json)
+
+          echo "Current version: $current_version"
+          echo "Previous version: $previous_version"
+
+          if [ "$current_version" != "$previous_version" ]; then
+            echo "::set-output name=update_found::true"
+            echo "::set-output name=previous_version::$previous_version"
+            echo "::set-output name=current_version::$current_version"
+          else
+            echo "::set-output name=update_found::false"
+          fi
+
+      - name: Save current version as previous version
+        if: steps.compare-versions.outputs.update_found == 'true'
+        run: |
+          cp current_ninja_forms.json previous_ninja_forms.json
+
+      - name: Commit updated version file
+        if: steps.compare-versions.outputs.update_found == 'true'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add previous_ninja_forms.json
+          git commit -m 'Update Ninja Forms previous version'
+          git push
+
+      - name: Create WP for testing
+        if: steps.compare-versions.outputs.update_found == 'true'
+        uses: instawp/wordpress-testing-automation@main
+        with:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          INSTAWP_TOKEN: ${{secrets.INSTAWP_TOKEN}}
+          INSTAWP_TEMPLATE_SLUG: checkview-testing
+          REPO_ID: 509
+          INSTAWP_ACTION: create-site-template
