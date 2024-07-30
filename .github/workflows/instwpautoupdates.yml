@@ -3,7 +3,7 @@ name: Check Ninja Forms Update
 on:
   push:
     branches:
-      - bug-fixes
+      - main
 
   schedule:
     - cron: '0 0 * * *' # Runs daily at 00:00 UTC
@@ -27,9 +27,25 @@ jobs:
           chmod +x wp-cli.phar
           sudo mv wp-cli.phar /usr/local/bin/wp
 
+      - name: Download WordPress
+        run: |
+          wp core download --path=wordpress
+
+      - name: Create wp-config.php
+        run: |
+          wp config create --dbname=wordpress --dbuser=example --dbpass=example --dbhost=localhost --path=wordpress
+
+      - name: Install WordPress
+        run: |
+          wp core install --url=http://example.com --title="WordPress Site" --admin_user=admin --admin_password=admin --admin_email=admin@example.com --skip-email --path=wordpress
+
+      - name: Install Ninja Forms
+        run: |
+          wp plugin install ninja-forms --activate --path=wordpress
+
       - name: Check for Ninja Forms update
         run: |
-          wp plugin list --format=json > plugin_list.json
+          wp plugin list --path=wordpress --format=json > plugin_list.json
           ninja_forms=$(jq '.[] | select(.name=="ninja-forms")' plugin_list.json)
           echo "$ninja_forms" > current_ninja_forms.json
 
