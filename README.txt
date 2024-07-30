@@ -153,6 +153,8 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 = 1.1.14 =
 * Added hCaptcha spam bypass in all forms.
 * Added Google Recaptcha V3 bypass in Gravity Forms.
+* Added hCaptcha spam bypass in WooCommerce checkout.
+* Added Google Recaptcha V3 bypass in Ninja forms ( addon based ).
 
 == Upgrade Notice ==
 
@@ -224,3 +226,5 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 = 1.1.14 =
 * Added hCaptcha spam bypass in all forms.
 * Added Google Recaptcha V3 bypass in Gravity Forms.
+* Added hCaptcha spam bypass in WooCommerce checkout.
+* Added Google Recaptcha V3 bypass in Ninja forms ( addon based ).
