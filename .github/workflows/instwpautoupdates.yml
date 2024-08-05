@@ -3,7 +3,7 @@ name: Check WordPress Plugin SVN Updates
 on:
   push:
     branches:
-      - bug-main
+      - main
   schedule:
     - cron: '0 * * * *' # Runs every hour
   workflow_dispatch: # Allow manual trigger
