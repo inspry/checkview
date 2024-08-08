@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Create WordPress Site for Testing
-        if: env.update_found == 'true'
+        if: env.update_found == 'ola'
         uses: instawp/wordpress-testing-automation@main
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
