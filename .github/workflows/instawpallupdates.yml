@@ -1,0 +1,257 @@
+name: Check Multiple WordPress Plugin SVN Updates
+
+on:
+  push:
+    branches:
+      - main1
+  schedule:
+    - cron: '0 * * * *' # Runs every hour
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  check-svn-updates:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up SVN
+        run: sudo apt-get install -y subversion
+
+      - name: Check for latest SVN revisions
+        id: check-svn
+        run: |
+          plugins=(
+            "ninja-forms"
+            "contact-form-7"
+            "formidable"
+            "gravityforms"
+            "wpforms-lite"
+            "woocommerce"
+            # Add-ons of Gravity Forms
+            "gravityformsuserregistration"
+            "gravityformspaypal"
+            "gravityformsstripe"
+          )
+          
+          for plugin in "${plugins[@]}"; do
+            svn info https://plugins.svn.wordpress.org/${plugin}/trunk | grep 'Last Changed Rev' | awk '{print $4}' > ${plugin}_current_revision.txt
+          done
+
+      - name: Get previous SVN revisions
+        id: get-previous
+        run: |
+          plugins=(
+            "ninja-forms"
+            "contact-form-7"
+            "formidable"
+            "gravityforms"
+            "wpforms-lite"
+            "woocommerce"
+            # Add-ons of Gravity Forms
+            "gravityformsuserregistration"
+            "gravityformspaypal"
+            "gravityformsstripe"
+          )
+          
+          for plugin in "${plugins[@]}"; do
+            if [ -f ${plugin}_previous_revision.txt ]; then
+              cat ${plugin}_previous_revision.txt
+            else
+              echo "0" > ${plugin}_previous_revision.txt
+            fi
+          done
+        continue-on-error: true
+
+      - name: Compare revisions and set outputs
+        id: compare-revisions
+        run: |
+          plugins=(
+            "ninja-forms"
+            "contact-form-7"
+            "formidable"
+            "gravityforms"
+            "wpforms-lite"
+            "woocommerce"
+            # Add-ons of Gravity Forms
+            "gravityformsuserregistration"
+            "gravityformspaypal"
+            "gravityformsstripe"
+          )
+          
+          update_found=false
+          
+          for plugin in "${plugins[@]}"; do
+            current_revision=$(cat ${plugin}_current_revision.txt)
+            previous_revision=$(cat ${plugin}_previous_revision.txt)
+
+            echo "Current revision for ${plugin}: $current_revision"
+            echo "Previous revision for ${plugin}: $previous_revision"
+
+            if [ "$current_revision" -gt "$previous_revision" ]; then
+              echo "::set-output name=update_found_${plugin}::true"
+              echo "::set-output name=current_revision_${plugin}::$current_revision"
+              update_found=true
+            else
+              echo "::set-output name=update_found_${plugin}::false"
+            fi
+          done
+          
+          if [ "$update_found" = true ]; then
+            echo "::set-output name=update_found::true"
+          else
+            echo "::set-output name=update_found::false"
+          fi
+
+      - name: Save current revisions as previous revisions
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        run: |
+          plugins=(
+            "ninja-forms"
+            "contact-form-7"
+            "formidable"
+            "gravityforms"
+            "wpforms-lite"
+            "woocommerce"
+            # Add-ons of Gravity Forms
+            "gravityformsuserregistration"
+            "gravityformspaypal"
+            "gravityformsstripe"
+          )
+          
+          for plugin in "${plugins[@]}"; do
+            if [ "$(steps.compare-revisions.outputs.update_found_${plugin})" == "true" ]; then
+              cp ${plugin}_current_revision.txt ${plugin}_previous_revision.txt
+            fi
+          done
+
+      - name: Commit updated revision files
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add *_previous_revision.txt
+          git commit -m 'Update SVN revisions'
+          git push
+
+# Define InstaWP jobs for each plugin
+
+  create-wp-for-ninja-forms:
+    runs-on: ubuntu-latest
+    needs: check-svn-updates
+    if: needs.check-svn-updates.outputs.update_found_ninja-forms == 'true'
+    steps:
+      - name: 'Check for Ninja Forms'
+        uses: instawp/wordpress-testing-automation@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+          INSTAWP_TEMPLATE_SLUG: ninja-forms-testing
+          REPO_ID: 509
+          INSTAWP_ACTION: create-site-template
+
+  create-wp-for-cf7:
+    runs-on: ubuntu-latest
+    needs: check-svn-updates
+    if: needs.check-svn-updates.outputs.update_found_contact-form-7 == 'true'
+    steps:
+      - name: 'Check for Contact Form 7'
+        uses: instawp/wordpress-testing-automation@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+          INSTAWP_TEMPLATE_SLUG: cf7-testing
+          REPO_ID: 509
+          INSTAWP_ACTION: create-site-template
+
+  create-wp-for-formidable:
+    runs-on: ubuntu-latest
+    needs: check-svn-updates
+    if: needs.check-svn-updates.outputs.update_found_formidable == 'true'
+    steps:
+      - name: 'Check for Formidable Forms'
+        uses: instawp/wordpress-testing-automation@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+          INSTAWP_TEMPLATE_SLUG: formidable-testing
+          REPO_ID: 509
+          INSTAWP_ACTION: create-site-template
+
+  create-wp-for-gravityforms:
+    runs-on: ubuntu-latest
+    needs: check-svn-updates
+    if: needs.check-svn-updates.outputs.update_found_gravityforms == 'true'
+    steps:
+      - name: 'Check for Gravity Forms'
+        uses: instawp/wordpress-testing-automation@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+          INSTAWP_TEMPLATE_SLUG: gravityforms-testing
+          REPO_ID: 509
+          INSTAWP_ACTION: create-site-template
+
+  create-wp-for-wpforms-lite:
+    runs-on: ubuntu-latest
+    needs: check-svn-updates
+    if: needs.check-svn-updates.outputs.update_found_wpforms-lite == 'true'
+    steps:
+      - name: 'Check for WPForms Lite'
+        uses: instawp/wordpress-testing-automation@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+          INSTAWP_TEMPLATE_SLUG: wpforms-lite-testing
+          REPO_ID: 509
+          INSTAWP_ACTION: create-site-template
+
+  create-wp-for-woocommerce:
+    runs-on: ubuntu-latest
+    needs: check-svn-updates
+    if: needs.check-svn-updates.outputs.update_found_woocommerce == 'true'
+    steps:
+      - name: 'Check for WooCommerce'
+        uses: instawp/wordpress-testing-automation@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+          INSTAWP_TEMPLATE_SLUG: woocommerce-testing
+          REPO_ID: 509
+          INSTAWP_ACTION: create-site-template
+
+  create-wp-for-gravityforms-addons:
+    runs-on: ubuntu-latest
+    needs: check-svn-updates
+    if: needs.check-svn-updates.outputs.update_found_gravityformsuserregistration == 'true' || needs.check-svn-updates.outputs.update_found_gravityformspaypal == 'true' || needs.check-svn-updates.outputs.update_found_gravityformsstripe == 'true'
+    steps:
+      - name: Trigger for Gravity Forms User Registration Add-On
+        if: needs.check-svn-updates.outputs.update_found_gravityformsuserregistration == 'true'
+        uses: instawp/wordpress-testing-automation@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+          INSTAWP_TEMPLATE_SLUG: gravityformsuserregistration-testing
+          REPO_ID: 509
+          INSTAWP_ACTION: create-site-template
+
+      - name: Trigger for Gravity Forms PayPal Add-On
+        if: needs.check-svn-updates.outputs.update_found_gravityformspaypal == 'true'
+        uses: instawp/wordpress-testing-automation@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+          INSTAWP_TEMPLATE_SLUG: gravityformspaypal-testing
+          REPO_ID: 509
+          INSTAWP_ACTION: create-site-template
+
+      - name: Trigger for Gravity Forms Stripe Add-On
+        if: needs.check-svn-updates.outputs.update_found_gravityformsstripe == 'true'
+        uses: instawp/wordpress-testing-automation@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+          INSTAWP_TEMPLATE_SLUG: gravityformsstripe-testing
+          REPO_ID: 509
+          INSTAWP_ACTION: create-site-template
