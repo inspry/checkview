@@ -66,9 +66,10 @@ jobs:
 
   create-wp-for-testing:
     runs-on: ubuntu-latest
+    needs: check-svn-updates
     steps:
       - name: Create WordPress Site for Testing
-        if: env.update_found == 'ola'
+        if: env.update_found == 'true'
         uses: instawp/wordpress-testing-automation@main
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
