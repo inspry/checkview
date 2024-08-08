@@ -67,7 +67,7 @@ jobs:
   create-wp-for-testing:
     runs-on: ubuntu-latest
     needs: check-svn-updates
-    if: needs.check-svn-updates.outputs.update_found == 'true'
+    if: env.update_found == 'true'
     steps:
       - name: Create WordPress Site for Testing
         uses: instawp/wordpress-testing-automation@main
