@@ -77,8 +77,12 @@ jobs:
           plugin_name=${{ matrix.plugin }}
           git pull --rebase origin bug-fixes
           git add "${plugin_name}_previous_revision.txt" "${plugin_name}_current_revision.txt"
-          git commit -m "Update $plugin_name SVN revision"
-          git push
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Update $plugin_name SVN revision"
+            git push
+          else
+            echo "No changes to commit"
+          fi
       - name: Create WOO Trusntile for Testing in InstaWP
         if: ${{ ( steps.compare-revisions.outputs.woocommerce_update_found == 'true' ) || ( steps.compare-revisions.outputs.simple-cloudflare-turnstile_update_found == 'true' ) }}
         uses: instawp/wordpress-testing-automation@main

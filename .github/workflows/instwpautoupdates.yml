@@ -64,8 +64,12 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git pull --rebase origin bug-fixes
           git add .
-          git commit -m 'Update Ninja Forms SVN revision'
-          git push
+          if ! git diff-index --quiet HEAD; then
+            git commit -m 'Update Ninja Forms SVN revision'
+            git push
+          else
+            echo "No changes to commit"
+          fi
 
       - name: Create WordPress Site for Testing in InstaWP
         if: steps.compare-revisions.outputs.update_found == 'true'
