@@ -109,7 +109,6 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-checkview.php';
  * @since    1.0.0
  */
 function run_checkview() {
-	add_filter( 'hcap_activate', '__return_false' );
 	$plugin = Checkview::get_instance();
 	$plugin->run();
 }
