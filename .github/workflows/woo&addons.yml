@@ -67,7 +67,8 @@ jobs:
         if: steps.compare-revisions.outputs.${{ matrix.plugin }}_update_found == 'true'
         run: |
           plugin_name=${{ matrix.plugin }}
-          cp "${plugin_name}_current_revision.txt" "${plugin_name}_latest_revision.txt"
+          mkdir -p .revision
+          cp "${plugin_name}_current_revision.txt" ".revision/${plugin_name}_latest_revision.txt"
 
       - name: Commit updated revision file
         if: steps.compare-revisions.outputs.${{ matrix.plugin }}_update_found == 'true'
@@ -76,7 +77,7 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           plugin_name=${{ matrix.plugin }}
           git pull --rebase origin bug-fixes
-          git add "${plugin_name}_latest_revision.txt"
+          git add ".revision/${plugin_name}_latest_revision.txt"
           if ! git diff-index --quiet HEAD; then
             git commit -m "Update $plugin_name SVN revision"
             git push
