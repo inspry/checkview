@@ -37,10 +37,10 @@ jobs:
         id: get-previous
         run: |
           plugin_name=${{ matrix.plugin }}
-          if [ -f "${plugin_name}_previous_revision.txt" ]; then
-            cat "${plugin_name}_previous_revision.txt"
+          if [ -f "${plugin_name}_latest_revision.txt" ]; then
+            cat "${plugin_name}_latest_revision.txt"
           else
-            echo "0" > "${plugin_name}_previous_revision.txt"
+            echo "0"
           fi
         continue-on-error: true
 
@@ -49,7 +49,7 @@ jobs:
         run: |
           plugin_name=${{ matrix.plugin }}
           current_revision=$(cat "${plugin_name}_current_revision.txt")
-          previous_revision=$(cat "${plugin_name}_previous_revision.txt")
+          previous_revision=$(cat "${plugin_name}_latest_revision.txt")
 
           echo "Current revision: $current_revision"
           echo "Previous revision: $previous_revision"
@@ -63,11 +63,11 @@ jobs:
             echo "::set-output name=${plugin_name}_update_found::false"
           fi
 
-      - name: Save current revision as previous revision
+      - name: Save current revision as latest revision
         if: steps.compare-revisions.outputs.${{ matrix.plugin }}_update_found == 'true'
         run: |
           plugin_name=${{ matrix.plugin }}
-          cp "${plugin_name}_current_revision.txt" "${plugin_name}_previous_revision.txt"
+          cp "${plugin_name}_current_revision.txt" "${plugin_name}_latest_revision.txt"
 
       - name: Commit updated revision file
         if: steps.compare-revisions.outputs.${{ matrix.plugin }}_update_found == 'true'
@@ -76,13 +76,14 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           plugin_name=${{ matrix.plugin }}
           git pull --rebase origin bug-fixes
-          git add "${plugin_name}_previous_revision.txt" "${plugin_name}_current_revision.txt"
+          git add "${plugin_name}_latest_revision.txt"
           if ! git diff-index --quiet HEAD; then
             git commit -m "Update $plugin_name SVN revision"
             git push
           else
             echo "No changes to commit"
           fi
+
       - name: Create WOO Trusntile for Testing in InstaWP
         if: ${{ ( steps.compare-revisions.outputs.woocommerce_update_found == 'true' ) || ( steps.compare-revisions.outputs.simple-cloudflare-turnstile_update_found == 'true' ) }}
         uses: instawp/wordpress-testing-automation@main
@@ -103,7 +104,6 @@ jobs:
             REPO_ID: 521
             INSTAWP_ACTION: create-site-template
 
-
       - name: Create WOO Classic Site for Testing in InstaWP
         if: steps.compare-revisions.outputs.woocommerce_update_found == 'true'
         uses: instawp/wordpress-testing-automation@main
@@ -123,4 +123,3 @@ jobs:
             INSTAWP_TEMPLATE_SLUG: woo-blocks--hcaptcha-for-wp
             REPO_ID: 521
             INSTAWP_ACTION: create-site-template
-
