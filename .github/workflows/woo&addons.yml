@@ -76,7 +76,7 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           plugin_name=${{ matrix.plugin }}
           git pull --rebase origin bug-fixes
-          git add "${plugin_name}_previous_revision.txt"
+          git add "${plugin_name}_previous_revision.txt" "${plugin_name}_current_revision.txt"
           git commit -m "Update $plugin_name SVN revision"
           git push
       - name: Create WOO Trusntile for Testing in InstaWP
