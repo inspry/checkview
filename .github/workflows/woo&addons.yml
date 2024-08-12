@@ -31,14 +31,14 @@ jobs:
         id: check-svn
         run: |
           plugin_name=${{ matrix.plugin }}
-          svn info https://plugins.svn.wordpress.org/$plugin_name/trunk | grep 'Last Changed Rev' | awk '{print $4}' > "${plugin_name}_current_revision.txt"
+          svn info https://plugins.svn.wordpress.org/$plugin_name/trunk | grep 'Last Changed Rev' | awk '{print $4}' > ".revision/${plugin_name}_current_revision.txt"
 
       - name: Get previous SVN revision
         id: get-previous
         run: |
           plugin_name=${{ matrix.plugin }}
-          if [ -f "${plugin_name}_latest_revision.txt" ]; then
-            cat "${plugin_name}_latest_revision.txt"
+          if [ -f ".revision/${plugin_name}_latest_revision.txt" ]; then
+            cat ".revision/${plugin_name}_latest_revision.txt"
           else
             echo "0"
           fi
@@ -48,11 +48,11 @@ jobs:
         id: compare-revisions
         run: |
           plugin_name=${{ matrix.plugin }}
-          current_revision=$(cat "${plugin_name}_current_revision.txt")
+          current_revision=$(cat ".revision/${plugin_name}_current_revision.txt")
           
           # Check if the previous revision file exists
-          if [ -f "${plugin_name}_latest_revision.txt" ]; then
-            previous_revision=$(cat "${plugin_name}_latest_revision.txt")
+          if [ -f ".revision/${plugin_name}_latest_revision.txt" ]; then
+            previous_revision=$(cat ".revision/${plugin_name}_latest_revision.txt")
           else
             previous_revision="0"
           fi
@@ -74,7 +74,7 @@ jobs:
         run: |
           plugin_name=${{ matrix.plugin }}
           mkdir -p .revision
-          cp "${plugin_name}_current_revision.txt" ".revision/${plugin_name}_latest_revision.txt"
+          cp ".revision/${plugin_name}_current_revision.txt" ".revision/${plugin_name}_latest_revision.txt"
 
       - name: Commit updated revision file
         if: steps.compare-revisions.outputs.${{ matrix.plugin }}_update_found == 'true'
