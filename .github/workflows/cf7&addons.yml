@@ -3,7 +3,7 @@ name: Check WordPress Plugin SVN Updates For CF7 And Addons
 on:
   push:
     branches:
-      - bug-fix
+      - bug-fixes
   schedule:
     - cron: '0 * * * *' # Runs every hour
   workflow_dispatch: # Allow manual trigger
