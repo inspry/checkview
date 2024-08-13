@@ -16,7 +16,8 @@ jobs:
       matrix:
         plugin:
           - simple-cloudflare-turnstile
-          - wpforms-lite
+          - contact-form-7
+          - hcaptcha-for-forms-and-more
           - akismet
           # Add more plugins here
 
@@ -31,14 +32,14 @@ jobs:
         id: check-svn
         run: |
           plugin_name=${{ matrix.plugin }}
-          svn info https://plugins.svn.wordpress.org/$plugin_name/trunk | grep 'Last Changed Rev' | awk '{print $4}' > ".revision/${plugin_name}_current_revision_wpforms.txt"
+          svn info https://plugins.svn.wordpress.org/$plugin_name/trunk | grep 'Last Changed Rev' | awk '{print $4}' > ".revision/${plugin_name}_current_revision_contact-form-7.txt"
 
       - name: Get previous SVN revision
         id: get-previous
         run: |
           plugin_name=${{ matrix.plugin }}
-          if [ -f ".revision/${plugin_name}_latest_revision_wpforms.txt" ]; then
-            cat ".revision/${plugin_name}_latest_revision_wpforms.txt"
+          if [ -f ".revision/${plugin_name}_latest_revision_contact-form-7.txt" ]; then
+            cat ".revision/${plugin_name}_latest_revision_contact-form-7.txt"
           else
             echo "0"
           fi
@@ -48,11 +49,11 @@ jobs:
         id: compare-revisions
         run: |
           plugin_name=${{ matrix.plugin }}
-          current_revision=$(cat ".revision/${plugin_name}_current_revision_wpforms.txt")
+          current_revision=$(cat ".revision/${plugin_name}_current_revision_contact-form-7.txt")
           
           # Check if the previous revision file exists
-          if [ -f ".revision/${plugin_name}_latest_revision_wpforms.txt" ]; then
-            previous_revision=$(cat ".revision/${plugin_name}_latest_revision_wpforms.txt")
+          if [ -f ".revision/${plugin_name}_latest_revision_contact-form-7.txt" ]; then
+            previous_revision=$(cat ".revision/${plugin_name}_latest_revision_contact-form-7.txt")
           else
             previous_revision="0"
           fi
@@ -74,7 +75,7 @@ jobs:
         run: |
           plugin_name=${{ matrix.plugin }}
           mkdir -p .revision
-          cp ".revision/${plugin_name}_current_revision_wpforms.txt" ".revision/${plugin_name}_latest_revision_wpforms.txt"
+          cp ".revision/${plugin_name}_current_revision_contact-form-7.txt" ".revision/${plugin_name}_latest_revision_contact-form-7.txt"
 
       - name: Commit updated revision file
         if: steps.compare-revisions.outputs.${{ matrix.plugin }}_update_found == 'true'
@@ -83,96 +84,64 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           plugin_name=${{ matrix.plugin }}
           git pull --rebase origin bug-fixes
-          git add ".revision/${plugin_name}_latest_revision_wpforms.txt"
+          git add ".revision/${plugin_name}_latest_revision_contact-form-7.txt"
           if ! git diff-index --quiet HEAD; then
             git commit -m "Update $plugin_name SVN revision"
             git push
           else
             echo "No changes to commit"
           fi
-
-      - name: Create WPFRORMS Trusntile Natvie for Testing in InstaWP
-        if: steps.compare-revisions.outputs.wpforms-lite_update_found == 'true'
+      - name: Create CF7 & hCaptcha Site for Testing in InstaWP
+        if: ${{ ( steps.compare-revisions.outputs.contact-form-7_update_found == 'true' ) || ( steps.compare-revisions.outputs.hcaptcha-for-forms-and-more_update_found == 'true' ) }}
         uses: instawp/wordpress-testing-automation@main
         with:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-            INSTAWP_TEMPLATE_SLUG:  wpforms--cloudflare-turnstile-native
+            INSTAWP_TEMPLATE_SLUG: contact-form-7--hcaptcha-for-wp
             REPO_ID: 521
             EXPIRY_HOURS: 1
             INSTAWP_ACTION: create-site-template
 
-      - name: Create CF7 & hCaptcha native Site for Testing in InstaWP
-        if: steps.compare-revisions.outputs.wpforms-lite_update_found == 'true'
+      - name: Create CF7 Trusntile for Testing in InstaWP
+        if: ${{ ( steps.compare-revisions.outputs.contact-form-7_update_found == 'true' ) || ( steps.compare-revisions.outputs.simple-cloudflare-turnstile_update_found == 'true' ) }}
         uses: instawp/wordpress-testing-automation@main
         with:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-            INSTAWP_TEMPLATE_SLUG: wpforms--hcaptcha-native
+            INSTAWP_TEMPLATE_SLUG: contact-form-7--simple-cloudflare-turnstile
             REPO_ID: 521
             EXPIRY_HOURS: 1
             INSTAWP_ACTION: create-site-template
 
-      - name: Create WPFRORMS Trusntile for Testing in InstaWP
-        if: ${{ ( steps.compare-revisions.outputs.wpforms-lite_update_found == 'true' ) || ( steps.compare-revisions.outputs.simple-cloudflare-turnstile_update_found == 'true' ) }}
-        uses: instawp/wordpress-testing-automation@main
-        with:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-            INSTAWP_TEMPLATE_SLUG: wpforms--simple-cloudflare-turnstile
-            REPO_ID: 521
-            EXPIRY_HOURS: 1
-            INSTAWP_ACTION: create-site-template
-
-      - name: Create CF7 With ReCaptcha v2 Site for Testing in InstaWP
-        if: steps.compare-revisions.outputs.wpforms-lite_update_found == 'true'
-        uses: instawp/wordpress-testing-automation@main
-        with:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-            INSTAWP_TEMPLATE_SLUG: wpforms--google-recaptcha-v2
-            REPO_ID: 521
-            EXPIRY_HOURS: 1
-            INSTAWP_ACTION: create-site-template
       - name: Create CF7 With Akismet Site for Testing in InstaWP
-        if: ${{ ( steps.compare-revisions.outputs.wpforms-lite_update_found  ) || ( steps.compare-revisions.outputs.akismet== 'true' ) }}
+        if: ${{ ( steps.compare-revisions.outputs.contact-form-7_update_found  ) || ( steps.compare-revisions.outputs.akismet== 'true' ) }}
         uses: instawp/wordpress-testing-automation@main
         with:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-            INSTAWP_TEMPLATE_SLUG: wpforms--akismet-anti-spam-plugin
-            REPO_ID: 521
-            EXPIRY_HOURS: 1
-            INSTAWP_ACTION: create-site-template
-
-      - name: Create CF7 Pro Site for Testing in InstaWP
-        if: steps.compare-revisions.outputs.wpforms-lite_update_found == 'true'
-        uses: instawp/wordpress-testing-automation@main
-        with:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-            INSTAWP_TEMPLATE_SLUG: wpforms-pro
+            INSTAWP_TEMPLATE_SLUG: contact-form-7--akismet-anti-spam
             REPO_ID: 521
             EXPIRY_HOURS: 1
             INSTAWP_ACTION: create-site-template
 
       - name: Create CF7 With ReCaptcha v3 Site for Testing in InstaWP
-        if: steps.compare-revisions.outputs.wpforms-lite_update_found == 'true'
+        if: steps.compare-revisions.outputs.contact-form-7_update_found == 'true'
         uses: instawp/wordpress-testing-automation@main
         with:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-            INSTAWP_TEMPLATE_SLUG: wpforms--google-recaptcha-v3-native
+            INSTAWP_TEMPLATE_SLUG: contact-form-7--google-recaptcha-v3
             REPO_ID: 521
             EXPIRY_HOURS: 1
             INSTAWP_ACTION: create-site-template
+            
       - name: Create CF7 Site for Testing in InstaWP
-        if: steps.compare-revisions.outputs.wpforms-lite_update_found == 'true'
+        if: steps.compare-revisions.outputs.contact-form-7_update_found == 'true'
         uses: instawp/wordpress-testing-automation@main
         with:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-            INSTAWP_TEMPLATE_SLUG: wp-forms
+            INSTAWP_TEMPLATE_SLUG: contact-form-7
             REPO_ID: 521
             EXPIRY_HOURS: 1
             INSTAWP_ACTION: create-site-template
