@@ -79,4 +79,5 @@ jobs:
             INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
             INSTAWP_TEMPLATE_SLUG: checkview-testing
             REPO_ID: 509
+            EXPIRY_HOURS: 1
             INSTAWP_ACTION: create-site-template

@@ -165,6 +165,7 @@ jobs:
             INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
             INSTAWP_TEMPLATE_SLUG: checkview-testing
             REPO_ID: 509
+            EXPIRY_HOURS: 1
             INSTAWP_ACTION: create-site-template
 
   create-wp-for-formidable:
@@ -180,6 +181,7 @@ jobs:
             INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
             INSTAWP_TEMPLATE_SLUG: checkview-testing
             REPO_ID: 509
+            EXPIRY_HOURS: 1
             INSTAWP_ACTION: create-site-template
 
   create-wp-for-gravityforms:
@@ -195,6 +197,7 @@ jobs:
             INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
             INSTAWP_TEMPLATE_SLUG: checkview-testing
             REPO_ID: 509
+            EXPIRY_HOURS: 1
             INSTAWP_ACTION: create-site-template
 
   create-wp-for-wpforms-lite:
@@ -210,6 +213,7 @@ jobs:
             INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
             INSTAWP_TEMPLATE_SLUG: checkview-testing
             REPO_ID: 509
+            EXPIRY_HOURS: 1
             INSTAWP_ACTION: create-site-template
 
   create-wp-for-woocommerce:
@@ -225,6 +229,7 @@ jobs:
             INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
             INSTAWP_TEMPLATE_SLUG: checkview-testing
             REPO_ID: 509
+            EXPIRY_HOURS: 1
             INSTAWP_ACTION: create-site-template
 
   create-wp-for-gravityforms-addons:
@@ -239,6 +244,7 @@ jobs:
           INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
           INSTAWP_TEMPLATE_SLUG: checkview-testing
           REPO_ID: 509
+          EXPIRY_HOURS: 1
           INSTAWP_ACTION: create-site-template
 
       - name: Trigger for Gravity Forms PayPal Add-On
@@ -249,6 +255,7 @@ jobs:
           INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
           INSTAWP_TEMPLATE_SLUG: checkview-testing
           REPO_ID: 509
+          EXPIRY_HOURS: 1
           INSTAWP_ACTION: create-site-template
 
       - name: Trigger for Gravity Forms Stripe Add-On
@@ -259,4 +266,5 @@ jobs:
           INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
           INSTAWP_TEMPLATE_SLUG: checkview-testing
           REPO_ID: 509
+          EXPIRY_HOURS: 1
           INSTAWP_ACTION: create-site-template

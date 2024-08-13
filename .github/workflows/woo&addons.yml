@@ -99,6 +99,7 @@ jobs:
             INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
             INSTAWP_TEMPLATE_SLUG: woo-classic---simple-cloudflare-turnstile
             REPO_ID: 521
+            EXPIRY_HOURS: 1
             INSTAWP_ACTION: create-site-template
 
       - name: Create WOO Blocks Site for Testing in InstaWP
@@ -109,6 +110,7 @@ jobs:
             INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
             INSTAWP_TEMPLATE_SLUG: woo-blocks
             REPO_ID: 521
+            EXPIRY_HOURS: 1
             INSTAWP_ACTION: create-site-template
 
       - name: Create WOO Classic Site for Testing in InstaWP
@@ -119,6 +121,7 @@ jobs:
             INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
             INSTAWP_TEMPLATE_SLUG: woo-classic
             REPO_ID: 521
+            EXPIRY_HOURS: 1
             INSTAWP_ACTION: create-site-template
 
       - name: Create WOO Blocks With hCaptcha Site for Testing in InstaWP
@@ -129,4 +132,5 @@ jobs:
             INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
             INSTAWP_TEMPLATE_SLUG: woo-blocks--hcaptcha-for-wp
             REPO_ID: 521
+            EXPIRY_HOURS: 1
             INSTAWP_ACTION: create-site-template
