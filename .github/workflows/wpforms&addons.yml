@@ -142,7 +142,7 @@ jobs:
             EXPIRY_HOURS: 1
             INSTAWP_ACTION: create-site-template
       - name: Create WPForms With Akismet Site for Testing in InstaWP
-        if: ${{ ( steps.compare-revisions.outputs.wpforms-lite_update_found  ) || ( steps.compare-revisions.outputs.akismet== 'true' ) }}
+        if: ${{ ( steps.compare-revisions.outputs.wpforms-lite_update_found  ) || ( steps.compare-revisions.outputs.akismet_update_found== 'true' ) }}
         uses: instawp/wordpress-testing-automation@main
         with:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
