@@ -517,6 +517,95 @@ Retrieves store locations.
 ```json
   {"status":200,"response":"Successfully retrieved the store locations.","body":{"selling_locations":{"AL":"Albania","AS":"American Samoa"},"shipping_locations":{"AL":"Albania","AS":"American Samoa"}}}
   ```
+### 11. `saas_get_site_info`
+
+Retrieves a list of all installed plugins, themes, and the WordPress core version.
+
+- **Endpoint**: `/checkview/v1/site-info`
+- **HTTP Method**: GET
+- **Parameters**:
+  - `_checkview_token` (required): JWT token for authentication.
+- **Usage**:
+  ```bash
+  curl -X GET "https://your-wordpress-site.com/wp-json/checkview/v1/site-info?_checkview_token=your-jwt-token"
+  ```
+- **Returns**:
+  - **Status 200**: Successfully retrieved the site information.
+  - **Status 403**: Invalid or missing authentication token.
+  - **Status 400**: Failed to retrieve site information.
+
+```json
+{
+  "status": 200,
+  "response": "Successfully retrieved site information.",
+  "body": {
+    "plugins": [
+      {
+        "name": "Plugin Name",
+        "version": "1.0.0",
+        "plugin_file": "plugin-directory/plugin-file.php",
+        "active": true
+      }
+    ],
+    "themes": [
+      {
+        "name": "Theme Name",
+        "version": "1.2.3",
+        "stylesheet": "theme-directory",
+        "active": true
+      }
+    ],
+    "core": {
+      "version": "6.0.1"
+    }
+  }
+}
+```
+
+### Example Response
+
+```json
+{
+  "plugins": [
+    {
+      "name": "Akismet Anti-Spam",
+      "version": "4.2.2",
+      "plugin_file": "akismet/akismet.php",
+      "active": true
+    },
+    {
+      "name": "Hello Dolly",
+      "version": "1.7.2",
+      "plugin_file": "hello-dolly/hello.php",
+      "active": false
+    }
+  ],
+  "themes": [
+    {
+      "name": "Twenty Twenty-One",
+      "version": "1.7",
+      "stylesheet": "twentytwentyone",
+      "active": false
+    },
+    {
+      "name": "Twenty Twenty-Three",
+      "version": "1.0",
+      "stylesheet": "twentytwentythree",
+      "active": true
+    }
+  ],
+  "core": {
+    "version": "6.3"
+  }
+}
+```
+
+- **Notes**:
+  - The `_checkview_token` parameter is required and must be a valid JWT token. If the token is missing or invalid, the request will return a `403 Forbidden` status.
+  - The `"active"` field in the plugins and themes list indicates whether the plugin or theme is currently active.
+  - The `"version"` field in the plugins and themes list indicates the version of the plugin or theme.
+
+Below is the updated documentation reflecting the added authentication using the `_checkview_token` parameter.
 ### Validate Token
 
 #### Endpoint
@@ -612,7 +701,7 @@ curl -X GET "https://your-api-domain.com/checkview/v1/permissions/check?_checkvi
 
 ## Notes
 - The API responses and examples provided are for illustrative purposes. Make sure to replace placeholder values such as `Your_JWT_Token`, form IDs, page IDs, etc., with actual values.
-- This documentation assumes the implementation of the JWT authentication mechanism and the functions `validate_jwt_token` and `must_ssl_url`, which are referenced in the provided code. Ensure that these functions are defined and functional in your implementation.
+- This documentation assumes the implementation of the JWT authentication mechanism and the functions `checkview_validate_jwt_token` and `checkview_must_ssl_url`, which are referenced in the provided code. Ensure that these functions are defined and functional in your implementation.
 - Adjust the URLs, namespaces, and authentication mechanisms based on your WordPress setup and customizations.
 
 For more information, visit [CheckView Documentation](https://checkview.io).

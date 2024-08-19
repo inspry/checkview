@@ -123,25 +123,25 @@ class Example_Test extends WP_UnitTestCase {
 		);
 	}
 
-	public function test_create_cv_session_should_return_void() {
+	public function test_checkview_create_cv_session_should_return_void() {
 		// Arrange
 		$ip      = '127.0.0.1';
 		$test_id = 1;
 
 		// Act
-		$result = create_cv_session( $ip, $test_id );
+		$result = checkview_create_cv_session( $ip, $test_id );
 
 		// Assert
 		$this->assertNull( $result );
 	}
 
-	public function test_create_cv_session_should_insert_session_data_into_database() {
+	public function test_checkview_create_cv_session_should_insert_session_data_into_database() {
 		// Arrange
 		$ip      = '127.0.0.1';
 		$test_id = 1;
 
 		// Act
-		create_cv_session( $ip, $test_id );
+		checkview_create_cv_session( $ip, $test_id );
 
 		// Assert
 		global $wpdb;
@@ -152,14 +152,14 @@ class Example_Test extends WP_UnitTestCase {
 		$this->assertEquals( $test_id, $session_data->test_id );
 	}
 
-	public function test_create_cv_session_should_not_insert_session_data_if_already_exists() {
+	public function test_checkview_create_cv_session_should_not_insert_session_data_if_already_exists() {
 		// Arrange
 		$ip      = '127.0.0.1';
 		$test_id = 1;
 
 		// Act
-		create_cv_session( $ip, $test_id );
-		// create_cv_session( $ip, $test_id );
+		checkview_create_cv_session( $ip, $test_id );
+		// checkview_create_cv_session( $ip, $test_id );
 
 		// Assert
 		global $wpdb;

@@ -108,9 +108,9 @@ class Checkview_Public {
 		);
 
 		// Current Vsitor IP.
-		$visitor_ip = get_visitor_ip();
+		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP. Todo.
-		$cv_bot_ip = get_api_ip();
+		$cv_bot_ip = checkview_get_api_ip();
 		// procceed if visitor ip is equal to cv bot ip. Todo.
 		if ( $visitor_ip === $cv_bot_ip ) {
 			wp_dequeue_script( 'contact-form-7' );

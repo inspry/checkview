@@ -95,7 +95,7 @@ class TestCheckviewAdmin extends WP_UnitTestCase {
 		$_SERVER['REMOTE_ADDR']    = $visitor_ip;
 		$_GET['checkview_test_id'] = '12345';
 		$this->assertEmpty( $admin->checkview_init_current_test() );
-		$cv_session = get_cv_session( $visitor_ip, '12345' );
+		$cv_session = checkview_get_cv_session( $visitor_ip, '12345' );
 		$this->assertEmpty( $cv_session );
 	}
 
