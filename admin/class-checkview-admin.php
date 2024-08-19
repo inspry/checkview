@@ -164,9 +164,9 @@ class Checkview_Admin {
 	public function checkview_disable_unwanted_plugins( $plugins ) {
 
 		// Current Vsitor IP.
-		$visitor_ip = get_visitor_ip();
+		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP.
-		$cv_bot_ip = get_api_ip();
+		$cv_bot_ip = checkview_get_api_ip();
 		// skip if visitor ip not equal to CV Bot IP.
 		if ( ! isset( $_REQUEST['checkview_test_id'] ) ) {
 			return $plugins;
@@ -190,9 +190,9 @@ class Checkview_Admin {
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 		// Current Vsitor IP.
-		$visitor_ip = get_visitor_ip();
+		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP. Todo.
-		$cv_bot_ip = get_api_ip();
+		$cv_bot_ip = checkview_get_api_ip();
 		// $visitor_ip = $cv_bot_ip;
 		// skip if visitor ip not equal to CV Bot IP.
 		if ( $visitor_ip !== $cv_bot_ip && 'checkview-saas' !== get_option( $visitor_ip ) && ! isset( $_REQUEST['checkview_test_id'] ) ) {
@@ -201,7 +201,7 @@ class Checkview_Admin {
 
 		// if clean talk plugin active whitelist check form API IP.
 		if ( is_plugin_active( 'cleantalk-spam-protect/cleantalk.php' ) ) {
-			whitelist_api_ip();
+			checkview_whitelist_api_ip();
 		}
 
 		$cv_test_id = isset( $_REQUEST['checkview_test_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) : '';
@@ -211,7 +211,7 @@ class Checkview_Admin {
 		// If not Ajax submission and found test_id.
 		if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'admin-ajax.php' ) === false && '' !== $cv_test_id ) {
 			// Create session for later use when form submit VIA AJAX.
-			create_cv_session( $visitor_ip, $cv_test_id );
+			checkview_create_cv_session( $visitor_ip, $cv_test_id );
 			update_option( $visitor_ip, 'checkview-saas', true );
 		}
 
@@ -236,7 +236,7 @@ class Checkview_Admin {
 			setcookie( 'checkview_test_id', $cv_test_id, time() + 6600, COOKIEPATH, COOKIE_DOMAIN );
 		}
 
-		$cv_session = get_cv_session( $visitor_ip, $cv_test_id );
+		$cv_session = checkview_get_cv_session( $visitor_ip, $cv_test_id );
 
 		// stop if session not found.
 		if ( ! empty( $cv_session ) ) {

@@ -12,7 +12,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 $checkview_options = get_option( 'checkview_api_options', array() );
 $delete_all        = ! empty( $checkview_options['checkview_delete_data'] ) ? $checkview_options['checkview_delete_data'] : '';
 $allow_dev         = ! empty( $checkview_options['checkview_allowed_extensions'] ) ? $checkview_options['checkview_allowed_extensions'] : '';
-$admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'CheckView' ) ) ? get_site_option( 'checkview_admin_menu_title', 'CheckView' ) : 'CheckView';
 
 ?>
 <div id="checkview-general-options" class="card">
@@ -198,6 +197,20 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 					<td class="checkview-make-library-box">
 					<label  for="checkview_get_store_locations">
 						<p class="make-lib-description"><?php echo esc_url_raw( get_rest_url() . 'checkview/v1/store/getstorelocations' ); ?></p>
+					</label>
+					</td>
+				</tr>
+
+				<tr valign="top">
+					<th scope="row" >
+						<label for="checkview_get_site_info">
+							<?php esc_html_e( 'Get site info', 'checkview' ); ?>
+						</label>
+						<p class="make-lib-description"><?php esc_html_e( 'Use this endpoint to get site info.', 'checkview' ); ?></p>
+					</th>
+					<td class="checkview-make-library-box">
+					<label  for="checkview_get_site_info">
+						<p class="make-lib-description"><?php echo esc_url_raw( get_rest_url() . 'checkview/v1/site-info' ); ?></p>
 					</label>
 					</td>
 				</tr>

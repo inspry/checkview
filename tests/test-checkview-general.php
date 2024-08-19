@@ -8,7 +8,7 @@ class Test_Checkview_General extends WP_UnitTestCase {
 		global $wpdb;
 
 		$test_id       = 'test_id_123';
-		$visitor_ip    = get_visitor_ip();
+		$visitor_ip    = checkview_get_visitor_ip();
 		$session_table = $wpdb->prefix . 'cv_session';
 		$test_key      = 'CF_TEST_' . $test_id;
 		// Create a test session in the database
@@ -40,7 +40,7 @@ class Test_Checkview_General extends WP_UnitTestCase {
 		$wpdb->insert(
 			$session_table,
 			array(
-				'visitor_ip' => get_visitor_ip(),
+				'visitor_ip' => checkview_get_visitor_ip(),
 				'test_id'    => $test_id,
 				'test_key'   => $test_key,
 			)
@@ -59,7 +59,7 @@ class Test_Checkview_General extends WP_UnitTestCase {
 	 */
 	public function test_delete_visitor_ip_option() {
 		$test_id    = 'test_id_123';
-		$visitor_ip = get_visitor_ip();
+		$visitor_ip = checkview_get_visitor_ip();
 
 		// Create a visitor IP option
 		update_option( $visitor_ip, 'test_value' );
@@ -76,7 +76,7 @@ class Test_Checkview_General extends WP_UnitTestCase {
 	 */
 	public function test_update_use_stripe_option() {
 		$test_id    = 'test_id_123';
-		$visitor_ip = get_visitor_ip();
+		$visitor_ip = checkview_get_visitor_ip();
 
 		// Create a use_stripe option
 		update_option( $visitor_ip . 'use_stripe', 'yes' );

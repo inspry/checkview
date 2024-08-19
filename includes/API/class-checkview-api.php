@@ -339,6 +339,21 @@ class CheckView_Api {
 				),
 			)
 		);
+		// stats.
+		register_rest_route(
+			'checkview/v1',
+			'/site-info',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'checkview_saas_get_site_info' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token' => array(
+						'required' => false,
+					),
+				),
+			),
+		);
 	} // end checkview_register_rest_route
 	/**
 	 * Retrieves the available orders.
@@ -1424,19 +1439,19 @@ class CheckView_Api {
 
 							if ( 'wp_block' === $form_page->post_type ) {
 
-								$wp_block_pages = get_wp_block_pages( $form_page->ID );
+								$wp_block_pages = checkview_get_wp_block_pages( $form_page->ID );
 								if ( $wp_block_pages ) {
 									foreach ( $wp_block_pages as $wp_block_page ) {
 										$forms['GravityForms'][ $row->id ]['pages'][] = array(
 											'ID'  => $wp_block_page->ID,
-											'url' => must_ssl_url( get_the_permalink( $wp_block_page->ID ) ),
+											'url' => checkview_must_ssl_url( get_the_permalink( $wp_block_page->ID ) ),
 										);
 									}
 								}
 							} else {
 								$forms['GravityForms'][ $row->id ]['pages'][] = array(
 									'ID'  => $form_page->ID,
-									'url' => must_ssl_url( get_the_permalink( $form_page->ID ) ),
+									'url' => checkview_must_ssl_url( get_the_permalink( $form_page->ID ) ),
 								);
 							}
 						}
@@ -1460,19 +1475,19 @@ class CheckView_Api {
 
 						if ( 'wp_block' === $form_page->post_type ) {
 
-							$wp_block_pages = get_wp_block_pages( $form_page->ID );
+							$wp_block_pages = checkview_get_wp_block_pages( $form_page->ID );
 							if ( $wp_block_pages ) {
 								foreach ( $wp_block_pages as $wp_block_page ) {
 									$forms['FluentForms'][ $row->id ]['pages'][] = array(
 										'ID'  => $wp_block_page->ID,
-										'url' => must_ssl_url( get_the_permalink( $wp_block_page->ID ) ),
+										'url' => checkview_must_ssl_url( get_the_permalink( $wp_block_page->ID ) ),
 									);
 								}
 							}
 						} else {
 							$forms['FluentForms'][ $row->id ]['pages'][] = array(
 								'ID'  => $form_page->ID,
-								'url' => must_ssl_url( get_the_permalink( $form_page->ID ) ),
+								'url' => checkview_must_ssl_url( get_the_permalink( $form_page->ID ) ),
 							);
 						}
 					}
@@ -1493,19 +1508,19 @@ class CheckView_Api {
 					if ( $form_pages ) {
 						foreach ( $form_pages as $form_page ) {
 							if ( 'wp_block' === $form_page->post_type ) {
-								$wp_block_pages = get_wp_block_pages( $form_page->ID );
+								$wp_block_pages = checkview_get_wp_block_pages( $form_page->ID );
 								if ( $wp_block_pages ) {
 									foreach ( $wp_block_pages as $wp_block_page ) {
 										$forms['NinjaForms'][ $row->id ]['pages'][] = array(
 											'ID'  => $wp_block_page->ID,
-											'url' => must_ssl_url( get_the_permalink( $wp_block_page->ID ) ),
+											'url' => checkview_must_ssl_url( get_the_permalink( $wp_block_page->ID ) ),
 										);
 									}
 								}
 							} else {
 								$forms['NinjaForms'][ $row->id ]['pages'][] = array(
 									'ID'  => $form_page->ID,
-									'url' => must_ssl_url( get_the_permalink( $form_page->ID ) ),
+									'url' => checkview_must_ssl_url( get_the_permalink( $form_page->ID ) ),
 								);
 							}
 						}
@@ -1532,10 +1547,10 @@ class CheckView_Api {
 					$form_location                = get_post_meta( $row->ID, 'wpforms_form_locations', true );
 					if ( $form_location ) {
 						foreach ( $form_location as $form_page ) {
-							if ( ! empty( must_ssl_url( get_the_permalink( $form_page['id'] ) ) ) ) {
+							if ( ! empty( checkview_must_ssl_url( get_the_permalink( $form_page['id'] ) ) ) ) {
 								$forms['WpForms'][ $row->ID ]['pages'][] = array(
 									'ID'  => $form_page['id'],
-									'url' => must_ssl_url( get_the_permalink( $form_page['id'] ) ),
+									'url' => checkview_must_ssl_url( get_the_permalink( $form_page['id'] ) ),
 								);
 							}
 						}
@@ -1562,19 +1577,19 @@ class CheckView_Api {
 
 							if ( 'wp_block' === $form_page->post_type ) {
 
-								$wp_block_pages = get_wp_block_pages( $form_page->ID );
+								$wp_block_pages = checkview_get_wp_block_pages( $form_page->ID );
 								if ( $wp_block_pages ) {
 									foreach ( $wp_block_pages as $wp_block_page ) {
 										$forms['Formidable'][ $row->id ]['pages'][] = array(
 											'ID'  => $wp_block_page->ID,
-											'url' => must_ssl_url( get_the_permalink( $wp_block_page->ID ) ),
+											'url' => checkview_must_ssl_url( get_the_permalink( $wp_block_page->ID ) ),
 										);
 									}
 								}
 							} else {
 								$forms['Formidable'][ $row->id ]['pages'][] = array(
 									'ID'  => $form_page->ID,
-									'url' => must_ssl_url( get_the_permalink( $form_page->ID ) ),
+									'url' => checkview_must_ssl_url( get_the_permalink( $form_page->ID ) ),
 								);
 							}
 						}
@@ -1606,21 +1621,21 @@ class CheckView_Api {
 						foreach ( $form_pages as $form_page ) {
 							if ( 'wp_block' === $form_page->post_type ) {
 
-								$wp_block_pages = get_wp_block_pages( $form_page->ID );
+								$wp_block_pages = checkview_get_wp_block_pages( $form_page->ID );
 								if ( $wp_block_pages ) {
 									foreach ( $wp_block_pages as $wp_block_page ) {
-										if ( ! empty( must_ssl_url( get_the_permalink( $wp_block_page->ID ) ) ) ) {
+										if ( ! empty( checkview_must_ssl_url( get_the_permalink( $wp_block_page->ID ) ) ) ) {
 											$forms['CF7'][ $row->ID ]['pages'][] = array(
 												'ID'  => $wp_block_page->ID,
-												'url' => must_ssl_url( get_the_permalink( $wp_block_page->ID ) ),
+												'url' => checkview_must_ssl_url( get_the_permalink( $wp_block_page->ID ) ),
 											);
 										}
 									}
 								}
-							} elseif ( ! empty( must_ssl_url( get_the_permalink( $form_page->ID ) ) ) ) {
+							} elseif ( ! empty( checkview_must_ssl_url( get_the_permalink( $form_page->ID ) ) ) ) {
 									$forms['CF7'][ $row->ID ]['pages'][] = array(
 										'ID'  => $form_page->ID,
-										'url' => must_ssl_url( get_the_permalink( $form_page->ID ) ),
+										'url' => checkview_must_ssl_url( get_the_permalink( $form_page->ID ) ),
 									);
 							}
 						}
@@ -1826,6 +1841,71 @@ class CheckView_Api {
 			}
 		}
 	}
+
+	/**
+	 * Returns site info.
+	 *
+	 * @return WP_Rest_Response forms details.
+	 */
+	public function checkview_saas_get_site_info() {
+		// Get all plugins.
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		$plugins = get_plugins();
+
+		$plugin_list = array();
+		foreach ( $plugins as $plugin_file => $plugin_data ) {
+			$plugin_list[] = array(
+				'name'        => $plugin_data['Name'],
+				'version'     => $plugin_data['Version'],
+				'plugin_file' => $plugin_file,
+				'active'      => is_plugin_active( $plugin_file ),
+			);
+		}
+
+		// Get active theme.
+		// Get all themes.
+		$themes     = wp_get_themes();
+		$theme_list = array();
+		foreach ( $themes as $stylesheet => $theme ) {
+			$theme_list[] = array(
+				'name'       => $theme->get( 'Name' ),
+				'version'    => $theme->get( 'Version' ),
+				'stylesheet' => $stylesheet,
+				'active'     => $theme->get_stylesheet() === get_stylesheet(),
+			);
+		}
+
+		// Get WordPress core version.
+		global $wp_version;
+		$core_info = array(
+			'version' => $wp_version,
+		);
+
+		// Combine all data.
+		$response = array(
+			'plugins' => $plugin_list,
+			'themes'  => $theme_list,
+			'core'    => $core_info,
+		);
+		if ( $response ) {
+				return new WP_REST_Response(
+					array(
+						'status'        => 200,
+						'response'      => esc_html__( 'Successfully retrieved the site info.', 'checkview' ),
+						'body_response' => $response,
+					)
+				);
+		} else {
+			return new WP_Error(
+				400,
+				esc_html__( 'Failed to retrieve the site info.', 'checkview' ),
+				'No data to check.'
+			);
+		}
+	}
+
 	/**
 	 * Validates Token.
 	 *
@@ -1847,7 +1927,7 @@ class CheckView_Api {
 			);
 			wp_die();
 		}
-		$valid_token = validate_jwt_token( $jwt_token );
+		$valid_token = checkview_validate_jwt_token( $jwt_token );
 		if ( true !== $valid_token ) {
 			$this->jwt_error = $valid_token;
 			return new WP_Error(

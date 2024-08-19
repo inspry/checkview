@@ -12,7 +12,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 $checkview_options = get_option( 'checkview_advance_options', array() );
 $delete_all        = ! empty( $checkview_options['checkview_delete_data'] ) ? $checkview_options['checkview_delete_data'] : '';
 $allow_dev         = ! empty( $checkview_options['checkview_allowed_extensions'] ) ? $checkview_options['checkview_allowed_extensions'] : '';
-$admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'CheckView' ) ) ? get_site_option( 'checkview_admin_menu_title', 'CheckView' ) : 'CheckView';
 
 ?>
 <div id="checkview-general-options" class="card">
@@ -21,19 +20,6 @@ $admin_menu_title  = ! empty( get_site_option( 'checkview_admin_menu_title', 'Ch
 		<?php wp_nonce_field( 'checkview_admin_advance_settings_action', 'checkview_admin_advance_settings_action' ); ?>
 		<table class="form-table">
 			<tbody>
-				<tr valign="top">
-					<th scope="row" >
-						<label for="checkview_admin_menu_title">
-							<?php esc_html_e( 'Admin menu title', 'th-checkview-server-custom-template-tab' ); ?>
-						</label>
-						<p class="make-lib-description"><?php esc_html_e( 'Customize the admin menu title using this field.', 'checkview' ); ?></p>
-					</th>
-					<td class="checkview-make-cache-box">
-					<label  for="checkview_admin_menu_title">
-						<input type="text" name="checkview_admin_menu_title" placeholder="<?php echo esc_html( $admin_menu_title ); ?>" value="<?php echo esc_html( $admin_menu_title ); ?>" class="th-del-lib" id="checkview_admin_menu_title"/>
-					</label>
-					</td>
-				</tr>
 				<tr valign="top">
 					<th scope="row" >
 						<label for="checkview_delete_data">
