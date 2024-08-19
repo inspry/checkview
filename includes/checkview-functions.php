@@ -196,6 +196,13 @@ if ( ! function_exists( 'whitelist_api_ip' ) ) {
 					'timeout' => 500,
 				)
 			);
+			// Check if the response is a WP_Error object.
+			if ( is_wp_error( $response ) ) {
+				// Handle the error here.
+				$error_message = $response->get_error_message();
+				error_log( "Request failed: $error_message" );
+				return null; // Or handle as needed, e.g., return an error message or false.
+			}
 			return json_decode( $response['body'], true );
 		}
 		return null;

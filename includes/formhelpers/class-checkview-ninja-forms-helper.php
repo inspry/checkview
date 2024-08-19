@@ -182,7 +182,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		 */
 		public function checkview_maybe_remove_v2_field( $fields ) {
 			foreach ( $fields as $key => $field ) {
-				if ( 'recaptcha' === $field->get_setting( 'type' ) || 'hcaptcha' === $field->get_setting( 'type' ) || 'akismet' === $field->get_setting( 'type' ) ) {
+				if ( 'recaptcha' === $field->get_setting( 'type' ) || 'hcaptcha-for-ninja-forms' === $field->get_setting( 'type' ) || 'akismet' === $field->get_setting( 'type' ) ) {
 					// Remove v2 reCAPTCHA, hcaptcha fields if still configured.
 					unset( $fields[ $key ] );
 				}
@@ -201,7 +201,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 			foreach ( $fields as $key => $field ) {
 				if ( 'hcaptcha-for-ninja-forms' === $field['type'] ) {
 					// Remove v2 reCAPTCHA fields if still configured.
-					unset( $fields[ $key ] );
+					//unset( $fields[ $key ] );
 				}
 			}
 			return $fields;

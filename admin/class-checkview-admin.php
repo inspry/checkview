@@ -225,7 +225,9 @@ class Checkview_Admin {
 		if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'admin-ajax.php' ) !== false ) {
 			$referer_url_query = wp_parse_url( $referrer_url, PHP_URL_QUERY );
 			$qry_str           = array();
-			parse_str( $referer_url_query, $qry_str );
+			if ( $referer_url_query ) {
+				parse_str( $referer_url_query, $qry_str );
+			}
 			if ( isset( $qry_str['checkview_test_id'] ) ) {
 				$cv_test_id = $qry_str['checkview_test_id'];
 			}

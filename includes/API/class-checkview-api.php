@@ -269,10 +269,10 @@ class CheckView_Api {
 			'checkview/v1',
 			'/store/cartdetails',
 			array(
-				'methods'  => array( 'GET' ),
-				'callback' => array( $this, 'checkview_get_cart_details' ),
+				'methods'             => array( 'GET' ),
+				'callback'            => array( $this, 'checkview_get_cart_details' ),
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'     => array(
+				'args'                => array(
 					'_checkview_token' => array(
 						'required' => true,
 					),
@@ -397,56 +397,56 @@ class CheckView_Api {
 
 		$params = array();
 
-		// $sql = "SELECT p.ID AS orderId, DATE_FORMAT(p.post_date_gmt, '%%Y-%%m-%%dT%%TZ') AS orderDate, 
-		// 	DATE_FORMAT(p.post_modified_gmt, '%%Y-%%m-%%dT%%TZ') AS lastModifiedOn, p.post_status AS status, 
-		// 	pm2.meta_value AS orderTotal, pm3.meta_value AS currency 
-		// 	FROM {$wpdb->prefix}posts as p
-		// 	LEFT JOIN {$wpdb->prefix}postmeta AS pm ON (p.id = pm.post_id AND pm.meta_key = '_payment_method') 
-		// 	LEFT JOIN {$wpdb->prefix}postmeta AS pm2 ON (p.id = pm2.post_id AND pm2.meta_key = '_order_total') 
-		// 	LEFT JOIN {$wpdb->prefix}postmeta AS pm3 ON (p.id = pm3.post_id AND pm3.meta_key = '_order_currency') 
-		// 	WHERE p.post_type = 'shop_order'
-		// 	AND p.post_status IN ('wc-processing', 'wc-completed', 'wc-failed', 'wc-cancelled') 
-		// 	AND pm.meta_value <> 'checkview' ";
+		// $sql = "SELECT p.ID AS orderId, DATE_FORMAT(p.post_date_gmt, '%%Y-%%m-%%dT%%TZ') AS orderDate,
+		// DATE_FORMAT(p.post_modified_gmt, '%%Y-%%m-%%dT%%TZ') AS lastModifiedOn, p.post_status AS status,
+		// pm2.meta_value AS orderTotal, pm3.meta_value AS currency
+		// FROM {$wpdb->prefix}posts as p
+		// LEFT JOIN {$wpdb->prefix}postmeta AS pm ON (p.id = pm.post_id AND pm.meta_key = '_payment_method')
+		// LEFT JOIN {$wpdb->prefix}postmeta AS pm2 ON (p.id = pm2.post_id AND pm2.meta_key = '_order_total')
+		// LEFT JOIN {$wpdb->prefix}postmeta AS pm3 ON (p.id = pm3.post_id AND pm3.meta_key = '_order_currency')
+		// WHERE p.post_type = 'shop_order'
+		// AND p.post_status IN ('wc-processing', 'wc-completed', 'wc-failed', 'wc-cancelled')
+		// AND pm.meta_value <> 'checkview' ";
 
 		// if ( ! empty( $checkview_order_last_modified_since ) ) {
 
-		// 	$sql     .= ' AND p.post_modified_gmt >= %s ';
-		// 	$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_since ) );
+		// $sql     .= ' AND p.post_modified_gmt >= %s ';
+		// $params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_since ) );
 
 		// }
 
 		// if ( ! empty( $checkview_order_last_modified_until ) ) {
 
-		// 	$sql     .= ' AND p.post_modified_gmt <= %s ';
-		// 	$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_until ) );
+		// $sql     .= ' AND p.post_modified_gmt <= %s ';
+		// $params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_until ) );
 
 		// }
 
 		// if ( ! empty( $checkview_order_id_after ) && ! empty( $checkview_order_last_modified_since ) ) {
 
-		// 	$sql     .= ' AND (p.post_modified_gmt != %s OR p.ID > %s) ';
-		// 	$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_since ) );
-		// 	$params[] = $checkview_order_id_after;
+		// $sql     .= ' AND (p.post_modified_gmt != %s OR p.ID > %s) ';
+		// $params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_since ) );
+		// $params[] = $checkview_order_id_after;
 
 		// }
 
 		// if ( ! empty( $checkview_order_id_before ) && ! empty( $checkview_order_last_modified_until ) ) {
 
-		// 	$sql     .= ' AND (p.post_modified_gmt != %s OR p.ID < %s) ';
-		// 	$params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_until ) );
-		// 	$params[] = $checkview_order_id_before;
+		// $sql     .= ' AND (p.post_modified_gmt != %s OR p.ID < %s) ';
+		// $params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_until ) );
+		// $params[] = $checkview_order_id_before;
 
 		// }
 
 		// // To make sure we don't get incomplete batches of orders.
 		// if ( ! empty( $checkview_order_last_modified_since ) ) {
-		// 	$sql .= ' AND p.post_modified_gmt < (NOW() - interval 2 second) ';
+		// $sql .= ' AND p.post_modified_gmt < (NOW() - interval 2 second) ';
 		// }
 
 		// if ( ! empty( $checkview_order_last_modified_until ) ) {
-		// 	$sql .= ' ORDER BY p.post_modified_gmt DESC, p.ID DESC';
+		// $sql .= ' ORDER BY p.post_modified_gmt DESC, p.ID DESC';
 		// } else {
-		// 	$sql .= ' ORDER BY p.post_modified_gmt ASC, p.ID ASC LIMIT';
+		// $sql .= ' ORDER BY p.post_modified_gmt ASC, p.ID ASC LIMIT';
 		// }
 
 		// $psql   = $wpdb->prepare( $sql, $params );
@@ -1089,8 +1089,8 @@ class CheckView_Api {
 		} else {
 			$body         = wp_remote_retrieve_body( $response );
 			$cart_details = json_decode( $body, true );
-			foreach ($cart_details['items'] as &$item) {
-				$item['name'] = html_entity_decode($item['name'], ENT_COMPAT, 'UTF-8');
+			foreach ( $cart_details['items'] as &$item ) {
+				$item['name'] = html_entity_decode( $item['name'], ENT_COMPAT, 'UTF-8' );
 			}
 			// Do something with $cart_details.
 		}
@@ -1532,10 +1532,12 @@ class CheckView_Api {
 					$form_location                = get_post_meta( $row->ID, 'wpforms_form_locations', true );
 					if ( $form_location ) {
 						foreach ( $form_location as $form_page ) {
-							$forms['WpForms'][ $row->ID ]['pages'][] = array(
-								'ID'  => $form_page['id'],
-								'url' => must_ssl_url( get_the_permalink( $form_page['id'] ) ),
-							);
+							if ( ! empty( must_ssl_url( get_the_permalink( $form_page['id'] ) ) ) ) {
+								$forms['WpForms'][ $row->ID ]['pages'][] = array(
+									'ID'  => $form_page['id'],
+									'url' => must_ssl_url( get_the_permalink( $form_page['id'] ) ),
+								);
+							}
 						}
 					}
 				}
@@ -1607,17 +1609,19 @@ class CheckView_Api {
 								$wp_block_pages = get_wp_block_pages( $form_page->ID );
 								if ( $wp_block_pages ) {
 									foreach ( $wp_block_pages as $wp_block_page ) {
-										$forms['CF7'][ $row->ID ]['pages'][] = array(
-											'ID'  => $wp_block_page->ID,
-											'url' => must_ssl_url( get_the_permalink( $wp_block_page->ID ) ),
-										);
+										if ( ! empty( must_ssl_url( get_the_permalink( $wp_block_page->ID ) ) ) ) {
+											$forms['CF7'][ $row->ID ]['pages'][] = array(
+												'ID'  => $wp_block_page->ID,
+												'url' => must_ssl_url( get_the_permalink( $wp_block_page->ID ) ),
+											);
+										}
 									}
 								}
-							} else {
-								$forms['CF7'][ $row->ID ]['pages'][] = array(
-									'ID'  => $form_page->ID,
-									'url' => must_ssl_url( get_the_permalink( $form_page->ID ) ),
-								);
+							} elseif ( ! empty( must_ssl_url( get_the_permalink( $form_page->ID ) ) ) ) {
+									$forms['CF7'][ $row->ID ]['pages'][] = array(
+										'ID'  => $form_page->ID,
+										'url' => must_ssl_url( get_the_permalink( $form_page->ID ) ),
+									);
 							}
 						}
 					}
