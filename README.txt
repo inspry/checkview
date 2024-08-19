@@ -89,13 +89,16 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 Here is the reversed changelog:
 
 = 1.1.15 =
-* Added filter for invalid URLs in CF7 and NinjaForms.
-* Added new endpoint to grab site info.
+* Added filter for invalid URLs in CF7 and Ninja Forms.
+* Added new endpoint to pull additional site info.
 * Updated general functions to include CheckView slug to avoid conflicts.
 * Added GitHub workflows for all forms (except Gravity Forms) and WooCommerce.
-* Added hCaptcha bypass in NinjaForms.
+* Added hCaptcha bypass in Ninja Forms.
 * Removed admin menu title settings from CheckView settings.
-* Added function to bypass GravityForms Recaptcha addon.
+* Added function to bypass Gravity Forms reCaptcha addon.
+* Added 2 new constants CHECKVIEW_URI & CHECKVIEW_EMAIL.
+* Updated CheckView info email with CHECKVIEW_EMAIL constant.
+* Updated php unit test cases with CHECKVIEW_EMAIL constant.
 
 = 1.1.14 =
 * Added hCaptcha spam bypass in all forms.
@@ -173,13 +176,16 @@ Here is the reversed changelog:
 Here is the reversed changelog:
 
 = 1.1.15 =
-* Added filter for invalid URLs in CF7 and NinjaForms.
-* Added new endpoint to grab site info.
+* Added filter for invalid URLs in CF7 and Ninja Forms.
+* Added new endpoint to pull additional site info.
 * Updated general functions to include CheckView slug to avoid conflicts.
 * Added GitHub workflows for all forms (except Gravity Forms) and WooCommerce.
-* Added hCaptcha bypass in NinjaForms.
+* Added hCaptcha bypass in Ninja Forms.
 * Removed admin menu title settings from CheckView settings.
-* Added function to bypass GravityForms Recaptcha addon.
+* Added function to bypass Gravity Forms reCaptcha addon.
+* Added 2 new constants CHECKVIEW_URI & CHECKVIEW_EMAIL.
+* Updated CheckView info email with CHECKVIEW_EMAIL constant.
+* Updated php unit test cases with CHECKVIEW_EMAIL constant.
 
 = 1.1.14 =
 * Added hCaptcha spam bypass in all forms.

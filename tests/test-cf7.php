@@ -20,8 +20,12 @@ class Checkview_Cf7_Helper_Test extends WP_UnitTestCase {
 	 * Test that the constructor sets up the loader and hooks.
 	 */
 	public function test_constructor() {
-		$helper  = new Checkview_Cf7_Helper();
-		$send_to = 'verify@test-mail.checkview.io';
+		$helper = new Checkview_Cf7_Helper();
+
+		if ( ! defined( 'CHECKVIEW_EMAIL' ) ) {
+			define( 'CHECKVIEW_EMAIL', 'verify@test-mail.checkview' );
+		}
+		$send_to = CHECKVIEW_EMAIL;
 		if ( isset( $test_form['send_to'] ) && '' !== $test_form['send_to'] ) {
 			$send_to = $test_form['send_to'];
 		}
@@ -46,22 +50,22 @@ class Checkview_Cf7_Helper_Test extends WP_UnitTestCase {
 		$contact_form->shouldReceive( 'scan_form_tags' )->andReturn( $tags );
 		$contact_form->shouldReceive( 'locale' )->andReturn( 'en_US' );
 		$contact_form->shouldReceive( 'is_true' )->andReturn( true );
-		$contact_form->shouldReceive( 'validate_schema' )->andReturn( true ); // Add this line
+		$contact_form->shouldReceive( 'validate_schema' )->andReturn( true ); // Add this line.
 		$contact_form->shouldReceive( 'id' )->andReturn( 123 );
 		$contact_form->shouldReceive( 'prop' )->with( 'mail' )->andReturn( array( 'recipient' => 'example@example.com' ) );
-		$contact_form->shouldReceive( 'message' )->andReturn( 'Form submitted successfully' ); // Add this line
+		$contact_form->shouldReceive( 'message' )->andReturn( 'Form submitted successfully' ); // Add this line.
 		$post      = new WP_Post( (object) array( 'ID' => 1 ) );
 		$post_mock = Mockery::mock( $post );
 
 		$submission = Mockery::mock( 'WPCF7_Submission' );
 		$submission->shouldReceive( 'get_instance' )->andReturnSelf();
 		$submission->shouldReceive( 'get_contact_form' )->andReturn( $contact_form );
-		$submission->id = 123; // Set the id property
+		$submission->id = 123; // Set the id property.
 		$submission->shouldReceive( 'id' )->andReturn( 123 );
 		$helper = new Checkview_Cf7_Helper();
 		$result = $helper->checkview_cf7_before_send_mail( $submission );
 
-		// Assert that the result is true or false based on your expected behavior
+		// Assert that the result is true or false based on your expected behavior.
 		$this->assertEquals( null, $result );
 	}
 
@@ -82,9 +86,9 @@ class Checkview_Cf7_Helper_Test extends WP_UnitTestCase {
 	 */
 	public function test_checkview_inject_email() {
 		$helper = new Checkview_Cf7_Helper();
-		$args   = array( 'recipient' => 'verify@test-mail.checkview.io' );
+		$args   = array( 'recipient' => CHECKVIEW_EMAIL );
 		$args   = $helper->checkview_inject_email( $args );
-		$this->assertEquals( 'verify@test-mail.checkview.io', $args['recipient'] );
+		$this->assertEquals( CHECKVIEW_EMAIL, $args['recipient'] );
 	}
 
 	/**

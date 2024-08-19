@@ -68,10 +68,12 @@ if ( ! defined( 'CHECKVIEW_PUBLIC_ASSETS' ) ) {
 	define( 'CHECKVIEW_PUBLIC_ASSETS', trailingslashit( plugin_dir_url( __FILE__ ) ) . 'public/assets/' );
 }
 
+if ( ! defined( 'CHECKVIEW_EMAIL' ) ) {
+	define( 'CHECKVIEW_EMAIL', 'verify@test-mail.checkview.io' );
+}
 if ( ! defined( 'CHECKVIEW_URI' ) ) {
 	define( 'CHECKVIEW_URI', trailingslashit( plugin_dir_url( __FILE__ ) ) );
 }
-
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-checkview-activator.php

@@ -249,7 +249,7 @@ class Checkview_Admin {
 				$test_form = json_decode( $test_form, true );
 			}
 
-			$send_to = 'verify@test-mail.checkview.io';
+			$send_to = CHECKVIEW_EMAIL;
 			if ( isset( $test_form['send_to'] ) && '' !== $test_form['send_to'] ) {
 				$send_to = $test_form['send_to'];
 			}
