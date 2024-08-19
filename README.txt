@@ -96,6 +96,9 @@ Here is the reversed changelog:
 * Added hCaptcha bypass in NinjaForms.
 * Removed admin menu title settings from CheckView settings.
 * Added function to bypass GravityForms Recaptcha addon.
+* Added 2 new constants CHECKVIEW_URI & CHECKVIEW_EMAIL.
+* Updated CheckView email with CHECKVIEW_EMAIL constant.
+* Updated unit test cases with CHECKVIEW_EMAIL constant.
 
 = 1.1.14 =
 * Added hCaptcha spam bypass in all forms.
@@ -180,6 +183,7 @@ Here is the reversed changelog:
 * Added hCaptcha bypass in NinjaForms.
 * Removed admin menu title settings from CheckView settings.
 * Added function to bypass GravityForms Recaptcha addon.
+* Added 2 new constants CHECKVIEW_URI & CHECKVIEW_EMAIL.
 
 = 1.1.14 =
 * Added hCaptcha spam bypass in all forms.

@@ -204,7 +204,7 @@ class Checkview_Woo_Automated_Testing {
 	 */
 	public function checkview_create_test_customer() {
 		$customer = $this->checkview_get_test_customer();
-		$email    = 'verify@test-mail.checkview.io';
+		$email    = CHECKVIEW_EMAIL;
 
 		if ( false === $customer || empty( $customer ) ) {
 			// Get user object by email.
@@ -216,7 +216,7 @@ class Checkview_Woo_Automated_Testing {
 			$customer = new WC_Customer();
 			$customer->set_username( uniqid( 'checkview_wc_automated_testing_' ) );
 			$customer->set_password( wp_generate_password() );
-			$customer->set_email( 'verify@test-mail.checkview.io' );
+			$customer->set_email( CHECKVIEW_EMAIL );
 			$customer->set_display_name( 'CheckView WooCommerce Automated Testing User' );
 
 			$customer_id = $customer->save();
@@ -264,7 +264,7 @@ class Checkview_Woo_Automated_Testing {
 	public function checkview_stop_registration_errors( $errors, $username, $email ) {
 		// Check for our WCAT username and email.
 		if ( false !== strpos( $username, 'checkview_wc_automated_testing_' )
-		&& false !== strpos( $email, 'verify@test-mail.checkview.io' ) ) {
+		&& false !== strpos( $email, CHECKVIEW_EMAIL ) ) {
 			// The default value for this in WC is a WP_Error object, so just reset it.
 			$errors = new WP_Error();
 		}
@@ -590,7 +590,7 @@ class Checkview_Woo_Automated_Testing {
 		// Check view Bot IP. Todo.
 		$cv_bot_ip = checkview_get_api_ip();
 		if ( ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) || ( 'checkview' === $payment_method || 'checkview' === $payment_made_by ) ) {
-			return 'verify@test-mail.checkview.io';
+			return CHECKVIEW_EMAIL;
 		}
 
 		return $recipient;
