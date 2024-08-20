@@ -3,7 +3,7 @@ name: Check WordPress Plugin SVN Updates For WooCommerce And Addons
 on:
   push:
     branches:
-      - bug-fixes
+      - main
   schedule:
     - cron: '0 * * * *' # Runs every hour
   workflow_dispatch: # Allow manual trigger
@@ -86,7 +86,7 @@ jobs:
           git stash --include-untracked
           
           # Pull the latest changes from the remote branch with rebase
-          git pull --rebase origin bug-fixes
+          git pull --rebase origin main
           
           # Apply the stashed changes back after the pull
           git stash pop || echo "No changes to apply from stash"
@@ -97,7 +97,7 @@ jobs:
           # Check if there are any changes to commit
           if ! git diff-index --quiet HEAD; then
             git commit -m "Update $plugin_name SVN revision"
-            git push origin bug-fixes
+            git push origin main
           else
             echo "No changes to commit"
           fi
