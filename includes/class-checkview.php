@@ -173,7 +173,7 @@ class Checkview {
 		$this->loader = new Checkview_Loader();
 		// Current Vsitor IP.
 		$visitor_ip = checkview_get_visitor_ip();
-		// Check view Bot IP. Todo.
+		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
 		// $visitor_ip = $cv_bot_ip;
 		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) ) {
@@ -406,9 +406,9 @@ class Checkview {
 
 		// Current Vsitor IP.
 		$visitor_ip = checkview_get_visitor_ip();
-		// Check view Bot IP. Todo.
+		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
-		// procceed if visitor ip is equal to cv bot ip. Todo.
+		// procceed if visitor ip is equal to cv bot ip.
 		if ( $visitor_ip === $cv_bot_ip ) {
 			$this->loader->add_action(
 				'pre_option_require_name_email',

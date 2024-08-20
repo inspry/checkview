@@ -484,8 +484,7 @@ class Checkview_Woo_Automated_Testing {
 	 */
 	public function checkview_no_index_for_test_product() {
 		$product_id = get_option( 'checkview_woo_product_id' );
-
-		if ( is_int( $product_id ) && 0 !== $product_id && is_single( $product_id ) ) {
+		if ( ! empty( $product_id ) && 0 !== $product_id && is_single( $product_id ) ) {
 			echo '<meta name="robots" content="noindex, nofollow"/>';
 		}
 	}
@@ -499,7 +498,7 @@ class Checkview_Woo_Automated_Testing {
 
 		// Current Vsitor IP.
 		$visitor_ip = checkview_get_visitor_ip();
-		// Check view Bot IP. Todo.
+		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
 		if ( ! is_admin() && class_exists( 'WooCommerce' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) ) {
 			if ( ( isset( $_GET['checkview_use_stripe'] ) && 'yes' === sanitize_text_field( wp_unslash( $_GET['checkview_use_stripe'] ) ) ) || 'yes' === get_option( $visitor_ip . 'use_stripe' ) ) {
@@ -587,7 +586,7 @@ class Checkview_Woo_Automated_Testing {
 		$payment_method  = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
 		$payment_made_by = is_object( $order ) ? $order->get_meta( 'payment_made_by' ) : '';
 		$visitor_ip      = checkview_get_visitor_ip();
-		// Check view Bot IP. Todo.
+		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
 		if ( ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) || ( 'checkview' === $payment_method || 'checkview' === $payment_made_by ) ) {
 			return CHECKVIEW_EMAIL;
