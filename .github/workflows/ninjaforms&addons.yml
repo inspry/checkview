@@ -3,7 +3,7 @@ name: Check WordPress Plugin SVN Updates For Ninja Forms And Addons
 on:
   push:
     branches:
-      - bug-fixes
+      - main
   schedule:
     - cron: '0 * * * *' # Runs every hour
   workflow_dispatch: # Allow manual trigger
@@ -86,7 +86,7 @@ jobs:
           git stash --include-untracked
     
           # Pull the latest changes from the remote branch with rebase
-          git pull --rebase origin bug-fixes
+          git pull --rebase origin main
 
           # Apply the stashed changes back after the pull
           git stash pop || echo "No changes to apply from stash"
