@@ -484,8 +484,7 @@ class Checkview_Woo_Automated_Testing {
 	 */
 	public function checkview_no_index_for_test_product() {
 		$product_id = get_option( 'checkview_woo_product_id' );
-
-		if ( is_int( $product_id ) && 0 !== $product_id && is_single( $product_id ) ) {
+		if ( ! empty( $product_id ) && 0 !== $product_id && is_single( $product_id ) ) {
 			echo '<meta name="robots" content="noindex, nofollow"/>';
 		}
 	}

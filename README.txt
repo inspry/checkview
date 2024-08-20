@@ -99,6 +99,7 @@ Here is the reversed changelog:
 * Added 2 new constants CHECKVIEW_URI & CHECKVIEW_EMAIL.
 * Updated CheckView info email with CHECKVIEW_EMAIL constant.
 * Updated php unit test cases with CHECKVIEW_EMAIL constant.
+* Updated noindex bot check for CheckView default product to work for all SEO plugins.
 
 = 1.1.14 =
 * Added hCaptcha spam bypass in all forms.
@@ -186,6 +187,7 @@ Here is the reversed changelog:
 * Added 2 new constants CHECKVIEW_URI & CHECKVIEW_EMAIL.
 * Updated CheckView info email with CHECKVIEW_EMAIL constant.
 * Updated php unit test cases with CHECKVIEW_EMAIL constant.
+* Updated noindex bot check for CheckView default product to work for all SEO plugins.
 
 = 1.1.14 =
 * Added hCaptcha spam bypass in all forms.
