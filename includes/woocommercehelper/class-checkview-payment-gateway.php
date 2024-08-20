@@ -88,9 +88,6 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) {
 			// Remove cart.
 			$woocommerce->cart->empty_cart();
 
-			// Schedule order deletion.
-			// checkview_schedule_delete_orders( $order_id );
-
 			// Return thankyou redirect.
 			return array(
 				'result'   => 'success',

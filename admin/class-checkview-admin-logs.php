@@ -14,6 +14,7 @@
  *
  * It is important that we save some events that take place on the plugin, this class
  * handles the addition of messages to our log file
+ * We are going to use this feature in future.
  *
  * @author      CheckView
  * @category    Incldues

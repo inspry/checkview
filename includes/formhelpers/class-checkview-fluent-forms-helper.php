@@ -115,98 +115,6 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 					update_option( '_fluentform_turnstile_details', $old_settings );
 				}
 			}
-			// add_filter(
-			// 'fluentform/rendering_form',
-			// function ( $form ) {
-			// foreach ( $form->fields['fields'] as $index => $field ) {
-			// if ( in_array( $field['element'], array( 'recaptcha', 'hcaptcha', 'turnstile', 'captcha' ) ) ) {
-			// \FluentForm\Framework\Helpers\ArrayHelper::forget( $form->fields['fields'], $index );
-			// }
-			// }
-			// return $form;
-			// },
-			// 20,
-			// 1
-			// );
-			// $autoincluderecaptcha = array(
-			// array(
-			// 'type'        => 'hcaptcha',
-			// 'is_disabled' => ! get_option( '_fluentform_hCaptcha_keys_status', false ),
-			// ),
-			// array(
-			// 'type'        => 'recaptcha',
-			// 'is_disabled' => ! get_option( '_fluentform_reCaptcha_keys_status', false ),
-			// ),
-			// array(
-			// 'type'        => 'turnstile',
-			// 'is_disabled' => ! get_option( '_fluentform_turnstile_keys_status', false ),
-			// ),
-			// );
-
-			// foreach ( $autoincluderecaptcha as $input ) {
-
-			// add_filter(
-			// 'fluentform/has_' . $input['type'],
-			// function () use ( $input ) {
-			// $option   = get_option( '_fluentform_global_form_settings' );
-			// $autoload = \FluentForm\Framework\Helpers\ArrayHelper::get( $option, 'misc.autoload_captcha' );
-			// $type     = \FluentForm\Framework\Helpers\ArrayHelper::get( $option, 'misc.captcha_type' );
-
-			// if ( $autoload || $type == $input['type'] ) {
-			// return false;
-			// }
-
-			// return false;
-			// },
-			// 20,
-			// 1
-			// );
-
-			// add_filter(
-			// 'fluentform/validate_input_item_recaptcha',
-			// function ( $error, $field, $form_data, $fields, $form, $errors ) {
-			// $option   = get_option( '_fluentform_global_form_settings' );
-			// $autoload = \FluentForm\Framework\Helpers\ArrayHelper::get( $option, 'misc.autoload_captcha' );
-			// $type     = \FluentForm\Framework\Helpers\ArrayHelper::get( $option, 'misc.captcha_type' );
-
-			// if ( $field['element'] == $type || $type == $field ) {
-			// return false;
-			// }
-
-			// return false;
-			// },
-			// 20,
-			// 6
-			// );
-			// }
-			// add_action(
-			// 'fluentform/before_form_validation',
-			// function ( $fields, $form_data ) {
-
-			// foreach ( $fields as $index => $field ) {
-			// if ( in_array( $field['element'], array( 'recaptcha', 'hcaptcha', 'turnstile', 'captcha' ) ) ) {
-			// unset( $fields[ $key ] );
-			// }
-			// }
-			// },
-			// 12,
-			// 2
-			// );
-			// add_filter(
-			// 'fluentform/disabled_components',
-			// function ( $disabled ) {
-			// Do your stuff here.
-			// $disabled['recaptcha'] = array(
-			// 'disabled'    => true,
-			// 'title'       => __( 'reCaptcha', 'fluentform' ),
-			// 'description' => __( 'Please enter a valid API key on FluentForms->Settings->reCaptcha', 'fluentform' ),
-			// 'hidePro'     => true,
-			// );
-			// return $disabled;
-			// },
-			// 10,
-			// 1
-			// );
 			add_filter(
 				'fluentform/recaptcha_v3_ref_score',
 				function ( $score ) {
@@ -217,6 +125,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			);
 			// bypass hcaptcha.
 			add_filter( 'hcap_activate', '__return_false' );
+			// bypass akismet.
 			add_filter(
 				'akismet_get_api_key',
 				'__return_null',

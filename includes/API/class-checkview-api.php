@@ -531,7 +531,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Retrieves the available order details bby id.
+	 * Retrieves the available order details by id.
 	 *
 	 * @param WP_REST_Request $request wp request object.
 	 * @return WP_REST_Response/json
@@ -714,7 +714,7 @@ class CheckView_Api {
 		wp_die();
 	}
 	/**
-	 * Retrieves the available forms.
+	 * Retrieves the available WooCommerce Products.
 	 *
 	 * @param WP_REST_Request $request wp request object.
 	 * @return WP_REST_Response/json
@@ -960,7 +960,7 @@ class CheckView_Api {
 		wp_die();
 	}
 	/**
-	 * Deletes all the avaiable test results for forms.
+	 * Deletes all the avaiable test orders made by SaaS.
 	 *
 	 * @param WP_REST_Request $request wp request object.
 	 * @return WP_REST_Response/WP_Error/json
@@ -1225,7 +1225,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Creates the test customer.
+	 * Retrieves the credentials for the test customer.
 	 *
 	 * @return WP_REST_Response/WP_Error/json
 	 */

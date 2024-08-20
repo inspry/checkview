@@ -133,7 +133,7 @@ class Checkview {
 		 */
 		require_once plugin_dir_path( __DIR__ ) . 'includes/vendor/autoload.php';
 		/**
-		 * The class responsible for defining all actions that occur in the public-facing
+		 * The class responsible for defining all actions that occur in the public and admin -facing
 		 * side of the site. Exposes the general functions.
 		 */
 		require_once plugin_dir_path( __DIR__ ) . 'includes/checkview-functions.php';
@@ -156,12 +156,12 @@ class Checkview {
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-checkview-admin.php';
 
 		/**
-		 * The class responsible for defining all actions that occur in the admin area.
+		 * The class responsible for defining and maintaining logs for  all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-checkview-admin-logs.php';
 
 		/**
-		 * The class responsible for defining all actions that occur in the admin area.
+		 * The class responsible for defining all settings that occur in the admin area.
 		 */
 		require_once plugin_dir_path( __DIR__ ) . 'admin/settings/class-checkview-admin-settings.php';
 
@@ -175,10 +175,8 @@ class Checkview {
 		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
-		// $visitor_ip = $cv_bot_ip;
 		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) ) {
 			$send_to = CHECKVIEW_EMAIL;
-			// skip if visitor ip not equal to CV Bot IP.
 
 			// if clean talk plugin active whitelist check form API IP. .
 			if ( is_plugin_active( 'cleantalk-spam-protect/cleantalk.php' ) ) {
@@ -237,7 +235,7 @@ class Checkview {
 		if ( class_exists( 'WooCommerce' ) ) {
 			/**
 			 * The class responsible for defining all actions that occur in the public-facing
-			 * side of the site. Exposes the API end points.
+			 * side of the site. Exposes CheckView payment gateway.
 			 */
 			require_once plugin_dir_path( __DIR__ ) . 'includes/woocommercehelper/class-checkview-woo-automated-testing.php';
 			$woo_helper = new Checkview_Woo_Automated_Testing( $this->get_plugin_name(), $this->get_version(), $this->loader );
@@ -408,7 +406,7 @@ class Checkview {
 		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
-		// procceed if visitor ip is equal to cv bot ip.
+		// proceed if visitor ip is equal to cv bot ip.
 		if ( $visitor_ip === $cv_bot_ip ) {
 			$this->loader->add_action(
 				'pre_option_require_name_email',
@@ -418,7 +416,7 @@ class Checkview {
 		}
 	}
 	/**
-	 * Tracks core version updates.
+	 * Tracks core version updates. Resets CheckView cache.
 	 *
 	 * @param [object] $upgrader_object class upgrader.
 	 * @param [array]  $options array.
