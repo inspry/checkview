@@ -83,18 +83,19 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           plugin_name=${{ matrix.plugin }}
-          
+
+          # Stash any unstaged changes before pulling
+          git stash --include-untracked
+
           # Pull the latest changes from the remote branch with rebase
           git pull --rebase origin bug-fixes
 
-          # Stash any unstaged changes to avoid conflicts during pull
-          git stash --include-untracked
-
           # Apply the stashed changes back after the pull
           git stash pop || echo "No changes to apply from stash"
-          
+
+          # Add the updated revision file
           git add ".revision/${plugin_name}_latest_revision_formidableform.txt"
-          
+
           # Commit the changes if there are any
           if ! git diff-index --quiet HEAD; then
             git commit -m "Update $plugin_name SVN revision"
