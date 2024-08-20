@@ -110,9 +110,6 @@ class Checkview_Admin_Settings {
 			$checkview_options['checkview_delete_data']        = sanitize_text_field( $del_data );
 			$checkview_options['checkview_allowed_extensions'] = sanitize_text_field( $allowed_extensions );
 			$checkview_options                                 = apply_filters( 'checkview_update_advance_options', $checkview_options );
-			$ad_title = isset( $_POST['checkview_admin_menu_title'] ) ? sanitize_text_field( wp_unslash( $_POST['checkview_admin_menu_title'] ) ) : esc_html__( 'CheckView', 'checkview' );
-
-			update_site_option( 'checkview_admin_menu_title', $ad_title );
 			update_option( 'checkview_advance_options', $checkview_options );
 			$uploads = 'true';
 		} else {
@@ -165,10 +162,9 @@ class Checkview_Admin_Settings {
 	 * @since 1.0.0
 	 */
 	public function checkview_menu() {
-		$admin_menu_title = ! empty( get_site_option( 'checkview_admin_menu_title', 'CheckView' ) ) ? get_site_option( 'checkview_admin_menu_title', 'CheckView' ) : 'CheckView';
 		add_options_page(
-			esc_html( $admin_menu_title ),
-			esc_html( $admin_menu_title ),
+			esc_html__( 'CheckView', 'checkview' ),
+			esc_html__( 'CheckView', 'checkview' ),
 			'manage_options',
 			'checkview-options',
 			array( $this, 'checkview_options' )

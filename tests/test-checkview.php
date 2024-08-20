@@ -7,7 +7,7 @@ class Test_Checkview_Bootstrap extends WP_UnitTestCase {
 	 */
 	public function test_plugin_version_defined() {
 		$this->assertTrue( defined( 'CHECKVIEW_VERSION' ) );
-		$this->assertEquals( '1.1.7', CHECKVIEW_VERSION );
+		$this->assertEquals( '1.1.15', CHECKVIEW_VERSION );
 	}
 
 	/**
@@ -22,6 +22,7 @@ class Test_Checkview_Bootstrap extends WP_UnitTestCase {
 		$this->assertTrue( defined( 'CHECKVIEW_ADMIN_ASSETS' ) );
 		$this->assertTrue( defined( 'CHECKVIEW_PUBLIC_ASSETS' ) );
 		$this->assertTrue( defined( 'CHECKVIEW_URI' ) );
+		$this->assertTrue( defined( 'CHECKVIEW_EMAIL' ) );
 	}
 
 	/**

@@ -16,7 +16,7 @@ use Firebase\JWT\Key;
 if ( ! defined( 'WPINC' ) ) {
 	die( 'Direct access not Allowed.' );
 }
-if ( ! function_exists( 'validate_jwt_token' ) ) {
+if ( ! function_exists( 'checkview_validate_jwt_token' ) ) {
 	/**
 	 * Decodes JWT TOKEN.
 	 *
@@ -24,9 +24,9 @@ if ( ! function_exists( 'validate_jwt_token' ) ) {
 	 * @return string/bool/void
 	 * @since    1.0.0
 	 */
-	function validate_jwt_token( $token ) {
+	function checkview_validate_jwt_token( $token ) {
 
-		$key = get_publickey();
+		$key = checkview_get_publickey();
 
 		try {
 			$decoded = JWT::decode( $token, new Key( $key, 'RS256' ) );
@@ -87,8 +87,8 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 			define( 'CV_TEST_ID', $checkview_test_id );
 		}
 		$session_table = $wpdb->prefix . 'cv_session';
-		$visitor_ip    = get_visitor_ip();
-		$cv_session    = get_cv_session( $visitor_ip, CV_TEST_ID );
+		$visitor_ip    = checkview_get_visitor_ip();
+		$cv_session    = checkview_get_cv_session( $visitor_ip, CV_TEST_ID );
 
 		// stop if session not found.
 		if ( ! empty( $cv_session ) ) {
@@ -106,16 +106,15 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 		update_option( $visitor_ip . 'use_stripe', 'no', true );
 	}
 }
-if ( ! function_exists( 'get_publickey' ) ) {
+if ( ! function_exists( 'checkview_get_publickey' ) ) {
 	/**
 	 * Get JWT Public KEY.
 	 *
 	 * @return array
 	 * @since    1.0.0
 	 */
-	function get_publickey() {
+	function checkview_get_publickey() {
 		$public_key = get_transient( 'checkview_saas_pk' );
-		// Todo.
 		if ( null === $public_key || '' === $public_key || empty( $public_key ) ) {
 			$response   = wp_remote_get(
 				'https://app.checkview.io/api/helper/public_key',
@@ -130,16 +129,15 @@ if ( ! function_exists( 'get_publickey' ) ) {
 		return $public_key;
 	}
 }
-if ( ! function_exists( 'get_api_ip' ) ) {
+if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 	/**
 	 * Get IP address of CheckView.
 	 *
 	 * @return string/void
 	 * @since    1.0.0
 	 */
-	function get_api_ip() {
+	function checkview_get_api_ip() {
 
-		// Todo.
 		$ip_address = get_transient( 'checkview_saas_ip_address' );
 		if ( null === $ip_address || '' === $ip_address || empty( $ip_address ) ) {
 			$request = wp_remote_get(
@@ -165,7 +163,7 @@ if ( ! function_exists( 'get_api_ip' ) ) {
 		return $ip_address;
 	}
 }
-if ( ! function_exists( 'whitelist_api_ip' ) ) {
+if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 	/**
 	 * Whitelist checkview Bot IP
 	 *
@@ -174,12 +172,12 @@ if ( ! function_exists( 'whitelist_api_ip' ) ) {
 	 * @return json/array/void
 	 * @since    1.0.0
 	 */
-	function whitelist_api_ip() {
+	function checkview_whitelist_api_ip() {
 
 		$spbc_data  = get_option( 'cleantalk_data', array() );
 		$user_token = $spbc_data['user_token'];
-		$current_ip = get_visitor_ip();
-		$api_ip     = get_api_ip();
+		$current_ip = checkview_get_visitor_ip();
+		$api_ip     = checkview_get_api_ip();
 
 		if ( $api_ip === $current_ip ) {
 			$response = wp_remote_get(
@@ -196,12 +194,19 @@ if ( ! function_exists( 'whitelist_api_ip' ) ) {
 					'timeout' => 500,
 				)
 			);
+			// Check if the response is a WP_Error object.
+			if ( is_wp_error( $response ) ) {
+				// Handle the error here.
+				$error_message = $response->get_error_message();
+				error_log( "Request failed: $error_message" );
+				return null; // Or handle as needed, e.g., return an error message or false.
+			}
 			return json_decode( $response['body'], true );
 		}
 		return null;
 	}
 }
-if ( ! function_exists( 'must_ssl_url' ) ) {
+if ( ! function_exists( 'checkview_must_ssl_url' ) ) {
 	/**
 	 * Convert http to https.
 	 *
@@ -209,20 +214,20 @@ if ( ! function_exists( 'must_ssl_url' ) ) {
 	 * @return string Url to be sanitized.
 	 * @since    1.0.0
 	 */
-	function must_ssl_url( $url ) {
+	function checkview_must_ssl_url( $url ) {
 
 		$url = str_replace( 'http:', 'https:', $url );
 		return $url;
 	}
 }
-if ( ! function_exists( 'get_visitor_ip' ) ) {
+if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
 	/**
 	 * Get Visitor IP.
 	 *
 	 * @return string ip address of visitor.
 	 * @since    1.0.0
 	 */
-	function get_visitor_ip() {
+	function checkview_get_visitor_ip() {
 
 		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
 			// check ip from share internet.
@@ -236,7 +241,7 @@ if ( ! function_exists( 'get_visitor_ip' ) ) {
 		return $ip;
 	}
 }
-if ( ! function_exists( 'create_cv_session' ) ) {
+if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 	/**
 	 * Create check view Test Session.
 	 *
@@ -245,11 +250,11 @@ if ( ! function_exists( 'create_cv_session' ) ) {
 	 * @return void
 	 * @since    1.0.0
 	 */
-	function create_cv_session( $ip, $test_id ) {
+	function checkview_create_cv_session( $ip, $test_id ) {
 		global $wp, $wpdb;
 
 		// return if already saved.
-		$already_have = get_cv_session( $ip, $test_id );
+		$already_have = checkview_get_cv_session( $ip, $test_id );
 		if ( ! empty( $already_have ) ) {
 			return;
 		}
@@ -295,7 +300,7 @@ if ( ! function_exists( 'create_cv_session' ) ) {
 		$wpdb->insert( $session_table, $session_data );
 	}
 }
-if ( ! function_exists( 'get_cv_session' ) ) {
+if ( ! function_exists( 'checkview_get_cv_session' ) ) {
 	/**
 	 * Get check view session from database.
 	 *
@@ -304,7 +309,7 @@ if ( ! function_exists( 'get_cv_session' ) ) {
 	 * @return array array of results form DB.
 	 * @since    1.0.0
 	 */
-	function get_cv_session( $ip, $test_id ) {
+	function checkview_get_cv_session( $ip, $test_id ) {
 		global $wpdb;
 
 		$session_table = $wpdb->prefix . 'cv_session';
@@ -314,7 +319,7 @@ if ( ! function_exists( 'get_cv_session' ) ) {
 	}
 }
 
-if ( ! function_exists( 'get_wp_block_pages' ) ) {
+if ( ! function_exists( 'checkview_get_wp_block_pages' ) ) {
 	/**
 	 * Get pages contact wpblock editor template.
 	 *
@@ -322,7 +327,7 @@ if ( ! function_exists( 'get_wp_block_pages' ) ) {
 	 * @return WPDB object from WPDB.
 	 * @since    1.0.0
 	 */
-	function get_wp_block_pages( $block_id ) {
+	function checkview_get_wp_block_pages( $block_id ) {
 		global $wpdb;
 
 		$sql = "SELECT * FROM {$wpdb->prefix}posts WHERE 1=1 and (post_content like '%wp:block {\"ref\":" . $block_id . "}%') and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
@@ -385,7 +390,7 @@ if ( ! function_exists( 'checkview_whitelist_saas_ip_addresses' ) ) {
 	 * @return bool
 	 */
 	function checkview_whitelist_saas_ip_addresses() {
-		$api_ip = get_api_ip();
+		$api_ip = checkview_get_api_ip();
 		if ( in_array( isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '', array( $api_ip ), true ) ) {
 			return true;
 		}
@@ -404,7 +409,7 @@ if ( ! function_exists( 'checkview_schedule_delete_orders' ) ) {
 }
 
 
-if ( ! function_exists( 'add_states_to_locations' ) ) {
+if ( ! function_exists( 'checkview_add_states_to_locations' ) ) {
 	/**
 	 * Function to add states to each country in a given locations array.
 	 *

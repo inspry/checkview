@@ -79,7 +79,7 @@ class Checkview {
 		if ( defined( 'CHECKVIEW_VERSION' ) ) {
 			$this->version = CHECKVIEW_VERSION;
 		} else {
-			$this->version = '1.1.14';
+			$this->version = '1.1.15';
 		}
 		$this->plugin_name = 'checkview';
 
@@ -172,17 +172,17 @@ class Checkview {
 		require_once plugin_dir_path( __DIR__ ) . 'public/class-checkview-public.php';
 		$this->loader = new Checkview_Loader();
 		// Current Vsitor IP.
-		$visitor_ip = get_visitor_ip();
-		// Check view Bot IP. Todo.
-		$cv_bot_ip = get_api_ip();
+		$visitor_ip = checkview_get_visitor_ip();
+		// Check view Bot IP.
+		$cv_bot_ip = checkview_get_api_ip();
 		// $visitor_ip = $cv_bot_ip;
 		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) ) {
-			$send_to = 'verify@test-mail.checkview.io';
+			$send_to = CHECKVIEW_EMAIL;
 			// skip if visitor ip not equal to CV Bot IP.
 
 			// if clean talk plugin active whitelist check form API IP. .
 			if ( is_plugin_active( 'cleantalk-spam-protect/cleantalk.php' ) ) {
-				whitelist_api_ip();
+				checkview_whitelist_api_ip();
 			}
 
 			$cv_test_id = isset( $_REQUEST['checkview_test_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) : '';
@@ -191,7 +191,7 @@ class Checkview {
 				// If not Ajax submission and found test_id.
 			if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'admin-ajax.php' ) === false && '' !== $cv_test_id ) {
 				// Create session for later use when form submit VIA AJAX.
-				create_cv_session( $visitor_ip, $cv_test_id );
+				checkview_create_cv_session( $visitor_ip, $cv_test_id );
 				update_option( $visitor_ip, 'checkview-saas', true );
 			}
 				// If submit VIA AJAX.
@@ -202,7 +202,7 @@ class Checkview {
 				$cv_test_id = $qry_str['checkview_test_id'];
 			}
 
-			$cv_session = get_cv_session( $visitor_ip, $cv_test_id );
+			$cv_session = checkview_get_cv_session( $visitor_ip, $cv_test_id );
 
 			// stop if session not found.
 			if ( ! empty( $cv_session ) ) {
@@ -405,10 +405,10 @@ class Checkview {
 		);
 
 		// Current Vsitor IP.
-		$visitor_ip = get_visitor_ip();
-		// Check view Bot IP. Todo.
-		$cv_bot_ip = get_api_ip();
-		// procceed if visitor ip is equal to cv bot ip. Todo.
+		$visitor_ip = checkview_get_visitor_ip();
+		// Check view Bot IP.
+		$cv_bot_ip = checkview_get_api_ip();
+		// procceed if visitor ip is equal to cv bot ip.
 		if ( $visitor_ip === $cv_bot_ip ) {
 			$this->loader->add_action(
 				'pre_option_require_name_email',

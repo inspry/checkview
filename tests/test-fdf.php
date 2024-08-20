@@ -5,7 +5,10 @@ if ( is_plugin_active( 'formidable/formidable.php' ) ) {
 class Test_Checkview_Formidable_Helper extends WP_UnitTestCase {
 
 	public function test_checkview_inject_email() {
-		$send_to = 'verify@test-mail.checkview.io';
+		if ( ! defined( 'CHECKVIEW_EMAIL' ) ) {
+			define( 'CHECKVIEW_EMAIL', 'verify@test-mail.checkview' );
+		}
+		$send_to = CHECKVIEW_EMAIL;
 		if ( isset( $test_form['send_to'] ) && '' !== $test_form['send_to'] ) {
 			$send_to = $test_form['send_to'];
 		}

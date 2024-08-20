@@ -9,7 +9,10 @@ class Checkview_Ninja_Forms_Helper_Test extends WP_UnitTestCase {
 		if ( is_plugin_active( 'ninja-forms/ninja-forms.php' ) ) {
 			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-ninja-forms-helper.php';
 		}
-		$send_to = 'verify@test-mail.checkview.io';
+		if ( ! defined( 'CHECKVIEW_EMAIL' ) ) {
+			define( 'CHECKVIEW_EMAIL', 'verify@test-mail.checkview.io' );
+		}
+		$send_to = CHECKVIEW_EMAIL;
 		if ( isset( $test_form['send_to'] ) && '' !== $test_form['send_to'] ) {
 			$send_to = $test_form['send_to'];
 		}
