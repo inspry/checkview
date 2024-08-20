@@ -50,7 +50,6 @@ jobs:
           plugin_name=${{ matrix.plugin }}
           current_revision=$(cat ".revision/${plugin_name}_current_revision.txt")
           
-          # Check if the previous revision file exists
           if [ -f ".revision/${plugin_name}_latest_revision.txt" ]; then
             previous_revision=$(cat ".revision/${plugin_name}_latest_revision.txt")
           else
@@ -82,18 +81,23 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           plugin_name=${{ matrix.plugin }}
+
           # Stash any unstaged changes to avoid conflicts during pull
           git stash --include-untracked
-    
+          
           # Pull the latest changes from the remote branch with rebase
           git pull --rebase origin bug-fixes
-
+          
           # Apply the stashed changes back after the pull
           git stash pop || echo "No changes to apply from stash"
+          
+          # Add the latest revision file and commit
           git add ".revision/${plugin_name}_latest_revision.txt"
+          
+          # Check if there are any changes to commit
           if ! git diff-index --quiet HEAD; then
             git commit -m "Update $plugin_name SVN revision"
-            git push
+            git push origin bug-fixes
           else
             echo "No changes to commit"
           fi
