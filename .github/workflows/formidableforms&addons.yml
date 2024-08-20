@@ -83,21 +83,27 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           plugin_name=${{ matrix.plugin }}
-          # Stash any unstaged changes to avoid conflicts during pull
-          git stash --include-untracked
-    
+          
           # Pull the latest changes from the remote branch with rebase
           git pull --rebase origin bug-fixes
 
+          # Stash any unstaged changes to avoid conflicts during pull
+          git stash --include-untracked
+
           # Apply the stashed changes back after the pull
           git stash pop || echo "No changes to apply from stash"
+          
           git add ".revision/${plugin_name}_latest_revision_formidableform.txt"
+          
+          # Commit the changes if there are any
           if ! git diff-index --quiet HEAD; then
             git commit -m "Update $plugin_name SVN revision"
+            # Push the changes
             git push
           else
             echo "No changes to commit"
           fi
+
       - name: Create Formidable Forms & hCaptcha Site for Testing in InstaWP
         if: ${{ ( steps.compare-revisions.outputs.formidable_update_found == 'true' ) || ( steps.compare-revisions.outputs.hcaptcha-for-forms-and-more_update_found == 'true' ) }}
         uses: instawp/wordpress-testing-automation@main
