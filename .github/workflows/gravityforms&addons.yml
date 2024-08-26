@@ -3,7 +3,7 @@ name: Check WordPress Plugin Version Updates
 on:
   push:
     branches:
-      - stagings
+      - staging
   schedule:
     - cron: '0 * * * *' # Runs every hour
   workflow_dispatch: # Allow manual trigger
@@ -15,10 +15,11 @@ jobs:
     strategy:
       matrix:
         plugin:
-          - simple-cloudflare-turnstile
-          - wpforms-lite
-          - akismet
+          - gravityformsturnstile
+          - gravityformsakismet
           - gravityforms
+          - gravityformsrecaptcha
+          - gf-hcaptcha
           # Add more plugins here
 
     steps:
@@ -26,7 +27,7 @@ jobs:
         id: get-plugin-version
         run: |
           plugin_slug=${{ matrix.plugin }}
-          response=$(curl -s "https://your-wordpress-site.com/wp-json/checkview/v1/plugin-version?_plugin_slug=$plugin_slug")
+          response=$(curl -s "https://gflistener.instawp.xyz/wp-json/checkview/v1/plugin-version?_plugin_slug=$plugin_slug")
           plugin_version=$(echo $response | jq -r '.version')
 
           if [ "$plugin_version" == "null" ] || [ -z "$plugin_version" ]; then

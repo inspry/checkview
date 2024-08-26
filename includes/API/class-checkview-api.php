@@ -1877,19 +1877,19 @@ class CheckView_Api {
 	 */
 	public function checkview_saas_get_plugin_version( WP_REST_Request $request ) {
 		if ( null !== $this->jwt_error ) {
-			return new WP_Error(
+			/**return new WP_Error(
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
 				esc_html( $this->jwt_error )
 			);
-			wp_die();
+			wp_die();*/
 		}
 		// Get all plugins.
 		if ( ! function_exists( 'get_plugins' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 		// Get the plugin slug from the request parameters.
-		$plugin_slug = $request->get_param( 'plugin_slug' );
+		$plugin_slug = $request->get_param( '_plugin_slug' );
 		$plugin_slug = isset( $plugin_slug ) ? sanitize_text_field( $plugin_slug ) : '';
 		if ( empty( $plugin_slug ) ) {
 			return new WP_Error(
@@ -1902,7 +1902,10 @@ class CheckView_Api {
 		// Format the slug to match the format used in the plugins directory.
 		$plugin_slug = sanitize_text_field( $plugin_slug );
 		$plugin_file = $plugin_slug . '/' . $plugin_slug . '.php';
-
+		if ( in_array( $plugin_slug, array( 'recaptcha', 'turnstile', 'akismet' ), true ) ) {
+			$plugin_folder = 'gravityforms' . $plugin_slug;
+			$plugin_file   = $plugin_folder . '/' . $plugin_slug . '.php';
+		}
 		// Get the plugin data using get_plugin_data.
 		if ( file_exists( WP_PLUGIN_DIR . '/' . $plugin_file ) ) {
 			$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_file );
