@@ -111,12 +111,20 @@ jobs:
             if ! git diff-index --quiet HEAD; then
               git commit -m "Update simple-cloudflare-turnstile SVN revision"
               
-              # Try to push changes
-              git push
-              if [ $? -ne 0 ]; then
-                echo "Push failed."
-                exit 1
-              fi
+              # Retry logic for pushing changes
+              retries=3
+              for i in $(seq 1 $retries); do
+                git push && break || {
+                  echo "Push failed. Attempt $i of $retries."
+                  sleep 5
+                  git fetch --prune
+                  git rebase origin/bug-fixes
+                }
+              done
+              if [ $i -eq $retries ]; then
+              echo "Push failed after $retries attempts."
+              exit 1
+            fi
             else
               echo "No changes to commit."
             fi
@@ -219,10 +227,18 @@ jobs:
           if ! git diff-index --quiet HEAD; then
             git commit -m "Update turnstile SVN revision"
             
-            # Try to push changes
-            git push
-            if [ $? -ne 0 ]; then
-              echo "Push failed."
+            # Retry logic for pushing changes
+            retries=3
+            for i in $(seq 1 $retries); do
+              git push && break || {
+                echo "Push failed. Attempt $i of $retries."
+                sleep 5
+                git fetch --prune
+                git rebase origin/bug-fixes
+              }
+            done
+            if [ $i -eq $retries ]; then
+              echo "Push failed after $retries attempts."
               exit 1
             fi
           else
@@ -328,9 +344,18 @@ jobs:
             git commit -m "Update akismet SVN revision"
             
             # Try to push changes
-            git push
-            if [ $? -ne 0 ]; then
-              echo "Push failed."
+            # Retry logic for pushing changes
+            retries=3
+            for i in $(seq 1 $retries); do
+              git push && break || {
+                echo "Push failed. Attempt $i of $retries."
+                sleep 5
+                git fetch --prune
+                git rebase origin/bug-fixes
+              }
+            done
+            if [ $i -eq $retries ]; then
+              echo "Push failed after $retries attempts."
               exit 1
             fi
           else
@@ -436,9 +461,18 @@ jobs:
             git commit -m "Update gravityforms SVN revision"
             
             # Try to push changes
-            git push
-            if [ $? -ne 0 ]; then
-              echo "Push failed."
+            # Retry logic for pushing changes
+            retries=3
+            for i in $(seq 1 $retries); do
+              git push && break || {
+                echo "Push failed. Attempt $i of $retries."
+                sleep 5
+                git fetch --prune
+                git rebase origin/bug-fixes
+              }
+            done
+            if [ $i -eq $retries ]; then
+              echo "Push failed after $retries attempts."
               exit 1
             fi
           else
@@ -544,9 +578,18 @@ jobs:
             git commit -m "Update recaptcha SVN revision"
             
             # Try to push changes
-            git push
-            if [ $? -ne 0 ]; then
-              echo "Push failed."
+            # Retry logic for pushing changes
+            retries=3
+            for i in $(seq 1 $retries); do
+              git push && break || {
+                echo "Push failed. Attempt $i of $retries."
+                sleep 5
+                git fetch --prune
+                git rebase origin/bug-fixes
+              }
+            done
+            if [ $i -eq $retries ]; then
+              echo "Push failed after $retries attempts."
               exit 1
             fi
           else
@@ -779,9 +822,18 @@ jobs:
             git commit -m "Update gravityforms-zero-spam SVN revision"
             
             # Try to push changes
-            git push
-            if [ $? -ne 0 ]; then
-              echo "Push failed."
+            # Retry logic for pushing changes
+            retries=3
+            for i in $(seq 1 $retries); do
+              git push && break || {
+                echo "Push failed. Attempt $i of $retries."
+                sleep 5
+                git fetch --prune
+                git rebase origin/bug-fixes
+              }
+            done
+            if [ $i -eq $retries ]; then
+              echo "Push failed after $retries attempts."
               exit 1
             fi
           else
@@ -887,9 +939,18 @@ jobs:
             git commit -m "Update hcaptcha-for-forms-and-more SVN revision"
             
             # Try to push changes
-            git push
-            if [ $? -ne 0 ]; then
-              echo "Push failed."
+            # Retry logic for pushing changes
+            retries=3
+            for i in $(seq 1 $retries); do
+              git push && break || {
+                echo "Push failed. Attempt $i of $retries."
+                sleep 5
+                git fetch --prune
+                git rebase origin/bug-fixes
+              }
+            done
+            if [ $i -eq $retries ]; then
+              echo "Push failed after $retries attempts."
               exit 1
             fi
           else
