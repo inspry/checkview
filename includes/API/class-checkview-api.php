@@ -349,10 +349,27 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token' => array(
-						'required' => false,
+						'required' => true,
 					),
 				),
 			),
+		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/plugin-version',
+			array(
+				'callback'            => array( $this, 'checkview_saas_get_plugin_version' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token' => array(
+						'required' => false,
+					),
+					'_plugin_slug'     => array(
+						'required' => false,
+					),
+				),
+			)
 		);
 	} // end checkview_register_rest_route
 	/**
@@ -412,60 +429,6 @@ class CheckView_Api {
 
 		$params = array();
 
-		// $sql = "SELECT p.ID AS orderId, DATE_FORMAT(p.post_date_gmt, '%%Y-%%m-%%dT%%TZ') AS orderDate,
-		// DATE_FORMAT(p.post_modified_gmt, '%%Y-%%m-%%dT%%TZ') AS lastModifiedOn, p.post_status AS status,
-		// pm2.meta_value AS orderTotal, pm3.meta_value AS currency
-		// FROM {$wpdb->prefix}posts as p
-		// LEFT JOIN {$wpdb->prefix}postmeta AS pm ON (p.id = pm.post_id AND pm.meta_key = '_payment_method')
-		// LEFT JOIN {$wpdb->prefix}postmeta AS pm2 ON (p.id = pm2.post_id AND pm2.meta_key = '_order_total')
-		// LEFT JOIN {$wpdb->prefix}postmeta AS pm3 ON (p.id = pm3.post_id AND pm3.meta_key = '_order_currency')
-		// WHERE p.post_type = 'shop_order'
-		// AND p.post_status IN ('wc-processing', 'wc-completed', 'wc-failed', 'wc-cancelled')
-		// AND pm.meta_value <> 'checkview' ";
-
-		// if ( ! empty( $checkview_order_last_modified_since ) ) {
-
-		// $sql     .= ' AND p.post_modified_gmt >= %s ';
-		// $params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_since ) );
-
-		// }
-
-		// if ( ! empty( $checkview_order_last_modified_until ) ) {
-
-		// $sql     .= ' AND p.post_modified_gmt <= %s ';
-		// $params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_until ) );
-
-		// }
-
-		// if ( ! empty( $checkview_order_id_after ) && ! empty( $checkview_order_last_modified_since ) ) {
-
-		// $sql     .= ' AND (p.post_modified_gmt != %s OR p.ID > %s) ';
-		// $params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_since ) );
-		// $params[] = $checkview_order_id_after;
-
-		// }
-
-		// if ( ! empty( $checkview_order_id_before ) && ! empty( $checkview_order_last_modified_until ) ) {
-
-		// $sql     .= ' AND (p.post_modified_gmt != %s OR p.ID < %s) ';
-		// $params[] = gmdate( 'Y-m-d H:i:s', strtotime( $checkview_order_last_modified_until ) );
-		// $params[] = $checkview_order_id_before;
-
-		// }
-
-		// // To make sure we don't get incomplete batches of orders.
-		// if ( ! empty( $checkview_order_last_modified_since ) ) {
-		// $sql .= ' AND p.post_modified_gmt < (NOW() - interval 2 second) ';
-		// }
-
-		// if ( ! empty( $checkview_order_last_modified_until ) ) {
-		// $sql .= ' ORDER BY p.post_modified_gmt DESC, p.ID DESC';
-		// } else {
-		// $sql .= ' ORDER BY p.post_modified_gmt ASC, p.ID ASC LIMIT';
-		// }
-
-		// $psql   = $wpdb->prepare( $sql, $params );
-		// $orders = $wpdb->get_results( $psql );
 		$args = array(
 			'limit'          => -1,
 			'payment_method' => 'checkview',
@@ -531,7 +494,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Retrieves the available order details bby id.
+	 * Retrieves the available order details by id.
 	 *
 	 * @param WP_REST_Request $request wp request object.
 	 * @return WP_REST_Response/json
@@ -714,7 +677,7 @@ class CheckView_Api {
 		wp_die();
 	}
 	/**
-	 * Retrieves the available forms.
+	 * Retrieves the available WooCommerce Products.
 	 *
 	 * @param WP_REST_Request $request wp request object.
 	 * @return WP_REST_Response/json
@@ -960,7 +923,7 @@ class CheckView_Api {
 		wp_die();
 	}
 	/**
-	 * Deletes all the avaiable test results for forms.
+	 * Deletes all the avaiable test orders made by SaaS.
 	 *
 	 * @param WP_REST_Request $request wp request object.
 	 * @return WP_REST_Response/WP_Error/json
@@ -1225,7 +1188,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Creates the test customer.
+	 * Retrieves the credentials for the test customer.
 	 *
 	 * @return WP_REST_Response/WP_Error/json
 	 */
@@ -1902,6 +1865,72 @@ class CheckView_Api {
 				400,
 				esc_html__( 'Failed to retrieve the site info.', 'checkview' ),
 				'No data to check.'
+			);
+		}
+	}
+
+	/**
+	 * Get the plugin version.
+	 *
+	 * @param WP_REST_Request $request WP_Request object.
+	 * @return Json/WP Error
+	 */
+	public function checkview_saas_get_plugin_version( WP_REST_Request $request ) {
+		if ( null !== $this->jwt_error ) {
+			/**return new WP_Error(
+				400,
+				esc_html__( 'Invalid request.', 'checkview' ),
+				esc_html( $this->jwt_error )
+			);
+			wp_die();*/
+		}
+		// Get all plugins.
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		// Get the plugin slug from the request parameters.
+		$plugin_slug = $request->get_param( '_plugin_slug' );
+		$plugin_slug = isset( $plugin_slug ) ? sanitize_text_field( $plugin_slug ) : '';
+		if ( empty( $plugin_slug ) ) {
+			return new WP_Error(
+				'missing_param',
+				esc_html__( 'Invalid request.', 'checkview' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		// Format the slug to match the format used in the plugins directory.
+		$plugin_slug = sanitize_text_field( $plugin_slug );
+		$plugin_file = $plugin_slug . '/' . $plugin_slug . '.php';
+		if ( in_array( $plugin_slug, array( 'recaptcha', 'turnstile', 'akismet' ), true ) ) {
+			$plugin_folder = 'gravityforms' . $plugin_slug;
+			$plugin_file   = $plugin_folder . '/' . $plugin_slug . '.php';
+		} elseif ( 'gravityforms-zero-spam' === $plugin_slug ) {
+			$plugin_folder = 'gravity-forms-zero-spam';
+			$plugin_file   = $plugin_folder . '/' . $plugin_slug . '.php';
+		} elseif ( 'hcaptcha-for-forms-and-more' === $plugin_slug ) {
+			$plugin_folder = $plugin_slug;
+			$plugin_slug   = 'hcaptcha';
+			$plugin_file   = $plugin_folder . '/' . $plugin_slug . '.php';
+		}
+		if ( file_exists( WP_PLUGIN_DIR . '/' . $plugin_file ) ) {
+			$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_file );
+			$version     = $plugin_data['Version'];
+
+			return new WP_REST_Response(
+				array(
+					'plugin_slug' => $plugin_slug,
+					'version'     => $version,
+				),
+				200
+			);
+		} else {
+			return new WP_Error(
+				'plugin_not_found',
+				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
+				array(
+					'status' => 404,
+				)
 			);
 		}
 	}

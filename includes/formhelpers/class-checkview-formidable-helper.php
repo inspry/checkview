@@ -354,7 +354,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			return $fields;
 		}
 		/**
-		 * Removes recaptchabmit field from the list of fields.
+		 * Removes captcha fields from the list of fields.
 		 *
 		 * @param array $fields Array of fields.
 		 * @param form  $form form.

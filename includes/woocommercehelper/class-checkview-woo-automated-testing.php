@@ -59,11 +59,6 @@ class Checkview_Woo_Automated_Testing {
 				$this,
 				'checkview_create_test_product',
 			);
-			// $this->loader->add_action(
-			// 'init',
-			// $this,
-			// 'checkview_create_test_customer',
-			// );
 			$this->loader->add_action(
 				'template_redirect',
 				$this,
@@ -567,11 +562,18 @@ class Checkview_Woo_Automated_Testing {
 				3
 			);
 			// bypass hcaptcha.
-			add_filter( 'hcap_activate', array( $this, '__return_false' ), -999, 1 );
+			add_filter( 'hcap_activate', array( $this, 'checkview_return_false' ), -999, 1 );
 		}
 	}
-	public function __return_false( $activate ) {
-		return false;
+	/**
+	 * Retuns false.
+	 *
+	 * @param bool $activate wether to activate or not.
+	 * @return bool
+	 */
+	public function checkview_return_false( $activate ) {
+		$activate = false;
+		return $activate;
 	}
 	/**
 	 * Disable admin notifications on checkview checks.

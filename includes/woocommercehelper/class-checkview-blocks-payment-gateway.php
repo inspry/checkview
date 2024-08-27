@@ -32,6 +32,11 @@ final class Checkview_Blocks_Payment_Gateway extends AbstractPaymentMethodType {
 	 */
 	protected $name = 'checkview';
 
+	/**
+	 * Support the gateway provides.
+	 *
+	 * @var array
+	 */
 	protected $supports = array( 'checkview' );
 
 	/**

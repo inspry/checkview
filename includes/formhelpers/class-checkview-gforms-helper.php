@@ -120,6 +120,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 			);
 			// bypass hcaptcha.
 			add_filter( 'hcap_activate', '__return_false' );
+			// bypass akimet.
 			add_filter(
 				'akismet_get_api_key',
 				'__return_null',

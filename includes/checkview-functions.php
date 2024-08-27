@@ -165,7 +165,7 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 }
 if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 	/**
-	 * Whitelist checkview Bot IP
+	 * Whitelist checkview Bot IP.
 	 *
 	 * Only run first time or if ip get changed.
 	 *
@@ -246,7 +246,7 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 	 * Create check view Test Session.
 	 *
 	 * @param string $ip the IP address of the SAAS.
-	 * @param int    $test_id The test ID to be conducted.
+	 * @param int    $test_id The test ID to be executed.
 	 * @return void
 	 * @since    1.0.0
 	 */
@@ -336,7 +336,7 @@ if ( ! function_exists( 'checkview_get_wp_block_pages' ) ) {
 }
 if ( ! function_exists( 'checkview_reset_cache' ) ) {
 	/**
-	 * Updates cached data.
+	 * Updates cached data. We cache all API calls from SaaS to save resources.Use this function to reset that.
 	 *
 	 * @param bool $sync hard sync or not.
 	 * @return bool
@@ -356,7 +356,7 @@ if ( ! function_exists( 'checkview_reset_cache' ) ) {
 
 if ( ! function_exists( 'checkview_deslash' ) ) {
 	/**
-	 * Deslashed double slashes
+	 * Deslashes double slashes.
 	 *
 	 * @since  1.1.0
 	 * @param [string] $content content to delash.
@@ -385,7 +385,7 @@ if ( ! function_exists( 'checkview_deslash' ) ) {
 }
 if ( ! function_exists( 'checkview_whitelist_saas_ip_addresses' ) ) {
 	/**
-	 * Whitelists SaaS site.
+	 * Whitelists SaaS site using its IP address.
 	 *
 	 * @return bool
 	 */

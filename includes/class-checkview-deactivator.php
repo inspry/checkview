@@ -22,12 +22,22 @@
 class Checkview_Deactivator {
 
 	/**
-	 * Short Description. (use period)
-	 *
-	 * Long Description.
+	 * Clear the cron job and remove the IP from the whitelist.
 	 *
 	 * @since    1.0.0
 	 */
 	public static function deactivate() {
+		// Clear the cron job.
+		wp_clear_scheduled_hook( 'checkview_delete_orders_action' );
+		$ip_to_remove = checkview_get_api_ip();
+		if ( substr( $ip_to_remove, 0, $settings['whitelisted_ips'] ) !== false ) {
+			// Replace the IP with an empty string (effectively removing it). Remove SaaSIP from hCaptcha settings.
+			$settings['whitelisted_ips'] = str_replace( $ip_to_remove, '', $settings['whitelisted_ips'] );
+
+			// Clean up any leftover newline characters.
+			$settings['whitelisted_ips'] = trim( preg_replace( '/\s+/', "\n", $settings['whitelisted_ips'] ) );
+			// Update the option with the IP removed.
+			update_option( 'hcaptcha_settings', $settings );
+		}
 	}
 }
