@@ -74,8 +74,10 @@ jobs:
 
           if [ "$current_revision" != "$previous_revision" ]; then
             echo "${{ matrix.plugin }}_update_found=true" >> $GITHUB_ENV
+            echo "::set-output name=${plugin_name}_update_found::true"
           else
             echo "${{ matrix.plugin }}_update_found=false" >> $GITHUB_ENV
+            echo "::set-output name=${plugin_name}_update_found::false"
           fi
 
       - name: Save current revision as latest revision
@@ -91,9 +93,9 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          plugin_name=${{ matrix.plugin }}
+          plugin_slug=${{ matrix.plugin }}
 
-          # Stash any unstaged changes before pulling
+          # Stash any unstaged changes to avoid conflicts during pull
           git stash --include-untracked
 
           # Pull the latest changes from the remote branch with rebase
@@ -101,18 +103,17 @@ jobs:
 
           # Apply the stashed changes back after the pull
           git stash pop || echo "No changes to apply from stash"
-
-          # Add the updated revision file
-          git add ".revision/${plugin_name}_latest_revision_gravityforms.txt"
-
-          # Commit the changes if there are any
+          
+          # Add changes to the revision file and commit
+          git add ".revision/${plugin_slug}_latest_revision_gravityforms.txt"
           if ! git diff-index --quiet HEAD; then
-            git commit -m "Update $plugin_name SVN revision"
-            # Push the changes
-            git push
+            git commit -m "Update $plugin_slug plugin version"
+            # Use the --force flag to overwrite remote branch if needed
+            git push origin bug-fixes --force
           else
             echo "No changes to commit"
           fi
+
             
       - name: Create Gravity Forms & hCaptcha native Site for Testing in InstaWP
         if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.gf-hcaptcha_update_found == 'true' ) }}
