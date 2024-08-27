@@ -24,7 +24,6 @@ jobs:
 
   check-turnstile:
     runs-on: ubuntu-latest
-    needs: setup
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -132,7 +131,6 @@ jobs:
 
   check-akismet:
     runs-on: ubuntu-latest
-    needs: setup
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
