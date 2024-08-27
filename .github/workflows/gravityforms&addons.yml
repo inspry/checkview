@@ -100,20 +100,56 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           plugin_name=${{ matrix.plugin }}
-          # Stash any unstaged changes to avoid conflicts during pull
-          git stash --include-untracked
-    
-          # Pull the latest changes from the remote branch with rebase
-          git pull --rebase origin bug-fixes
 
-          # Apply the stashed changes back after the pull
-          git stash pop || echo "No changes to apply from stash"
-          git add ".revision/${plugin_name}_latest_revision_gravityforms.txt"
-          if ! git diff-index --quiet HEAD; then
-            git commit -m "Update $plugin_name SVN revision"
-            git push
-          else
-            echo "No changes to commit"
+          max_retries=5
+          attempt=0
+          success=false
+
+          while [ $attempt -lt $max_retries ]; do
+            echo "Attempt $((attempt + 1)) of $max_retries"
+            
+            # Stash any unstaged changes before pulling
+            git stash --include-untracked
+
+            # Pull the latest changes from the remote branch with rebase
+            git pull --rebase origin bug-fixes
+            
+            # Apply the stashed changes back after the pull
+            git stash pop || echo "No changes to apply from stash"
+
+            # Add the updated revision file
+            git add ".revision/${plugin_name}_latest_revision_gravityforms.txt"
+
+            # Check if there are any changes to commit
+            if ! git diff-index --quiet HEAD; then
+              git commit -m "Update $plugin_name SVN revision"
+              
+              # Try to push changes
+              git push
+              if [ $? -eq 0 ]; then
+                echo "Successfully pushed changes."
+                success=true
+                break
+              else
+                echo "Push failed. Retrying..."
+              fi
+            else
+              echo "No changes to commit."
+              success=true
+              break
+            fi
+
+            attempt=$((attempt + 1))
+            
+            # Sleep for a random amount of time between 1 and 10 seconds
+            sleep_time=$(( RANDOM % 10 + 1 )) # Random sleep time from 1 to 10 seconds
+            echo "Sleeping for $sleep_time seconds..."
+            sleep $sleep_time
+          done
+
+          if [ "$success" = false ]; then
+            echo "Failed to push changes after $max_retries attempts."
+            exit 1
           fi
 
         
