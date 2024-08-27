@@ -94,25 +94,26 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           plugin_slug=${{ matrix.plugin }}
-
+      
           # Stash any unstaged changes to avoid conflicts during pull
           git stash --include-untracked
-
+      
           # Pull the latest changes from the remote branch with rebase
-          git pull --rebase origin bug-fixes
-
+          git pull --rebase origin bug-fixes || git rebase --abort
+      
           # Apply the stashed changes back after the pull
           git stash pop || echo "No changes to apply from stash"
-          
+      
           # Add changes to the revision file and commit
           git add ".revision/${plugin_slug}_latest_revision_gravityforms.txt"
           if ! git diff-index --quiet HEAD; then
             git commit -m "Update $plugin_slug plugin version"
-            # Use the --force flag to overwrite remote branch if needed
-            git push origin bug-fixes --force
+            # Use the --force-with-lease flag to push changes
+            git push origin bug-fixes --force-with-lease
           else
             echo "No changes to commit"
           fi
+        
 
             
       - name: Create Gravity Forms & hCaptcha native Site for Testing in InstaWP
