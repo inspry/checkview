@@ -85,7 +85,7 @@ jobs:
   
         - name: Random Sleep Before Processing
           run: |
-            sleep_time=$(( RANDOM % 3 + 1 ))
+            sleep_time=11
             echo "Sleeping for $sleep_time seconds..."
             sleep $sleep_time
   
@@ -206,7 +206,7 @@ jobs:
 
       - name: Random Sleep Before Processing
         run: |
-          sleep_time=$(( RANDOM % 4 + 1 ))
+          sleep_time=3
           echo "Sleeping for $sleep_time seconds..."
           sleep $sleep_time
 
@@ -327,7 +327,7 @@ jobs:
 
       - name: Random Sleep Before Processing
         run: |
-          sleep_time=$(( RANDOM % 2 + 1 ))
+          sleep_time=10
           echo "Sleeping for $sleep_time seconds..."
           sleep $sleep_time
 
@@ -364,7 +364,7 @@ jobs:
             for i in $(seq 1 $retries); do
               git push && break || {
                 echo "Push failed. Attempt $i of $retries."
-                sleep 5
+                sleep 4
                 git fetch --prune
                 git rebase origin/bug-fixes
               }
@@ -449,7 +449,7 @@ jobs:
 
       - name: Random Sleep Before Processing
         run: |
-          sleep_time=$(( RANDOM % 5 + 1 ))
+          sleep_time=9
           echo "Sleeping for $sleep_time seconds..."
           sleep $sleep_time
 
@@ -571,7 +571,7 @@ jobs:
 
       - name: Random Sleep Before Processing
         run: |
-          sleep_time=$(( RANDOM % 10 + 1 ))
+          sleep_time=8
           echo "Sleeping for $sleep_time seconds..."
           sleep $sleep_time
 
@@ -704,7 +704,7 @@ jobs:
 
       - name: Random Sleep Before Processing
         run: |
-          sleep_time=$(( RANDOM % 10 + 1 ))
+          sleep_time=7
           echo "Sleeping for $sleep_time seconds..."
           sleep $sleep_time
 
@@ -825,7 +825,7 @@ jobs:
 
       - name: Random Sleep Before Processing
         run: |
-          sleep_time=$(( RANDOM % 9 + 1 ))
+          sleep_time=6
           echo "Sleeping for $sleep_time seconds..."
           sleep $sleep_time
 
@@ -946,7 +946,7 @@ jobs:
 
       - name: Random Sleep Before Processing
         run: |
-          sleep_time=$(( RANDOM % 8 + 1 ))
+          sleep_time=5
           echo "Sleeping for $sleep_time seconds..."
           sleep $sleep_time
 
