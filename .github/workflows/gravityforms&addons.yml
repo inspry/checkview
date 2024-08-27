@@ -66,6 +66,7 @@ jobs:
       - name: Compare revisions
         id: compare-revisions
         run: |
+          plugin_name=${{ matrix.plugin }}
           current_revision=$(cat ".revision/${{ matrix.plugin }}_current_revision_gravityforms.txt")
           previous_revision=${{ env.previous_revision }}
 
@@ -97,22 +98,21 @@ jobs:
       
           # Stash any unstaged changes to avoid conflicts during pull
           git stash --include-untracked
-      
+    
           # Pull the latest changes from the remote branch with rebase
           git pull --rebase origin bug-fixes || git rebase --abort
-      
+
           # Apply the stashed changes back after the pull
           git stash pop || echo "No changes to apply from stash"
-      
-          # Add changes to the revision file and commit
           git add ".revision/${plugin_slug}_latest_revision_gravityforms.txt"
           if ! git diff-index --quiet HEAD; then
             git commit -m "Update $plugin_slug plugin version"
-            # Use the --force-with-lease flag to push changes
+            # Push changes with --force-with-lease to handle ref lock issue
             git push origin bug-fixes --force-with-lease
           else
             echo "No changes to commit"
           fi
+
         
 
             
