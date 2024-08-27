@@ -22,7 +22,7 @@
 class Checkview_Activator {
 
 	/**
-	 * Short Description. (use period)
+	 * Creates table for the plugin and sets transients.
 	 *
 	 * Long Description.
 	 *

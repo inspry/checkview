@@ -57,7 +57,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * Adds admin notices
+	 * Adds admin notices.
 	 *
 	 * @since 1.0.0
 	 * @return void
@@ -90,7 +90,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * Advance settings save
+	 * Advance settings save.
 	 *
 	 * @since 1.0.0
 	 * @return void
@@ -172,7 +172,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * Setting page data
+	 * Setting page data.
 	 *
 	 * @since 1.0.0
 	 */
@@ -224,7 +224,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * Template Hero Settings Sections
+	 * CheckView Settings Sections.
 	 *
 	 * @since 1.0.0
 	 *
@@ -261,7 +261,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * Add footer branding
+	 * Add footer branding.
 	 *
 	 * @since 1.0.0
 	 * @param string $footer_text footer text.

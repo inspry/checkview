@@ -1,6 +1,6 @@
 <?php
 /**
- * General Options
+ * General Options.
  *
  * @package settings
  */
