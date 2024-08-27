@@ -90,7 +90,7 @@ jobs:
           cp "$current_revision_file" "$latest_revision_file"
       - name: Random Sleep Before Processing
         run: |
-          sleep_time=$(( RANDOM % 8 ))
+          sleep_time=$(( RANDOM % 6 + 1 ))
           echo "Sleeping for $sleep_time seconds..."
           sleep $sleep_time
 
@@ -99,45 +99,22 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          max_retries=5
-          attempt=0
-          
-          sleep_time=$(( RANDOM % 10 ))
-          echo "Sleeping for $sleep_time seconds..."
-          sleep $sleep_time
-          # Stash any unstaged changes before pulling
+          plugin_name=${{ matrix.plugin }}
+          # Stash any unstaged changes to avoid conflicts during pull
           git stash --include-untracked
-
+    
           # Pull the latest changes from the remote branch with rebase
-          git pull --rebase origin bug-fixes
+          git pull --rebase origin main
 
           # Apply the stashed changes back after the pull
           git stash pop || echo "No changes to apply from stash"
-
-          # Add the updated revision file
-          git add ".revision/${{ matrix.plugin }}_latest_revision_gravityforms.txt"
-
-          # Check if there are any changes to commit
+          git add ".revision/${plugin_name}_latest_revision_gravityforms.txt"
           if ! git diff-index --quiet HEAD; then
-            git commit -m "Update ${{ matrix.plugin }} SVN revision"
-            
-            # Try to push changes
+            git commit -m "Update $plugin_name SVN revision"
             git push
-            if [ $? -eq 0 ]; then
-              echo "Successfully pushed changes."
-              break
-            else
-              echo "Push failed. Retrying..."
-            fi
           else
-            echo "No changes to commit."
-            break
+            echo "No changes to commit"
           fi
-
-        
-          sleep 10  # Wait before retrying
-          echo "Failed to push changes after $max_retries attempts."
-          exit1
 
         
 
