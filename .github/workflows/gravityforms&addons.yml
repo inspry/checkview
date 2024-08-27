@@ -21,9 +21,12 @@ jobs:
         gravityforms-zero-spam
         hcaptcha-for-forms-and-more
         simple-cloudflare-turnstile
-
+    steps:
+      - name: Setup Plugins List
+        run: echo "Plugins list set up"
   check-turnstile:
     runs-on: ubuntu-latest
+    needs: setup
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -131,6 +134,7 @@ jobs:
 
   check-akismet:
     runs-on: ubuntu-latest
+    needs: setup
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
