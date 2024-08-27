@@ -88,6 +88,11 @@ jobs:
           current_revision_file=".revision/${plugin_slug}_current_revision_gravityforms.txt"
           latest_revision_file=".revision/${plugin_slug}_latest_revision_gravityforms.txt"
           cp "$current_revision_file" "$latest_revision_file"
+      - name: Random Sleep Before Processing
+        run: |
+          sleep_time=$(( RANDOM % 10 ))
+          echo "Sleeping for $sleep_time seconds..."
+          sleep $sleep_time
 
       - name: Commit updated revision file
         if: env.${{ matrix.plugin }}_update_found == 'true'
