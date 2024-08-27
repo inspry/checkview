@@ -97,7 +97,7 @@ jobs:
           git stash --include-untracked
 
           # Pull the latest changes from the remote branch with rebase
-          git pull --rebase origin main
+          git pull --rebase origin bug-fixes
 
           # Apply the stashed changes back after the pull
           git stash pop || echo "No changes to apply from stash"
