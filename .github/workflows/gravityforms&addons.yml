@@ -98,8 +98,13 @@ jobs:
             # Stash any unstaged changes before pulling
             git stash --include-untracked
   
-            # Pull the latest changes from the remote branch with rebase
-            git pull --rebase origin bug-fixes
+            git fetch origin
+            # Rebase the local branch on top of the fetched remote branch
+            git rebase origin/bug-fixes || {
+              echo "Rebase failed. Attempting to resolve conflicts and retry."
+              git rebase --abort
+              git pull --rebase origin bug-fixes
+            }
             
             # Apply the stashed changes back after the pull
             git stash pop || echo "No changes to apply from stash"
@@ -214,8 +219,13 @@ jobs:
           # Stash any unstaged changes before pulling
           git stash --include-untracked
 
-          # Pull the latest changes from the remote branch with rebase
-          git pull --rebase origin bug-fixes
+          git fetch origin
+          # Rebase the local branch on top of the fetched remote branch
+          git rebase origin/bug-fixes || {
+            echo "Rebase failed. Attempting to resolve conflicts and retry."
+            git rebase --abort
+            git pull --rebase origin bug-fixes
+          }
           
           # Apply the stashed changes back after the pull
           git stash pop || echo "No changes to apply from stash"
@@ -330,8 +340,13 @@ jobs:
           # Stash any unstaged changes before pulling
           git stash --include-untracked
 
-          # Pull the latest changes from the remote branch with rebase
-          git pull --rebase origin bug-fixes
+          git fetch origin
+          # Rebase the local branch on top of the fetched remote branch
+          git rebase origin/bug-fixes || {
+            echo "Rebase failed. Attempting to resolve conflicts and retry."
+            git rebase --abort
+            git pull --rebase origin bug-fixes
+          }
           
           # Apply the stashed changes back after the pull
           git stash pop || echo "No changes to apply from stash"
@@ -447,8 +462,13 @@ jobs:
           # Stash any unstaged changes before pulling
           git stash --include-untracked
 
-          # Pull the latest changes from the remote branch with rebase
-          git pull --rebase origin bug-fixes
+          git fetch origin
+          # Rebase the local branch on top of the fetched remote branch
+          git rebase origin/bug-fixes || {
+            echo "Rebase failed. Attempting to resolve conflicts and retry."
+            git rebase --abort
+            git pull --rebase origin bug-fixes
+          }
           
           # Apply the stashed changes back after the pull
           git stash pop || echo "No changes to apply from stash"
@@ -564,8 +584,13 @@ jobs:
           # Stash any unstaged changes before pulling
           git stash --include-untracked
 
-          # Pull the latest changes from the remote branch with rebase
-          git pull --rebase origin bug-fixes
+          git fetch origin
+          # Rebase the local branch on top of the fetched remote branch
+          git rebase origin/bug-fixes || {
+            echo "Rebase failed. Attempting to resolve conflicts and retry."
+            git rebase --abort
+            git pull --rebase origin bug-fixes
+          }
           
           # Apply the stashed changes back after the pull
           git stash pop || echo "No changes to apply from stash"
@@ -692,8 +717,13 @@ jobs:
           # Stash any unstaged changes before pulling
           git stash --include-untracked
 
-          # Pull the latest changes from the remote branch with rebase
-          git pull --rebase origin bug-fixes
+          git fetch origin
+          # Rebase the local branch on top of the fetched remote branch
+          git rebase origin/bug-fixes || {
+            echo "Rebase failed. Attempting to resolve conflicts and retry."
+            git rebase --abort
+            git pull --rebase origin bug-fixes
+          }
           
           # Apply the stashed changes back after the pull
           git stash pop || echo "No changes to apply from stash"
@@ -807,9 +837,13 @@ jobs:
           
           # Stash any unstaged changes before pulling
           git stash --include-untracked
-
-          # Pull the latest changes from the remote branch with rebase
-          git pull --rebase origin bug-fixes
+          git fetch origin
+          # Rebase the local branch on top of the fetched remote branch
+          git rebase origin/bug-fixes || {
+            echo "Rebase failed. Attempting to resolve conflicts and retry."
+            git rebase --abort
+            git pull --rebase origin bug-fixes
+          }
           
           # Apply the stashed changes back after the pull
           git stash pop || echo "No changes to apply from stash"
@@ -925,8 +959,15 @@ jobs:
           # Stash any unstaged changes before pulling
           git stash --include-untracked
 
-          # Pull the latest changes from the remote branch with rebase
-          git pull --rebase origin bug-fixes
+          # Fetch the latest changes from the remote branch
+          git fetch origin
+
+          # Rebase the local branch on top of the fetched remote branch
+          git rebase origin/bug-fixes || {
+            echo "Rebase failed. Attempting to resolve conflicts and retry."
+            git rebase --abort
+            git pull --rebase origin bug-fixes
+          }
           
           # Apply the stashed changes back after the pull
           git stash pop || echo "No changes to apply from stash"
