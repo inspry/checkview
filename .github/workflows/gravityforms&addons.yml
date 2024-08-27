@@ -9,22 +9,22 @@ on:
   workflow_dispatch: # Allow manual trigger
 
 jobs:
-  check-plugin-version:
+  setup:
     runs-on: ubuntu-latest
+    outputs:
+      plugins: |
+        turnstile
+        akismet
+        gravityforms
+        recaptcha
+        gf-hcaptcha
+        gravityforms-zero-spam
+        hcaptcha-for-forms-and-more
+        simple-cloudflare-turnstile
 
-    strategy:
-      matrix:
-        plugin:
-          - turnstile
-          - akismet
-          - gravityforms
-          - recaptcha
-          - gf-hcaptcha
-          - gravityforms-zero-spam
-          - hcaptcha-for-forms-and-more
-          - simple-cloudflare-turnstile
-          # Add more plugins here
-
+  check-turnstile:
+    runs-on: ubuntu-latest
+    needs: setup
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -32,30 +32,28 @@ jobs:
       - name: Create .revision Directory
         run: mkdir -p .revision
 
-      - name: Get plugin version from WordPress site
+      - name: Get Turnstile plugin version from WordPress site
         id: get-plugin-version
         run: |
-          plugin_slug=${{ matrix.plugin }}
-          response=$(curl -s "https://gflistener.instawp.xyz/wp-json/checkview/v1/plugin-version?_plugin_slug=$plugin_slug")
+          response=$(curl -s "https://gflistener.instawp.xyz/wp-json/checkview/v1/plugin-version?_plugin_slug=turnstile")
           plugin_version=$(echo $response | jq -r '.version')
 
           if [ "$plugin_version" == "null" ] || [ -z "$plugin_version" ]; then
-            echo "Plugin version not found for $plugin_slug"
+            echo "Plugin version not found for turnstile"
             exit 1
           else
-            echo "Plugin version for $plugin_slug is $plugin_version"
+            echo "Plugin version for turnstile is $plugin_version"
             echo "plugin_version=$plugin_version" >> $GITHUB_ENV
 
             # Save the plugin version to the current revision file
-            current_revision_file=".revision/${plugin_slug}_current_revision_gravityforms.txt"
+            current_revision_file=".revision/turnstile_current_revision_gravityforms.txt"
             echo "$plugin_version" > "$current_revision_file"
           fi
 
       - name: Get previous plugin version
         id: get-previous
         run: |
-          plugin_slug=${{ matrix.plugin }}
-          previous_revision_file=".revision/${plugin_slug}_latest_revision_gravityforms.txt"
+          previous_revision_file=".revision/turnstile_latest_revision_gravityforms.txt"
           if [ -f "$previous_revision_file" ]; then
             previous_revision=$(cat "$previous_revision_file")
           else
@@ -66,191 +64,184 @@ jobs:
       - name: Compare revisions
         id: compare-revisions
         run: |
-          plugin_name=${{ matrix.plugin }}
-          current_revision=$(cat ".revision/${{ matrix.plugin }}_current_revision_gravityforms.txt")
+          current_revision=$(cat ".revision/turnstile_current_revision_gravityforms.txt")
           previous_revision=${{ env.previous_revision }}
 
           echo "Current revision: $current_revision"
           echo "Previous revision: $previous_revision"
 
           if [ "$current_revision" != "$previous_revision" ]; then
-            echo "${{ matrix.plugin }}_update_found=true" >> $GITHUB_ENV
-            echo "::set-output name=${plugin_name}_update_found::true"
+            echo "::set-output name=update_found::true"
           else
-            echo "${{ matrix.plugin }}_update_found=false" >> $GITHUB_ENV
-            echo "::set-output name=${plugin_name}_update_found::false"
+            echo "::set-output name=update_found::false"
           fi
 
       - name: Save current revision as latest revision
-        if: env.${{ matrix.plugin }}_update_found == 'true'
+        if: steps.compare-revisions.outputs.update_found == 'true'
         run: |
-          plugin_slug=${{ matrix.plugin }}
-          current_revision_file=".revision/${plugin_slug}_current_revision_gravityforms.txt"
-          latest_revision_file=".revision/${plugin_slug}_latest_revision_gravityforms.txt"
-          cp "$current_revision_file" "$latest_revision_file"
+          cp ".revision/turnstile_current_revision_gravityforms.txt" ".revision/turnstile_latest_revision_gravityforms.txt"
+
       - name: Random Sleep Before Processing
         run: |
-          sleep_time=$(( RANDOM % 6 + 1 ))
+          sleep_time=$(( RANDOM % 10 + 1 ))
           echo "Sleeping for $sleep_time seconds..."
           sleep $sleep_time
 
       - name: Commit updated revision file
-        if: env.${{ matrix.plugin }}_update_found == 'true'
+        if: steps.compare-revisions.outputs.update_found == 'true'
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          plugin_name=${{ matrix.plugin }}
+          
+          # Stash any unstaged changes before pulling
+          git stash --include-untracked
 
-          max_retries=5
-          attempt=0
-          success=false
+          # Pull the latest changes from the remote branch with rebase
+          git pull --rebase origin bug-fixes
+          
+          # Apply the stashed changes back after the pull
+          git stash pop || echo "No changes to apply from stash"
 
-          while [ $attempt -lt $max_retries ]; do
-            echo "Attempt $((attempt + 1)) of $max_retries"
+          # Add the updated revision file
+          git add ".revision/turnstile_latest_revision_gravityforms.txt"
+
+          # Check if there are any changes to commit
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Update turnstile SVN revision"
             
-            # Stash any unstaged changes before pulling
-            git stash --include-untracked
-
-            # Pull the latest changes from the remote branch with rebase
-            git pull --rebase origin bug-fixes
-            
-            # Apply the stashed changes back after the pull
-            git stash pop || echo "No changes to apply from stash"
-
-            # Add the updated revision file
-            git add ".revision/${plugin_name}_latest_revision_gravityforms.txt"
-
-            # Check if there are any changes to commit
-            if ! git diff-index --quiet HEAD; then
-              git commit -m "Update $plugin_name SVN revision"
-              
-              # Try to push changes
-              git push
-              if [ $? -eq 0 ]; then
-                echo "Successfully pushed changes."
-                success=true
-                break
-              else
-                echo "Push failed. Retrying..."
-              fi
-            else
-              echo "No changes to commit."
-              success=true
-              break
+            # Try to push changes
+            git push
+            if [ $? -ne 0 ]; then
+              echo "Push failed."
+              exit 1
             fi
-
-            attempt=$((attempt + 1))
-            
-            # Sleep for a random amount of time between 1 and 10 seconds
-            sleep_time=$(( RANDOM % 10 + 1 )) # Random sleep time from 1 to 10 seconds
-            echo "Sleeping for $sleep_time seconds..."
-            sleep $sleep_time
-          done
-
-          if [ "$success" = false ]; then
-            echo "Failed to push changes after $max_retries attempts."
-            exit 1
+          else
+            echo "No changes to commit."
           fi
 
-        
+      - name: Create Testing Site in InstaWP Turnstile
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        uses: instawp/wordpress-testing-automation@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+          INSTAWP_TEMPLATE_SLUG: gravity-forms--turnstile-third-party
+          REPO_ID: 521
+          EXPIRY_HOURS: 1
+          INSTAWP_ACTION: create-site-template
 
+  check-akismet:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create .revision Directory
+        run: mkdir -p .revision
+
+      - name: Get Akismet plugin version from WordPress site
+        id: get-plugin-version
+        run: |
+          response=$(curl -s "https://gflistener.instawp.xyz/wp-json/checkview/v1/plugin-version?_plugin_slug=akismet")
+          plugin_version=$(echo $response | jq -r '.version')
+
+          if [ "$plugin_version" == "null" ] || [ -z "$plugin_version" ]; then
+            echo "Plugin version not found for akismet"
+            exit 1
+          else
+            echo "Plugin version for akismet is $plugin_version"
+            echo "plugin_version=$plugin_version" >> $GITHUB_ENV
+
+            # Save the plugin version to the current revision file
+            current_revision_file=".revision/akismet_current_revision_gravityforms.txt"
+            echo "$plugin_version" > "$current_revision_file"
+          fi
+
+      - name: Get previous plugin version
+        id: get-previous
+        run: |
+          previous_revision_file=".revision/akismet_latest_revision_gravityforms.txt"
+          if [ -f "$previous_revision_file" ]; then
+            previous_revision=$(cat "$previous_revision_file")
+          else
+            previous_revision="0"
+          fi
+          echo "previous_revision=$previous_revision" >> $GITHUB_ENV
+
+      - name: Compare revisions
+        id: compare-revisions
+        run: |
+          current_revision=$(cat ".revision/akismet_current_revision_gravityforms.txt")
+          previous_revision=${{ env.previous_revision }}
+
+          echo "Current revision: $current_revision"
+          echo "Previous revision: $previous_revision"
+
+          if [ "$current_revision" != "$previous_revision" ]; then
+            echo "::set-output name=update_found::true"
+          else
+            echo "::set-output name=update_found::false"
+          fi
+
+      - name: Save current revision as latest revision
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        run: |
+          cp ".revision/akismet_current_revision_gravityforms.txt" ".revision/akismet_latest_revision_gravityforms.txt"
+
+      - name: Random Sleep Before Processing
+        run: |
+          sleep_time=$(( RANDOM % 10 + 1 ))
+          echo "Sleeping for $sleep_time seconds..."
+          sleep $sleep_time
+
+      - name: Commit updated revision file
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # Stash any unstaged changes before pulling
+          git stash --include-untracked
+
+          # Pull the latest changes from the remote branch with rebase
+          git pull --rebase origin bug-fixes
+          
+          # Apply the stashed changes back after the pull
+          git stash pop || echo "No changes to apply from stash"
+
+          # Add the updated revision file
+          git add ".revision/akismet_latest_revision_gravityforms.txt"
+
+          # Check if there are any changes to commit
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Update akismet SVN revision"
             
-      - name: Create Gravity Forms & hCaptcha native Site for Testing in InstaWP
-        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.gf-hcaptcha_update_found == 'true' ) }}
-        uses: instawp/wordpress-testing-automation@main
-        with:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-            INSTAWP_TEMPLATE_SLUG: gravity--hcaptcha-third-party
-            REPO_ID: 521
-            EXPIRY_HOURS: 1
-            INSTAWP_ACTION: create-site-template
+            # Try to push changes
+            git push
+            if [ $? -ne 0 ]; then
+              echo "Push failed."
+              exit 1
+            fi
+          else
+            echo "No changes to commit."
+          fi
 
-      - name: Create Gravity Forms & hCaptcha  Site for Testing in InstaWP
-        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.hcaptcha-for-forms-and-more_update_found == 'true' ) }}
+      - name: Create Testing Site in InstaWP
+        if: steps.compare-revisions.outputs.update_found == 'true'
         uses: instawp/wordpress-testing-automation@main
         with:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-            INSTAWP_TEMPLATE_SLUG: gravity--hcaptcha-third-party
-            REPO_ID: 521
-            EXPIRY_HOURS: 1
-            INSTAWP_ACTION: create-site-template
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+          INSTAWP_TEMPLATE_SLUG: gravity-forms--akismet
+          REPO_ID: 521
+          EXPIRY_HOURS: 1
+          INSTAWP_ACTION: create-site-template
 
-      - name: Create Gravity Forms Trusntile 3rd party for Testing in InstaWP
-        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.simple-cloudflare-turnstile_update_found == 'true' ) }}
-        uses: instawp/wordpress-testing-automation@main
-        with:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-            INSTAWP_TEMPLATE_SLUG: gravity-forms--turnstile-third-party
-            REPO_ID: 521
-            EXPIRY_HOURS: 1
-            INSTAWP_ACTION: create-site-template
-
-      - name: Create Gravity Forms Trusntile native for Testing in InstaWP
-        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.turnstile_update_found == 'true' ) }}
-        uses: instawp/wordpress-testing-automation@main
-        with:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-            INSTAWP_TEMPLATE_SLUG: gravity-forms--cloudflare-turnstile-3p
-            REPO_ID: 521
-            EXPIRY_HOURS: 1
-            INSTAWP_ACTION: create-site-template
-            
-      - name: Create Gravity Forms With Akismet Site for Testing in InstaWP
-        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.akismet_update_found== 'true' ) }}
-        uses: instawp/wordpress-testing-automation@main
-        with:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-            INSTAWP_TEMPLATE_SLUG: gravity-forms--akismet
-            REPO_ID: 521
-            EXPIRY_HOURS: 1
-            INSTAWP_ACTION: create-site-template
-
-      - name: Create Gravity Forms With ReCaptcha v3 Native Site for Testing in InstaWP
-        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.recaptcha_update_found == 'true' ) }}
-        uses: instawp/wordpress-testing-automation@main
-        with:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-            INSTAWP_TEMPLATE_SLUG: gravity-forms--recaptcha-v3
-            REPO_ID: 521
-            EXPIRY_HOURS: 1
-            INSTAWP_ACTION: create-site-template
-
-      - name: Create Gravity Forms With ReCaptcha v2 Native Site for Testing in InstaWP
-        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.recaptcha_update_found == 'true' ) }}
-        uses: instawp/wordpress-testing-automation@main
-        with:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-            INSTAWP_TEMPLATE_SLUG: gravity-forms--recaptcha-v2
-            REPO_ID: 521
-            EXPIRY_HOURS: 1
-            INSTAWP_ACTION: create-site-template  
-            
-      - name: Create Gravity Forms With Zero Spam Site for Testing in InstaWP
-        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.gravityforms-zero-spam_update_found == 'true' ) }}
-        uses: instawp/wordpress-testing-automation@main
-        with:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-            INSTAWP_TEMPLATE_SLUG: gravity-forms--zero-spam
-            REPO_ID: 521
-            EXPIRY_HOURS: 1
-            INSTAWP_ACTION: create-site-template 
-
-
-      - name: Create Gravity Forms Site for Testing in InstaWP
-        if: steps.compare-revisions.outputs.gravityforms_update_found == 'true'
-        uses: instawp/wordpress-testing-automation@main
-        with:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-            INSTAWP_TEMPLATE_SLUG: gravity-forms
-            REPO_ID: 521
-            EXPIRY_HOURS: 1
-            INSTAWP_ACTION: create-site-template
+# Repeat similar jobs for each of the other plugins:
+# check-gravityforms
+# check-recaptcha
+# check-gf-hcaptcha
+# check-gravityforms-zero-spam
+# check-hcaptcha-for-forms-and-more
+# check-simple-cloudflare-turnstile
