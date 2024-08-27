@@ -24,6 +24,114 @@ jobs:
     steps:
       - name: Setup Plugins List
         run: echo "Plugins list set up"
+  check-simple-cloudflare-turnstile:
+      runs-on: ubuntu-latest
+      needs: setup
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v3
+  
+        - name: Create .revision Directory
+          run: mkdir -p .revision
+  
+        - name: Get Simple Cloudflare Turnstile plugin version from WordPress site
+          id: get-plugin-version
+          run: |
+            response=$(curl -s "https://gflistener.instawp.xyz/wp-json/checkview/v1/plugin-version?_plugin_slug=simple-cloudflare-turnstile")
+            plugin_version=$(echo $response | jq -r '.version')
+  
+            if [ "$plugin_version" == "null" ] || [ -z "$plugin_version" ]; then
+              echo "Plugin version not found for simple-cloudflare-turnstile"
+              exit 1
+            else
+              echo "Plugin version for simple-cloudflare-turnstile is $plugin_version"
+              echo "plugin_version=$plugin_version" >> $GITHUB_ENV
+  
+              # Save the plugin version to the current revision file
+              current_revision_file=".revision/simple-cloudflare-turnstile_current_revision_gravityforms.txt"
+              echo "$plugin_version" > "$current_revision_file"
+            fi
+  
+        - name: Get previous plugin version
+          id: get-previous
+          run: |
+            previous_revision_file=".revision/simple-cloudflare-turnstile_latest_revision_gravityforms.txt"
+            if [ -f "$previous_revision_file" ]; then
+              previous_revision=$(cat "$previous_revision_file")
+            else
+              previous_revision="0"
+            fi
+            echo "previous_revision=$previous_revision" >> $GITHUB_ENV
+  
+        - name: Compare revisions
+          id: compare-revisions
+          run: |
+            current_revision=$(cat ".revision/simple-cloudflare-turnstile_current_revision_gravityforms.txt")
+            previous_revision=${{ env.previous_revision }}
+  
+            echo "Current revision: $current_revision"
+            echo "Previous revision: $previous_revision"
+  
+            if [ "$current_revision" != "$previous_revision" ]; then
+              echo "::set-output name=update_found::true"
+            else
+              echo "::set-output name=update_found::false"
+            fi
+  
+        - name: Save current revision as latest revision
+          if: steps.compare-revisions.outputs.update_found == 'true'
+          run: |
+            cp ".revision/simple-cloudflare-turnstile_current_revision_gravityforms.txt" ".revision/simple-cloudflare-turnstile_latest_revision_gravityforms.txt"
+  
+        - name: Random Sleep Before Processing
+          run: |
+            sleep_time=$(( RANDOM % 3 + 1 ))
+            echo "Sleeping for $sleep_time seconds..."
+            sleep $sleep_time
+  
+        - name: Commit updated revision file
+          if: steps.compare-revisions.outputs.update_found == 'true'
+          run: |
+            git config --global user.name 'github-actions[bot]'
+            git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+            
+            # Stash any unstaged changes before pulling
+            git stash --include-untracked
+  
+            # Pull the latest changes from the remote branch with rebase
+            git pull --rebase origin bug-fixes
+            
+            # Apply the stashed changes back after the pull
+            git stash pop || echo "No changes to apply from stash"
+  
+            # Add the updated revision file
+            git add ".revision/simple-cloudflare-turnstile_latest_revision_gravityforms.txt"
+  
+            # Check if there are any changes to commit
+            if ! git diff-index --quiet HEAD; then
+              git commit -m "Update simple-cloudflare-turnstile SVN revision"
+              
+              # Try to push changes
+              git push
+              if [ $? -ne 0 ]; then
+                echo "Push failed."
+                exit 1
+              fi
+            else
+              echo "No changes to commit."
+            fi
+  
+        - name: Create Testing Site in InstaWP
+          if: steps.compare-revisions.outputs.update_found == 'true'
+          uses: instawp/wordpress-testing-automation@main
+          with:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+            INSTAWP_TEMPLATE_SLUG: gravity-forms--turnstile-third-party
+            REPO_ID: 521
+            EXPIRY_HOURS: 1
+            INSTAWP_ACTION: create-site-template
+      
   check-turnstile:
     runs-on: ubuntu-latest
     needs: setup
@@ -85,7 +193,7 @@ jobs:
 
       - name: Random Sleep Before Processing
         run: |
-          sleep_time=$(( RANDOM % 10 + 1 ))
+          sleep_time=$(( RANDOM % 4 + 1 ))
           echo "Sleeping for $sleep_time seconds..."
           sleep $sleep_time
 
@@ -127,7 +235,7 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-          INSTAWP_TEMPLATE_SLUG: gravity-forms--turnstile-third-party
+          INSTAWP_TEMPLATE_SLUG: gravity-forms--cloudflare-turnstile-3p
           REPO_ID: 521
           EXPIRY_HOURS: 1
           INSTAWP_ACTION: create-site-template
@@ -193,7 +301,7 @@ jobs:
 
       - name: Random Sleep Before Processing
         run: |
-          sleep_time=$(( RANDOM % 10 + 1 ))
+          sleep_time=$(( RANDOM % 2 + 1 ))
           echo "Sleeping for $sleep_time seconds..."
           sleep $sleep_time
 
@@ -240,10 +348,553 @@ jobs:
           EXPIRY_HOURS: 1
           INSTAWP_ACTION: create-site-template
 
-# Repeat similar jobs for each of the other plugins:
-# check-gravityforms
-# check-recaptcha
-# check-gf-hcaptcha
-# check-gravityforms-zero-spam
-# check-hcaptcha-for-forms-and-more
-# check-simple-cloudflare-turnstile
+  check-gravityforms:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create .revision Directory
+        run: mkdir -p .revision
+
+      - name: Get Gravity Forms plugin version from WordPress site
+        id: get-plugin-version
+        run: |
+          response=$(curl -s "https://gflistener.instawp.xyz/wp-json/checkview/v1/plugin-version?_plugin_slug=gravityforms")
+          plugin_version=$(echo $response | jq -r '.version')
+
+          if [ "$plugin_version" == "null" ] || [ -z "$plugin_version" ]; then
+            echo "Plugin version not found for gravityforms"
+            exit 1
+          else
+            echo "Plugin version for gravityforms is $plugin_version"
+            echo "plugin_version=$plugin_version" >> $GITHUB_ENV
+
+            # Save the plugin version to the current revision file
+            current_revision_file=".revision/gravityforms_current_revision_gravityforms.txt"
+            echo "$plugin_version" > "$current_revision_file"
+          fi
+
+      - name: Get previous plugin version
+        id: get-previous
+        run: |
+          previous_revision_file=".revision/gravityforms_latest_revision_gravityforms.txt"
+          if [ -f "$previous_revision_file" ]; then
+            previous_revision=$(cat "$previous_revision_file")
+          else
+            previous_revision="0"
+          fi
+          echo "previous_revision=$previous_revision" >> $GITHUB_ENV
+
+      - name: Compare revisions
+        id: compare-revisions
+        run: |
+          current_revision=$(cat ".revision/gravityforms_current_revision_gravityforms.txt")
+          previous_revision=${{ env.previous_revision }}
+
+          echo "Current revision: $current_revision"
+          echo "Previous revision: $previous_revision"
+
+          if [ "$current_revision" != "$previous_revision" ]; then
+            echo "::set-output name=update_found::true"
+          else
+            echo "::set-output name=update_found::false"
+          fi
+
+      - name: Save current revision as latest revision
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        run: |
+          cp ".revision/gravityforms_current_revision_gravityforms.txt" ".revision/gravityforms_latest_revision_gravityforms.txt"
+
+      - name: Random Sleep Before Processing
+        run: |
+          sleep_time=$(( RANDOM % 5 + 1 ))
+          echo "Sleeping for $sleep_time seconds..."
+          sleep $sleep_time
+
+      - name: Commit updated revision file
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # Stash any unstaged changes before pulling
+          git stash --include-untracked
+
+          # Pull the latest changes from the remote branch with rebase
+          git pull --rebase origin bug-fixes
+          
+          # Apply the stashed changes back after the pull
+          git stash pop || echo "No changes to apply from stash"
+
+          # Add the updated revision file
+          git add ".revision/gravityforms_latest_revision_gravityforms.txt"
+
+          # Check if there are any changes to commit
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Update gravityforms SVN revision"
+            
+            # Try to push changes
+            git push
+            if [ $? -ne 0 ]; then
+              echo "Push failed."
+              exit 1
+            fi
+          else
+            echo "No changes to commit."
+          fi
+
+      - name: Create Testing Site in InstaWP
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        uses: instawp/wordpress-testing-automation@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+          INSTAWP_TEMPLATE_SLUG: gravity-forms
+          REPO_ID: 521
+          EXPIRY_HOURS: 1
+          INSTAWP_ACTION: create-site-template
+
+  check-recaptcha:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create .revision Directory
+        run: mkdir -p .revision
+
+      - name: Get reCAPTCHA plugin version from WordPress site
+        id: get-plugin-version
+        run: |
+          response=$(curl -s "https://gflistener.instawp.xyz/wp-json/checkview/v1/plugin-version?_plugin_slug=recaptcha")
+          plugin_version=$(echo $response | jq -r '.version')
+
+          if [ "$plugin_version" == "null" ] || [ -z "$plugin_version" ]; then
+            echo "Plugin version not found for recaptcha"
+            exit 1
+          else
+            echo "Plugin version for recaptcha is $plugin_version"
+            echo "plugin_version=$plugin_version" >> $GITHUB_ENV
+
+            # Save the plugin version to the current revision file
+            current_revision_file=".revision/recaptcha_current_revision_gravityforms.txt"
+            echo "$plugin_version" > "$current_revision_file"
+          fi
+
+      - name: Get previous plugin version
+        id: get-previous
+        run: |
+          previous_revision_file=".revision/recaptcha_latest_revision_gravityforms.txt"
+          if [ -f "$previous_revision_file" ]; then
+            previous_revision=$(cat "$previous_revision_file")
+          else
+            previous_revision="0"
+          fi
+          echo "previous_revision=$previous_revision" >> $GITHUB_ENV
+
+      - name: Compare revisions
+        id: compare-revisions
+        run: |
+          current_revision=$(cat ".revision/recaptcha_current_revision_gravityforms.txt")
+          previous_revision=${{ env.previous_revision }}
+
+          echo "Current revision: $current_revision"
+          echo "Previous revision: $previous_revision"
+
+          if [ "$current_revision" != "$previous_revision" ]; then
+            echo "::set-output name=update_found::true"
+          else
+            echo "::set-output name=update_found::false"
+          fi
+
+      - name: Save current revision as latest revision
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        run: |
+          cp ".revision/recaptcha_current_revision_gravityforms.txt" ".revision/recaptcha_latest_revision_gravityforms.txt"
+
+      - name: Random Sleep Before Processing
+        run: |
+          sleep_time=$(( RANDOM % 10 + 1 ))
+          echo "Sleeping for $sleep_time seconds..."
+          sleep $sleep_time
+
+      - name: Commit updated revision file
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # Stash any unstaged changes before pulling
+          git stash --include-untracked
+
+          # Pull the latest changes from the remote branch with rebase
+          git pull --rebase origin bug-fixes
+          
+          # Apply the stashed changes back after the pull
+          git stash pop || echo "No changes to apply from stash"
+
+          # Add the updated revision file
+          git add ".revision/recaptcha_latest_revision_gravityforms.txt"
+
+          # Check if there are any changes to commit
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Update recaptcha SVN revision"
+            
+            # Try to push changes
+            git push
+            if [ $? -ne 0 ]; then
+              echo "Push failed."
+              exit 1
+            fi
+          else
+            echo "No changes to commit."
+          fi
+
+      - name: Create Testing Site in InstaWP
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        uses: instawp/wordpress-testing-automation@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+          INSTAWP_TEMPLATE_SLUG: gravity-forms--recaptcha-v3
+          REPO_ID: 521
+          EXPIRY_HOURS: 1
+          INSTAWP_ACTION: create-site-template
+
+      - name: Create Testing Site in InstaWP v2
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        uses: instawp/wordpress-testing-automation@main
+        with:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+            INSTAWP_TEMPLATE_SLUG: gravity-forms--recaptcha-v2
+            REPO_ID: 521
+            EXPIRY_HOURS: 1
+            INSTAWP_ACTION: create-site-template
+
+  check-gf-hcaptcha:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create .revision Directory
+        run: mkdir -p .revision
+
+      - name: Get GF HCaptcha plugin version from WordPress site
+        id: get-plugin-version
+        run: |
+          response=$(curl -s "https://gflistener.instawp.xyz/wp-json/checkview/v1/plugin-version?_plugin_slug=gf-hcaptcha")
+          plugin_version=$(echo $response | jq -r '.version')
+
+          if [ "$plugin_version" == "null" ] || [ -z "$plugin_version" ]; then
+            echo "Plugin version not found for gf-hcaptcha"
+            exit 1
+          else
+            echo "Plugin version for gf-hcaptcha is $plugin_version"
+            echo "plugin_version=$plugin_version" >> $GITHUB_ENV
+
+            # Save the plugin version to the current revision file
+            current_revision_file=".revision/gf-hcaptcha_current_revision_gravityforms.txt"
+            echo "$plugin_version" > "$current_revision_file"
+          fi
+
+      - name: Get previous plugin version
+        id: get-previous
+        run: |
+          previous_revision_file=".revision/gf-hcaptcha_latest_revision_gravityforms.txt"
+          if [ -f "$previous_revision_file" ]; then
+            previous_revision=$(cat "$previous_revision_file")
+          else
+            previous_revision="0"
+          fi
+          echo "previous_revision=$previous_revision" >> $GITHUB_ENV
+
+      - name: Compare revisions
+        id: compare-revisions
+        run: |
+          current_revision=$(cat ".revision/gf-hcaptcha_current_revision_gravityforms.txt")
+          previous_revision=${{ env.previous_revision }}
+
+          echo "Current revision: $current_revision"
+          echo "Previous revision: $previous_revision"
+
+          if [ "$current_revision" != "$previous_revision" ]; then
+            echo "::set-output name=update_found::true"
+          else
+            echo "::set-output name=update_found::false"
+          fi
+
+      - name: Save current revision as latest revision
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        run: |
+          cp ".revision/gf-hcaptcha_current_revision_gravityforms.txt" ".revision/gf-hcaptcha_latest_revision_gravityforms.txt"
+
+      - name: Random Sleep Before Processing
+        run: |
+          sleep_time=$(( RANDOM % 10 + 1 ))
+          echo "Sleeping for $sleep_time seconds..."
+          sleep $sleep_time
+
+      - name: Commit updated revision file
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # Stash any unstaged changes before pulling
+          git stash --include-untracked
+
+          # Pull the latest changes from the remote branch with rebase
+          git pull --rebase origin bug-fixes
+          
+          # Apply the stashed changes back after the pull
+          git stash pop || echo "No changes to apply from stash"
+
+          # Add the updated revision file
+          git add ".revision/gf-hcaptcha_latest_revision_gravityforms.txt"
+
+          # Check if there are any changes to commit
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Update gf-hcaptcha SVN revision"
+            
+            # Try to push changes
+            git push
+            if [ $? -ne 0 ]; then
+              echo "Push failed."
+              exit 1
+            fi
+          else
+            echo "No changes to commit."
+          fi
+
+      - name: Create Testing Site in InstaWP
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        uses: instawp/wordpress-testing-automation@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+          INSTAWP_TEMPLATE_SLUG: gravity--hcaptcha-third-party
+          REPO_ID: 521
+          EXPIRY_HOURS: 1
+          INSTAWP_ACTION: create-site-template
+
+  check-gravityforms-zero-spam:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create .revision Directory
+        run: mkdir -p .revision
+
+      - name: Get Gravity Forms Zero Spam plugin version from WordPress site
+        id: get-plugin-version
+        run: |
+          response=$(curl -s "https://gflistener.instawp.xyz/wp-json/checkview/v1/plugin-version?_plugin_slug=gravityforms-zero-spam")
+          plugin_version=$(echo $response | jq -r '.version')
+
+          if [ "$plugin_version" == "null" ] || [ -z "$plugin_version" ]; then
+            echo "Plugin version not found for gravityforms-zero-spam"
+            exit 1
+          else
+            echo "Plugin version for gravityforms-zero-spam is $plugin_version"
+            echo "plugin_version=$plugin_version" >> $GITHUB_ENV
+
+            # Save the plugin version to the current revision file
+            current_revision_file=".revision/gravityforms-zero-spam_current_revision_gravityforms.txt"
+            echo "$plugin_version" > "$current_revision_file"
+          fi
+
+      - name: Get previous plugin version
+        id: get-previous
+        run: |
+          previous_revision_file=".revision/gravityforms-zero-spam_latest_revision_gravityforms.txt"
+          if [ -f "$previous_revision_file" ]; then
+            previous_revision=$(cat "$previous_revision_file")
+          else
+            previous_revision="0"
+          fi
+          echo "previous_revision=$previous_revision" >> $GITHUB_ENV
+
+      - name: Compare revisions
+        id: compare-revisions
+        run: |
+          current_revision=$(cat ".revision/gravityforms-zero-spam_current_revision_gravityforms.txt")
+          previous_revision=${{ env.previous_revision }}
+
+          echo "Current revision: $current_revision"
+          echo "Previous revision: $previous_revision"
+
+          if [ "$current_revision" != "$previous_revision" ]; then
+            echo "::set-output name=update_found::true"
+          else
+            echo "::set-output name=update_found::false"
+          fi
+
+      - name: Save current revision as latest revision
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        run: |
+          cp ".revision/gravityforms-zero-spam_current_revision_gravityforms.txt" ".revision/gravityforms-zero-spam_latest_revision_gravityforms.txt"
+
+      - name: Random Sleep Before Processing
+        run: |
+          sleep_time=$(( RANDOM % 9 + 1 ))
+          echo "Sleeping for $sleep_time seconds..."
+          sleep $sleep_time
+
+      - name: Commit updated revision file
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # Stash any unstaged changes before pulling
+          git stash --include-untracked
+
+          # Pull the latest changes from the remote branch with rebase
+          git pull --rebase origin bug-fixes
+          
+          # Apply the stashed changes back after the pull
+          git stash pop || echo "No changes to apply from stash"
+
+          # Add the updated revision file
+          git add ".revision/gravityforms-zero-spam_latest_revision_gravityforms.txt"
+
+          # Check if there are any changes to commit
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Update gravityforms-zero-spam SVN revision"
+            
+            # Try to push changes
+            git push
+            if [ $? -ne 0 ]; then
+              echo "Push failed."
+              exit 1
+            fi
+          else
+            echo "No changes to commit."
+          fi
+
+      - name: Create Testing Site in InstaWP
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        uses: instawp/wordpress-testing-automation@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+          INSTAWP_TEMPLATE_SLUG: gravity-forms--zero-spam
+          REPO_ID: 521
+          EXPIRY_HOURS: 1
+          INSTAWP_ACTION: create-site-template
+
+  check-hcaptcha-for-forms-and-more:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create .revision Directory
+        run: mkdir -p .revision
+
+      - name: Get hCaptcha for Forms and More plugin version from WordPress site
+        id: get-plugin-version
+        run: |
+          response=$(curl -s "https://gflistener.instawp.xyz/wp-json/checkview/v1/plugin-version?_plugin_slug=hcaptcha-for-forms-and-more")
+          plugin_version=$(echo $response | jq -r '.version')
+
+          if [ "$plugin_version" == "null" ] || [ -z "$plugin_version" ]; then
+            echo "Plugin version not found for hcaptcha-for-forms-and-more"
+            exit 1
+          else
+            echo "Plugin version for hcaptcha-for-forms-and-more is $plugin_version"
+            echo "plugin_version=$plugin_version" >> $GITHUB_ENV
+
+            # Save the plugin version to the current revision file
+            current_revision_file=".revision/hcaptcha-for-forms-and-more_current_revision_gravityforms.txt"
+            echo "$plugin_version" > "$current_revision_file"
+          fi
+
+      - name: Get previous plugin version
+        id: get-previous
+        run: |
+          previous_revision_file=".revision/hcaptcha-for-forms-and-more_latest_revision_gravityforms.txt"
+          if [ -f "$previous_revision_file" ]; then
+            previous_revision=$(cat "$previous_revision_file")
+          else
+            previous_revision="0"
+          fi
+          echo "previous_revision=$previous_revision" >> $GITHUB_ENV
+
+      - name: Compare revisions
+        id: compare-revisions
+        run: |
+          current_revision=$(cat ".revision/hcaptcha-for-forms-and-more_current_revision_gravityforms.txt")
+          previous_revision=${{ env.previous_revision }}
+
+          echo "Current revision: $current_revision"
+          echo "Previous revision: $previous_revision"
+
+          if [ "$current_revision" != "$previous_revision" ]; then
+            echo "::set-output name=update_found::true"
+          else
+            echo "::set-output name=update_found::false"
+          fi
+
+      - name: Save current revision as latest revision
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        run: |
+          cp ".revision/hcaptcha-for-forms-and-more_current_revision_gravityforms.txt" ".revision/hcaptcha-for-forms-and-more_latest_revision_gravityforms.txt"
+
+      - name: Random Sleep Before Processing
+        run: |
+          sleep_time=$(( RANDOM % 8 + 1 ))
+          echo "Sleeping for $sleep_time seconds..."
+          sleep $sleep_time
+
+      - name: Commit updated revision file
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # Stash any unstaged changes before pulling
+          git stash --include-untracked
+
+          # Pull the latest changes from the remote branch with rebase
+          git pull --rebase origin bug-fixes
+          
+          # Apply the stashed changes back after the pull
+          git stash pop || echo "No changes to apply from stash"
+
+          # Add the updated revision file
+          git add ".revision/hcaptcha-for-forms-and-more_latest_revision_gravityforms.txt"
+
+          # Check if there are any changes to commit
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Update hcaptcha-for-forms-and-more SVN revision"
+            
+            # Try to push changes
+            git push
+            if [ $? -ne 0 ]; then
+              echo "Push failed."
+              exit 1
+            fi
+          else
+            echo "No changes to commit."
+          fi
+
+      - name: Create Testing Site in InstaWP
+        if: steps.compare-revisions.outputs.update_found == 'true'
+        uses: instawp/wordpress-testing-automation@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+          INSTAWP_TEMPLATE_SLUG: gravity--hcaptcha-third-party
+          REPO_ID: 521
+          EXPIRY_HOURS: 1
+          INSTAWP_ACTION: create-site-template
