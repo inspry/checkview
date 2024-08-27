@@ -125,20 +125,20 @@ jobs:
               git push
               if [ $? -eq 0 ]; then
                 echo "Successfully pushed changes."
-                exit 0
+                break
               else
                 echo "Push failed. Retrying..."
               fi
             else
               echo "No changes to commit."
-              exit 0
+              break
             fi
 
             attempt=$((attempt + 1))
             sleep 10  # Wait before retrying
           done
           echo "Failed to push changes after $max_retries attempts."
-          exit 1
+          exit1
 
         
 
