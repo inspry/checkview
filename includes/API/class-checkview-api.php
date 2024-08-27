@@ -1905,8 +1905,14 @@ class CheckView_Api {
 		if ( in_array( $plugin_slug, array( 'recaptcha', 'turnstile', 'akismet' ), true ) ) {
 			$plugin_folder = 'gravityforms' . $plugin_slug;
 			$plugin_file   = $plugin_folder . '/' . $plugin_slug . '.php';
+		} elseif ( 'gravityforms-zero-spam' === $plugin_slug ) {
+			$plugin_folder = 'gravity-forms-zero-spam';
+			$plugin_file   = $plugin_folder . '/' . $plugin_slug . '.php';
+		} elseif ( 'hcaptcha-for-forms-and-more' === $plugin_slug ) {
+			$plugin_folder = $plugin_slug;
+			$plugin_slug   = 'hcaptcha';
+			$plugin_file   = $plugin_folder . '/' . $plugin_slug . '.php';
 		}
-		// Get the plugin data using get_plugin_data.
 		if ( file_exists( WP_PLUGIN_DIR . '/' . $plugin_file ) ) {
 			$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_file );
 			$version     = $plugin_data['Version'];

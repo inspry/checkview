@@ -1,4 +1,4 @@
-name: Check WordPress Plugin Version Updates
+name: Check WordPress Plugin Version Updates For Gravity
 
 on:
   push:
@@ -15,10 +15,10 @@ jobs:
     strategy:
       matrix:
         plugin:
-          - gravityformsturnstile
-          - gravityformsakismet
+          - turnstile
+          - akismet
           - gravityforms
-          - gravityformsrecaptcha
+          - recaptcha
           - gf-hcaptcha
           - gravityforms-zero-spam
           - hcaptcha-for-forms-and-more
@@ -26,6 +26,9 @@ jobs:
           # Add more plugins here
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Create .revision Directory
         run: mkdir -p .revision
 
@@ -88,10 +91,24 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          plugin_slug=${{ matrix.plugin }}
-          git add ".revision/${plugin_slug}_latest_revision_gravityforms.txt"
+          plugin_name=${{ matrix.plugin }}
+
+          # Stash any unstaged changes before pulling
+          git stash --include-untracked
+
+          # Pull the latest changes from the remote branch with rebase
+          git pull --rebase origin main
+
+          # Apply the stashed changes back after the pull
+          git stash pop || echo "No changes to apply from stash"
+
+          # Add the updated revision file
+          git add ".revision/${plugin_name}_latest_revision_gravityforms.txt"
+
+          # Commit the changes if there are any
           if ! git diff-index --quiet HEAD; then
-            git commit -m "Update $plugin_slug plugin version"
+            git commit -m "Update $plugin_name SVN revision"
+            # Push the changes
             git push
           else
             echo "No changes to commit"
@@ -103,13 +120,24 @@ jobs:
         with:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
-            INSTAWP_TEMPLATE_SLUG: gravity-forms--hcaptcha-for-wp
+            INSTAWP_TEMPLATE_SLUG: gravity--hcaptcha-third-party
+            REPO_ID: 521
+            EXPIRY_HOURS: 1
+            INSTAWP_ACTION: create-site-template
+
+      - name: Create Gravity Forms & hCaptcha  Site for Testing in InstaWP
+        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.hcaptcha-for-forms-and-more_update_found == 'true' ) }}
+        uses: instawp/wordpress-testing-automation@main
+        with:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+            INSTAWP_TEMPLATE_SLUG: gravity--hcaptcha-third-party
             REPO_ID: 521
             EXPIRY_HOURS: 1
             INSTAWP_ACTION: create-site-template
 
       - name: Create Gravity Forms Trusntile 3rd party for Testing in InstaWP
-        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.gravityformsturnstile_update_found == 'true' ) }}
+        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.simple-cloudflare-turnstile_update_found == 'true' ) }}
         uses: instawp/wordpress-testing-automation@main
         with:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -118,9 +146,20 @@ jobs:
             REPO_ID: 521
             EXPIRY_HOURS: 1
             INSTAWP_ACTION: create-site-template
+
+      - name: Create Gravity Forms Trusntile native for Testing in InstaWP
+        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.turnstile_update_found == 'true' ) }}
+        uses: instawp/wordpress-testing-automation@main
+        with:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+            INSTAWP_TEMPLATE_SLUG: gravity-forms--cloudflare-turnstile-3p
+            REPO_ID: 521
+            EXPIRY_HOURS: 1
+            INSTAWP_ACTION: create-site-template
             
       - name: Create Gravity Forms With Akismet Site for Testing in InstaWP
-        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.gravityformsakismet_update_found== 'true' ) }}
+        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.akismet_update_found== 'true' ) }}
         uses: instawp/wordpress-testing-automation@main
         with:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -131,7 +170,7 @@ jobs:
             INSTAWP_ACTION: create-site-template
 
       - name: Create Gravity Forms With ReCaptcha v3 Native Site for Testing in InstaWP
-        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.gravityformsrecaptcha_update_found == 'true' ) }}
+        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.recaptcha_update_found == 'true' ) }}
         uses: instawp/wordpress-testing-automation@main
         with:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -142,7 +181,7 @@ jobs:
             INSTAWP_ACTION: create-site-template
 
       - name: Create Gravity Forms With ReCaptcha v2 Native Site for Testing in InstaWP
-        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.gravityformsrecaptcha_update_found == 'true' ) }}
+        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.recaptcha_update_found == 'true' ) }}
         uses: instawp/wordpress-testing-automation@main
         with:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -150,7 +189,18 @@ jobs:
             INSTAWP_TEMPLATE_SLUG: gravity-forms--recaptcha-v2
             REPO_ID: 521
             EXPIRY_HOURS: 1
-            INSTAWP_ACTION: create-site-template      
+            INSTAWP_ACTION: create-site-template  
+            
+      - name: Create Gravity Forms With Zero Spam Site for Testing in InstaWP
+        if: ${{ ( steps.compare-revisions.outputs.gravityforms_update_found == 'true' ) || ( steps.compare-revisions.outputs.gravityforms-zero-spam_update_found == 'true' ) }}
+        uses: instawp/wordpress-testing-automation@main
+        with:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            INSTAWP_TOKEN: ${{ secrets.INSTAWP_TOKEN }}
+            INSTAWP_TEMPLATE_SLUG: gravity-forms--zero-spam
+            REPO_ID: 521
+            EXPIRY_HOURS: 1
+            INSTAWP_ACTION: create-site-template 
 
 
       - name: Create Gravity Forms Site for Testing in InstaWP
