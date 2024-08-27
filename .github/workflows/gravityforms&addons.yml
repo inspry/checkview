@@ -94,21 +94,25 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          plugin_slug=${{ matrix.plugin }}
-      
-          # Stash any unstaged changes to avoid conflicts during pull
+          plugin_name=${{ matrix.plugin }}
+
+          # Stash any unstaged changes before pulling
           git stash --include-untracked
-    
+
           # Pull the latest changes from the remote branch with rebase
-          git pull --rebase origin bug-fixes || git rebase --abort
+          git pull --rebase origin bug-fixes
 
           # Apply the stashed changes back after the pull
           git stash pop || echo "No changes to apply from stash"
-          git add ".revision/${plugin_slug}_latest_revision_gravityforms.txt"
+
+          # Add the updated revision file
+          git add ".revision/${plugin_name}_latest_revision_gravityforms.txt"
+
+          # Commit the changes if there are any
           if ! git diff-index --quiet HEAD; then
-            git commit -m "Update $plugin_slug plugin version"
-            # Push changes with --force-with-lease to handle ref lock issue
-            git push origin bug-fixes --force-with-lease
+            git commit -m "Update $plugin_name SVN revision"
+            # Push the changes
+            git push
           else
             echo "No changes to commit"
           fi
