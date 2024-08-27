@@ -26,6 +26,9 @@ jobs:
           # Add more plugins here
 
     steps:
+      - name: Create .revision Directory
+        run: mkdir -p .revision
+
       - name: Get plugin version from WordPress site
         id: get-plugin-version
         run: |
@@ -38,71 +41,57 @@ jobs:
             exit 1
           else
             echo "Plugin version for $plugin_slug is $plugin_version"
-            echo "::set-output name=plugin_version::$plugin_version"
+            echo "plugin_version=$plugin_version" >> $GITHUB_ENV
+
             # Save the plugin version to the current revision file
-            current_revision_file=".revision/${plugin_name}_current_revision_gravityforms.txt"
+            current_revision_file=".revision/${plugin_slug}_current_revision_gravityforms.txt"
             echo "$plugin_version" > "$current_revision_file"
           fi
 
       - name: Get previous plugin version
         id: get-previous
         run: |
-          plugin_name=${{ matrix.plugin }}
-          if [ -f ".revision/${plugin_name}_latest_revision_gravityforms.txt" ]; then
-            cat ".revision/${plugin_name}_latest_revision_gravityforms.txt"
+          plugin_slug=${{ matrix.plugin }}
+          previous_revision_file=".revision/${plugin_slug}_latest_revision_gravityforms.txt"
+          if [ -f "$previous_revision_file" ]; then
+            previous_revision=$(cat "$previous_revision_file")
           else
-            echo "0"
+            previous_revision="0"
           fi
-        continue-on-error: true
+          echo "previous_revision=$previous_revision" >> $GITHUB_ENV
 
       - name: Compare revisions
         id: compare-revisions
         run: |
-          plugin_name=${{ matrix.plugin }}
-          current_revision=$(cat ".revision/${plugin_name}_current_revision_gravityforms.txt")
-          
-          # Check if the previous revision file exists
-          if [ -f ".revision/${plugin_name}_latest_revision_gravityforms.txt" ]; then
-            previous_revision=$(cat ".revision/${plugin_name}_latest_revision_gravityforms.txt")
-          else
-            previous_revision="0"
-          fi
+          current_revision=$(cat ".revision/${{ matrix.plugin }}_current_revision_gravityforms.txt")
+          previous_revision=${{ env.previous_revision }}
 
           echo "Current revision: $current_revision"
           echo "Previous revision: $previous_revision"
 
-          if [ "$current_revision" -gt "$previous_revision" ]; then
-            echo "${plugin_name}_update_found=true" >> $GITHUB_ENV
-            echo "::set-output name=${plugin_name}_update_found::true"
+          if [ "$current_revision" != "$previous_revision" ]; then
+            echo "${{ matrix.plugin }}_update_found=true" >> $GITHUB_ENV
           else
-            echo "${plugin_name}_update_found=false" >> $GITHUB_ENV
-            echo "::set-output name=${plugin_name}_update_found::false"
+            echo "${{ matrix.plugin }}_update_found=false" >> $GITHUB_ENV
           fi
 
       - name: Save current revision as latest revision
-        if: steps.compare-revisions.outputs.${{ matrix.plugin }}_update_found == 'true'
+        if: env.${{ matrix.plugin }}_update_found == 'true'
         run: |
-          plugin_name=${{ matrix.plugin }}
-          mkdir -p .revision
-          cp ".revision/${plugin_name}_current_revision_gravityforms.txt" ".revision/${plugin_name}_latest_revision_gravityforms.txt"
+          plugin_slug=${{ matrix.plugin }}
+          current_revision_file=".revision/${plugin_slug}_current_revision_gravityforms.txt"
+          latest_revision_file=".revision/${plugin_slug}_latest_revision_gravityforms.txt"
+          cp "$current_revision_file" "$latest_revision_file"
 
       - name: Commit updated revision file
-        if: steps.compare-revisions.outputs.${{ matrix.plugin }}_update_found == 'true'
+        if: env.${{ matrix.plugin }}_update_found == 'true'
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          plugin_name=${{ matrix.plugin }}
-          # Stash any unstaged changes to avoid conflicts during pull
-          git stash --include-untracked
-    
-          # Pull the latest changes from the remote branch with rebase
-          git pull --rebase origin main
-
-          # Apply the stashed changes back after the pull
-          git stash pop || echo "No changes to apply from stash"
-          git add ".revision/${plugin_name}_latest_revision_gravityforms.txt"
+          plugin_slug=${{ matrix.plugin }}
+          git add ".revision/${plugin_slug}_latest_revision_gravityforms.txt"
           if ! git diff-index --quiet HEAD; then
-            git commit -m "Update $plugin_name SVN revision"
+            git commit -m "Update $plugin_slug plugin version"
             git push
           else
             echo "No changes to commit"
