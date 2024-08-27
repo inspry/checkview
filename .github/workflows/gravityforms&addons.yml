@@ -704,7 +704,7 @@ jobs:
 
       - name: Random Sleep Before Processing
         run: |
-          sleep_time=7
+          sleep_time=2
           echo "Sleeping for $sleep_time seconds..."
           sleep $sleep_time
 
@@ -740,7 +740,7 @@ jobs:
             for i in $(seq 1 $retries); do
               git push && break || {
                 echo "Push failed. Attempt $i of $retries."
-                sleep 5
+                sleep 3
                 git fetch --prune
                 git rebase origin/bug-fixes
               }
