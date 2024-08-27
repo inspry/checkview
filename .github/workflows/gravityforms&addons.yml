@@ -102,6 +102,9 @@ jobs:
           max_retries=5
           attempt=0
           while [ $attempt -lt $max_retries ]; do
+            sleep_time=$(( RANDOM % 10 ))
+            echo "Sleeping for $sleep_time seconds..."
+            sleep $sleep_time
             # Stash any unstaged changes before pulling
             git stash --include-untracked
 
