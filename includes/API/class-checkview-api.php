@@ -78,12 +78,12 @@ class CheckView_Api {
 			'checkview/v1',
 			'/forms/formslist',
 			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'checkview_get_available_forms_list' ),
-				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'                => array(
+				'methods'  => 'GET',
+				'callback' => array( $this, 'checkview_get_available_forms_list' ),
+				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'     => array(
 					'_checkview_token' => array(
-						'required' => true,
+						'required' => false,
 					),
 				),
 			)
@@ -1368,14 +1368,14 @@ class CheckView_Api {
 			wp_die();
 		}
 		if ( '' !== $forms_list && null !== $forms_list && false !== $forms_list ) {
-			return new WP_REST_Response(
-				array(
-					'status'        => 200,
-					'response'      => esc_html__( 'Successfully retrieved the forms list.', 'checkview' ),
-					'body_response' => $forms_list,
-				)
-			);
-			wp_die();
+			// return new WP_REST_Response(
+			// array(
+			// 'status'        => 200,
+			// 'response'      => esc_html__( 'Successfully retrieved the forms list.', 'checkview' ),
+			// 'body_response' => $forms_list,
+			// )
+			// );
+			// wp_die();
 		}
 		$forms = array();
 		if ( ! is_admin() ) {
@@ -1395,8 +1395,26 @@ class CheckView_Api {
 					foreach ( $addons as $addon ) {
 						$forms['GravityForms'][ $row->id ]['addons'][] = $addon->addon_slug;
 					}
-					$sql        = "SELECT ID FROM {$wpdb->prefix}posts	 WHERE 1=1 and (post_content like '%wp:gravityforms/form {\"formId\":\"" . $row->id . "\"%' OR post_content like '%[gravityform id=\"" . $row->id . "\"%' OR post_content like '%[gravityform id=" . $row->id . "%'  OR post_content like \"%[gravityform id=" . $row->id . "%\") and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
-					$form_pages = $wpdb->get_results( $sql );
+					$sql = "SELECT ID FROM {$wpdb->prefix}posts	 WHERE 1=1 and (post_content like '%wp:gravityforms/form {\"formId\":\"" . $row->id . "\"%' OR post_content like '%[gravityform id=\"" . $row->id . "\"%' OR post_content like '%[gravityform id=" . $row->id . "%'  OR post_content like \"%[gravityform id=" . $row->id . "%\") and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
+					// WPDBPREPARE.
+					$form_pages = $wpdb->get_results(
+						$wpdb->prepare(
+							"SELECT ID FROM {$wpdb->prefix}posts 
+						WHERE 1=1 
+						AND (
+							post_content LIKE %s 
+							OR post_content LIKE %s 
+							OR post_content LIKE %s  
+							OR post_content LIKE %s
+						) 
+						AND post_status = 'publish' 
+						AND post_type NOT IN ('kadence_wootemplate', 'revision')",
+							'%wp:gravityforms/form {"formId":"' . $row->id . '"%',
+							'%[gravityform id="' . $row->id . '"%',
+							'%[gravityform id=' . $row->id . '%',
+							'%[gravityform id=' . $row->id . '%'
+						)
+					);
 					if ( $form_pages ) {
 						foreach ( $form_pages as $form_page ) {
 
@@ -1433,10 +1451,28 @@ class CheckView_Api {
 						'Name' => $row->title,
 					);
 					$sql                              = "SELECT ID FROM {$wpdb->prefix}posts	 WHERE 1=1 and (post_content like '%wp:fluentfom/guten-block {\"formId\":\"" . $row->id . "\"%' OR post_content like '%[fluentform id=\"" . $row->id . "\"%' OR post_content like '%[fluentform id=" . $row->id . "%' OR post_content like \"%[fluentform id=" . $row->id . "%\") and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
-					$form_pages                       = $wpdb->get_results( $sql );
+					// WPDBPREPARE.
+					$form_pages = $wpdb->get_results(
+						$wpdb->prepare(
+							"SELECT ID FROM {$wpdb->prefix}posts 
+						WHERE 1=1 
+						AND (
+							post_content LIKE %s 
+							OR post_content LIKE %s 
+							OR post_content LIKE %s 
+							OR post_content LIKE %s
+						) 
+						AND post_status = 'publish' 
+						AND post_type NOT IN ('kadence_wootemplate', 'revision')",
+							'%wp:fluentfom/guten-block {"formId":"' . $row->id . '"%',
+							'%[fluentform id="' . $row->id . '"%',
+							'%[fluentform id=' . $row->id . '%',
+							'%[fluentform id=' . $row->id . '%'
+						)
+					);
 					foreach ( $form_pages as $form_page ) {
 
-						if ( 'wp_block' === $form_page->post_type ) {
+						if ( ! empty( $form_page->post_type ) && 'wp_block' === $form_page->post_type ) {
 
 							$wp_block_pages = checkview_get_wp_block_pages( $form_page->ID );
 							if ( $wp_block_pages ) {
@@ -1467,7 +1503,25 @@ class CheckView_Api {
 						'Name' => $row->title,
 					);
 					$sql                             = "SELECT * FROM {$wpdb->prefix}posts WHERE 1=1 and (post_content like '%wp:ninja-forms/form {\"formID\":" . $row->id . "%' OR post_content like '%[ninja_form id=\"" . $row->id . "\"]%' OR post_content like '%[ninja_form id=" . $row->id . "]%' OR post_content like \"%[ninja_form id='" . $row->id . "']%\" ) and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
-					$form_pages                      = $wpdb->get_results( $sql );
+					// WPDBPREPARE.
+					$form_pages = $wpdb->get_results(
+						$wpdb->prepare(
+							"SELECT * FROM {$wpdb->prefix}posts 
+						WHERE 1=1 
+						AND (
+							post_content LIKE %s 
+							OR post_content LIKE %s 
+							OR post_content LIKE %s 
+							OR post_content LIKE %s
+						) 
+						AND post_status = 'publish' 
+						AND post_type NOT IN ('kadence_wootemplate', 'revision')",
+							'%wp:ninja-forms/form {\"formID\":' . $row->id . '%',
+							'%[ninja_form id="' . $row->id . '"]%',
+							'%[ninja_form id=' . $row->id . ']%',
+							'%[ninja_form id=\'' . $row->id . '\']%'
+						)
+					);
 					if ( $form_pages ) {
 						foreach ( $form_pages as $form_page ) {
 							if ( 'wp_block' === $form_page->post_type ) {
@@ -1533,12 +1587,25 @@ class CheckView_Api {
 					);
 
 					$sql = "SELECT ID FROM {$wpdb->prefix}posts	 WHERE 1=1 and (post_content like '%[formidable id=\"" . $row->id . "\"%' OR post_content like '%[formidable id=" . $row->id . "]%') and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
-
-					$form_pages = $wpdb->get_results( $sql );
+					// WPDBPREPARE.
+					$form_pages = $wpdb->get_results(
+						$wpdb->prepare(
+							"SELECT ID FROM {$wpdb->prefix}posts 
+						WHERE 1=1 
+						AND (
+							post_content LIKE %s 
+							OR post_content LIKE %s
+						) 
+						AND post_status = 'publish' 
+						AND post_type NOT IN ('kadence_wootemplate', 'revision')",
+							'%[formidable id=\"' . $row->id . '\"%',
+							'%[formidable id=' . $row->id . ']%'
+						)
+					);
 					if ( $form_pages ) {
 						foreach ( $form_pages as $form_page ) {
 
-							if ( 'wp_block' === $form_page->post_type ) {
+							if ( ! empty( $form_page->post_type ) && 'wp_block' === $form_page->post_type ) {
 
 								$wp_block_pages = checkview_get_wp_block_pages( $form_page->ID );
 								if ( $wp_block_pages ) {
@@ -1573,16 +1640,34 @@ class CheckView_Api {
 			$results = get_posts( $args );
 			if ( $results ) {
 				foreach ( $results as $row ) {
+					$hash                     = substr( get_post_meta( $row->ID, '_hash', true ), 0, absint( 7 ) );
 					$forms['CF7'][ $row->ID ] = array(
-						'ID'   => $row->ID,
+						'ID'   => $hash,
 						'Name' => $row->post_title,
 					);
 
-					$sql        = "SELECT ID FROM {$wpdb->prefix}posts	 WHERE 1=1 and (post_content like '%wp:contact-form-7/contact-form-selector {\"id\":" . $row->ID . "%' OR post_content like '%[contact-form-7 id=\"" . $row->ID . "\"%' OR post_content like '%[contact-form-7 id=" . $row->ID . "%' OR post_content like \"%[contact-form-7 id=" . $row->ID . "%\") and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
-					$form_pages = $wpdb->get_results( $sql );
+					$sql = "SELECT ID FROM {$wpdb->prefix}posts	 WHERE 1=1 and (post_content like '%wp:contact-form-7/contact-form-selector {\"id\":" . $hash . "%' OR post_content like '%[contact-form-7 id=\"" . $hash . "\"%' OR post_content like '%[contact-form-7 id=" . $hash . "%' OR post_content like \"%[contact-form-7 id=" . $hash . "%\") and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
+					$form_pages = $wpdb->get_results(
+						$wpdb->prepare(
+							"SELECT ID FROM {$wpdb->prefix}posts
+						WHERE 1=1
+						AND (
+							(post_content LIKE %s OR post_content LIKE %s OR post_content LIKE %s OR post_content LIKE %s)
+							AND post_status = %s
+							AND post_type NOT IN (%s, %s)
+						)",
+							'%wp:contact-form-7/contact-form-selector {"id":"' . $hash . '%',
+							'%[contact-form-7 id="' . $hash . '%',
+							'%[contact-form-7 id=' . $hash . '%',
+							'%[contact-form-7 id=' . $hash . '%',
+							'publish',
+							'kadence_wootemplate',
+							'revision'
+						)
+					);
 					if ( $form_pages ) {
 						foreach ( $form_pages as $form_page ) {
-							if ( 'wp_block' === $form_page->post_type ) {
+							if ( ! empty( $form_page->post_type ) && 'wp_block' === $form_page->post_type ) {
 
 								$wp_block_pages = checkview_get_wp_block_pages( $form_page->ID );
 								if ( $wp_block_pages ) {

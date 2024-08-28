@@ -314,7 +314,18 @@ if ( ! function_exists( 'checkview_get_cv_session' ) ) {
 
 		$session_table = $wpdb->prefix . 'cv_session';
 		$query         = 'Select * from ' . $session_table . ' where visitor_ip=%s and test_id=%s LIMIT 1';
-		$result        = $wpdb->get_results( $wpdb->prepare( $query, $ip, $test_id ), ARRAY_A );
+		// WPDBPREPARE.
+		$result        = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$session_table}
+				WHERE visitor_ip = %s
+				AND test_id = %s
+				LIMIT 1",
+				$ip,
+				$test_id
+			),
+			ARRAY_A
+		);
 		return $result;
 	}
 }
@@ -331,7 +342,14 @@ if ( ! function_exists( 'checkview_get_wp_block_pages' ) ) {
 		global $wpdb;
 
 		$sql = "SELECT * FROM {$wpdb->prefix}posts WHERE 1=1 and (post_content like '%wp:block {\"ref\":" . $block_id . "}%') and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
-		return $wpdb->get_results( $sql );
+		// WPDBPREPARE.
+		return $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->prefix}posts WHERE 1=1 AND (post_content LIKE %s) AND post_status=%s AND post_type NOT IN ('kadence_wootemplate', 'revision')",
+				'%wp:block {\"ref\":' . $block_id . '}%',
+				'publish'
+			)
+		);
 	}
 }
 if ( ! function_exists( 'checkview_reset_cache' ) ) {

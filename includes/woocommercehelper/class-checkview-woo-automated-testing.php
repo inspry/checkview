@@ -697,6 +697,17 @@ class Checkview_Woo_Automated_Testing {
 			LEFT JOIN {$wpdb->prefix}postmeta AS pm ON (p.id = pm.post_id AND pm.meta_key = '_payment_method')
 			WHERE meta_value = 'checkview' "
 		);
+		// WPDBPREPARE.
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT p.id
+			FROM {$wpdb->prefix}posts AS p
+			LEFT JOIN {$wpdb->prefix}postmeta AS pm ON (p.id = pm.post_id AND pm.meta_key = %s)
+			WHERE pm.meta_value = %s",
+				'_payment_method',
+				'checkview'
+			)
+		);
 		if ( empty( $orders ) ) {
 			$args = array(
 				'limit'          => -1,
