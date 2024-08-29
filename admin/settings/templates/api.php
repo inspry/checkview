@@ -214,6 +214,20 @@ $allow_dev         = ! empty( $checkview_options['checkview_allowed_extensions']
 					</label>
 					</td>
 				</tr>
+
+				<tr valign="top">
+					<th scope="row" >
+						<label for="checkview_get_plugin_version">
+							<?php esc_html_e( 'Get plugin version', 'checkview' ); ?>
+						</label>
+						<p class="make-lib-description"><?php esc_html_e( 'Use this endpoint to get plugin version.', 'checkview' ); ?></p>
+					</th>
+					<td class="checkview-make-library-box">
+					<label  for="checkview_get_plugin_version">
+						<p class="make-lib-description"><?php echo esc_url_raw( get_rest_url() . 'checkview/v1/plugin-version' ); ?></p>
+					</label>
+					</td>
+				</tr>
 				<?php do_action( 'checkview_api_settings', $checkview_options ); ?>
 			</tbody>
 		</table>

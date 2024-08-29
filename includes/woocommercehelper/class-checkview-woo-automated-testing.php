@@ -330,35 +330,6 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * Return cart details.
-	 *
-	 * @return bool/array
-	 */
-	public function get_woocommerce_cart_details() {
-		$url             = get_rest_url() . 'wc/v3/cart';
-		$consumer_key    = 'ck_c0e08bbe91c3b0b85940b3005fd62782a7d91e67';
-		$consumer_secret = 'cs_7e077b6af86eb443b9d2f0d6ca5f1fa986be7ee6';
-
-		$response = wp_remote_get(
-			$url,
-			array(
-				'headers' => array(
-					'Authorization' => 'Basic ' . base64_encode( $consumer_key . ':' . $consumer_secret ),
-				),
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
-			return false; // Error occurred.
-		}
-
-		$body         = wp_remote_retrieve_body( $response );
-		$cart_details = json_decode( $body, true );
-
-		return $cart_details;
-	}
-
-	/**
 	 * Retrieves details for test product.
 	 *
 	 * @return WC_Product/bool
