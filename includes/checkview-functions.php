@@ -455,3 +455,36 @@ if ( ! function_exists( 'checkview_add_states_to_locations' ) ) {
 		return $locations_with_states;
 	}
 }
+
+if ( ! function_exists( 'checkview_is_plugin_request' ) ) {
+	/**
+	 * Checks for SaaS Call.
+	 *
+	 * @return bool
+	 */
+	function checkview_is_plugin_request() {
+		$current_route = rest_get_url_prefix() . '/checkview/v1/';
+		return strpos(
+			isset( $_SERVER['REQUEST_URI'] ) ? sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '',
+			$current_route
+		) !== false;
+	}
+}
+
+if ( ! function_exists( 'checkview_add_csp_header_for_plugin' ) ) {
+	/**
+	 * Adds csp headers for SaaS API calls.
+	 *
+	 * @return void
+	 */
+	function checkview_add_csp_header_for_plugin() {
+		// Check if the current request is related to your plugin.
+		if ( checkview_is_plugin_request() ) {
+			header( "Content-Security-Policy: default-src 'self'; script-src 'self' https://app.checkview.io; style-src 'self' https://app.checkview.io; connect-src 'self' https://app.checkview.io;" );
+
+			header( "Content-Security-Policy: default-src 'self'; script-src 'self' https://storage.googleapis.com; style-src 'self' https://storage.googleapis.com; connect-src 'self' https://storage.googleapis.com;" );
+			// Mention the types of resources being returned from your SaaS.
+		}
+	}
+}
+add_action( 'send_headers', 'checkview_add_csp_header_for_plugin' );
