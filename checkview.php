@@ -74,6 +74,10 @@ if ( ! defined( 'CHECKVIEW_EMAIL' ) ) {
 if ( ! defined( 'CHECKVIEW_URI' ) ) {
 	define( 'CHECKVIEW_URI', trailingslashit( plugin_dir_url( __FILE__ ) ) );
 }
+
+if ( ! defined( 'CHECKVIEW_CONTAINER_IP' ) ) {
+	define( 'CHECKVIEW_CONTAINER_IP', 'https://storage.googleapis.com/test-ip-bucket/container_ip' );
+}
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-checkview-activator.php

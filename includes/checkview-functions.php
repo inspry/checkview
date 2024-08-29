@@ -141,13 +141,12 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 		$ip_address = get_transient( 'checkview_saas_ip_address' );
 		if ( null === $ip_address || '' === $ip_address || empty( $ip_address ) ) {
 			$request = wp_remote_get(
-				'https://app.checkview.io/api/helper/container_ip',
+				'https://storage.googleapis.com/test-ip-bucket/container_ip',
 				array(
 					'method'  => 'GET',
 					'timeout' => 500,
 				)
 			);
-
 			if ( is_wp_error( $request ) ) {
 				return null;
 			}
@@ -315,7 +314,7 @@ if ( ! function_exists( 'checkview_get_cv_session' ) ) {
 		$session_table = $wpdb->prefix . 'cv_session';
 		$query         = 'Select * from ' . $session_table . ' where visitor_ip=%s and test_id=%s LIMIT 1';
 		// WPDBPREPARE.
-		$result        = $wpdb->get_results(
+		$result = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * FROM {$session_table}
 				WHERE visitor_ip = %s
