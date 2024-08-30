@@ -25,6 +25,10 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
+// Check if the current user has the necessary capability.
+if ( ! current_user_can( 'manage_options' ) ) {
+	die( esc_html__( 'You are not allowed to uninstall this plugin.', 'checkview' ) );
+}
 global $wpdb;
 $checkview_options = get_option( 'checkview_advance_options', array() );
 $delete_all        = ! empty( $checkview_options['checkview_delete_data'] ) ? $checkview_options['checkview_delete_data'] : '';

@@ -79,7 +79,7 @@ class Checkview {
 		if ( defined( 'CHECKVIEW_VERSION' ) ) {
 			$this->version = CHECKVIEW_VERSION;
 		} else {
-			$this->version = '1.1.15';
+			$this->version = '1.1.16';
 		}
 		$this->plugin_name = 'checkview';
 

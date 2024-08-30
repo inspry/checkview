@@ -34,10 +34,10 @@ class Example_Test extends WP_UnitTestCase {
 	public function test_checkview_get_available_orders_invalid_jwt_token() {
 		// Mock the JWT error
 		$this->checkViewApi->jwt_error = 'Invalid JWT token';
-	
+
 		$request  = new WP_REST_Request();
 		$response = $this->checkViewApi->checkview_get_available_orders( $request );
-	
+
 		$this->assertInstanceOf( WP_Error::class, $response );
 		$this->assertEquals( 400, $response->get_error_code() );
 		$this->assertEquals( 'Use a valid JWT token.', $response->get_error_message() );

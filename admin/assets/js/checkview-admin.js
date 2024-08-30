@@ -5,7 +5,6 @@
 
             e.preventDefault();
             var $thisButton = $(this);
-            console.log("helloworld");
             $thisButton.removeClass('success error').addClass('loading');
             Swal.fire({
                 title: 'Are you sure?',
