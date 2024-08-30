@@ -101,6 +101,7 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 			$test_key = $cv_session[0]['test_key'];
 			delete_option( $test_key );
 		}
+
 		$wpdb->delete(
 			$session_table,
 			array(
@@ -298,8 +299,10 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 		if ( ! empty( $already_have ) ) {
 			return;
 		}
-
-		$current_url = home_url( add_query_arg( array(), $wp->request ) );
+		$current_url = '';
+		if ( ! empty( $wp->request ) ) {
+			$current_url = home_url( add_query_arg( array(), $wp->request ) );
+		}
 
 		$is_sub_directory = explode( '/', str_replace( '//', '|', $current_url ) );
 		if ( count( $is_sub_directory ) > 1 ) {
@@ -553,3 +556,4 @@ if ( ! function_exists( 'checkview_is_valid_uuid' ) ) {
 		return preg_match( '/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i', $uuid );
 	}
 }
+// complete_checkview_test( '2121c45d-2ac7-4d21-8b54-9a732867bfaf' );

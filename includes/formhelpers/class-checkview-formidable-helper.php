@@ -238,7 +238,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			$result = $wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . 'frm_items WHERE id=%d', $entry_id ) );
 
 			// Test completed So Clear sessions.
-			complete_checkview_test();
+			complete_checkview_test( $checkview_test_id );
 		}
 
 		/**

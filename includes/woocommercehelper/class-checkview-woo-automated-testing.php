@@ -53,121 +53,121 @@ class Checkview_Woo_Automated_Testing {
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
 		$this->loader      = $loader;
-		if ( $this->loader ) {
-			$this->loader->add_action(
-				'admin_init',
-				$this,
-				'checkview_create_test_product',
-				200
-			);
+		// if ( $this->loader ) {
+		// 	$this->loader->add_action(
+		// 		'admin_init',
+		// 		$this,
+		// 		'checkview_create_test_product',
+		// 		200
+		// 	);
 
-			$this->loader->add_action(
-				'trashed_post',
-				$this,
-				'checkview_trash_product_option',
-				20
-			);
+		// 	$this->loader->add_action(
+		// 		'trashed_post',
+		// 		$this,
+		// 		'checkview_trash_product_option',
+		// 		20
+		// 	);
 
-			// Hook into after_delete_post to delete the option when the product is permanently deleted.
-			$this->loader->add_action(
-				'after_delete_post',
-				$this,
-				'checkview_after_delete_product'
-			);
-			$this->loader->add_action(
-				'template_redirect',
-				$this,
-				'checkview_empty_woocommerce_cart_if_parameter',
-			);
+		// 	// Hook into after_delete_post to delete the option when the product is permanently deleted.
+		// 	$this->loader->add_action(
+		// 		'after_delete_post',
+		// 		$this,
+		// 		'checkview_after_delete_product'
+		// 	);
+		// 	$this->loader->add_action(
+		// 		'template_redirect',
+		// 		$this,
+		// 		'checkview_empty_woocommerce_cart_if_parameter',
+		// 	);
 
-			$this->loader->add_action(
-				'wp_head',
-				$this,
-				'checkview_no_index_for_test_product',
-			);
+		// 	$this->loader->add_action(
+		// 		'wp_head',
+		// 		$this,
+		// 		'checkview_no_index_for_test_product',
+		// 	);
 
-			$this->loader->add_filter(
-				'wpseo_exclude_from_sitemap_by_post_ids',
-				$this,
-				'checkview_seo_hide_product_from_sitemap',
-			);
+		// 	$this->loader->add_filter(
+		// 		'wpseo_exclude_from_sitemap_by_post_ids',
+		// 		$this,
+		// 		'checkview_seo_hide_product_from_sitemap',
+		// 	);
 
-			$this->loader->add_filter(
-				'wp_sitemaps_posts_query_args',
-				$this,
-				'checkview_hide_product_from_sitemap',
-			);
+		// 	$this->loader->add_filter(
+		// 		'wp_sitemaps_posts_query_args',
+		// 		$this,
+		// 		'checkview_hide_product_from_sitemap',
+		// 	);
 
-			$this->loader->add_filter(
-				'publicize_should_publicize_published_post',
-				$this,
-				'checkview_seo_hide_product_from_jetpack',
-			);
+		// 	$this->loader->add_filter(
+		// 		'publicize_should_publicize_published_post',
+		// 		$this,
+		// 		'checkview_seo_hide_product_from_jetpack',
+		// 	);
 
-			$this->loader->add_filter(
-				'woocommerce_webhook_should_deliver',
-				$this,
-				'checkview_filter_webhooks',
-				10,
-				3
-			);
+		// 	$this->loader->add_filter(
+		// 		'woocommerce_webhook_should_deliver',
+		// 		$this,
+		// 		'checkview_filter_webhooks',
+		// 		10,
+		// 		3
+		// 	);
 
-			$this->loader->add_filter(
-				'woocommerce_email_recipient_new_order',
-				$this,
-				'checkview_filter_admin_emails',
-				10,
-				3
-			);
+		// 	$this->loader->add_filter(
+		// 		'woocommerce_email_recipient_new_order',
+		// 		$this,
+		// 		'checkview_filter_admin_emails',
+		// 		10,
+		// 		3
+		// 	);
 
-			$this->loader->add_action(
-				'checkview_delete_orders_action',
-				$this,
-				'checkview_delete_orders',
-				10,
-				1
-			);
-			$this->loader->add_action(
-				'checkview_rotate_user_credentials',
-				$this,
-				'checkview_rotate_test_user_credentials',
-				10,
-			);
+		// 	$this->loader->add_action(
+		// 		'checkview_delete_orders_action',
+		// 		$this,
+		// 		'checkview_delete_orders',
+		// 		10,
+		// 		1
+		// 	);
+		// 	$this->loader->add_action(
+		// 		'checkview_rotate_user_credentials',
+		// 		$this,
+		// 		'checkview_rotate_test_user_credentials',
+		// 		10,
+		// 	);
 
-			$this->loader->add_filter(
-				'woocommerce_registration_errors',
-				$this,
-				'checkview_stop_registration_errors',
-				15,
-				3
-			);
+		// 	$this->loader->add_filter(
+		// 		'woocommerce_registration_errors',
+		// 		$this,
+		// 		'checkview_stop_registration_errors',
+		// 		15,
+		// 		3
+		// 	);
 
-			// Delete orders on backend page load if crons are disabled.
-			if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
-				$this->loader->add_action(
-					'admin_init',
-					$this,
-					'delete_orders_from_backend',
-				);
-			}
+		// 	// Delete orders on backend page load if crons are disabled.
+		// 	if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
+		// 		$this->loader->add_action(
+		// 			'admin_init',
+		// 			$this,
+		// 			'delete_orders_from_backend',
+		// 		);
+		// 	}
 
-			$this->loader->add_filter(
-				'woocommerce_can_reduce_order_stock',
-				$this,
-				'checkview_maybe_not_reduce_stock',
-				10,
-				2
-			);
+		// 	$this->loader->add_filter(
+		// 		'woocommerce_can_reduce_order_stock',
+		// 		$this,
+		// 		'checkview_maybe_not_reduce_stock',
+		// 		10,
+		// 		2
+		// 	);
 
-			$this->loader->add_filter(
-				'woocommerce_prevent_adjust_line_item_product_stock',
-				$this,
-				'checkview_woocommerce_prevent_adjust_line_item_product_stock',
-				10,
-				3
-			);
-		}
-		$this->checkview_test_mode();
+		// 	$this->loader->add_filter(
+		// 		'woocommerce_prevent_adjust_line_item_product_stock',
+		// 		$this,
+		// 		'checkview_woocommerce_prevent_adjust_line_item_product_stock',
+		// 		10,
+		// 		3
+		// 	);
+		// }
+		//$this->checkview_test_mode();
 	}
 
 
@@ -813,7 +813,7 @@ class Checkview_Woo_Automated_Testing {
 	 * @return void
 	 */
 	public function checkview_add_custom_fields_after_purchase( $order_id, $old_status, $new_status ) {
-		if ( isset( $_COOKIE['checkview_test_id'] ) && '' !== $_COOKIE['checkview_test_id'] ) {
+		if ( isset( $_COOKIE['checkview_test_id'] ) && '' !== $_COOKIE['checkview_test_id'] && checkview_is_valid_uuid( sanitize_text_field( wp_unslash( $_COOKIE['checkview_test_id'] ) ) ) ) {
 			$order = new WC_Order( $order_id );
 			$order->update_meta_data( 'payment_made_by', 'checkview' );
 

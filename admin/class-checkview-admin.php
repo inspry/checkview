@@ -169,6 +169,9 @@ class Checkview_Admin {
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
 		// skip if visitor ip not equal to CV Bot IP.
+		if ( $cv_bot_ip !== $visitor_ip ) {
+			return $plugins;
+		}
 		if ( ! isset( $_REQUEST['checkview_test_id'] ) || ! checkview_is_valid_uuid( sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) ) ) {
 			return $plugins;
 		}

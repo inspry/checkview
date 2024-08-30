@@ -170,7 +170,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 			wp_delete_post( $entry_id, true );
 
 			// Test completed So Clear sessions.
-			complete_checkview_test();
+			complete_checkview_test( $checkview_test_id );
 		}
 
 		/**
