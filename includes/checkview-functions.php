@@ -59,6 +59,9 @@ if ( ! function_exists( 'get_checkview_test_id' ) ) {
 		$cv_test_id = isset( $_REQUEST['checkview_test_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) : '';
 
 		if ( ! empty( $cv_test_id ) ) {
+			if ( ! checkview_is_valid_uuid( $cv_test_id ) ) {
+				return false;
+			}
 			return $cv_test_id;
 		} else {
 			$referer_url = isset( $_SERVER['HTTP_REFERER'] ) ? sanitize_url( sanitize_text_field( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) ) : '';
@@ -66,6 +69,9 @@ if ( ! function_exists( 'get_checkview_test_id' ) ) {
 			$qry_str     = array();
 			if ( $referer_url ) {
 				parse_str( $referer_url, $qry_str );
+			}
+			if ( ! checkview_is_valid_uuid( $qry_str['checkview_test_id'] ) ) {
+				return false;
 			}
 			if ( isset( $qry_str['checkview_test_id'] ) ) {
 				return $qry_str['checkview_test_id'];
@@ -284,7 +290,9 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 	 */
 	function checkview_create_cv_session( $ip, $test_id ) {
 		global $wp, $wpdb;
-
+		if ( ! checkview_is_valid_uuid( $test_id ) ) {
+			return;
+		}
 		// return if already saved.
 		$already_have = checkview_get_cv_session( $ip, $test_id );
 		if ( ! empty( $already_have ) ) {
@@ -533,3 +541,15 @@ if ( ! function_exists( 'checkview_add_csp_header_for_plugin' ) ) {
 	}
 }
 add_action( 'send_headers', 'checkview_add_csp_header_for_plugin' );
+
+if ( ! function_exists( 'checkview_is_valid_uuid' ) ) {
+	/**
+	 * Validates CheckView Test ID.
+	 *
+	 * @param [string] $uuid checkview_test_id.
+	 * @return bool
+	 */
+	function checkview_is_valid_uuid( $uuid ) {
+		return preg_match( '/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i', $uuid );
+	}
+}

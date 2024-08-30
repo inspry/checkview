@@ -141,6 +141,7 @@ class Checkview_Admin {
 		} else {
 			$tab = '';
 		}
+
 		$user_id = get_current_user_id();
 		wp_localize_script(
 			$this->plugin_name,
@@ -168,7 +169,7 @@ class Checkview_Admin {
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
 		// skip if visitor ip not equal to CV Bot IP.
-		if ( ! isset( $_REQUEST['checkview_test_id'] ) ) {
+		if ( ! isset( $_REQUEST['checkview_test_id'] ) || ! checkview_is_valid_uuid( sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) ) ) {
 			return $plugins;
 		}
 		// disable clean talk for cv bot ip.
@@ -231,6 +232,9 @@ class Checkview_Admin {
 			if ( isset( $qry_str['checkview_test_id'] ) ) {
 				$cv_test_id = $qry_str['checkview_test_id'];
 			}
+		}
+		if ( ! empty( $cv_test_id ) && ! checkview_is_valid_uuid( $cv_test_id ) ) {
+			return;
 		}
 		if ( $cv_test_id && '' !== $cv_test_id ) {
 			setcookie( 'checkview_test_id', $cv_test_id, time() + 6600, COOKIEPATH, COOKIE_DOMAIN );
