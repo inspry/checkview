@@ -1646,7 +1646,7 @@ class CheckView_Api {
 						'Name' => $row->post_title,
 					);
 
-					$sql = "SELECT ID FROM {$wpdb->prefix}posts	 WHERE 1=1 and (post_content like '%wp:contact-form-7/contact-form-selector {\"id\":" . $hash . "%' OR post_content like '%[contact-form-7 id=\"" . $hash . "\"%' OR post_content like '%[contact-form-7 id=" . $hash . "%' OR post_content like \"%[contact-form-7 id=" . $hash . "%\") and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
+					$sql        = "SELECT ID FROM {$wpdb->prefix}posts	 WHERE 1=1 and (post_content like '%wp:contact-form-7/contact-form-selector {\"id\":" . $hash . "%' OR post_content like '%[contact-form-7 id=\"" . $hash . "\"%' OR post_content like '%[contact-form-7 id=" . $hash . "%' OR post_content like \"%[contact-form-7 id=" . $hash . "%\") and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
 					$form_pages = $wpdb->get_results(
 						$wpdb->prepare(
 							"SELECT ID FROM {$wpdb->prefix}posts
@@ -2032,6 +2032,14 @@ class CheckView_Api {
 		nocache_headers();
 		$jwt_token = $request->get_param( '_checkview_token' );
 		$jwt_token = isset( $jwt_token ) ? sanitize_text_field( $jwt_token ) : null;
+		// Check if the request is made over HTTPS.
+		if ( ! is_ssl() ) {
+			return new WP_Error(
+				'insecure_request',
+				esc_html__( 'Invalid request.', 'checkview' ),
+				array( 'status' => 400 )
+			);
+		}
 		// checking for JWT token.
 		if ( ! isset( $jwt_token ) ) {
 			return new WP_Error(
