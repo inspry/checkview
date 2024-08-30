@@ -99,7 +99,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 				);
 			}
 			// bypass hcaptcha.
-			add_filter( 'hcap_activate', '__return_false' );
+			//add_filter( 'hcap_activate', '__return_false' );
 		}
 
 		/**

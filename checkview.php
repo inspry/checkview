@@ -15,7 +15,7 @@
  * Plugin Name:       CheckView
  * Plugin URI:        https://checkview.io
  * Description:       CheckView is the #1 fully automated solution to test your WordPress forms and detect form problems fast.  Automatically test your WordPress forms to ensure you never miss a lead again.
- * Version:           1.1.15
+ * Version:           1.1.16
  * Author:            CheckView
  * Author URI:        https://checkview.io/
  * License:           GPL-2.0+
@@ -136,6 +136,9 @@ add_action(
  * @return bool
  */
 function checkview_my_hcap_activate( $activate ) {
+	if ( is_plugin_active( 'ninja-forms/ninja-forms.php' ) ) {
+		return;
+	}
 	if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
 		// check ip from share internet.
 		$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ) );
@@ -144,6 +147,11 @@ function checkview_my_hcap_activate( $activate ) {
 		$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
 	} else {
 		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+	}
+	// Validate that the input is a valid IP address.
+	if ( ! empty( $ip ) && ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+		// If validation fails, handle the error appropriately.
+		wp_die( esc_html__( 'Invalid IP Address', 'checkview' ) );
 	}
 	if ( isset( $_REQUEST['checkview_test_id'] ) || 'checkview-saas' === get_option( $ip ) ) {
 		return false;
