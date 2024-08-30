@@ -55,9 +55,24 @@ class Checkview_Woo_Automated_Testing {
 		$this->loader      = $loader;
 		if ( $this->loader ) {
 			$this->loader->add_action(
-				'init',
+				'admin_init',
 				$this,
 				'checkview_create_test_product',
+				200
+			);
+
+			$this->loader->add_action(
+				'trashed_post',
+				$this,
+				'checkview_trash_product_option',
+				20
+			);
+
+			// Hook into after_delete_post to delete the option when the product is permanently deleted.
+			$this->loader->add_action(
+				'after_delete_post',
+				$this,
+				'checkview_after_delete_product'
 			);
 			$this->loader->add_action(
 				'template_redirect',
@@ -155,6 +170,35 @@ class Checkview_Woo_Automated_Testing {
 		$this->checkview_test_mode();
 	}
 
+
+	/**
+	 * Deletes the option storing the product ID when the product is permanently deleted.
+	 *
+	 * @param int $post_id The ID of the post being deleted.
+	 */
+	public function checkview_after_delete_product( $post_id ) {
+		$product_id = get_option( 'checkview_woo_product_id' );
+
+		if ( $product_id && $post_id == $product_id ) {
+			// Delete the option storing the product ID if the deleted post is the test product.
+			delete_option( 'checkview_woo_product_id' );
+		}
+	}
+
+	/**
+	 * Handles the scenario where the product is moved to the trash.
+	 *
+	 * @param int $post_id The ID of the post being trashed.
+	 */
+	public function checkview_trash_product_option( $post_id ) {
+		// Check if the trashed post is the test product.
+		$product_id = get_option( 'checkview_woo_product_id' );
+
+		if ( $post_id == $product_id ) {
+			// If the product being trashed matches the stored product ID, delete the option.
+			wp_untrash_post( $product_id );
+		}
+	}
 	/**
 	 * Empties the Cart before sessions inits.
 	 *
@@ -336,7 +380,6 @@ class Checkview_Woo_Automated_Testing {
 	 */
 	public function checkview_get_test_product() {
 		$product_id = get_option( 'checkview_woo_product_id' );
-
 		if ( $product_id ) {
 			try {
 				$product = new WC_Product( $product_id );
@@ -348,11 +391,33 @@ class Checkview_Woo_Automated_Testing {
 				}
 			// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			} catch ( \Exception $e ) {
+				// Check if any product with the title "CheckView Testing Product" exists.
 				// The given test product was not valid, so we should fallback to the
 				// default response if one was not found in the first place.
 			}
 		}
 
+		$existing_product = wc_get_products(
+			array(
+				'name'   => 'CheckView Testing Product',
+				'status' => array( 'trash', 'publish' ),
+				'limit'  => 1,
+				'return' => 'objects',
+			)
+		);
+
+		if ( ! empty( $existing_product ) ) {
+			// If the product already exists (published or trashed), save its ID to options and return it.
+			$product = $existing_product[0];
+
+			// If the product is in the trash, restore it.
+			if ( $product->get_status() === 'trash' ) {
+				wp_untrash_post( $product->get_id() );
+			}
+
+			update_option( 'checkview_woo_product_id', $product->get_id(), true );
+			return $product;
+		}
 		return false;
 	}
 
