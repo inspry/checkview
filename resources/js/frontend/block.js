@@ -1,4 +1,3 @@
-
 import { sprintf, __ } from '@wordpress/i18n';
 import { registerPaymentMethod } from '@woocommerce/blocks-registry';
 import { decodeEntities } from '@wordpress/html-entities';
@@ -11,12 +10,32 @@ const defaultLabel = __(
 	'woo-gutenberg-products-block'
 );
 
-const label = decodeEntities(settings.title) || defaultLabel;
+// Custom escapeHTML function for sanitizing
+function escapeHTML(str) {
+    return str.replace(/[&<>"'`=\/]/g, function(s) {
+        return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+            '/': '&#x2F;',
+            '`': '&#x60;',
+            '=': '&#x3D;'
+        }[s];
+    });
+}
+
+// Sanitize the title and description before decoding them
+const sanitizedTitle = escapeHTML(settings.title) || defaultLabel;
+const sanitizedDescription = escapeHTML(settings.description || '');
+
+const label = decodeEntities(sanitizedTitle);
 /**
  * Content component
  */
 const Content = () => {
-	return decodeEntities(settings.description || '');
+	return decodeEntities(sanitizedDescription);
 };
 /**
  * Label component

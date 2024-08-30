@@ -21,10 +21,21 @@ class Test_Checkview_General extends WP_UnitTestCase {
 			)
 		);
 
-		// Call the function to complete the test
+		// Call the function to complete the test.
 		complete_checkview_test( $test_id );
-		// Assert that the session is deleted from the database
+		// Assert that the session is deleted from the database.
+		// WPDBPREPARE.
 		$result = $wpdb->get_results( "SELECT * FROM $session_table WHERE visitor_ip = '$visitor_ip' AND test_id = '$test_id' AND test_key = '$test_key'" );
+
+		$result = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM $session_table WHERE visitor_ip = %s AND test_id = %s AND test_key = %s",
+				$visitor_ip,
+				$test_id,
+				$test_key
+			)
+		);
+
 		$this->assertEmpty( $result );
 	}
 
