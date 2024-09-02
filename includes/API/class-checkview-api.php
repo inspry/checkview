@@ -1049,7 +1049,7 @@ class CheckView_Api {
 			$headers['Cookie'] = implode( '; ', $cookies );
 		}
 		// Make the remote GET request.
-		$response = wp_remote_get(
+		$response = wp_safe_remote_get(
 			$url,
 			array(
 				'headers' => $headers,
@@ -1368,14 +1368,14 @@ class CheckView_Api {
 			wp_die();
 		}
 		if ( '' !== $forms_list && null !== $forms_list && false !== $forms_list ) {
-			// return new WP_REST_Response(
-			// array(
-			// 'status'        => 200,
-			// 'response'      => esc_html__( 'Successfully retrieved the forms list.', 'checkview' ),
-			// 'body_response' => $forms_list,
-			// )
-			// );
-			// wp_die();
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the forms list.', 'checkview' ),
+					'body_response' => $forms_list,
+				)
+			);
+			wp_die();
 		}
 		$forms = array();
 		if ( ! is_admin() ) {

@@ -123,7 +123,7 @@ if ( ! function_exists( 'checkview_get_publickey' ) ) {
 	function checkview_get_publickey() {
 		$public_key = get_transient( 'checkview_saas_pk' );
 		if ( null === $public_key || '' === $public_key || empty( $public_key ) ) {
-			$response   = wp_remote_get(
+			$response   = wp_safe_remote_get(
 				'https://app.checkview.io/api/helper/public_key',
 				array(
 					'method'  => 'GET',
@@ -152,7 +152,7 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 			wp_die( esc_html__( 'Invalid IP Address', 'checkview' ) );
 		}
 		if ( null === $ip_address || '' === $ip_address || empty( $ip_address ) ) {
-			$request = wp_remote_get(
+			$request = wp_safe_remote_get(
 				'https://storage.googleapis.com/test-ip-bucket/container_ip',
 				array(
 					'method'  => 'GET',
@@ -191,14 +191,14 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 		$api_ip     = checkview_get_api_ip();
 
 		if ( $api_ip === $current_ip ) {
-			$response = wp_remote_get(
+			$response = wp_safe_remote_get(
 				'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=1&status=allow&note=Checkview Bot&records=' . $api_ip,
 				array(
 					'method'  => 'GET',
 					'timeout' => 500,
 				)
 			);
-			$response = wp_remote_get(
+			$response = wp_safe_remote_get(
 				'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=4&status=allow&note=Checkview Bot&records=checkview.io',
 				array(
 					'method'  => 'GET',
