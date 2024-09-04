@@ -100,6 +100,20 @@ register_activation_hook( __FILE__, 'activate_checkview' );
 register_deactivation_hook( __FILE__, 'deactivate_checkview' );
 
 /**
+ * Validates IP address.
+ *
+ * @param IP $ip IP address.
+ * @return bool
+ */
+function checkview_validate_ip( $ip ) {
+	// Validate that the input is a valid IP address.
+	if ( ! empty( $ip ) && ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+		// If validation fails, handle the error appropriately.
+		error_log( esc_html__( 'Invalid IP Address', 'checkview' ) );
+		return false;
+	}
+}
+/**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
@@ -151,7 +165,9 @@ function checkview_my_hcap_activate( $activate ) {
 	// Validate that the input is a valid IP address.
 	if ( ! empty( $ip ) && ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
 		// If validation fails, handle the error appropriately.
-		wp_die( esc_html__( 'Invalid IP Address', 'checkview' ) );
+		if ( ! checkview_validate_ip( $ip ) ) {
+			return $activate;
+		}
 	}
 	if ( isset( $_REQUEST['checkview_test_id'] ) || 'checkview-saas' === get_option( $ip ) ) {
 		return false;

@@ -102,5 +102,19 @@ class Checkview_Activator {
 			$sql .= ') ENGINE=InnoDB DEFAULT CHARSET=utf8;';
 			dbDelta( $sql );
 		}
+
+		$cv_used_nonces = $wpdb->prefix . 'cv_used_nonces';
+
+		$charset_collate = $wpdb->get_charset_collate();
+		if ( $wpdb->get_var( $wpdb->prepare( 'show tables like %s', $cv_used_nonces ) ) !== $cv_used_nonces ) {
+				$sql = "CREATE TABLE $cv_used_nonces (
+				id BIGINT(20) NOT NULL AUTO_INCREMENT,
+				nonce VARCHAR(255) NOT NULL,
+				used_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+				PRIMARY KEY (id),
+				UNIQUE KEY nonce (nonce)
+			) $charset_collate;";
+			dbDelta( $sql );
+		}
 	}
 }

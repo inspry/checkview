@@ -87,6 +87,20 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 == Changelog ==
 
 Here is the reversed changelog:
+= 1.1.17 =
+* Resolved token validation issue.
+* Resolved IP address validation issues.
+* Added data validations.
+* Added API validations.
+* Added SaaS IP address validation.
+* Added SaaS nonce token validation.
+* Added must SSL checks for API calls.
+* Added new DB table for storing used nonce.
+* Added crone to delete expired nonce.
+* Added logs for API and internal functions.
+* Resolved hCaptcha missing fields error after NinjaForms latest updates.
+* Added endpoint to expose version changes for installed plugins.
+
 = 1.1.16 =
 * Added hCaptcha bypass in Ninja Forms.
 * Updated SaaS public key address.
@@ -95,6 +109,7 @@ Here is the reversed changelog:
 * Added validations for SaaS IP addresses.
 * Added checks to avoid default product duplications.
 * Added auto restore from trash feature for the default product.
+
 = 1.1.15 =
 * Added filter for invalid URLs in CF7 and Ninja Forms.
 * Added new endpoint to pull additional site info.
@@ -182,6 +197,20 @@ Here is the reversed changelog:
 == Upgrade Notice ==
 
 Here is the reversed changelog:
+= 1.1.17 =
+* Resolved token validation issue.
+* Resolved IP address validation issues.
+* Added data validations.
+* Added API validations.
+* Added SaaS IP address validation.
+* Added SaaS nonce token validation.
+* Added must SSL checks for API calls.
+* Added new DB table for storing used nonce.
+* Added crone to delete expired nonce.
+* Added logs for API and internal functions.
+* Resolved hCaptcha missing fields error after NinjaForms latest updates.
+* Added endpoint to expose version changes for installed plugins.
+
 = 1.1.16 =
 * Added hCaptcha bypass in Ninja Forms.
 * Updated SaaS public key address.
@@ -190,6 +219,7 @@ Here is the reversed changelog:
 * Added validations for SaaS IP addresses.
 * Added checks to avoid default product duplications.
 * Added auto restore from trash feature for the default product.
+
 = 1.1.15 =
 * Added filter for invalid URLs in CF7 and Ninja Forms.
 * Added new endpoint to pull additional site info.

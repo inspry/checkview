@@ -146,11 +146,6 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 	function checkview_get_api_ip() {
 
 		$ip_address = get_transient( 'checkview_saas_ip_address' );
-		// Validate that the input is a valid IP address.
-		if ( ! empty( $ip_address ) && ! filter_var( $ip_address, FILTER_VALIDATE_IP ) ) {
-			// If validation fails, handle the error appropriately.
-			wp_die( esc_html__( 'Invalid IP Address', 'checkview' ) );
-		}
 		if ( null === $ip_address || '' === $ip_address || empty( $ip_address ) ) {
 			$request = wp_safe_remote_get(
 				'https://storage.googleapis.com/test-ip-bucket/container_ip',
@@ -169,6 +164,13 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 			if ( ! empty( $data ) ) {
 				$ip_address = $data['ipAddress'];
 				set_transient( 'checkview_saas_ip_address', $ip_address, 12 * HOUR_IN_SECONDS );
+			}
+		}
+		// Validate that the input is a valid IP address.
+		if ( ! empty( $ip_address ) && ! filter_var( $ip_address, FILTER_VALIDATE_IP ) ) {
+			// If validation fails, handle the error appropriately.
+			if ( ! checkview_validate_ip( $ip_address ) ) {
+				return false;
 			}
 		}
 		return $ip_address;
@@ -251,8 +253,9 @@ if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
 		}
 		// Validate that the input is a valid IP address.
 		if ( ! empty( $ip ) && ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
-			// If validation fails, handle the error appropriately.
-			wp_die( esc_html__( 'Invalid IP Address', 'checkview' ) );
+			if ( ! checkview_validate_ip( $ip ) ) {
+				return false;
+			}
 		}
 		return $ip;
 	}
@@ -314,7 +317,8 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 		if ( ! empty( $request_uri ) && ! filter_var( $request_uri, FILTER_SANITIZE_URL ) ) {
 			// If validation fails, handle the error appropriately.
-			wp_die( esc_html__( 'Invalid IP Address', 'checkview' ) );
+			error_log( esc_html__( 'Invalid url.', 'checkview' ) );
+			return false;
 		}
 		if ( count( $is_sub_directory ) > 1 ) {
 			$current_url = $current_url . $request_uri;
@@ -456,6 +460,7 @@ if ( ! function_exists( 'checkview_whitelist_saas_ip_addresses' ) ) {
 	 */
 	function checkview_whitelist_saas_ip_addresses() {
 		$api_ip = checkview_get_api_ip();
+		// $ip = '2.3';
 		if ( ! empty( $_SERVER['REMOTE_ADDR'] ) && ! filter_var( sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ), FILTER_SANITIZE_URL ) ) {
 			// If validation fails, handle the error appropriately.
 			wp_die( esc_html__( 'Invalid IP Address.', 'checkview' ) );
@@ -516,6 +521,7 @@ if ( ! function_exists( 'checkview_is_plugin_request' ) ) {
 	 */
 	function checkview_is_plugin_request() {
 		$current_route = rest_get_url_prefix() . '/checkview/v1/';
+		// $ip = '2.3';
 		if ( ! empty( $_SERVER['REQUEST_URI'] ) && ! filter_var( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), FILTER_SANITIZE_URL ) ) {
 			// If validation fails, handle the error appropriately.
 			wp_die( esc_html__( 'Invalid IP Address.', 'checkview' ) );

@@ -39,5 +39,7 @@ class Checkview_Deactivator {
 			// Update the option with the IP removed.
 			update_option( 'hcaptcha_settings', $settings );
 		}
+		$timestamp = wp_next_scheduled( 'checkview_nonce_cleanup_cron' );
+		wp_unschedule_event( $timestamp, 'checkview_nonce_cleanup_cron' );
 	}
 }

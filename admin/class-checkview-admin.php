@@ -50,8 +50,48 @@ class Checkview_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
+		add_action(
+			'wp',
+			array( $this, 'checkview_schedule_nonce_cleanup' )
+		);
+
+		add_action(
+			'checkview_nonce_cleanup_cron',
+			array( $this, 'checkview_delete_expired_nonces' )
+		);
 	}
 
+	/**
+	 * Deletes expired nonces.
+	 *
+	 * @return void
+	 */
+	public function checkview_delete_expired_nonces() {
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'used_nonces';
+
+		// Define the expiration period (e.g., 24 hours).
+		$expiration = gmdate( 'Y-m-d H:i:s', strtotime( '-24 hours' ) );
+
+		// Delete nonces older than the expiration time.
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM $table_name WHERE used_at < %s",
+				$expiration
+			)
+		);
+	}
+
+	/**
+	 * Schedules nonce cleanup process.
+	 *
+	 * @return void
+	 */
+	public function checkview_schedule_nonce_cleanup() {
+		if ( ! wp_next_scheduled( 'checkview_nonce_cleanup_cron' ) ) {
+			wp_schedule_event( time(), 'hourly', 'checkview_nonce_cleanup_cron' );
+		}
+	}
 	/**
 	 * Register the stylesheets for the admin area.
 	 *

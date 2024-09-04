@@ -402,18 +402,11 @@ class Checkview {
 			'enqueue_scripts'
 		);
 
-		// Current Vsitor IP.
-		$visitor_ip = checkview_get_visitor_ip();
-		// Check view Bot IP.
-		$cv_bot_ip = checkview_get_api_ip();
-		// proceed if visitor ip is equal to cv bot ip.
-		if ( $visitor_ip === $cv_bot_ip ) {
-			$this->loader->add_action(
-				'pre_option_require_name_email',
-				'',
-				'checkview_whitelist_saas_ip_addresses'
-			);
-		}
+		$this->loader->add_action(
+			'pre_option_require_name_email',
+			'',
+			'checkview_whitelist_saas_ip_addresses'
+		);
 	}
 	/**
 	 * Tracks core version updates. Resets CheckView cache.

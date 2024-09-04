@@ -598,7 +598,12 @@ class Checkview_Woo_Automated_Testing {
 				3
 			);
 			// bypass hcaptcha.
-			add_filter( 'hcap_activate', array( $this, 'checkview_return_false' ), -999, 1 );
+			add_filter(
+				'hcap_activate',
+				array( $this, 'checkview_return_false' ),
+				-999,
+				1
+			);
 		}
 	}
 	/**
