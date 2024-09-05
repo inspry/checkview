@@ -2021,10 +2021,20 @@ class CheckView_Api {
 		// Wanted to Add JWT AUTH could not add because of limited time.
 		// set no cache header.
 		nocache_headers();
-		$jwt_token   = $request->get_param( '_checkview_token' );
-		$nonce_token = $request->get_param( '_checkview_nonce' );
-		$nonce_token = isset( $nonce_token ) ? sanitize_text_field( $nonce_token ) : null;
-		$jwt_token   = isset( $jwt_token ) ? sanitize_text_field( $jwt_token ) : null;
+		// Get the Authorization header.
+		$auth_header = $request->get_header( 'Authorization' );
+		$auth_header = isset( $auth_header ) ? sanitize_text_field( $auth_header ) : '';
+		// checking for JWT token.
+		if ( empty( $auth_header ) ) {
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'api-logs', 'Empty header.' );
+			return new WP_Error(
+				400,
+				esc_html__( 'Invalid request.', 'checkview' ),
+				''
+			);
+			wp_die();
+		}
 		// Check if the request is made over HTTPS.
 		if ( ! is_ssl() ) {
 			// Log the detailed error for internal use.
@@ -2035,11 +2045,12 @@ class CheckView_Api {
 				array( 'status' => 400 )
 			);
 		}
-
+		$nonce_token = checkview_validate_jwt_token( $auth_header );
 		// checking for JWT token.
-		if ( ! isset( $nonce_token ) ) {
+		if ( ! isset( $nonce_token ) || empty( $nonce_token ) || is_wp_error( $nonce_token ) ) {
+			$this->jwt_error = $nonce_token;
 			// Log the detailed error for internal use.
-			Checkview_Admin_Logs::add( 'api-logs', 'Empty nonce token.' );
+			Checkview_Admin_Logs::add( 'api-logs', 'Invalid token.' );
 			return new WP_Error(
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
@@ -2074,36 +2085,16 @@ class CheckView_Api {
 				Checkview_Admin_Logs::add( 'api-logs', 'Not able to add nonce.' );
 				return new WP_Error(
 					'error',
-					esc_html__( 'An error occurred while processing your request.', 'checkview' ),
+					esc_html__(
+						'An error occurred while processing your request.',
+						'checkview'
+					),
 					array(
 						'status' => 404,
 					)
 				);
 			}
 		}
-		// checking for JWT token.
-		if ( ! isset( $jwt_token ) ) {
-			// Log the detailed error for internal use.
-			Checkview_Admin_Logs::add( 'api-logs', 'Empty JWT token.' );
-			return new WP_Error(
-				400,
-				esc_html__( 'Invalid request.', 'checkview' ),
-				''
-			);
-			wp_die();
-		}
-		$valid_token = checkview_validate_jwt_token( $jwt_token );
-		if ( true !== $valid_token ) {
-			$this->jwt_error = $valid_token;
-			// Log the detailed error for internal use.
-			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
-			return new WP_Error(
-				400,
-				esc_html__( 'Invalid request.', 'checkview' ),
-			);
-			wp_die();
-		}
-
 		return array(
 			'code' => 'jwt_auth_valid_token',
 			'data' => array(

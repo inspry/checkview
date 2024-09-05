@@ -21,30 +21,63 @@ if ( ! function_exists( 'checkview_validate_jwt_token' ) ) {
 	 * Decodes JWT TOKEN.
 	 *
 	 * @param string $token jwt token to valiate.
-	 * @return string/bool/void
+	 * @return string/bool/void/WP_Error
 	 * @since    1.0.0
 	 */
 	function checkview_validate_jwt_token( $token ) {
 
 		$key = checkview_get_publickey();
+		// Ensure the header is present.
+		if ( ! $token ) {
+			Checkview_Admin_Logs::add( 'api-logs', 'Authorization header not found.' );
+			return new WP_Error(
+				'no_auth_header',
+				'There was a technical error while processing your request.',
+				array( 'status' => 401 )
+			);
+		}
 
+		// Check if it contains a Bearer token.
+		if ( strpos( $token, 'Bearer ' ) !== 0 ) {
+			Checkview_Admin_Logs::add( 'api-logs', 'Authorization header must start with "Bearer "' );
+			return new WP_Error(
+				'invalid_auth_header',
+				'There was a technical error while processing your request.',
+				array( 'status' => 401 )
+			);
+		}
+
+		// Extract the JWT token from the header.
+		$token = substr( $token, 7 ); // Remove "Bearer " prefix.
 		try {
 			$decoded = JWT::decode( $token, new Key( $key, 'RS256' ) );
 		} catch ( Exception $e ) {
-			return esc_html( $e->getMessage() );
+			Checkview_Admin_Logs::add( 'api-logs', esc_html( $e->getMessage() ) );
+			return new WP_Error(
+				'invalid_auth_header',
+				'There was a technical error while processing your request.',
+				array( 'status' => 401 )
+			);
 		}
 		$jwt = (array) $decoded;
 		// if url mismatch return false.
 		if ( str_contains( $jwt['websiteUrl'], get_bloginfo( 'url' ) ) !== true && get_bloginfo( 'url' ) !== $jwt['websiteUrl'] && ! strpos( $jwt['websiteUrl'], get_bloginfo( 'url' ) ) ) {
-			return esc_html__( 'Invalid Token', 'checkview' );
+			Checkview_Admin_Logs::add( 'api-logs', 'Invalid site url.' );
+			return false;
 		}
 
 		// if token expired.
 		if ( $jwt['exp'] < time() ) {
-
-			return esc_html__( 'Token Expired', 'checkview' );
+			Checkview_Admin_Logs::add( 'api-logs', 'Token Expired.' );
+			return false;
 		}
-		return true;
+
+		// if url mismatch return false.
+		if ( empty( $jwt['_checkview_nonce'] ) ) {
+			Checkview_Admin_Logs::add( 'api-logs', 'Nonce Absent.' );
+			return false;
+		}
+		return $jwt['_checkview_nonce'];
 	}
 }
 if ( ! function_exists( 'get_checkview_test_id' ) ) {

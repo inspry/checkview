@@ -150,9 +150,6 @@ add_action(
  * @return bool
  */
 function checkview_my_hcap_activate( $activate ) {
-	if ( is_plugin_active( 'ninja-forms/ninja-forms.php' ) ) {
-		return;
-	}
 	if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
 		// check ip from share internet.
 		$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ) );
