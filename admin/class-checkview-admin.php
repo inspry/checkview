@@ -209,12 +209,10 @@ class Checkview_Admin {
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
 		// skip if visitor ip not equal to CV Bot IP.
-		if ( $cv_bot_ip !== $visitor_ip ) {
+		if ( ( ! is_array( $cv_bot_ip ) || ! in_array( $visitor_ip, $cv_bot_ip ) ) && ( ! isset( $_REQUEST['checkview_test_id'] ) || ! checkview_is_valid_uuid( sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) ) ) ) {
 			return $plugins;
 		}
-		if ( ! isset( $_REQUEST['checkview_test_id'] ) || ! checkview_is_valid_uuid( sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) ) ) {
-			return $plugins;
-		}
+
 		// disable clean talk for cv bot ip.
 		$key = array_search( 'cleantalk-spam-protect/cleantalk.php', $plugins, true );
 		if ( false !== $key ) {
@@ -236,10 +234,15 @@ class Checkview_Admin {
 		// Current Vsitor IP.
 		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP.
-		$cv_bot_ip = checkview_get_api_ip();
+		$cv_bot_ip   = checkview_get_api_ip();
+		// LocalTest.
+		$cv_bot_ip[] = '::1';
 		// $visitor_ip = $cv_bot_ip;
 		// skip if visitor ip not equal to CV Bot IP.
-		if ( $visitor_ip !== $cv_bot_ip && 'checkview-saas' !== get_option( $visitor_ip ) && ! isset( $_REQUEST['checkview_test_id'] ) ) {
+		if ( is_array( $cv_bot_ip ) && ! in_array( $visitor_ip, $cv_bot_ip ) ) {
+			return;
+		}
+		if ( 'checkview-saas' !== get_option( $visitor_ip ) && ! isset( $_REQUEST['checkview_test_id'] ) ) {
 			return;
 		}
 

@@ -27,6 +27,15 @@ if ( ! function_exists( 'checkview_validate_jwt_token' ) ) {
 	function checkview_validate_jwt_token( $token ) {
 
 		$key = checkview_get_publickey();
+		$key = '-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwRRtGQbYMUMSLooRo/s4
+PauU7PCH8Shf1ZybhIEImft1v6sUKzTKMXcKiQu0s/dNt5c6324FWVyVg7AVteGg
+hBUL74ZVuKXjh6jCQ9XgOPcVSYZxohjhskbXPA+pKBEuCMVEvNZZw9R91q7JFUvb
+P8F1xhbHPYTba26CKpZEil06DDXozkmkTYY52x/iyb5WMZ50RZokUOL6QKKRjQ5V
+HDbFNhBZeq490nFVwXHiVqAK/ey9AmsDEZMqjkTfR53lmz5WJbG/w3L0WzVmREMh
+XcACW1kwGceYPWMoFKMtKFCBNu1I6sSt06weTakB9/dGE9zjNRQIuIyZxB+ChK2s
+/QIDAQAB
+-----END PUBLIC KEY-----';
 		// Ensure the header is present.
 		if ( ! $token ) {
 			Checkview_Admin_Logs::add( 'api-logs', 'Authorization header not found.' );
@@ -63,6 +72,10 @@ if ( ! function_exists( 'checkview_validate_jwt_token' ) ) {
 		// if url mismatch return false.
 		if ( str_contains( $jwt['websiteUrl'], get_bloginfo( 'url' ) ) !== true && get_bloginfo( 'url' ) !== $jwt['websiteUrl'] && ! strpos( $jwt['websiteUrl'], get_bloginfo( 'url' ) ) ) {
 			Checkview_Admin_Logs::add( 'api-logs', 'Invalid site url.' );
+			echo get_bloginfo( 'url' ) ;
+			echo "   ";
+			echo $jwt['websiteUrl'];
+			exit;
 			return false;
 		}
 
@@ -178,7 +191,7 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 	 */
 	function checkview_get_api_ip() {
 
-		$ip_address = get_transient( 'checkview_saas_ip_address' );
+		$ip_address = get_transient( 'checkview_saas_ip_address' ) ? get_transient( 'checkview_saas_ip_address' ) : array();
 		if ( null === $ip_address || '' === $ip_address || empty( $ip_address ) ) {
 			$request = wp_safe_remote_get(
 				'https://storage.googleapis.com/test-ip-bucket/container_ip',
@@ -194,18 +207,35 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 			$body = wp_remote_retrieve_body( $request );
 
 			$data = json_decode( $body, true );
-			if ( ! empty( $data ) ) {
+			if ( ! empty( $data ) && ! empty( $data['ipAddress'] ) ) {
 				$ip_address = $data['ipAddress'];
+				if ( ! empty( $ip_address ) && is_array( $ip_address ) ) {
+					foreach ( $ip_address as $ip ) {
+						// If validation fails, handle the error appropriately.
+						if ( ! checkview_validate_ip( $ip ) ) {
+							return false;
+						}
+					}
+				} elseif ( ! checkview_validate_ip( $ip_address ) ) {
+					return false;
+				}
+				set_transient( 'checkview_saas_ip_address', $ip_address, 12 * HOUR_IN_SECONDS );
+			} elseif ( ! empty( $data ) && ! empty( $data['ipAddresses'] ) ) {
+				$ip_address = $data['ipAddresses'];
+				if ( ! empty( $ip_address ) && is_array( $ip_address ) ) {
+					foreach ( $ip_address as $ip ) {
+						// If validation fails, handle the error appropriately.
+						if ( ! checkview_validate_ip( $ip ) ) {
+							return false;
+						}
+					}
+				} elseif ( ! checkview_validate_ip( $ip_address ) ) {
+					return false;
+				}
 				set_transient( 'checkview_saas_ip_address', $ip_address, 12 * HOUR_IN_SECONDS );
 			}
 		}
-		// Validate that the input is a valid IP address.
-		if ( ! empty( $ip_address ) && ! filter_var( $ip_address, FILTER_VALIDATE_IP ) ) {
-			// If validation fails, handle the error appropriately.
-			if ( ! checkview_validate_ip( $ip_address ) ) {
-				return false;
-			}
-		}
+
 		return $ip_address;
 	}
 }
@@ -225,7 +255,7 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 		$current_ip = checkview_get_visitor_ip();
 		$api_ip     = checkview_get_api_ip();
 
-		if ( $api_ip === $current_ip ) {
+		if ( is_array( $api_ip ) && in_array( $current_ip, $api_ip ) ) {
 			$response = wp_safe_remote_get(
 				'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=1&status=allow&note=Checkview Bot&records=' . $api_ip,
 				array(
@@ -284,38 +314,15 @@ if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
 		} else {
 			$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 		}
-		// Validate that the input is a valid IP address.
-		if ( ! empty( $ip ) && ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
-			if ( ! checkview_validate_ip( $ip ) ) {
-				return false;
-			}
+
+		if ( ! checkview_validate_ip( $ip ) ) {
+			return false;
 		}
+
 		return $ip;
 	}
 }
-if ( function_exists( 'is_ipv6_address' ) ) {
-	/**
-	 * Check if the provided IP address is IPv6.
-	 *
-	 * @param string $ip_address The IP address to check.
-	 * @return bool True if the IP address is IPv6, false otherwise.
-	 */
-	function is_ipv6_address( $ip_address ) {
-		return filter_var( $ip_address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) !== false;
-	}
-}
 
-if ( ! function_exists( 'is_ipv4_address' ) ) {
-	/**
-	 * Check if the provided IP address is IPv4.
-	 *
-	 * @param string $ip_address The IP address to check.
-	 * @return bool True if the IP address is IPv4, false otherwise.
-	 */
-	function is_ipv4_address( $ip_address ) {
-		return filter_var( $ip_address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) !== false;
-	}
-}
 if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 	/**
 	 * Create check view Test Session.
@@ -350,7 +357,8 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 		if ( ! empty( $request_uri ) && ! filter_var( $request_uri, FILTER_SANITIZE_URL ) ) {
 			// If validation fails, handle the error appropriately.
-			error_log( esc_html__( 'Invalid url.', 'checkview' ) );
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'ip-logs', esc_html__( 'Invalid URL.', 'checkview' ) );
 			return false;
 		}
 		if ( count( $is_sub_directory ) > 1 ) {
@@ -493,12 +501,12 @@ if ( ! function_exists( 'checkview_whitelist_saas_ip_addresses' ) ) {
 	 */
 	function checkview_whitelist_saas_ip_addresses() {
 		$api_ip = checkview_get_api_ip();
-		// $ip = '2.3';
-		if ( ! empty( $_SERVER['REMOTE_ADDR'] ) && ! filter_var( sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ), FILTER_SANITIZE_URL ) ) {
-			// If validation fails, handle the error appropriately.
-			wp_die( esc_html__( 'Invalid IP Address.', 'checkview' ) );
+		if ( ! empty( $_SERVER['REMOTE_ADDR'] ) && ! filter_var( sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ), FILTER_VALIDATE_IP ) ) {
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'ip-logs', esc_html__( 'Invalid IP Address.', 'checkview' ) );
+			return false;
 		}
-		if ( in_array( isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '', array( $api_ip ), true ) ) {
+		if ( is_array( $api_ip ) && in_array( isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '', $api_ip, true ) ) {
 			return true;
 		}
 	}
@@ -554,10 +562,10 @@ if ( ! function_exists( 'checkview_is_plugin_request' ) ) {
 	 */
 	function checkview_is_plugin_request() {
 		$current_route = rest_get_url_prefix() . '/checkview/v1/';
-		// $ip = '2.3';
 		if ( ! empty( $_SERVER['REQUEST_URI'] ) && ! filter_var( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), FILTER_SANITIZE_URL ) ) {
 			// If validation fails, handle the error appropriately.
-			wp_die( esc_html__( 'Invalid IP Address.', 'checkview' ) );
+			Checkview_Admin_Logs::add( 'ip-logs', esc_html__( 'Invalid IP Address.', 'checkview' ) );
+			return false;
 		}
 		return strpos(
 			isset( $_SERVER['REQUEST_URI'] ) ? sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '',
@@ -595,4 +603,43 @@ if ( ! function_exists( 'checkview_is_valid_uuid' ) ) {
 		return preg_match( '/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i', $uuid );
 	}
 }
-// complete_checkview_test( '2121c45d-2ac7-4d21-8b54-9a732867bfaf' );
+
+
+$privateKey = '-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDBFG0ZBtgxQxIu
+ihGj+zg9q5Ts8IfxKF/VnJuEgQiZ+3W/qxQrNMoxdwqJC7Sz9023lzrfbgVZXJWD
+sBW14aCEFQvvhlW4peOHqMJD1eA49xVJhnGiGOGyRtc8D6koES4IxUS81lnD1H3W
+rskVS9s/wXXGFsc9hNtrboIqlkSKXToMNejOSaRNhjnbH+LJvlYxnnRFmiRQ4vpA
+opGNDlUcNsU2EFl6rj3ScVXBceJWoAr97L0CawMRkyqORN9HneWbPlYlsb/DcvRb
+NWZEQyFdwAJbWTAZx5g9YygUoy0oUIE27UjqxK3TrB5NqQH390YT3OM1FAi4jJnE
+H4KEraz9AgMBAAECggEACJqTd/xrX0xf/8LMveJO6qnvwbGjyLYCez9L5+xkSMmk
+pI0kdv5r8UNXyVd9B4ptB8O4J3+uUQG2Oen7iwTRRV3v1tVTdgHLTYluyrKA+4qk
+A89aumQpV2t0KOSdigcJgvHDcv2m8EE2TMUj64xNFR6BcIfQUaEWJACU7jcAyFXJ
+1SBAU/rhQOdQTGrLBjm1j0dxUS3UHALK/gNGk7jKuAg638lZudrVgTBrxYuyFyK2
+7as6BBKhQjcf4Bow9qarclMGGusBQxFI2pESrUjWodaPlTT5Ky3Z8ClmjLlLwcNH
+/GzRRMerXVf7cmM/hU+vJZXgCNbIaGPgs771kSz/8wKBgQDzmpUwAs808GbWNqxK
+Q7tnvFWwAdlQhLNnqRL+55FHQ+u6lCy+qOsj3erjv9hLshzEU4djpJIXjpQQ6UBK
+iMhtWJj0A5hgOZDWka/6lvwx87INmKWWJkDTX27M9FPpQFChhj83Q1GKpH8w1B3W
+0ZTBqvUfekryVCGIO5LMG4p1pwKBgQDK56suhVUXTyoL53bQqvV+nEXniDeZqMep
+ZAwOX41yXeuFMs9BxLwK4W1Bor2VymJb8CoH/Mako03taQOSci7ybxZPRGOB9oYB
+9qSe5GxgxZaYVYu/JP+vYmha17O8CxvTOrKa+9ZV/dipTTlwXJgTdg6lSwGgMAp9
+ISkZVlfkuwKBgD2g6gVPcKRv/VRMWKIhKJRB7Vut3BCmwcyD1a5vXy2sXULCod9K
+VNKqHfaoXkwoL2bryuDGjb8v7v2oRP+WQz6Gn4t8LVyKs73U9bRr5jms8WrHJ30p
+CFVxW1K2rVPhVYTHtc6BVWvB2fu8biAevYeRfJoOEk/kQOd6StUgUpMZAoGBAKRc
+xe4JU8Rt/EFoXnbqBbNqI7ZKQb/XWOV+hcWe4ZWjPwXHAtzj4O9vbHGewrR0HPkc
+su+Fc+Qp5RZL2vjmReFc21WasIC2khdFFFUh9Cjv5e3AXlOYRQZtUNtFn/LTjNau
+1b92AUnnN3rtc3nxh788AuEiwU5hnB2AnypHJyvBAoGAUY9IZJAtAwvL3TnzHAb5
+QVNWKGfXZjl0HbJkdAff7vtDvMSLMc2u/hV5fcfk9WxJ7t7G+HApaOoYzY47xyMv
+Cr3p0PqeC+wUi8zyIPB5mCgB1M1F1FdtobiH27Q/Sv3s/nuH76UN8oSQ5TqiKeZL
+1R6FwcbP9u6uv8dP2VssCK8=
+-----END PRIVATE KEY-----';
+
+$payload = [
+    "websiteUrl" => 'https://inspry-test-site.com',
+    "exp" => 1729104000,  // Unix timestamp for expiration
+    "_checkview_nonce" => "2121c45d-2ac7-4d21-8b54-9a732867bfaf"
+];
+
+$jwt = JWT::encode($payload, $privateKey, 'RS256');
+
+//echo "Your JWT Token: " . $jwt;

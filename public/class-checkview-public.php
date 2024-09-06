@@ -112,7 +112,7 @@ class Checkview_Public {
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
 		// procceed if visitor ip is equal to cv bot ip.
-		if ( $visitor_ip === $cv_bot_ip ) {
+		if ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) {
 			wp_dequeue_script( 'contact-form-7' );
 			wp_dequeue_style( 'contact-form-7' );
 			wp_dequeue_script( 'wpcf7-recaptcha' );

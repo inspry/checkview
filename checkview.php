@@ -15,7 +15,7 @@
  * Plugin Name:       CheckView
  * Plugin URI:        https://checkview.io
  * Description:       CheckView is the #1 fully automated solution to test your WordPress forms and detect form problems fast.  Automatically test your WordPress forms to ensure you never miss a lead again.
- * Version:           1.1.16
+ * Version:           1.1.17
  * Author:            CheckView
  * Author URI:        https://checkview.io/
  * License:           GPL-2.0+
@@ -36,7 +36,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'CHECKVIEW_VERSION', '1.1.16' );
+define( 'CHECKVIEW_VERSION', '1.1.17' );
 
 /**
  * Define constant for plugin settings link
@@ -111,7 +111,10 @@ function checkview_validate_ip( $ip ) {
 		// If validation fails, handle the error appropriately.
 		error_log( esc_html__( 'Invalid IP Address', 'checkview' ) );
 		return false;
+	} elseif ( empty( $ip ) ) {
+		return false;
 	}
+	return true;
 }
 /**
  * The core plugin class that is used to define internationalization,
@@ -159,13 +162,11 @@ function checkview_my_hcap_activate( $activate ) {
 	} else {
 		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 	}
-	// Validate that the input is a valid IP address.
-	if ( ! empty( $ip ) && ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
-		// If validation fails, handle the error appropriately.
-		if ( ! checkview_validate_ip( $ip ) ) {
-			return $activate;
-		}
+	// If validation fails, handle the error appropriately.
+	if ( ! checkview_validate_ip( $ip ) ) {
+		return $activate;
 	}
+
 	if ( isset( $_REQUEST['checkview_test_id'] ) || 'checkview-saas' === get_option( $ip ) ) {
 		return false;
 	}
@@ -174,7 +175,35 @@ function checkview_my_hcap_activate( $activate ) {
 
 add_filter( 'hcap_activate', 'checkview_my_hcap_activate' );
 
+if ( ! function_exists( 'checkview_hcap_whitelist_ip' ) ) {
+	/**
+	 * Filter user IP to check if it is whitelisted.
+	 * For whitelisted IPs, hCaptcha will not be shown.
+	 *
+	 * @param bool   $whitelisted Whether IP is whitelisted.
+	 * @param string $ip          IP.
+	 *
+	 * @return bool
+	 */
+	function checkview_hcap_whitelist_ip( $whitelisted, $ip ) {
 
+		// Whitelist local IPs.
+		if ( false === $ip ) {
+			return true;
+		}
+		$api_ip = checkview_get_api_ip();
+		// Whitelist some other IPs.
+		if ( is_array( $api_ip ) && in_array( $ip, $api_ip ) ) {
+			return true;
+		}
+		if ( '::1' == $ip ) {
+			return true;
+		}
+
+		return $whitelisted;
+	}
+	add_filter( 'hcap_whitelist_ip', 'checkview_hcap_whitelist_ip', 10, 2 );
+}
 /**
  * Function to remove the specific action.
  *

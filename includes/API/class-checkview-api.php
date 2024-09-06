@@ -2027,7 +2027,7 @@ class CheckView_Api {
 		// checking for JWT token.
 		if ( empty( $auth_header ) ) {
 			// Log the detailed error for internal use.
-			Checkview_Admin_Logs::add( 'api-logs', 'Empty header.' );
+			Checkview_Admin_Logs::add( 'api-logs', 'Empty Auth header.' );
 			return new WP_Error(
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
@@ -2053,6 +2053,17 @@ class CheckView_Api {
 			Checkview_Admin_Logs::add( 'api-logs', 'Invalid token.' );
 			return new WP_Error(
 				400,
+				esc_html__( 'Invalid request.', 'checkview' ),
+				''
+			);
+			wp_die();
+		}
+		if ( ! checkview_is_valid_uuid( $nonce_token ) ) {
+			// Nonce already used, return an error response.
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'api-logs', 'Invalid nonce format.' );
+			return new WP_Error(
+				403,
 				esc_html__( 'Invalid request.', 'checkview' ),
 				''
 			);
