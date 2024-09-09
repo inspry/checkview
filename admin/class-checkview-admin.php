@@ -170,6 +170,7 @@ class Checkview_Admin {
 		$cv_bot_ip = checkview_get_api_ip();
 		// skip if visitor ip not equal to CV Bot IP.
 		if ( ! isset( $_REQUEST['checkview_test_id'] ) || ! checkview_is_valid_uuid( sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) ) ) {
+			Checkview_Admin_Logs::add( 'test-logs', 'Invalid testID.checkview_disable_unwanted_plugins.' );
 			return $plugins;
 		}
 		// disable clean talk for cv bot ip.
@@ -234,6 +235,7 @@ class Checkview_Admin {
 			}
 		}
 		if ( ! empty( $cv_test_id ) && ! checkview_is_valid_uuid( $cv_test_id ) ) {
+			Checkview_Admin_Logs::add( 'test-logs', 'Invalid testID.checkview_init_current_test.' );
 			return;
 		}
 		if ( $cv_test_id && '' !== $cv_test_id ) {

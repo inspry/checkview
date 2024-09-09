@@ -270,7 +270,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 				}
 			}
 			// Test completed So Clear sessions.
-			complete_checkview_test();
+			complete_checkview_test( $checkview_test_id );
 		}
 	}
 	$checkview_wpforms_helper = new Checkview_Wpforms_Helper();

@@ -7,7 +7,7 @@ Tested up to: 6.6.1
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 1.1.16
+Stable tag: 1.1.17
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -87,6 +87,10 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 == Changelog ==
 
 Here is the reversed changelog:
+= 1.1.17 =
+* Removed wp_die from IP address validations.
+* Added internal logs to track IP address bypass.
+
 = 1.1.16 =
 * Added hCaptcha bypass in Ninja Forms.
 * Updated SaaS public key address.
@@ -182,6 +186,10 @@ Here is the reversed changelog:
 == Upgrade Notice ==
 
 Here is the reversed changelog:
+= 1.1.17 =
+* Removed wp_die from IP address validations.
+* Added internal logs to track IP address bypass.
+
 = 1.1.16 =
 * Added hCaptcha bypass in Ninja Forms.
 * Updated SaaS public key address.

@@ -251,7 +251,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				}
 			}
 			// Test completed So Clear sessions.
-			complete_checkview_test();
+			complete_checkview_test( $checkview_test_id );
 		}
 	}
 

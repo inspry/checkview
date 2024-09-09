@@ -60,6 +60,7 @@ if ( ! function_exists( 'get_checkview_test_id' ) ) {
 
 		if ( ! empty( $cv_test_id ) ) {
 			if ( ! checkview_is_valid_uuid( $cv_test_id ) ) {
+				Checkview_Admin_Logs::add( 'test-logs', 'Invalid testID.get_checkview_test_id.' );
 				return false;
 			}
 			return $cv_test_id;
@@ -71,6 +72,7 @@ if ( ! function_exists( 'get_checkview_test_id' ) ) {
 				parse_str( $referer_url, $qry_str );
 			}
 			if ( ! checkview_is_valid_uuid( $qry_str['checkview_test_id'] ) ) {
+				Checkview_Admin_Logs::add( 'test-logs', 'Invalid testID.get_checkview_test_id.' );
 				return false;
 			}
 			if ( isset( $qry_str['checkview_test_id'] ) ) {
@@ -148,7 +150,8 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 		// Validate that the input is a valid IP address.
 		if ( ! empty( $ip_address ) && ! filter_var( $ip_address, FILTER_VALIDATE_IP ) ) {
 			// If validation fails, handle the error appropriately.
-			wp_die( esc_html__( 'Invalid IP Address', 'checkview' ) );
+			Checkview_Admin_Logs::add( 'api-logs', 'Invalid IP Address.checkview_get_api_ip.' );
+			return;
 		}
 		if ( null === $ip_address || '' === $ip_address || empty( $ip_address ) ) {
 			$request = wp_remote_get(
@@ -251,7 +254,8 @@ if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
 		// Validate that the input is a valid IP address.
 		if ( ! empty( $ip ) && ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
 			// If validation fails, handle the error appropriately.
-			wp_die( esc_html__( 'Invalid IP Address', 'checkview' ) );
+			Checkview_Admin_Logs::add( 'api-logs', 'Invalid IP Address.checkview_get_visitor_ip.' );
+			return;
 		}
 		return $ip;
 	}
@@ -291,6 +295,7 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 	function checkview_create_cv_session( $ip, $test_id ) {
 		global $wp, $wpdb;
 		if ( ! checkview_is_valid_uuid( $test_id ) ) {
+			Checkview_Admin_Logs::add( 'test-logs', 'Invalid testID.checkview_create_cv_session.' );
 			return;
 		}
 		// return if already saved.
@@ -298,8 +303,10 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 		if ( ! empty( $already_have ) ) {
 			return;
 		}
-
-		$current_url = home_url( add_query_arg( array(), $wp->request ) );
+		$current_url = '';
+		if ( ! empty( $wp->request ) ) {
+			$current_url = home_url( add_query_arg( array(), $wp->request ) );
+		}
 
 		$is_sub_directory = explode( '/', str_replace( '//', '|', $current_url ) );
 		if ( count( $is_sub_directory ) > 1 ) {
@@ -311,7 +318,8 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 		if ( ! empty( $request_uri ) && ! filter_var( $request_uri, FILTER_SANITIZE_URL ) ) {
 			// If validation fails, handle the error appropriately.
-			wp_die( esc_html__( 'Invalid IP Address', 'checkview' ) );
+			Checkview_Admin_Logs::add( 'api-logs', 'Invalid IP Address.checkview_create_cv_session.' );
+			return;
 		}
 		if ( count( $is_sub_directory ) > 1 ) {
 			$current_url = $current_url . $request_uri;
@@ -455,7 +463,8 @@ if ( ! function_exists( 'checkview_whitelist_saas_ip_addresses' ) ) {
 		$api_ip = checkview_get_api_ip();
 		if ( ! empty( $_SERVER['REMOTE_ADDR'] ) && ! filter_var( sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ), FILTER_SANITIZE_URL ) ) {
 			// If validation fails, handle the error appropriately.
-			wp_die( esc_html__( 'Invalid IP Address.', 'checkview' ) );
+			Checkview_Admin_Logs::add( 'api-logs', 'Invalid IP Address.checkview_whitelist_saas_ip_addresses.' );
+			return;
 		}
 		if ( in_array( isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '', array( $api_ip ), true ) ) {
 			return true;
@@ -515,7 +524,8 @@ if ( ! function_exists( 'checkview_is_plugin_request' ) ) {
 		$current_route = rest_get_url_prefix() . '/checkview/v1/';
 		if ( ! empty( $_SERVER['REQUEST_URI'] ) && ! filter_var( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), FILTER_SANITIZE_URL ) ) {
 			// If validation fails, handle the error appropriately.
-			wp_die( esc_html__( 'Invalid IP Address.', 'checkview' ) );
+			Checkview_Admin_Logs::add( 'api-logs', 'Invalid IP Address.checkview_is_plugin_request.' );
+			return;
 		}
 		return strpos(
 			isset( $_SERVER['REQUEST_URI'] ) ? sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '',

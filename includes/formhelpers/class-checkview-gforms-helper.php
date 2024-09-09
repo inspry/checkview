@@ -169,7 +169,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				GFAPI::delete_entry( $entry['id'] );
 			}
 			// Test completed So Clear sessions.
-			complete_checkview_test();
+			complete_checkview_test( $checkview_test_id );
 		}
 		/**
 		 * Injects email to Formidableis supported emails.

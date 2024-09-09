@@ -15,7 +15,7 @@
  * Plugin Name:       CheckView
  * Plugin URI:        https://checkview.io
  * Description:       CheckView is the #1 fully automated solution to test your WordPress forms and detect form problems fast.  Automatically test your WordPress forms to ensure you never miss a lead again.
- * Version:           1.1.16
+ * Version:           1.1.17
  * Author:            CheckView
  * Author URI:        https://checkview.io/
  * License:           GPL-2.0+
@@ -36,7 +36,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'CHECKVIEW_VERSION', '1.1.16' );
+define( 'CHECKVIEW_VERSION', '1.1.17' );
 
 /**
  * Define constant for plugin settings link
@@ -151,7 +151,7 @@ function checkview_my_hcap_activate( $activate ) {
 	// Validate that the input is a valid IP address.
 	if ( ! empty( $ip ) && ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
 		// If validation fails, handle the error appropriately.
-		wp_die( esc_html__( 'Invalid IP Address', 'checkview' ) );
+		error_log( 'Invalid IP Address.checkview_my_hcap_activate.' );
 	}
 	if ( isset( $_REQUEST['checkview_test_id'] ) || 'checkview-saas' === get_option( $ip ) ) {
 		return false;
