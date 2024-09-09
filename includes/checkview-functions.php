@@ -72,8 +72,8 @@ XcACW1kwGceYPWMoFKMtKFCBNu1I6sSt06weTakB9/dGE9zjNRQIuIyZxB+ChK2s
 		// if url mismatch return false.
 		if ( str_contains( $jwt['websiteUrl'], get_bloginfo( 'url' ) ) !== true && get_bloginfo( 'url' ) !== $jwt['websiteUrl'] && ! strpos( $jwt['websiteUrl'], get_bloginfo( 'url' ) ) ) {
 			Checkview_Admin_Logs::add( 'api-logs', 'Invalid site url.' );
-			echo get_bloginfo( 'url' ) ;
-			echo "   ";
+			echo get_bloginfo( 'url' );
+			echo '   ';
 			echo $jwt['websiteUrl'];
 			exit;
 			return false;
@@ -194,7 +194,7 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 		$ip_address = get_transient( 'checkview_saas_ip_address' ) ? get_transient( 'checkview_saas_ip_address' ) : array();
 		if ( null === $ip_address || '' === $ip_address || empty( $ip_address ) ) {
 			$request = wp_safe_remote_get(
-				'https://storage.googleapis.com/test-ip-bucket/container_ip',
+				'https://storage.googleapis.com/test-ip-bucket/container_ip_addresses',
 				array(
 					'method'  => 'GET',
 					'timeout' => 500,
@@ -235,7 +235,9 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 				set_transient( 'checkview_saas_ip_address', $ip_address, 12 * HOUR_IN_SECONDS );
 			}
 		}
-
+		if ( ! is_array( $ip_address ) ) {
+			return (array) $ip_address;
+		}
 		return $ip_address;
 	}
 }
@@ -603,43 +605,3 @@ if ( ! function_exists( 'checkview_is_valid_uuid' ) ) {
 		return preg_match( '/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i', $uuid );
 	}
 }
-
-
-$privateKey = '-----BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDBFG0ZBtgxQxIu
-ihGj+zg9q5Ts8IfxKF/VnJuEgQiZ+3W/qxQrNMoxdwqJC7Sz9023lzrfbgVZXJWD
-sBW14aCEFQvvhlW4peOHqMJD1eA49xVJhnGiGOGyRtc8D6koES4IxUS81lnD1H3W
-rskVS9s/wXXGFsc9hNtrboIqlkSKXToMNejOSaRNhjnbH+LJvlYxnnRFmiRQ4vpA
-opGNDlUcNsU2EFl6rj3ScVXBceJWoAr97L0CawMRkyqORN9HneWbPlYlsb/DcvRb
-NWZEQyFdwAJbWTAZx5g9YygUoy0oUIE27UjqxK3TrB5NqQH390YT3OM1FAi4jJnE
-H4KEraz9AgMBAAECggEACJqTd/xrX0xf/8LMveJO6qnvwbGjyLYCez9L5+xkSMmk
-pI0kdv5r8UNXyVd9B4ptB8O4J3+uUQG2Oen7iwTRRV3v1tVTdgHLTYluyrKA+4qk
-A89aumQpV2t0KOSdigcJgvHDcv2m8EE2TMUj64xNFR6BcIfQUaEWJACU7jcAyFXJ
-1SBAU/rhQOdQTGrLBjm1j0dxUS3UHALK/gNGk7jKuAg638lZudrVgTBrxYuyFyK2
-7as6BBKhQjcf4Bow9qarclMGGusBQxFI2pESrUjWodaPlTT5Ky3Z8ClmjLlLwcNH
-/GzRRMerXVf7cmM/hU+vJZXgCNbIaGPgs771kSz/8wKBgQDzmpUwAs808GbWNqxK
-Q7tnvFWwAdlQhLNnqRL+55FHQ+u6lCy+qOsj3erjv9hLshzEU4djpJIXjpQQ6UBK
-iMhtWJj0A5hgOZDWka/6lvwx87INmKWWJkDTX27M9FPpQFChhj83Q1GKpH8w1B3W
-0ZTBqvUfekryVCGIO5LMG4p1pwKBgQDK56suhVUXTyoL53bQqvV+nEXniDeZqMep
-ZAwOX41yXeuFMs9BxLwK4W1Bor2VymJb8CoH/Mako03taQOSci7ybxZPRGOB9oYB
-9qSe5GxgxZaYVYu/JP+vYmha17O8CxvTOrKa+9ZV/dipTTlwXJgTdg6lSwGgMAp9
-ISkZVlfkuwKBgD2g6gVPcKRv/VRMWKIhKJRB7Vut3BCmwcyD1a5vXy2sXULCod9K
-VNKqHfaoXkwoL2bryuDGjb8v7v2oRP+WQz6Gn4t8LVyKs73U9bRr5jms8WrHJ30p
-CFVxW1K2rVPhVYTHtc6BVWvB2fu8biAevYeRfJoOEk/kQOd6StUgUpMZAoGBAKRc
-xe4JU8Rt/EFoXnbqBbNqI7ZKQb/XWOV+hcWe4ZWjPwXHAtzj4O9vbHGewrR0HPkc
-su+Fc+Qp5RZL2vjmReFc21WasIC2khdFFFUh9Cjv5e3AXlOYRQZtUNtFn/LTjNau
-1b92AUnnN3rtc3nxh788AuEiwU5hnB2AnypHJyvBAoGAUY9IZJAtAwvL3TnzHAb5
-QVNWKGfXZjl0HbJkdAff7vtDvMSLMc2u/hV5fcfk9WxJ7t7G+HApaOoYzY47xyMv
-Cr3p0PqeC+wUi8zyIPB5mCgB1M1F1FdtobiH27Q/Sv3s/nuH76UN8oSQ5TqiKeZL
-1R6FwcbP9u6uv8dP2VssCK8=
------END PRIVATE KEY-----';
-
-$payload = [
-    "websiteUrl" => 'https://inspry-test-site.com',
-    "exp" => 1729104000,  // Unix timestamp for expiration
-    "_checkview_nonce" => "2121c45d-2ac7-4d21-8b54-9a732867bfaf"
-];
-
-$jwt = JWT::encode($payload, $privateKey, 'RS256');
-
-//echo "Your JWT Token: " . $jwt;

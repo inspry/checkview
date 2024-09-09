@@ -7,7 +7,7 @@ Tested up to: 6.6.1
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 1.1.16
+Stable tag: 2.0.0
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -87,19 +87,20 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 == Changelog ==
 
 Here is the reversed changelog:
-= 1.1.17 =
-* Resolved token validation issue.
+= 2.0.0 =
+* Resolved token validation issues.
 * Resolved IP address validation issues.
 * Added data validations.
 * Added API validations.
 * Added SaaS IP address validation.
 * Added SaaS nonce token validation.
 * Added must SSL checks for API calls.
-* Added new DB table for storing used nonce.
-* Added crone to delete expired nonce.
+* Added new DB table for storing used nonces.
+* Added cron job to delete expired nonces.
 * Added logs for API and internal functions.
 * Resolved hCaptcha missing fields error after NinjaForms latest updates.
 * Added endpoint to expose version changes for installed plugins.
+* Updated container ip addresses.
 
 = 1.1.16 =
 * Added hCaptcha bypass in Ninja Forms.
@@ -197,19 +198,20 @@ Here is the reversed changelog:
 == Upgrade Notice ==
 
 Here is the reversed changelog:
-= 1.1.17 =
-* Resolved token validation issue.
+= 2.0.0 =
+* Resolved token validation issues.
 * Resolved IP address validation issues.
 * Added data validations.
 * Added API validations.
 * Added SaaS IP address validation.
 * Added SaaS nonce token validation.
 * Added must SSL checks for API calls.
-* Added new DB table for storing used nonce.
-* Added crone to delete expired nonce.
+* Added new DB table for storing used nonces.
+* Added crone job to delete expired nonces.
 * Added logs for API and internal functions.
 * Resolved hCaptcha missing fields error after NinjaForms latest updates.
 * Added endpoint to expose version changes for installed plugins.
+* Updated container ip addresses.
 
 = 1.1.16 =
 * Added hCaptcha bypass in Ninja Forms.
