@@ -89,8 +89,10 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 				'__return_true',
 				999
 			);
-			// bypass hcaptcha.
-			add_filter( 'hcap_activate', '__return_false' );
+			add_filter(
+				'frm_run_honeypot',
+				'__return_false'
+			);
 		}
 		/**
 		 * Injects email to Formidableis supported emails.
