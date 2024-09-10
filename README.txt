@@ -88,19 +88,36 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 Here is the reversed changelog:
 = 2.0.0 =
-* Resolved token validation issues.
-* Resolved IP address validation issues.
-* Added data validations.
-* Added API validations.
+
+* Resolved token validation issues (SaaS was bypassing without token for forms list endpoint).
+
+* Resolved IP address validation issues (SaaS was not able to bypass even with valid IP address).
+
+* Added data validations (IP address and test ID validations).
+
+* Added API validations (Added extra layer of security with nonce addition).
+
 * Added SaaS IP address validation.
-* Added SaaS nonce token validation.
-* Added must SSL checks for API calls.
-* Added new DB table for storing used nonces.
+
+* Added SaaS nonce token validation in all API endpoints.
+
+* Added SSL checks for all API calls.
+
+* Added new database table for storing used nonces.
+
 * Added cron job to delete expired nonces.
+
 * Added logs for API and internal functions.
+
 * Resolved hCaptcha missing fields error after NinjaForms latest updates.
+
 * Added endpoint to expose version changes for installed plugins.
-* Updated container ip addresses.
+
+* Updated container IP addresses.
+
+= 1.1.17 =
+* Removed wp_die from IP address validations.
+* Added internal logs to track IP address bypass.
 
 = 1.1.16 =
 * Added hCaptcha bypass in Ninja Forms.
@@ -199,19 +216,36 @@ Here is the reversed changelog:
 
 Here is the reversed changelog:
 = 2.0.0 =
-* Resolved token validation issues.
-* Resolved IP address validation issues.
-* Added data validations.
-* Added API validations.
+
+* Resolved token validation issues (SaaS was bypassing without token for forms list endpoint).
+
+* Resolved IP address validation issues (SaaS was not able to bypass even with valid IP address).
+
+* Added data validations (IP address and test ID validations).
+
+* Added API validations (Added extra layer of security with nonce addition).
+
 * Added SaaS IP address validation.
-* Added SaaS nonce token validation.
-* Added must SSL checks for API calls.
-* Added new DB table for storing used nonces.
-* Added crone job to delete expired nonces.
+
+* Added SaaS nonce token validation in all API endpoints.
+
+* Added SSL checks for all API calls.
+
+* Added new database table for storing used nonces.
+
+* Added cron job to delete expired nonces.
+
 * Added logs for API and internal functions.
+
 * Resolved hCaptcha missing fields error after NinjaForms latest updates.
+
 * Added endpoint to expose version changes for installed plugins.
-* Updated container ip addresses.
+
+* Updated container IP addresses.
+
+= 1.1.17 =
+* Removed wp_die from IP address validations.
+* Added internal logs to track IP address bypass.
 
 = 1.1.16 =
 * Added hCaptcha bypass in Ninja Forms.
