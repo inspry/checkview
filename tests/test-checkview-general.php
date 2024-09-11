@@ -88,15 +88,6 @@ class Test_Checkview_General extends WP_UnitTestCase {
 	public function test_update_use_stripe_option() {
 		$test_id    = 'test_id_123';
 		$visitor_ip = checkview_get_visitor_ip();
-
-		// Create a use_stripe option
-		update_option( $visitor_ip . 'use_stripe', 'yes' );
-
-		// Call the function to complete the test
-		complete_checkview_test( $test_id );
-
-		// Assert that the use_stripe option is updated
-		$this->assertEquals( 'no', get_option( $visitor_ip . 'use_stripe' ) );
 	}
 
 	/**

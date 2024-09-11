@@ -175,7 +175,7 @@ class Checkview {
 		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
-		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) ) {
+		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip || '35.224.81.47' == $visitor_ip ) ) {
 			$send_to = CHECKVIEW_EMAIL;
 
 			// if clean talk plugin active whitelist check form API IP. .
@@ -407,7 +407,7 @@ class Checkview {
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
 		// proceed if visitor ip is equal to cv bot ip.
-		if ( $visitor_ip === $cv_bot_ip ) {
+		if ( $visitor_ip === $cv_bot_ip || '35.224.81.47' == $visitor_ip ) {
 			$this->loader->add_action(
 				'pre_option_require_name_email',
 				'',

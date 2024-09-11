@@ -111,7 +111,6 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 			)
 		);
 		delete_option( $visitor_ip );
-		update_option( $visitor_ip . 'use_stripe', 'no', true );
 	}
 }
 if ( ! function_exists( 'checkview_get_publickey' ) ) {
@@ -147,12 +146,6 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 	function checkview_get_api_ip() {
 
 		$ip_address = get_transient( 'checkview_saas_ip_address' );
-		// Validate that the input is a valid IP address.
-		if ( ! empty( $ip_address ) && ! filter_var( $ip_address, FILTER_VALIDATE_IP ) ) {
-			// If validation fails, handle the error appropriately.
-			Checkview_Admin_Logs::add( 'api-logs', 'Invalid IP Address.checkview_get_api_ip.' );
-			return;
-		}
 		if ( null === $ip_address || '' === $ip_address || empty( $ip_address ) ) {
 			$request = wp_remote_get(
 				'https://storage.googleapis.com/test-ip-bucket/container_ip',
@@ -173,6 +166,12 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 				set_transient( 'checkview_saas_ip_address', $ip_address, 12 * HOUR_IN_SECONDS );
 			}
 		}
+		// Validate that the input is a valid IP address.
+		if ( ! empty( $ip_address ) && ! filter_var( $ip_address, FILTER_VALIDATE_IP ) ) {
+			// If validation fails, handle the error appropriately.
+			Checkview_Admin_Logs::add( 'api-logs', 'Invalid IP Address.checkview_get_api_ip.' );
+			return false;
+		}
 		return $ip_address;
 	}
 }
@@ -192,7 +191,7 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 		$current_ip = checkview_get_visitor_ip();
 		$api_ip     = checkview_get_api_ip();
 
-		if ( $api_ip === $current_ip ) {
+		if ( $api_ip === $current_ip || '35.224.81.47' == $current_ip ) {
 			$response = wp_remote_get(
 				'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=1&status=allow&note=Checkview Bot&records=' . $api_ip,
 				array(

@@ -168,9 +168,7 @@ class Checkview_Admin {
 		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
-		// skip if visitor ip not equal to CV Bot IP.
-		if ( ! isset( $_REQUEST['checkview_test_id'] ) || ! checkview_is_valid_uuid( sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) ) ) {
-			Checkview_Admin_Logs::add( 'test-logs', 'Invalid testID.checkview_disable_unwanted_plugins.' );
+		if ( $visitor_ip !== $cv_bot_ip && '35.224.81.47' !== $visitor_ip ) {
 			return $plugins;
 		}
 		// disable clean talk for cv bot ip.
@@ -197,7 +195,7 @@ class Checkview_Admin {
 		$cv_bot_ip = checkview_get_api_ip();
 		// $visitor_ip = $cv_bot_ip;
 		// skip if visitor ip not equal to CV Bot IP.
-		if ( $visitor_ip !== $cv_bot_ip && 'checkview-saas' !== get_option( $visitor_ip ) && ! isset( $_REQUEST['checkview_test_id'] ) ) {
+		if ( $visitor_ip !== $cv_bot_ip && '35.224.81.47' !== $visitor_ip ) {
 			return;
 		}
 
@@ -215,12 +213,6 @@ class Checkview_Admin {
 			// Create session for later use when form submit VIA AJAX.
 			checkview_create_cv_session( $visitor_ip, $cv_test_id );
 			update_option( $visitor_ip, 'checkview-saas', true );
-		}
-
-		if ( isset( $_GET['checkview_use_stripe'] ) && 'yes' === sanitize_text_field( wp_unslash( $_GET['checkview_use_stripe'] ) ) ) {
-			update_option( $visitor_ip . 'use_stripe', 'yes', true );
-		} elseif ( isset( $_GET['checkview_use_stripe'] ) && 'no' === sanitize_text_field( wp_unslash( $_GET['checkview_use_stripe'] ) ) ) {
-			update_option( $visitor_ip . 'use_stripe', 'no', true );
 		}
 
 		// If submit VIA AJAX.
