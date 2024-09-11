@@ -137,7 +137,7 @@ add_action(
  */
 function checkview_my_hcap_activate( $activate ) {
 	if ( is_plugin_active( 'ninja-forms/ninja-forms.php' ) ) {
-		return;
+		//return;
 	}
 	if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
 		// check ip from share internet.

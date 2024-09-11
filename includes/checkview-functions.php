@@ -341,7 +341,6 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 		}
 		$session_table = $wpdb->prefix . 'cv_session';
 
-		$wpdb->delete( $session_table, array( 'visitor_ip' => $ip ) );
 		$test_key     = 'CF_TEST_' . $page_id;
 		$session_data = array(
 			'visitor_ip' => $ip,
