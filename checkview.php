@@ -136,9 +136,6 @@ add_action(
  * @return bool
  */
 function checkview_my_hcap_activate( $activate ) {
-	if ( is_plugin_active( 'ninja-forms/ninja-forms.php' ) ) {
-		//return;
-	}
 	if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
 		// check ip from share internet.
 		$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ) );
@@ -160,7 +157,39 @@ function checkview_my_hcap_activate( $activate ) {
 }
 
 add_filter( 'hcap_activate', 'checkview_my_hcap_activate' );
+if ( ! function_exists( 'checkview_hcap_whitelist_ip' ) ) {
+	/**
+	 * Filter user IP to check if it is whitelisted.
+	 * For whitelisted IPs, hCaptcha will not be shown.
+	 *
+	 * @param bool   $whitelisted Whether IP is whitelisted.
+	 * @param string $ip          IP.
+	 *
+	 * @return bool
+	 */
+	function checkview_hcap_whitelist_ip( $whitelisted, $ip ) {
 
+		// Whitelist local IPs.
+		if ( false === $ip ) {
+			return true;
+		}
+		if ( function_exists( 'checkview_get_api_ip' ) ) {
+			$cv_bot_ip = checkview_get_api_ip();
+		} else {
+			return $whitelisted;
+		}
+		// Whitelist some other IPs.
+		if ( $ip == $cv_bot_ip || '35.224.81.47' == $ip ) {
+			return true;
+		}
+		if ( '::1' == $ip ) {
+			return true;
+		}
+
+		return $whitelisted;
+	}
+	add_filter( 'hcap_whitelist_ip', 'checkview_hcap_whitelist_ip', 10, 2 );
+}
 
 /**
  * Function to remove the specific action.
