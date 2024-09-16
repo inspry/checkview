@@ -561,3 +561,56 @@ if ( ! function_exists( 'checkview_is_valid_uuid' ) ) {
 		return preg_match( '/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i', $uuid );
 	}
 }
+if ( ! function_exists( 'checkview_delete_table_cron_activation' ) ) {
+	/**
+	 * Register the cron event if it's not already scheduled.
+	 *
+	 * @return void
+	 */
+	function checkview_delete_table_cron_activation() {
+		if ( ! wp_next_scheduled( 'checkview_delete_table_cron_hook' ) ) {
+			wp_schedule_event( time(), 'weekly', 'checkview_delete_table_cron_hook' );
+		}
+	}
+}
+
+if ( ! function_exists( 'checkview_add_weekly_cron_schedule' ) ) {
+	/**
+	 * Adds custom schedule.
+	 *
+	 * @param array $schedules array of schedules.
+	 * @return array.
+	 */
+	function checkview_add_weekly_cron_schedule( $schedules ) {
+		$schedules['weekly'] = array(
+			'interval' => 604800, // 7 days in seconds
+			'display'  => __( 'Once Weekly', 'checkview' ),
+		);
+		return $schedules;
+	}
+	add_filter( 'cron_schedules', 'checkview_add_weekly_cron_schedule' );
+}
+
+if ( ! function_exists( 'checkview_delete_tables_data' ) ) {
+	/**
+	 * This function will run every 7 days to delete data from the tables.
+	 *
+	 * @return void
+	 */
+	function checkview_delete_tables_data() {
+		global $wpdb;
+
+		global $wpdb;
+
+		// Delete all entries from 'cv_entry' table.
+		$table_entry = esc_sql( $wpdb->prefix . 'cv_entry' );
+		$wpdb->query( "DELETE FROM $table_entry" );
+
+		// Delete all entries from 'cv_entry_meta' table.
+		$table_entry_meta = esc_sql( $wpdb->prefix . 'cv_entry_meta' );
+		$wpdb->query( "DELETE FROM $table_entry_meta" );
+	}
+
+	// Attach the function to the cron event.
+	add_action( 'checkview_delete_table_cron_hook', 'checkview_delete_tables_data' );
+}

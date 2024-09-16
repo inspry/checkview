@@ -7,7 +7,7 @@ Tested up to: 6.6.1
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 1.1.18
+Stable tag: 1.1.19
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -86,7 +86,11 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 == Changelog ==
 
-Here is the reversed changelog:
+= 1.1.19 =
+* Added internal logs to track API calls for delete endpoint.
+* Resolved Cloudflare Turnstile bypass in WPForms latest updates.
+* Added cron to delete CheckView test results after 7 days.
+
 = 1.1.18 =
 * Added internal logs to track IP address bypass.
 * Updated IP validation checks.
@@ -192,7 +196,11 @@ Here is the reversed changelog:
 
 == Upgrade Notice ==
 
-Here is the reversed changelog:
+= 1.1.19 =
+* Added internal logs to track API calls for delete endpoint.
+* Resolved Cloudflare Turnstile bypass in WPForms latest updates.
+* Added cron to delete CheckView test results after 7 days.
+
 = 1.1.18 =
 * Added internal logs to track IP address bypass.
 * Updated IP validation checks.

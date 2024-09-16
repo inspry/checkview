@@ -78,12 +78,12 @@ class CheckView_Api {
 			'checkview/v1',
 			'/forms/formslist',
 			array(
-				'methods'  => 'GET',
-				'callback' => array( $this, 'checkview_get_available_forms_list' ),
-				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'     => array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'checkview_get_available_forms_list' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
 					'_checkview_token' => array(
-						'required' => false,
+						'required' => true,
 					),
 				),
 			)
