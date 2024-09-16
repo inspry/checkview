@@ -1391,9 +1391,14 @@ class CheckView_Api {
 						'Name' => $row->title,
 					);
 					$tablename                         = $wpdb->prefix . 'gf_addon_feed';
-					$addons                            = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where is_active=%d and form_id=%d', 1, $row->id ) );
-					foreach ( $addons as $addon ) {
-						$forms['GravityForms'][ $row->id ]['addons'][] = $addon->addon_slug;
+					$table_exists                      = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $tablename ) );
+
+					if ( $table_exists === $tablename ) {
+						// The table exists.
+						$addons = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where is_active=%d and form_id=%d', 1, $row->id ) );
+						foreach ( $addons as $addon ) {
+							$forms['GravityForms'][ $row->id ]['addons'][] = $addon->addon_slug;
+						}
 					}
 					$sql = "SELECT ID FROM {$wpdb->prefix}posts	 WHERE 1=1 and (post_content like '%wp:gravityforms/form {\"formId\":\"" . $row->id . "\"%' OR post_content like '%[gravityform id=\"" . $row->id . "\"%' OR post_content like '%[gravityform id=" . $row->id . "%'  OR post_content like \"%[gravityform id=" . $row->id . "%\") and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
 					// WPDBPREPARE.
@@ -1646,7 +1651,7 @@ class CheckView_Api {
 						'Name' => $row->post_title,
 					);
 
-					$sql = "SELECT ID FROM {$wpdb->prefix}posts	 WHERE 1=1 and (post_content like '%wp:contact-form-7/contact-form-selector {\"id\":" . $hash . "%' OR post_content like '%[contact-form-7 id=\"" . $hash . "\"%' OR post_content like '%[contact-form-7 id=" . $hash . "%' OR post_content like \"%[contact-form-7 id=" . $hash . "%\") and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
+					$sql        = "SELECT ID FROM {$wpdb->prefix}posts	 WHERE 1=1 and (post_content like '%wp:contact-form-7/contact-form-selector {\"id\":" . $hash . "%' OR post_content like '%[contact-form-7 id=\"" . $hash . "\"%' OR post_content like '%[contact-form-7 id=" . $hash . "%' OR post_content like \"%[contact-form-7 id=" . $hash . "%\") and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
 					$form_pages = $wpdb->get_results(
 						$wpdb->prepare(
 							"SELECT ID FROM {$wpdb->prefix}posts
@@ -1730,6 +1735,7 @@ class CheckView_Api {
 		);
 		$results = array();
 		if ( '' === $uid || null === $uid ) {
+			Checkview_Admin_Logs::add( 'api-logs', 'EmptyUI.' );
 			return new WP_Error(
 				400,
 				esc_html__( 'Empty UID.', 'checkview' ),
@@ -1768,6 +1774,7 @@ class CheckView_Api {
 					}
 				}
 				if ( ! empty( $results ) && false !== $results ) {
+					Checkview_Admin_Logs::add( 'api-logs', 'Successfully sent test results for.' . $uid );
 					return new WP_REST_Response(
 						array(
 							'status'        => 200,
@@ -1776,6 +1783,7 @@ class CheckView_Api {
 						)
 					);
 				} else {
+					Checkview_Admin_Logs::add( 'api-logs', 'failed results.' );
 					return new WP_Error(
 						400,
 						esc_html__( 'Failed to retrieve the results.', 'checkview' ),
@@ -1784,6 +1792,7 @@ class CheckView_Api {
 				}
 				wp_die();
 			} else {
+				Checkview_Admin_Logs::add( 'api-logs', 'failed results start.' . $uid );
 				return new WP_Error(
 					400,
 					esc_html__( 'Failed to retrieve the results.', 'checkview' ),
@@ -1859,6 +1868,7 @@ class CheckView_Api {
 		);
 		$results = array();
 		if ( '' === $uid || null === $uid || false === $uid ) {
+			Checkview_Admin_Logs::add( 'api-logs', 'EmptyUI Delete.' );
 			return new WP_Error(
 				400,
 				esc_html__( 'Empty UID.', 'checkview' ),
@@ -1866,11 +1876,21 @@ class CheckView_Api {
 			);
 			wp_die();
 		} else {
+			Checkview_Admin_Logs::add( 'api-logs', 'Successfully removed test results for.' . $uid );
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully removed the results.', 'checkview' ),
+					'body_response' => $results,
+				)
+			);
+			wp_die();
 			$tablename = $wpdb->prefix . 'cv_entry';
 			$result    = $wpdb->delete( $tablename, array( 'uid' => $uid ) );
 			$tablename = $wpdb->prefix . 'cv_entry_meta';
 			$rows      = $wpdb->delete( $tablename, array( 'uid' => $uid ) );
 			if ( $rows ) {
+				Checkview_Admin_Logs::add( 'api-logs', 'Successfully removed test results for.' . $uid );
 				return new WP_REST_Response(
 					array(
 						'status'        => 200,
@@ -1880,6 +1900,7 @@ class CheckView_Api {
 				);
 				wp_die();
 			} else {
+				Checkview_Admin_Logs::add( 'api-logs', 'failed remove start.' . $uid );
 				return new WP_Error(
 					400,
 					esc_html__( 'Failed to remove the results.', 'checkview' ),
