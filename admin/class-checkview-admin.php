@@ -168,7 +168,7 @@ class Checkview_Admin {
 		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
-		if ( $visitor_ip !== $cv_bot_ip && '35.224.81.47' !== $visitor_ip ) {
+		if ( is_array( $cv_bot_ip ) && ! in_array( $visitor_ip, $cv_bot_ip ) ) {
 			return $plugins;
 		}
 		// disable clean talk for cv bot ip.
@@ -195,7 +195,7 @@ class Checkview_Admin {
 		$cv_bot_ip = checkview_get_api_ip();
 		// $visitor_ip = $cv_bot_ip;
 		// skip if visitor ip not equal to CV Bot IP.
-		if ( $visitor_ip !== $cv_bot_ip && '35.224.81.47' !== $visitor_ip ) {
+		if ( is_array( $cv_bot_ip ) && ! in_array( $visitor_ip, $cv_bot_ip ) ) {
 			return;
 		}
 

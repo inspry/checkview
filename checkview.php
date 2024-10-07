@@ -179,7 +179,7 @@ if ( ! function_exists( 'checkview_hcap_whitelist_ip' ) ) {
 			return $whitelisted;
 		}
 		// Whitelist some other IPs.
-		if ( $ip == $cv_bot_ip || '35.224.81.47' == $ip ) {
+		if ( is_array( $cv_bot_ip ) && in_array( $ip, $cv_bot_ip ) ) {
 			return true;
 		}
 		if ( '::1' == $ip ) {

@@ -148,7 +148,7 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 		$ip_address = get_transient( 'checkview_saas_ip_address' );
 		if ( null === $ip_address || '' === $ip_address || empty( $ip_address ) ) {
 			$request = wp_remote_get(
-				'https://storage.googleapis.com/test-ip-bucket/container_ip',
+				'https://verify.checkview.io/whitelist.json',
 				array(
 					'method'  => 'GET',
 					'timeout' => 500,
@@ -161,17 +161,22 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 			$body = wp_remote_retrieve_body( $request );
 
 			$data = json_decode( $body, true );
-			if ( ! empty( $data ) ) {
-				$ip_address = $data['ipAddress'];
-				set_transient( 'checkview_saas_ip_address', $ip_address, 12 * HOUR_IN_SECONDS );
+			if ( ! empty( $data['ipAddresses'] ) ) {
+				$ip_address = $data['ipAddresses'];
 			}
 		}
-		// Validate that the input is a valid IP address.
-		if ( ! empty( $ip_address ) && ! filter_var( $ip_address, FILTER_VALIDATE_IP ) ) {
-			// If validation fails, handle the error appropriately.
-			Checkview_Admin_Logs::add( 'api-logs', 'Invalid IP Address.checkview_get_api_ip.' );
-			return false;
+		if ( is_array( $ip_address ) ) {
+			foreach ( $ip_address as $ip ) {
+				// Validate that the input is a valid IP address.
+				if ( ! empty( $ip ) && ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+					// If validation fails, handle the error appropriately.
+					Checkview_Admin_Logs::add( 'api-logs', 'Invalid IP Address.checkview_get_api_ip.' );
+					return false;
+				}
+			}
+			set_transient( 'checkview_saas_ip_address', $ip_address, 12 * HOUR_IN_SECONDS );
 		}
+		$ip_address[] = '::1';
 		return $ip_address;
 	}
 }
@@ -191,9 +196,9 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 		$current_ip = checkview_get_visitor_ip();
 		$api_ip     = checkview_get_api_ip();
 
-		if ( $api_ip === $current_ip || '35.224.81.47' == $current_ip ) {
+		if ( is_array( $api_ip ) && in_array( $current_ip, $api_ip ) ) {
 			$response = wp_remote_get(
-				'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=1&status=allow&note=Checkview Bot&records=' . $api_ip,
+				'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=1&status=allow&note=Checkview Bot&records=' . $current_ip,
 				array(
 					'method'  => 'GET',
 					'timeout' => 500,
@@ -464,7 +469,7 @@ if ( ! function_exists( 'checkview_whitelist_saas_ip_addresses' ) ) {
 			Checkview_Admin_Logs::add( 'api-logs', 'Invalid IP Address.checkview_whitelist_saas_ip_addresses.' );
 			return;
 		}
-		if ( in_array( isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '', array( $api_ip ), true ) ) {
+		if ( is_array( $api_ip ) && in_array( isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '', $api_ip, true ) ) {
 			return true;
 		}
 	}
