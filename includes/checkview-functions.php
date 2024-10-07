@@ -176,7 +176,9 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 			}
 			set_transient( 'checkview_saas_ip_address', $ip_address, 12 * HOUR_IN_SECONDS );
 		}
-		$ip_address[] = '::1';
+		if ( is_array( $ip_address ) ) {
+			$ip_address[] = '::1';
+		}
 		return $ip_address;
 	}
 }

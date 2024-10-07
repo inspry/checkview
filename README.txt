@@ -7,7 +7,7 @@ Tested up to: 6.6.1
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 1.1.19
+Stable tag: 1.1.20
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -85,6 +85,9 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 3. CheckView general settings.
 
 == Changelog ==
+= 1.1.20 =
+* Updated endpoint url to retrieve the whitelisted IP's for CheckView SaaS.
+* Updated SaaS IP address checks.
 
 = 1.1.19 =
 * Added internal logs to track API calls for delete endpoint.
@@ -195,6 +198,9 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Initial release.
 
 == Upgrade Notice ==
+= 1.1.20 =
+* Updated endpoint url to retrieve the whitelisted IP's for CheckView SaaS.
+* Updated SaaS IP address checks.
 
 = 1.1.19 =
 * Added internal logs to track API calls for delete endpoint.
