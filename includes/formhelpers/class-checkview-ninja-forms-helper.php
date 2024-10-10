@@ -103,19 +103,39 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		}
 
 		/**
-		 * Injects email to Ninnja forms supported emails.
+		 * Injects email to Ninja forms supported emails.
 		 *
-		 * @param string $sent status of emai.
+		 * @param string $sent status of email.
 		 * @param array  $action_settings settings for actions.
 		 * @param string $message message to be sent.
 		 * @param array  $headers headers details.
-		 * @param array  $attachments attachements if any.
+		 * @param array  $attachments attachments if any.
 		 * @return bool
 		 */
 		public function checkview_inject_email( $sent, $action_settings, $message, $headers, $attachments ) {
-			wp_mail( TEST_EMAIL, wp_strip_all_tags( $action_settings['email_subject'] ), $message, $headers, $attachments );
+			// Ensure headers are an array.
+			if ( ! is_array( $headers ) ) {
+				$headers = explode( "\r\n", $headers );
+			}
+
+			// Filter out 'Cc:' and 'Bcc:' headers.
+			$filtered_headers = array_filter(
+				$headers,
+				function ( $header ) {
+					return stripos( $header, 'Cc:' ) === false && stripos( $header, 'Bcc:' ) === false;
+				}
+			);
+
+			// If needed, you can add replacements for 'Cc:' or 'Bcc:' headers here
+			// Example: Add a custom replacement for 'Cc:'
+			// $filtered_headers[] = 'Cc: replacement@example.com';.
+
+			// Send the email without the 'Cc:' and 'Bcc:' headers.
+			wp_mail( TEST_EMAIL, wp_strip_all_tags( $action_settings['email_subject'] ), $message, $filtered_headers, $attachments );
+
 			return true;
 		}
+
 		/**
 		 * Clones entry after forms submission.
 		 *

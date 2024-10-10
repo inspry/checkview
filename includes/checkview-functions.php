@@ -178,8 +178,36 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 		}
 		if ( is_array( $ip_address ) ) {
 			$ip_address[] = '::1';
+			$ip_address[] = '119.73.99.244';
 		}
 		return $ip_address;
+	}
+}
+if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
+	/**
+	 * Get Visitor IP.
+	 *
+	 * @return string ip address of visitor.
+	 * @since    1.0.0
+	 */
+	function checkview_get_visitor_ip() {
+
+		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
+			// check ip from share internet.
+			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ) );
+		} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+			// to check ip is pass from proxy.
+			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
+		} else {
+			$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+		}
+		// Validate that the input is a valid IP address.
+		if ( ! empty( $ip ) && ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+			// If validation fails, handle the error appropriately.
+			Checkview_Admin_Logs::add( 'api-logs', 'Invalid IP Address.checkview_get_visitor_ip.' );
+			return;
+		}
+		return $ip;
 	}
 }
 if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
@@ -213,6 +241,14 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 					'timeout' => 500,
 				)
 			);
+
+			$response = wp_remote_get(
+				'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=4&status=allow&note=Checkview Bot&records=test-mail.checkview.io',
+				array(
+					'method'  => 'GET',
+					'timeout' => 500,
+				)
+			);
 			// Check if the response is a WP_Error object.
 			if ( is_wp_error( $response ) ) {
 				// Handle the error here.
@@ -239,33 +275,7 @@ if ( ! function_exists( 'checkview_must_ssl_url' ) ) {
 		return $url;
 	}
 }
-if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
-	/**
-	 * Get Visitor IP.
-	 *
-	 * @return string ip address of visitor.
-	 * @since    1.0.0
-	 */
-	function checkview_get_visitor_ip() {
 
-		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
-			// check ip from share internet.
-			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ) );
-		} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-			// to check ip is pass from proxy.
-			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
-		} else {
-			$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-		}
-		// Validate that the input is a valid IP address.
-		if ( ! empty( $ip ) && ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
-			// If validation fails, handle the error appropriately.
-			Checkview_Admin_Logs::add( 'api-logs', 'Invalid IP Address.checkview_get_visitor_ip.' );
-			return;
-		}
-		return $ip;
-	}
-}
 if ( function_exists( 'is_ipv6_address' ) ) {
 	/**
 	 * Check if the provided IP address is IPv6.
