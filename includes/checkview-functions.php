@@ -227,6 +227,10 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 		$api_ip     = checkview_get_api_ip();
 
 		if ( is_array( $api_ip ) && in_array( $current_ip, $api_ip ) ) {
+			$ips = checkview_get_cleantalk_whitelisted_ips();
+			if ( is_array( $ips ) && in_array( $current_ip, $ips ) ) {
+				return;
+			}
 			$response = wp_remote_get(
 				'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=1&status=allow&note=Checkview Bot&records=' . $current_ip,
 				array(
@@ -234,21 +238,24 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 					'timeout' => 500,
 				)
 			);
-			$response = wp_remote_get(
-				'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=4&status=allow&note=Checkview Bot&records=checkview.io',
-				array(
-					'method'  => 'GET',
-					'timeout' => 500,
-				)
-			);
-
-			$response = wp_remote_get(
-				'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=4&status=allow&note=Checkview Bot&records=test-mail.checkview.io',
-				array(
-					'method'  => 'GET',
-					'timeout' => 500,
-				)
-			);
+			if ( is_array( $ips ) && ! in_array( 'checkview.io', $ips ) ) {
+				$response = wp_remote_get(
+					'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=4&status=allow&note=Checkview Bot&records=checkview.io',
+					array(
+						'method'  => 'GET',
+						'timeout' => 500,
+					)
+				);
+			}
+			if ( is_array( $ips ) && ! in_array( 'test-mail.checkview.io', $ips ) ) {
+				$response = wp_remote_get(
+					'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=4&status=allow&note=Checkview Bot&records=test-mail.checkview.io',
+					array(
+						'method'  => 'GET',
+						'timeout' => 500,
+					)
+				);
+			}
 			// Check if the response is a WP_Error object.
 			if ( is_wp_error( $response ) ) {
 				// Handle the error here.
@@ -261,6 +268,60 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 		return null;
 	}
 }
+
+if ( ! function_exists( 'checkview_get_cleantalk_whitelisted_ips' ) ) {
+	/**
+	 * Retrieves whitelisted IP's from CleanTalk.
+	 *
+	 * @return array list of ips.
+	 */
+	function checkview_get_cleantalk_whitelisted_ips() {
+		$ip_array = get_transient( 'checkview_whitelisted_ips' );
+		if ( ! empty( $ip_array ) && is_array( $ip_array ) ) {
+			return $ip_array;
+		}
+		$spbc_data  = get_option( 'cleantalk_data', array() );
+		$user_token = $spbc_data['user_token'];
+		// Your CleanTalk API token.
+
+		// CleanTalk API endpoint to get whitelisted IPs.
+		$api_url = "https://api.cleantalk.org/?method_name=private_list_get&user_token=$user_token&service_type=antispam";
+
+		// Perform a remote GET request using WordPress' wp_remote_get() function.
+		$response = wp_remote_get( $api_url );
+
+		// Check if the request returned an error.
+		if ( is_wp_error( $response ) ) {
+			// Handle the error here.
+			error_log( 'Error fetching whitelisted IPs: ' . $response->get_error_message() );
+			return null; // Or handle as needed, e.g., return an error message or false.
+		}
+
+		// Get the response body.
+		$body = wp_remote_retrieve_body( $response );
+
+		// Decode the JSON response.
+		$whitelisted_ips = json_decode( $body, true );
+
+		// Initialize an empty array to store IP addresses.
+		$ip_array = array();
+
+		// Check if we have valid data.
+		if ( isset( $whitelisted_ips['data'] ) && ! empty( $whitelisted_ips['data'] ) ) {
+			// Loop through and add IPs to the array.
+			foreach ( $whitelisted_ips['data'] as $entry ) {
+				if ( isset( $entry['record'] ) && ! in_array( $entry['record'], $ip_array ) ) {
+					// Add the IP address (from the 'record' key) to the array.
+					$ip_array[] = $entry['record'];
+				}
+			}
+		}
+		set_transient( 'checkview_whitelisted_ips', $ip_array, 12 * HOUR_IN_SECONDS );
+		return $ip_array;
+	}
+}
+
+
 if ( ! function_exists( 'checkview_must_ssl_url' ) ) {
 	/**
 	 * Convert http to https.
@@ -434,6 +495,7 @@ if ( ! function_exists( 'checkview_reset_cache' ) ) {
 		delete_transient( 'checkview_store_orders_transient' );
 		delete_transient( 'checkview_store_products_transient' );
 		delete_transient( 'checkview_store_shipping_transient' );
+		delete_transient( 'checkview_whitelisted_ips' );
 		$sync = true;
 		return $sync;
 	}

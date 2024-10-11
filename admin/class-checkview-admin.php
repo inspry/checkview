@@ -174,7 +174,7 @@ class Checkview_Admin {
 		// disable clean talk for cv bot ip.
 		$key = array_search( 'cleantalk-spam-protect/cleantalk.php', $plugins, true );
 		if ( false !== $key ) {
-			unset( $plugins[ $key ] );
+			//unset( $plugins[ $key ] );
 		}
 		return $plugins;
 	}

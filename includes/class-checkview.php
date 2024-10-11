@@ -79,7 +79,7 @@ class Checkview {
 		if ( defined( 'CHECKVIEW_VERSION' ) ) {
 			$this->version = CHECKVIEW_VERSION;
 		} else {
-			$this->version = '1.1.20';
+			$this->version = '1.1.21';
 		}
 		$this->plugin_name = 'checkview';
 
@@ -177,11 +177,6 @@ class Checkview {
 		$cv_bot_ip = checkview_get_api_ip();
 		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) && ( isset( $_REQUEST['checkview_test_id'] ) || ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) ) ) {
 			$send_to = CHECKVIEW_EMAIL;
-
-			// if clean talk plugin active whitelist check form API IP. .
-			if ( is_plugin_active( 'cleantalk-spam-protect/cleantalk.php' ) ) {
-				checkview_whitelist_api_ip();
-			}
 
 			$cv_test_id = isset( $_REQUEST['checkview_test_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) : '';
 

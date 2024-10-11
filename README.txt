@@ -7,7 +7,7 @@ Tested up to: 6.6.1
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 1.1.20
+Stable tag: 1.1.21
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -85,6 +85,13 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 3. CheckView general settings.
 
 == Changelog ==
+= 1.1.21 =
+* Added a patch for CleanTalk whitelisting for SaaS IP addresses.
+* Added a patch to divert Ninja Forms BCC and CC for admin notifications.
+* Updated the priority of the checkview_get_visitor_ip() function definition to resolve the undefined function issue.
+* Skipped CleanTalk deactivation function to avoid whitelisting failure. 
+* Added cache to store list of whitelisted SaaS IP addresses.
+
 = 1.1.20 =
 * Updated endpoint url to retrieve the whitelisted IP's for CheckView SaaS.
 * Updated SaaS IP address checks.
@@ -198,6 +205,13 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Initial release.
 
 == Upgrade Notice ==
+= 1.1.21 =
+* Added a patch for CleanTalk whitelisting for SaaS IP addresses.
+* Added a patch to divert Ninja Forms BCC and CC for admin notifications.
+* Updated the priority of the checkview_get_visitor_ip() function definition to resolve the undefined function issue.
+* Skipped CleanTalk deactivation function to avoid whitelisting failure. 
+* Added cache to store list of whitelisted SaaS IP addresses.
+
 = 1.1.20 =
 * Updated endpoint url to retrieve the whitelisted IP's for CheckView SaaS.
 * Updated SaaS IP address checks.
