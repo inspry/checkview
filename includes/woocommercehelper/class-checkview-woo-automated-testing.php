@@ -575,11 +575,6 @@ class Checkview_Woo_Automated_Testing {
 				$this,
 				'checkview_woocommerce_block_support',
 			);
-			add_filter(
-				'cfturnstile_whitelisted',
-				'__return_true',
-				999
-			);
 			// Make the test product visible in the catalog.
 			add_filter(
 				'woocommerce_product_is_visible',
