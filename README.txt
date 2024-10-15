@@ -87,8 +87,9 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 == Changelog ==
 
 = 1.1.22 =
-* Added patch for Contact Form 7 module to load on ajax loads.
-* Updated checkview_get_api_ip() function to resolve CleanTalk and hCaptcha bypass errors for SaaS IP addresses.
+* Added a patch to ensure the Contact Form 7 module loads during AJAX requests.
+* Resolved CAPTCHA errors for Contact Form 7.
+* Updated the checkview_get_api_ip() function to address CleanTalk and hCaptcha bypass issues for SaaS IP addresses.
 
 = 1.1.21 =
 * Added a patch for CleanTalk whitelisting for SaaS IP addresses.
@@ -211,8 +212,9 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 == Upgrade Notice ==
 = 1.1.22 =
-* Added patch for Contact Form 7 module to load on ajax loads.
-* Updated checkview_get_api_ip() function to resolve CleanTalk and hCaptcha bypass errors for SaaS IP addresses.
+* Added a patch to ensure the Contact Form 7 module loads during AJAX requests.
+* Resolved CAPTCHA errors for Contact Form 7.
+* Updated the checkview_get_api_ip() function to address CleanTalk and hCaptcha bypass issues for SaaS IP addresses.
 
 = 1.1.21 =
 * Added a patch for CleanTalk whitelisting for SaaS IP addresses.
