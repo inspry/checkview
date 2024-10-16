@@ -27,15 +27,6 @@ if ( ! function_exists( 'checkview_validate_jwt_token' ) ) {
 	function checkview_validate_jwt_token( $token ) {
 
 		$key = checkview_get_publickey();
-		$key = '-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwRRtGQbYMUMSLooRo/s4
-PauU7PCH8Shf1ZybhIEImft1v6sUKzTKMXcKiQu0s/dNt5c6324FWVyVg7AVteGg
-hBUL74ZVuKXjh6jCQ9XgOPcVSYZxohjhskbXPA+pKBEuCMVEvNZZw9R91q7JFUvb
-P8F1xhbHPYTba26CKpZEil06DDXozkmkTYY52x/iyb5WMZ50RZokUOL6QKKRjQ5V
-HDbFNhBZeq490nFVwXHiVqAK/ey9AmsDEZMqjkTfR53lmz5WJbG/w3L0WzVmREMh
-XcACW1kwGceYPWMoFKMtKFCBNu1I6sSt06weTakB9/dGE9zjNRQIuIyZxB+ChK2s
-/QIDAQAB
------END PUBLIC KEY-----';
 		// Ensure the header is present.
 		if ( ! $token ) {
 			Checkview_Admin_Logs::add( 'api-logs', 'Authorization header not found.' );
@@ -72,10 +63,6 @@ XcACW1kwGceYPWMoFKMtKFCBNu1I6sSt06weTakB9/dGE9zjNRQIuIyZxB+ChK2s
 		// if url mismatch return false.
 		if ( str_contains( $jwt['websiteUrl'], get_bloginfo( 'url' ) ) !== true && get_bloginfo( 'url' ) !== $jwt['websiteUrl'] && ! strpos( $jwt['websiteUrl'], get_bloginfo( 'url' ) ) ) {
 			Checkview_Admin_Logs::add( 'api-logs', 'Invalid site url.' );
-			echo get_bloginfo( 'url' );
-			echo '   ';
-			echo $jwt['websiteUrl'];
-			exit;
 			return false;
 		}
 
@@ -156,7 +143,6 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 			)
 		);
 		delete_option( $visitor_ip );
-		update_option( $visitor_ip . 'use_stripe', 'no', true );
 	}
 }
 if ( ! function_exists( 'checkview_get_publickey' ) ) {
@@ -193,8 +179,8 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 
 		$ip_address = get_transient( 'checkview_saas_ip_address' ) ? get_transient( 'checkview_saas_ip_address' ) : array();
 		if ( null === $ip_address || '' === $ip_address || empty( $ip_address ) ) {
-			$request = wp_safe_remote_get(
-				'https://storage.googleapis.com/test-ip-bucket/container_ip_addresses',
+			$request = wp_remote_get(
+				'https://verify.checkview.io/whitelist.json',
 				array(
 					'method'  => 'GET',
 					'timeout' => 500,
@@ -207,20 +193,7 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 			$body = wp_remote_retrieve_body( $request );
 
 			$data = json_decode( $body, true );
-			if ( ! empty( $data ) && ! empty( $data['ipAddress'] ) ) {
-				$ip_address = $data['ipAddress'];
-				if ( ! empty( $ip_address ) && is_array( $ip_address ) ) {
-					foreach ( $ip_address as $ip ) {
-						// If validation fails, handle the error appropriately.
-						if ( ! checkview_validate_ip( $ip ) ) {
-							return false;
-						}
-					}
-				} elseif ( ! checkview_validate_ip( $ip_address ) ) {
-					return false;
-				}
-				set_transient( 'checkview_saas_ip_address', $ip_address, 12 * HOUR_IN_SECONDS );
-			} elseif ( ! empty( $data ) && ! empty( $data['ipAddresses'] ) ) {
+			if ( ! empty( $data ) && ! empty( $data['ipAddresses'] ) ) {
 				$ip_address = $data['ipAddresses'];
 				if ( ! empty( $ip_address ) && is_array( $ip_address ) ) {
 					foreach ( $ip_address as $ip ) {
