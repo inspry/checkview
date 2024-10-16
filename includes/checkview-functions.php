@@ -179,8 +179,8 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 
 		$ip_address = get_transient( 'checkview_saas_ip_address' ) ? get_transient( 'checkview_saas_ip_address' ) : array();
 		if ( null === $ip_address || '' === $ip_address || empty( $ip_address ) ) {
-			$request = wp_safe_remote_get(
-				'https://storage.googleapis.com/test-ip-bucket/container_ip_addresses',
+			$request = wp_remote_get(
+				'https://verify.checkview.io/whitelist.json',
 				array(
 					'method'  => 'GET',
 					'timeout' => 500,
@@ -193,20 +193,7 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 			$body = wp_remote_retrieve_body( $request );
 
 			$data = json_decode( $body, true );
-			if ( ! empty( $data ) && ! empty( $data['ipAddress'] ) ) {
-				$ip_address = $data['ipAddress'];
-				if ( ! empty( $ip_address ) && is_array( $ip_address ) ) {
-					foreach ( $ip_address as $ip ) {
-						// If validation fails, handle the error appropriately.
-						if ( ! checkview_validate_ip( $ip ) ) {
-							return false;
-						}
-					}
-				} elseif ( ! checkview_validate_ip( $ip_address ) ) {
-					return false;
-				}
-				set_transient( 'checkview_saas_ip_address', $ip_address, 12 * HOUR_IN_SECONDS );
-			} elseif ( ! empty( $data ) && ! empty( $data['ipAddresses'] ) ) {
+			if ( ! empty( $data ) && ! empty( $data['ipAddresses'] ) ) {
 				$ip_address = $data['ipAddresses'];
 				if ( ! empty( $ip_address ) && is_array( $ip_address ) ) {
 					foreach ( $ip_address as $ip ) {
