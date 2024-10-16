@@ -197,31 +197,6 @@ class Checkview_Admin {
 	}
 
 	/**
-	 * Disable unwanted plugins for check view bot ip
-	 *
-	 * @param [string] $plugins activated plugins list.
-	 * @return string
-	 */
-	public function checkview_disable_unwanted_plugins( $plugins ) {
-
-		// Current Vsitor IP.
-		$visitor_ip = checkview_get_visitor_ip();
-		// Check view Bot IP.
-		$cv_bot_ip = checkview_get_api_ip();
-		// skip if visitor ip not equal to CV Bot IP.
-		if ( ( ! is_array( $cv_bot_ip ) || ! in_array( $visitor_ip, $cv_bot_ip ) ) && ( ! isset( $_REQUEST['checkview_test_id'] ) || ! checkview_is_valid_uuid( sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) ) ) ) {
-			return $plugins;
-		}
-
-		// disable clean talk for cv bot ip.
-		$key = array_search( 'cleantalk-spam-protect/cleantalk.php', $plugins, true );
-		if ( false !== $key ) {
-			unset( $plugins[ $key ] );
-		}
-		return $plugins;
-	}
-
-	/**
 	 * Loads Form Test and helper classes.
 	 *
 	 * @return void
@@ -235,14 +210,9 @@ class Checkview_Admin {
 		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
-		// LocalTest.
-		$cv_bot_ip[] = '::1';
 		// $visitor_ip = $cv_bot_ip;
 		// skip if visitor ip not equal to CV Bot IP.
 		if ( is_array( $cv_bot_ip ) && ! in_array( $visitor_ip, $cv_bot_ip ) ) {
-			return;
-		}
-		if ( 'checkview-saas' !== get_option( $visitor_ip ) && ! isset( $_REQUEST['checkview_test_id'] ) ) {
 			return;
 		}
 
@@ -260,12 +230,6 @@ class Checkview_Admin {
 			// Create session for later use when form submit VIA AJAX.
 			checkview_create_cv_session( $visitor_ip, $cv_test_id );
 			update_option( $visitor_ip, 'checkview-saas', true );
-		}
-
-		if ( isset( $_GET['checkview_use_stripe'] ) && 'yes' === sanitize_text_field( wp_unslash( $_GET['checkview_use_stripe'] ) ) ) {
-			update_option( $visitor_ip . 'use_stripe', 'yes', true );
-		} elseif ( isset( $_GET['checkview_use_stripe'] ) && 'no' === sanitize_text_field( wp_unslash( $_GET['checkview_use_stripe'] ) ) ) {
-			update_option( $visitor_ip . 'use_stripe', 'no', true );
 		}
 
 		// If submit VIA AJAX.

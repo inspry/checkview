@@ -175,12 +175,7 @@ class Checkview {
 		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
-		// LocalTest.
-		$cv_bot_ip[] = '::1';
 		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) ) ) {
-			if ( ! is_array( $cv_bot_ip ) && ! in_array( $visitor_ip, $cv_bot_ip ) ) {
-				return;
-			}
 			$send_to = CHECKVIEW_EMAIL;
 
 			// if clean talk plugin active whitelist check form API IP. .
@@ -365,13 +360,6 @@ class Checkview {
 				3
 			);
 		}
-		$this->loader->add_filter(
-			'option_active_plugins',
-			$plugin_admin,
-			'checkview_disable_unwanted_plugins',
-			99,
-			1
-		);
 		$this->loader->add_action(
 			'init',
 			$plugin_admin,
@@ -409,11 +397,18 @@ class Checkview {
 			'enqueue_scripts'
 		);
 
-		$this->loader->add_action(
-			'pre_option_require_name_email',
-			'',
-			'checkview_whitelist_saas_ip_addresses'
-		);
+		// Current Vsitor IP.
+		$visitor_ip = checkview_get_visitor_ip();
+		// Check view Bot IP.
+		$cv_bot_ip = checkview_get_api_ip();
+		// proceed if visitor ip is equal to cv bot ip.
+		if ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) {
+			$this->loader->add_action(
+				'pre_option_require_name_email',
+				'',
+				'checkview_whitelist_saas_ip_addresses'
+			);
+		}
 	}
 	/**
 	 * Tracks core version updates. Resets CheckView cache.

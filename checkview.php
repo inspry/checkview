@@ -191,12 +191,13 @@ if ( ! function_exists( 'checkview_hcap_whitelist_ip' ) ) {
 		if ( false === $ip ) {
 			return true;
 		}
-		$api_ip = checkview_get_api_ip();
-		// Whitelist some other IPs.
-		if ( is_array( $api_ip ) && in_array( $ip, $api_ip ) ) {
-			return true;
+		if ( function_exists( 'checkview_get_api_ip' ) ) {
+			$cv_bot_ip = checkview_get_api_ip();
+		} else {
+			return $whitelisted;
 		}
-		if ( '::1' == $ip ) {
+		// Whitelist some other IPs.
+		if ( is_array( $cv_bot_ip ) && in_array( $ip, $cv_bot_ip ) ) {
 			return true;
 		}
 

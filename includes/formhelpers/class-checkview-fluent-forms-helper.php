@@ -134,39 +134,6 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		}
 
 		/**
-		 * Recursively remove validation rules from form fields.
-		 *
-		 * @param array $fields The fields array to process.
-		 * @return array The modified fields array without validation rules.
-		 *
-		 * @author Taylor Drayson
-		 * @link https://snippetclub.com
-		 */
-		public function remove_validation_rules( $fields ) {
-			foreach ( $fields as &$field ) {
-				// Remove validation rules if they exist in the field settings.
-				if ( isset( $field['settings']['validation_rules'] ) ) {
-					unset( $field['settings']['validation_rules'] );
-				}
-
-				// Check for nested fields and call the function recursively.
-				if ( isset( $field['fields'] ) && is_array( $field['fields'] ) ) {
-					$field['fields'] = $this->remove_validation_rules( $field['fields'] );
-				}
-
-				// Check for columns with nested fields and call the function recursively.
-				if ( isset( $field['columns'] ) && is_array( $field['columns'] ) ) {
-					foreach ( $field['columns'] as &$column ) {
-						if ( isset( $column['fields'] ) && is_array( $column['fields'] ) ) {
-							$column['fields'] = $this->remove_validation_rules( $column['fields'] );
-						}
-					}
-				}
-			}
-
-			return $fields;
-		}
-		/**
 		 * Injects email to fluentform supported emails.
 		 *
 		 * @param string $address email address.

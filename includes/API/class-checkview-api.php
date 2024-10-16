@@ -83,7 +83,7 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token' => array(
-						'required' => false,
+						'required' => true,
 					),
 				),
 			)
@@ -97,16 +97,16 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token' => array(
-						'required' => false,
+						'required' => true,
 					),
 					'frm_id'           => array(
-						'required' => false,
+						'required' => true,
 					),
 					'pg_id'            => array(
-						'required' => false,
+						'required' => true,
 					),
 					'type'             => array(
-						'required' => false,
+						'required' => true,
 					),
 					'send_to'          => array(
 						'required' => false,
@@ -124,10 +124,10 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'uid'              => array(
-						'required' => false,
+						'required' => true,
 					),
 					'_checkview_token' => array(
-						'required' => false,
+						'required' => true,
 					),
 				),
 			)
@@ -142,10 +142,10 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'uid'              => array(
-						'required' => false,
+						'required' => true,
 					),
 					'_checkview_token' => array(
-						'required' => false,
+						'required' => true,
 					),
 				),
 			)
@@ -160,7 +160,7 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token'                    => array(
-						'required' => false,
+						'required' => true,
 					),
 					'checkview_order_last_modified_since' => array(
 						'required' => false,
@@ -187,10 +187,10 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token'   => array(
-						'required' => false,
+						'required' => true,
 					),
 					'checkview_order_id' => array(
-						'required' => false,
+						'required' => true,
 					),
 				),
 			)
@@ -205,7 +205,7 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token'       => array(
-						'required' => false,
+						'required' => true,
 					),
 					'checkview_keyword'      => array(
 						'required' => false,
@@ -226,7 +226,7 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token' => array(
-						'required' => false,
+						'required' => true,
 					),
 				),
 			)
@@ -241,10 +241,10 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token' => array(
-						'required' => false,
+						'required' => true,
 					),
 					'order_id'         => array(
-						'required' => false,
+						'required' => true,
 					),
 				),
 			)
@@ -259,7 +259,7 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token' => array(
-						'required' => false,
+						'required' => true,
 					),
 				),
 			)
@@ -274,7 +274,7 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token' => array(
-						'required' => false,
+						'required' => true,
 					),
 				),
 			)
@@ -289,7 +289,7 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token' => array(
-						'required' => false,
+						'required' => true,
 					),
 				),
 			)
@@ -304,7 +304,7 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token' => array(
-						'required' => false,
+						'required' => true,
 					),
 				),
 			)
@@ -319,7 +319,7 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token' => array(
-						'required' => false,
+						'required' => true,
 					),
 				),
 			)
@@ -334,7 +334,7 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token' => array(
-						'required' => false,
+						'required' => true,
 					),
 				),
 			)
@@ -349,7 +349,7 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token' => array(
-						'required' => false,
+						'required' => true,
 					),
 				),
 			),
@@ -363,10 +363,10 @@ class CheckView_Api {
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token' => array(
-						'required' => false,
+						'required' => true,
 					),
 					'_plugin_slug'     => array(
-						'required' => false,
+						'required' => true,
 					),
 				),
 			)

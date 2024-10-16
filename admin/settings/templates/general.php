@@ -47,7 +47,7 @@ $allow_dev         = ! empty( $checkview_options['checkview_allowed_extensions']
 					</th>
 					<td class="checkview-make-cache-box">
 						<label class="" for="checkview_update_cache">
-							<button onclick="checkview_update_cache()" type="button" id="checkview_update_cache" name="checkview_update_cache" data-nonce="<?php echo esc_attr( wp_create_nonce( 'checkview_reset_cache' ) ); ?>" class="button checkview-button-spinner btn-outline-secondary"><?php esc_html_e( 'Update Cache', 'checkview' ); ?></button>
+							<button type="button" id="checkview_update_cache" name="checkview_update_cache" data-nonce="<?php echo esc_attr( wp_create_nonce( 'checkview_reset_cache' ) ); ?>" class="button checkview-button-spinner btn-outline-secondary"><?php esc_html_e( 'Update Cache', 'checkview' ); ?></button>
 						</label>
 					</td>
 				</tr>

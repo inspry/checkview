@@ -114,6 +114,33 @@ Here is the reversed changelog:
 * Added endpoint to expose version changes for installed plugins.
 
 * Updated container IP addresses.
+= 1.1.22 =
+* Added a patch to ensure the Contact Form 7 module loads during AJAX requests.
+* Resolved CAPTCHA errors for Contact Form 7.
+* Updated the checkview_get_api_ip() function to address CleanTalk and hCaptcha bypass issues for SaaS IP addresses.
+
+= 1.1.21 =
+* Added a patch for CleanTalk whitelisting for SaaS IP addresses.
+* Added a patch to divert Ninja Forms BCC and CC for admin notifications.
+* Updated the priority of the checkview_get_visitor_ip() function definition to resolve the undefined function issue.
+* Skipped CleanTalk deactivation function to avoid whitelisting failure. 
+* Added cache to store list of whitelisted SaaS IP addresses.
+
+= 1.1.20 =
+* Updated endpoint url to retrieve the whitelisted IP's for CheckView SaaS.
+* Updated SaaS IP address checks.
+
+= 1.1.19 =
+* Added internal logs to track API calls for delete endpoint.
+* Resolved Cloudflare Turnstile bypass in WPForms latest updates.
+* Added cron to delete CheckView test results after 7 days.
+
+= 1.1.18 =
+* Added internal logs to track IP address bypass.
+* Updated IP validation checks.
+* Added hCaptcha whitelisting for SaaS IP address.
+* Added functions to handle parallel sessions for all forms.
+* Added functions to handle parallel sessions for WooCommerce.
 
 = 1.1.17 =
 * Removed wp_die from IP address validations.
@@ -242,6 +269,34 @@ Here is the reversed changelog:
 * Added endpoint to expose version changes for installed plugins.
 
 * Updated container IP addresses.
+
+= 1.1.22 =
+* Added a patch to ensure the Contact Form 7 module loads during AJAX requests.
+* Resolved CAPTCHA errors for Contact Form 7.
+* Updated the checkview_get_api_ip() function to address CleanTalk and hCaptcha bypass issues for SaaS IP addresses.
+
+= 1.1.21 =
+* Added a patch for CleanTalk whitelisting for SaaS IP addresses.
+* Added a patch to divert Ninja Forms BCC and CC for admin notifications.
+* Updated the priority of the checkview_get_visitor_ip() function definition to resolve the undefined function issue.
+* Skipped CleanTalk deactivation function to avoid whitelisting failure. 
+* Added cache to store list of whitelisted SaaS IP addresses.
+
+= 1.1.20 =
+* Updated endpoint url to retrieve the whitelisted IP's for CheckView SaaS.
+* Updated SaaS IP address checks.
+
+= 1.1.19 =
+* Added internal logs to track API calls for delete endpoint.
+* Resolved Cloudflare Turnstile bypass in WPForms latest updates.
+* Added cron to delete CheckView test results after 7 days.
+
+= 1.1.18 =
+* Added internal logs to track IP address bypass.
+* Updated IP validation checks.
+* Added hCaptcha whitelisting for SaaS IP address.
+* Added functions to handle parallel sessions for all forms.
+* Added functions to handle parallel sessions for WooCommerce.
 
 = 1.1.17 =
 * Removed wp_die from IP address validations.
