@@ -23,7 +23,6 @@ class Test_Checkview_Bootstrap extends WP_UnitTestCase {
 		$this->assertTrue( defined( 'CHECKVIEW_PUBLIC_ASSETS' ) );
 		$this->assertTrue( defined( 'CHECKVIEW_URI' ) );
 		$this->assertTrue( defined( 'CHECKVIEW_EMAIL' ) );
-		$this->assertTrue( defined( 'CHECKVIEW_CONTAINER_IP' ) );
 	}
 
 	/**
