@@ -143,6 +143,8 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 			)
 		);
 		delete_option( $visitor_ip );
+		setcookie( 'checkview_test_id', '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
+		setcookie( 'checkview_test_id' . $checkview_test_id, '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
 	}
 }
 if ( ! function_exists( 'checkview_get_publickey' ) ) {

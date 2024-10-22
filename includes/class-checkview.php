@@ -192,7 +192,10 @@ class Checkview {
 				checkview_create_cv_session( $visitor_ip, $cv_test_id );
 				update_option( $visitor_ip, 'checkview-saas', true );
 			}
-				// If submit VIA AJAX.
+			if ( $cv_test_id && '' !== $cv_test_id ) {
+				setcookie( 'checkview_test_id' . $cv_test_id, $cv_test_id, time() + 3600, COOKIEPATH, COOKIE_DOMAIN );
+			}
+			// If submit VIA AJAX.
 			if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'admin-ajax.php' ) !== false ) {
 				$referer_url_query = wp_parse_url( $referrer_url, PHP_URL_QUERY );
 				$qry_str           = array();
