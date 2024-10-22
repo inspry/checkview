@@ -250,6 +250,10 @@ class Checkview_Admin {
 			setcookie( 'checkview_test_id', $cv_test_id, time() + 6600, COOKIEPATH, COOKIE_DOMAIN );
 		}
 
+		if ( $cv_test_id && '' !== $cv_test_id ) {
+			setcookie( 'checkview_test_id' . $cv_test_id, $cv_test_id, time() + 3600, COOKIEPATH, COOKIE_DOMAIN );
+		}
+
 		$cv_session = checkview_get_cv_session( $visitor_ip, $cv_test_id );
 
 		// stop if session not found.
