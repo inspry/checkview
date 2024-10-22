@@ -2,11 +2,25 @@
 
 ## Branch description 
 
-> **production:-** It corresponds to live website and will be exact copy of live filesystem
+> **main:-** This branch corresponds to the latest version in svn repository for CheckView. To release a new version to svn repo, always make sure you merge your final changes into the main branch and test it thoroughly. After testing make sure you have checked out in main branch. Must use following command if not on main branch:
+git checkout main
+git pull origin main
+Now you have latest code in your local main branch.
+Then you have to create a new tag that should resemble the latest version of the plugin.
+If we want to release 1.1.20 let's say here how we will do it. Use following commands on your main branch locally.
+git tag -a v1.0.20 -m "Release version 1.0.20" ( make sure to use this syntax v1.0.20 anything after v will be released as a new version )
+This will create a new tag with above comment. After this you have to push your newly created tag.
+git push origin v1.0.20 ( again is used same syntax )
+That's it it will create a new tag and release in github and will push to the svn repo. You don't have to create any release or tag directly in Github.
 
-> **master:-** It will contain stable changes which are tested and ready to go live
-
-> **staging:-** It corresponds to staging website and might contain unstable changes as they are under development
+> **trunk:-** This branch holds latest version for trunk folder of svn repository for CheckView.
+This branch should only be used if you don't want to release a new version and just want to update readme's or descriptions or assets in current version.
+To work with this branch in really simple.
+git pull origin trunk
+git add .
+git commit -m "added your changes"
+git push
+That's it. It will push your changes to the trunk folder of svn repo and also the version that's currently active.
 
 ## Development process
 
