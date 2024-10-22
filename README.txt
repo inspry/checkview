@@ -113,7 +113,12 @@ Here is the reversed changelog:
 
 * Added endpoint to expose version changes for installed plugins.
 
+* Resolved Recaptcha validation error in WPForms.
+
+* Resolved Cloudflare Turnstile validation errors in FluentForms.
+
 * Updated container IP addresses.
+
 = 1.1.22 =
 * Added a patch to ensure the Contact Form 7 module loads during AJAX requests.
 * Resolved CAPTCHA errors for Contact Form 7.
@@ -267,6 +272,10 @@ Here is the reversed changelog:
 * Resolved hCaptcha missing fields error after NinjaForms latest updates.
 
 * Added endpoint to expose version changes for installed plugins.
+
+* Resolved Recaptcha validation error in WPForms.
+
+* Resolved Cloudflare Turnstile validation errors in FluentForms.
 
 * Updated container IP addresses.
 
