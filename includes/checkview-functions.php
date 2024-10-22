@@ -21,30 +21,63 @@ if ( ! function_exists( 'checkview_validate_jwt_token' ) ) {
 	 * Decodes JWT TOKEN.
 	 *
 	 * @param string $token jwt token to valiate.
-	 * @return string/bool/void
+	 * @return string/bool/void/WP_Error
 	 * @since    1.0.0
 	 */
 	function checkview_validate_jwt_token( $token ) {
 
 		$key = checkview_get_publickey();
+		// Ensure the header is present.
+		if ( ! $token ) {
+			Checkview_Admin_Logs::add( 'api-logs', 'Authorization header not found.' );
+			return new WP_Error(
+				'no_auth_header',
+				'There was a technical error while processing your request.',
+				array( 'status' => 401 )
+			);
+		}
 
+		// Check if it contains a Bearer token.
+		if ( strpos( $token, 'Bearer ' ) !== 0 ) {
+			Checkview_Admin_Logs::add( 'api-logs', 'Authorization header must start with "Bearer "' );
+			return new WP_Error(
+				'invalid_auth_header',
+				'There was a technical error while processing your request.',
+				array( 'status' => 401 )
+			);
+		}
+
+		// Extract the JWT token from the header.
+		$token = substr( $token, 7 ); // Remove "Bearer " prefix.
 		try {
 			$decoded = JWT::decode( $token, new Key( $key, 'RS256' ) );
 		} catch ( Exception $e ) {
-			return esc_html( $e->getMessage() );
+			Checkview_Admin_Logs::add( 'api-logs', esc_html( $e->getMessage() ) );
+			return new WP_Error(
+				'invalid_auth_header',
+				'There was a technical error while processing your request.',
+				array( 'status' => 401 )
+			);
 		}
 		$jwt = (array) $decoded;
 		// if url mismatch return false.
 		if ( str_contains( $jwt['websiteUrl'], get_bloginfo( 'url' ) ) !== true && get_bloginfo( 'url' ) !== $jwt['websiteUrl'] && ! strpos( $jwt['websiteUrl'], get_bloginfo( 'url' ) ) ) {
-			return esc_html__( 'Invalid Token', 'checkview' );
+			Checkview_Admin_Logs::add( 'api-logs', 'Invalid site url.' );
+			return false;
 		}
 
 		// if token expired.
 		if ( $jwt['exp'] < time() ) {
-
-			return esc_html__( 'Token Expired', 'checkview' );
+			Checkview_Admin_Logs::add( 'api-logs', 'Token Expired.' );
+			return false;
 		}
-		return true;
+
+		// if url mismatch return false.
+		if ( empty( $jwt['_checkview_nonce'] ) ) {
+			Checkview_Admin_Logs::add( 'api-logs', 'Nonce Absent.' );
+			return false;
+		}
+		return $jwt['_checkview_nonce'];
 	}
 }
 if ( ! function_exists( 'get_checkview_test_id' ) ) {
@@ -101,6 +134,7 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 			$test_key = $cv_session[0]['test_key'];
 			delete_option( $test_key );
 		}
+
 		$wpdb->delete(
 			$session_table,
 			array(
@@ -109,7 +143,6 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 			)
 		);
 		delete_option( $visitor_ip );
-		update_option( $visitor_ip . 'use_stripe', 'no', true );
 	}
 }
 if ( ! function_exists( 'checkview_get_publickey' ) ) {
@@ -122,7 +155,7 @@ if ( ! function_exists( 'checkview_get_publickey' ) ) {
 	function checkview_get_publickey() {
 		$public_key = get_transient( 'checkview_saas_pk' );
 		if ( null === $public_key || '' === $public_key || empty( $public_key ) ) {
-			$response   = wp_remote_get(
+			$response   = wp_safe_remote_get(
 				'https://app.checkview.io/api/helper/public_key',
 				array(
 					'method'  => 'GET',
@@ -144,15 +177,10 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 	 */
 	function checkview_get_api_ip() {
 
-		$ip_address = get_transient( 'checkview_saas_ip_address' );
-		// Validate that the input is a valid IP address.
-		if ( ! empty( $ip_address ) && ! filter_var( $ip_address, FILTER_VALIDATE_IP ) ) {
-			// If validation fails, handle the error appropriately.
-			wp_die( esc_html__( 'Invalid IP Address', 'checkview' ) );
-		}
+		$ip_address = get_transient( 'checkview_saas_ip_address' ) ? get_transient( 'checkview_saas_ip_address' ) : array();
 		if ( null === $ip_address || '' === $ip_address || empty( $ip_address ) ) {
 			$request = wp_remote_get(
-				'https://storage.googleapis.com/test-ip-bucket/container_ip',
+				'https://verify.checkview.io/whitelist.json',
 				array(
 					'method'  => 'GET',
 					'timeout' => 500,
@@ -165,14 +193,112 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 			$body = wp_remote_retrieve_body( $request );
 
 			$data = json_decode( $body, true );
-			if ( ! empty( $data ) ) {
-				$ip_address = $data['ipAddress'];
+			if ( ! empty( $data ) && ! empty( $data['ipAddresses'] ) ) {
+				$ip_address = $data['ipAddresses'];
+				if ( ! empty( $ip_address ) && is_array( $ip_address ) ) {
+					foreach ( $ip_address as $ip ) {
+						// If validation fails, handle the error appropriately.
+						if ( ! checkview_validate_ip( $ip ) ) {
+							return false;
+						}
+					}
+				} elseif ( ! checkview_validate_ip( $ip_address ) ) {
+					return false;
+				}
 				set_transient( 'checkview_saas_ip_address', $ip_address, 12 * HOUR_IN_SECONDS );
 			}
+		}
+		if ( ! is_array( $ip_address ) ) {
+			$ip_address = (array) $ip_address;
+		}
+		if ( is_array( $ip_address ) ) {
+			$ip_address[] = '::1';
+			$ip_address[] = '119.73.99.244';
 		}
 		return $ip_address;
 	}
 }
+
+if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
+	/**
+	 * Get Visitor IP.
+	 *
+	 * @return string ip address of visitor.
+	 * @since    1.0.0
+	 */
+	function checkview_get_visitor_ip() {
+
+		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
+			// check ip from share internet.
+			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ) );
+		} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+			// to check ip is pass from proxy.
+			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
+		} else {
+			$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+		}
+
+		if ( ! checkview_validate_ip( $ip ) ) {
+			return false;
+		}
+
+		return $ip;
+	}
+}
+
+if ( ! function_exists( 'checkview_get_cleantalk_whitelisted_ips' ) ) {
+	/**
+	 * Retrieves whitelisted IP's from CleanTalk.
+	 *
+	 * @return array list of ips.
+	 */
+	function checkview_get_cleantalk_whitelisted_ips() {
+		$ip_array = get_transient( 'checkview_whitelisted_ips' );
+		if ( ! empty( $ip_array ) && is_array( $ip_array ) ) {
+			return $ip_array;
+		}
+		$spbc_data  = get_option( 'cleantalk_data', array() );
+		$user_token = $spbc_data['user_token'];
+		// Your CleanTalk API token.
+
+		// CleanTalk API endpoint to get whitelisted IPs.
+		$api_url = "https://api.cleantalk.org/?method_name=private_list_get&user_token=$user_token&service_type=antispam";
+
+		// Perform a remote GET request using WordPress' wp_remote_get() function.
+		$response = wp_remote_get( $api_url );
+
+		// Check if the request returned an error.
+		if ( is_wp_error( $response ) ) {
+			// Handle the error here.
+			error_log( 'Error fetching whitelisted IPs: ' . $response->get_error_message() );
+			Checkview_Admin_Logs::add( 'ip-logs', esc_html__( 'Error fetching whitelisted IPs: ' . $response->get_error_message(), 'checkview' ) );
+			return null; // Or handle as needed, e.g., return an error message or false.
+		}
+
+		// Get the response body.
+		$body = wp_remote_retrieve_body( $response );
+
+		// Decode the JSON response.
+		$whitelisted_ips = json_decode( $body, true );
+
+		// Initialize an empty array to store IP addresses.
+		$ip_array = array();
+
+		// Check if we have valid data.
+		if ( isset( $whitelisted_ips['data'] ) && ! empty( $whitelisted_ips['data'] ) ) {
+			// Loop through and add IPs to the array.
+			foreach ( $whitelisted_ips['data'] as $entry ) {
+				if ( isset( $entry['record'] ) && ! in_array( $entry['record'], $ip_array ) ) {
+					// Add the IP address (from the 'record' key) to the array.
+					$ip_array[] = $entry['record'];
+				}
+			}
+		}
+		set_transient( 'checkview_whitelisted_ips', $ip_array, 12 * HOUR_IN_SECONDS );
+		return $ip_array;
+	}
+}
+
 if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 	/**
 	 * Whitelist checkview Bot IP.
@@ -189,21 +315,36 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 		$current_ip = checkview_get_visitor_ip();
 		$api_ip     = checkview_get_api_ip();
 
-		if ( $api_ip === $current_ip ) {
+		if ( is_array( $api_ip ) && in_array( $current_ip, $api_ip ) ) {
+			$ips = checkview_get_cleantalk_whitelisted_ips();
+			if ( is_array( $ips ) && in_array( $current_ip, $ips ) ) {
+				return;
+			}
 			$response = wp_remote_get(
-				'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=1&status=allow&note=Checkview Bot&records=' . $api_ip,
+				'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=1&status=allow&note=Checkview Bot&records=' . $current_ip,
 				array(
 					'method'  => 'GET',
 					'timeout' => 500,
 				)
 			);
-			$response = wp_remote_get(
-				'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=4&status=allow&note=Checkview Bot&records=checkview.io',
-				array(
-					'method'  => 'GET',
-					'timeout' => 500,
-				)
-			);
+			if ( is_array( $ips ) && ! in_array( 'checkview.io', $ips ) ) {
+				$response = wp_remote_get(
+					'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=4&status=allow&note=Checkview Bot&records=checkview.io',
+					array(
+						'method'  => 'GET',
+						'timeout' => 500,
+					)
+				);
+			}
+			if ( is_array( $ips ) && ! in_array( 'test-mail.checkview.io', $ips ) ) {
+				$response = wp_remote_get(
+					'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=4&status=allow&note=Checkview Bot&records=test-mail.checkview.io',
+					array(
+						'method'  => 'GET',
+						'timeout' => 500,
+					)
+				);
+			}
 			// Check if the response is a WP_Error object.
 			if ( is_wp_error( $response ) ) {
 				// Handle the error here.
@@ -230,55 +371,7 @@ if ( ! function_exists( 'checkview_must_ssl_url' ) ) {
 		return $url;
 	}
 }
-if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
-	/**
-	 * Get Visitor IP.
-	 *
-	 * @return string ip address of visitor.
-	 * @since    1.0.0
-	 */
-	function checkview_get_visitor_ip() {
 
-		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
-			// check ip from share internet.
-			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ) );
-		} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-			// to check ip is pass from proxy.
-			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
-		} else {
-			$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-		}
-		// Validate that the input is a valid IP address.
-		if ( ! empty( $ip ) && ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
-			// If validation fails, handle the error appropriately.
-			wp_die( esc_html__( 'Invalid IP Address', 'checkview' ) );
-		}
-		return $ip;
-	}
-}
-if ( function_exists( 'is_ipv6_address' ) ) {
-	/**
-	 * Check if the provided IP address is IPv6.
-	 *
-	 * @param string $ip_address The IP address to check.
-	 * @return bool True if the IP address is IPv6, false otherwise.
-	 */
-	function is_ipv6_address( $ip_address ) {
-		return filter_var( $ip_address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) !== false;
-	}
-}
-
-if ( ! function_exists( 'is_ipv4_address' ) ) {
-	/**
-	 * Check if the provided IP address is IPv4.
-	 *
-	 * @param string $ip_address The IP address to check.
-	 * @return bool True if the IP address is IPv4, false otherwise.
-	 */
-	function is_ipv4_address( $ip_address ) {
-		return filter_var( $ip_address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) !== false;
-	}
-}
 if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 	/**
 	 * Create check view Test Session.
@@ -298,8 +391,10 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 		if ( ! empty( $already_have ) ) {
 			return;
 		}
-
-		$current_url = home_url( add_query_arg( array(), $wp->request ) );
+		$current_url = '';
+		if ( ! empty( $wp->request ) ) {
+			$current_url = home_url( add_query_arg( array(), $wp->request ) );
+		}
 
 		$is_sub_directory = explode( '/', str_replace( '//', '|', $current_url ) );
 		if ( count( $is_sub_directory ) > 1 ) {
@@ -311,7 +406,9 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 		if ( ! empty( $request_uri ) && ! filter_var( $request_uri, FILTER_SANITIZE_URL ) ) {
 			// If validation fails, handle the error appropriately.
-			wp_die( esc_html__( 'Invalid IP Address', 'checkview' ) );
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'ip-logs', esc_html__( 'Invalid URL.', 'checkview' ) );
+			return false;
 		}
 		if ( count( $is_sub_directory ) > 1 ) {
 			$current_url = $current_url . $request_uri;
@@ -333,10 +430,8 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 			}
 		}
 		$session_table = $wpdb->prefix . 'cv_session';
-
-		$wpdb->delete( $session_table, array( 'visitor_ip' => $ip ) );
-		$test_key     = 'CF_TEST_' . $page_id;
-		$session_data = array(
+		$test_key      = 'CF_TEST_' . $page_id;
+		$session_data  = array(
 			'visitor_ip' => $ip,
 			'test_key'   => $test_key,
 			'test_id'    => $test_id,
@@ -411,6 +506,7 @@ if ( ! function_exists( 'checkview_reset_cache' ) ) {
 		delete_transient( 'checkview_store_orders_transient' );
 		delete_transient( 'checkview_store_products_transient' );
 		delete_transient( 'checkview_store_shipping_transient' );
+		delete_transient( 'checkview_whitelisted_ips' );
 		$sync = true;
 		return $sync;
 	}
@@ -453,11 +549,12 @@ if ( ! function_exists( 'checkview_whitelist_saas_ip_addresses' ) ) {
 	 */
 	function checkview_whitelist_saas_ip_addresses() {
 		$api_ip = checkview_get_api_ip();
-		if ( ! empty( $_SERVER['REMOTE_ADDR'] ) && ! filter_var( sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ), FILTER_SANITIZE_URL ) ) {
-			// If validation fails, handle the error appropriately.
-			wp_die( esc_html__( 'Invalid IP Address.', 'checkview' ) );
+		if ( ! empty( $_SERVER['REMOTE_ADDR'] ) && ! filter_var( sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ), FILTER_VALIDATE_IP ) ) {
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'ip-logs', esc_html__( 'Invalid IP Address.', 'checkview' ) );
+			return false;
 		}
-		if ( in_array( isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '', array( $api_ip ), true ) ) {
+		if ( is_array( $api_ip ) && in_array( isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '', $api_ip, true ) ) {
 			return true;
 		}
 	}
@@ -515,7 +612,8 @@ if ( ! function_exists( 'checkview_is_plugin_request' ) ) {
 		$current_route = rest_get_url_prefix() . '/checkview/v1/';
 		if ( ! empty( $_SERVER['REQUEST_URI'] ) && ! filter_var( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), FILTER_SANITIZE_URL ) ) {
 			// If validation fails, handle the error appropriately.
-			wp_die( esc_html__( 'Invalid IP Address.', 'checkview' ) );
+			Checkview_Admin_Logs::add( 'ip-logs', esc_html__( 'Invalid IP Address.', 'checkview' ) );
+			return false;
 		}
 		return strpos(
 			isset( $_SERVER['REQUEST_URI'] ) ? sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '',
@@ -552,4 +650,58 @@ if ( ! function_exists( 'checkview_is_valid_uuid' ) ) {
 	function checkview_is_valid_uuid( $uuid ) {
 		return preg_match( '/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i', $uuid );
 	}
+}
+
+if ( ! function_exists( 'checkview_schedule_weekly_cleanup' ) ) {
+	/**
+	 * Register the cron event if it's not already scheduled.
+	 *
+	 * @return void
+	 */
+	function checkview_schedule_weekly_cleanup() {
+		if ( ! wp_next_scheduled( 'checkview_delete_table_cron_hook' ) ) {
+			wp_schedule_event( time(), 'weekly', 'checkview_delete_table_cron_hook' );
+		}
+	}
+	// Hook to initialize the cron job when WordPress loads.
+	add_action( 'init', 'checkview_schedule_weekly_cleanup' );
+}
+
+if ( ! function_exists( 'checkview_add_weekly_cron_schedule' ) ) {
+	/**
+	 * Adds custom schedule.
+	 *
+	 * @param array $schedules array of schedules.
+	 * @return array.
+	 */
+	function checkview_add_weekly_cron_schedule( $schedules ) {
+		$schedules['weekly'] = array(
+			'interval' => 604800, // 7 days in seconds
+			'display'  => __( 'Once Weekly', 'checkview' ),
+		);
+		return $schedules;
+	}
+	add_filter( 'cron_schedules', 'checkview_add_weekly_cron_schedule' );
+}
+
+if ( ! function_exists( 'checkview_delete_tables_data' ) ) {
+	/**
+	 * This function will run every 7 days to delete data from the tables.
+	 *
+	 * @return void
+	 */
+	function checkview_delete_tables_data() {
+		global $wpdb;
+
+		// Delete all entries from 'cv_entry' table.
+		$table_entry = esc_sql( $wpdb->prefix . 'cv_entry' );
+		$wpdb->query( "DELETE FROM $table_entry" );
+
+		// Delete all entries from 'cv_entry_meta' table.
+		$table_entry_meta = esc_sql( $wpdb->prefix . 'cv_entry_meta' );
+		$wpdb->query( "DELETE FROM $table_entry_meta" );
+	}
+
+	// Attach the function to the cron event.
+	add_action( 'checkview_delete_table_cron_hook', 'checkview_delete_tables_data' );
 }

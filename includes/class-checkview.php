@@ -79,7 +79,7 @@ class Checkview {
 		if ( defined( 'CHECKVIEW_VERSION' ) ) {
 			$this->version = CHECKVIEW_VERSION;
 		} else {
-			$this->version = '1.1.16';
+			$this->version = '2.0.0';
 		}
 		$this->plugin_name = 'checkview';
 
@@ -175,7 +175,7 @@ class Checkview {
 		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
-		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || $visitor_ip === $cv_bot_ip ) ) {
+		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) ) ) {
 			$send_to = CHECKVIEW_EMAIL;
 
 			// if clean talk plugin active whitelist check form API IP. .
@@ -197,7 +197,9 @@ class Checkview {
 				$referer_url_query = wp_parse_url( $referrer_url, PHP_URL_QUERY );
 				$qry_str           = array();
 				parse_str( $referer_url_query, $qry_str );
-				$cv_test_id = $qry_str['checkview_test_id'];
+				if ( ! empty( $qry_str['checkview_test_id'] ) ) {
+					$cv_test_id = $qry_str['checkview_test_id'];
+				}
 			}
 
 			$cv_session = checkview_get_cv_session( $visitor_ip, $cv_test_id );
@@ -358,13 +360,6 @@ class Checkview {
 				3
 			);
 		}
-		$this->loader->add_filter(
-			'option_active_plugins',
-			$plugin_admin,
-			'checkview_disable_unwanted_plugins',
-			99,
-			1
-		);
 		$this->loader->add_action(
 			'init',
 			$plugin_admin,
@@ -407,7 +402,7 @@ class Checkview {
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
 		// proceed if visitor ip is equal to cv bot ip.
-		if ( $visitor_ip === $cv_bot_ip ) {
+		if ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) {
 			$this->loader->add_action(
 				'pre_option_require_name_email',
 				'',

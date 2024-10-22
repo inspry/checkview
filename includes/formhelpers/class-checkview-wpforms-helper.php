@@ -52,13 +52,14 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 					$old_settings['turnstile-secret-key'] = '1x0000000000000000000000000000000AA';
 					update_option( 'wpforms_settings', $old_settings );
 				}
+			} else {
+				// Disable reCAPTCHA assets and initialisation on the frontend.
+				add_filter(
+					'wpforms_frontend_recaptcha_disable',
+					'__return_true',
+					99
+				);
 			}
-			// Disable reCAPTCHA assets and initialisation on the frontend.
-			add_filter(
-				'wpforms_frontend_recaptcha_disable',
-				'__return_true',
-				99
-			);
 
 			// Disable validation and verification on the backend.
 			add_filter(
@@ -270,7 +271,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 				}
 			}
 			// Test completed So Clear sessions.
-			complete_checkview_test();
+			complete_checkview_test( $checkview_test_id );
 		}
 	}
 	$checkview_wpforms_helper = new Checkview_Wpforms_Helper();

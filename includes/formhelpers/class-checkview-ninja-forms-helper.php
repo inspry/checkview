@@ -53,12 +53,6 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 				'__return_null',
 				-10
 			);
-			add_filter(
-				'ninja_forms_display_fields',
-				array( $this, 'maybe_remove_v2_field' ),
-				10,
-				2
-			);
 
 			add_filter(
 				'ninja_forms_form_fields',
@@ -98,22 +92,39 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 					5
 				);
 			}
-			// bypass hcaptcha.
-			//add_filter( 'hcap_activate', '__return_false' );
 		}
 
 		/**
-		 * Injects email to Ninnja forms supported emails.
+		 * Injects email to Ninja forms supported emails.
 		 *
-		 * @param string $sent status of emai.
+		 * @param string $sent status of email.
 		 * @param array  $action_settings settings for actions.
 		 * @param string $message message to be sent.
 		 * @param array  $headers headers details.
-		 * @param array  $attachments attachements if any.
+		 * @param array  $attachments attachments if any.
 		 * @return bool
 		 */
 		public function checkview_inject_email( $sent, $action_settings, $message, $headers, $attachments ) {
-			wp_mail( TEST_EMAIL, wp_strip_all_tags( $action_settings['email_subject'] ), $message, $headers, $attachments );
+			// Ensure headers are an array.
+			if ( ! is_array( $headers ) ) {
+				$headers = explode( "\r\n", $headers );
+			}
+
+			// Filter out 'Cc:' and 'Bcc:' headers.
+			$filtered_headers = array_filter(
+				$headers,
+				function ( $header ) {
+					return stripos( $header, 'Cc:' ) === false && stripos( $header, 'Bcc:' ) === false;
+				}
+			);
+
+			// If needed, you can add replacements for 'Cc:' or 'Bcc:' headers here
+			// Example: Add a custom replacement for 'Cc:'
+			// $filtered_headers[] = 'Cc: replacement@example.com';.
+
+			// Send the email without the 'Cc:' and 'Bcc:' headers.
+			wp_mail( TEST_EMAIL, wp_strip_all_tags( $action_settings['email_subject'] ), $message, $filtered_headers, $attachments );
+
 			return true;
 		}
 		/**
@@ -170,7 +181,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 			wp_delete_post( $entry_id, true );
 
 			// Test completed So Clear sessions.
-			complete_checkview_test();
+			complete_checkview_test( $checkview_test_id );
 		}
 
 		/**
@@ -185,23 +196,6 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 				if ( 'recaptcha' === $field->get_setting( 'type' ) || 'hcaptcha-for-ninja-forms' === $field->get_setting( 'type' ) || 'akismet' === $field->get_setting( 'type' ) ) {
 					// Remove v2 reCAPTCHA, hcaptcha fields if still configured.
 					unset( $fields[ $key ] );
-				}
-			}
-			return $fields;
-		}
-
-		/**
-		 * Removes V2 field.
-		 *
-		 * @param array $fields fields.
-		 * @param int   $form_id form id.
-		 * @return fields
-		 */
-		public function maybe_remove_v2_field( $fields, $form_id ) {
-			foreach ( $fields as $key => $field ) {
-				if ( 'hcaptcha-for-ninja-forms' === $field['type'] ) {
-					// Remove v2 reCAPTCHA fields if still configured.
-					//unset( $fields[ $key ] );
 				}
 			}
 			return $fields;

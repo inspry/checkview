@@ -1,0 +1,29 @@
+name: Plugin asset/readme update
+
+on:
+  push:
+    branches:
+      - trunk
+
+jobs:
+  trunk:
+    name: Push to trunk
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+    - name: Install SVN
+      run: sudo apt-get install subversion
+
+    - name: Build
+      run: |
+          composer install --no-dev --prefer-dist --optimize-autoloader --no-scripts
+          yarn install
+          grunt build
+    - name: WordPress.org plugin asset/readme updates
+      uses: 10up/action-wordpress-plugin-asset-update@stable
+      env:
+        SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+        SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+        SLUG: checkview
+        IGNORE_OTHER_FILES: true

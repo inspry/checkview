@@ -7,7 +7,7 @@ Tested up to: 6.6.1
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 1.1.16
+Stable tag: 2.0.0
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -87,6 +87,65 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 == Changelog ==
 
 Here is the reversed changelog:
+= 2.0.0 =
+
+* Resolved token validation issues (SaaS was bypassing without token for forms list endpoint).
+
+* Resolved IP address validation issues (SaaS was not able to bypass even with valid IP address).
+
+* Added data validations (IP address and test ID validations).
+
+* Added API validations (Added extra layer of security with nonce addition).
+
+* Added SaaS IP address validation.
+
+* Added SaaS nonce token validation in all API endpoints.
+
+* Added SSL checks for all API calls.
+
+* Added new database table for storing used nonces.
+
+* Added cron job to delete expired nonces.
+
+* Added logs for API and internal functions.
+
+* Resolved hCaptcha missing fields error after NinjaForms latest updates.
+
+* Added endpoint to expose version changes for installed plugins.
+
+* Updated container IP addresses.
+= 1.1.22 =
+* Added a patch to ensure the Contact Form 7 module loads during AJAX requests.
+* Resolved CAPTCHA errors for Contact Form 7.
+* Updated the checkview_get_api_ip() function to address CleanTalk and hCaptcha bypass issues for SaaS IP addresses.
+
+= 1.1.21 =
+* Added a patch for CleanTalk whitelisting for SaaS IP addresses.
+* Added a patch to divert Ninja Forms BCC and CC for admin notifications.
+* Updated the priority of the checkview_get_visitor_ip() function definition to resolve the undefined function issue.
+* Skipped CleanTalk deactivation function to avoid whitelisting failure. 
+* Added cache to store list of whitelisted SaaS IP addresses.
+
+= 1.1.20 =
+* Updated endpoint url to retrieve the whitelisted IP's for CheckView SaaS.
+* Updated SaaS IP address checks.
+
+= 1.1.19 =
+* Added internal logs to track API calls for delete endpoint.
+* Resolved Cloudflare Turnstile bypass in WPForms latest updates.
+* Added cron to delete CheckView test results after 7 days.
+
+= 1.1.18 =
+* Added internal logs to track IP address bypass.
+* Updated IP validation checks.
+* Added hCaptcha whitelisting for SaaS IP address.
+* Added functions to handle parallel sessions for all forms.
+* Added functions to handle parallel sessions for WooCommerce.
+
+= 1.1.17 =
+* Removed wp_die from IP address validations.
+* Added internal logs to track IP address bypass.
+
 = 1.1.16 =
 * Added hCaptcha bypass in Ninja Forms.
 * Updated SaaS public key address.
@@ -95,6 +154,7 @@ Here is the reversed changelog:
 * Added validations for SaaS IP addresses.
 * Added checks to avoid default product duplications.
 * Added auto restore from trash feature for the default product.
+
 = 1.1.15 =
 * Added filter for invalid URLs in CF7 and Ninja Forms.
 * Added new endpoint to pull additional site info.
@@ -182,6 +242,66 @@ Here is the reversed changelog:
 == Upgrade Notice ==
 
 Here is the reversed changelog:
+= 2.0.0 =
+
+* Resolved token validation issues (SaaS was bypassing without token for forms list endpoint).
+
+* Resolved IP address validation issues (SaaS was not able to bypass even with valid IP address).
+
+* Added data validations (IP address and test ID validations).
+
+* Added API validations (Added extra layer of security with nonce addition).
+
+* Added SaaS IP address validation.
+
+* Added SaaS nonce token validation in all API endpoints.
+
+* Added SSL checks for all API calls.
+
+* Added new database table for storing used nonces.
+
+* Added cron job to delete expired nonces.
+
+* Added logs for API and internal functions.
+
+* Resolved hCaptcha missing fields error after NinjaForms latest updates.
+
+* Added endpoint to expose version changes for installed plugins.
+
+* Updated container IP addresses.
+
+= 1.1.22 =
+* Added a patch to ensure the Contact Form 7 module loads during AJAX requests.
+* Resolved CAPTCHA errors for Contact Form 7.
+* Updated the checkview_get_api_ip() function to address CleanTalk and hCaptcha bypass issues for SaaS IP addresses.
+
+= 1.1.21 =
+* Added a patch for CleanTalk whitelisting for SaaS IP addresses.
+* Added a patch to divert Ninja Forms BCC and CC for admin notifications.
+* Updated the priority of the checkview_get_visitor_ip() function definition to resolve the undefined function issue.
+* Skipped CleanTalk deactivation function to avoid whitelisting failure. 
+* Added cache to store list of whitelisted SaaS IP addresses.
+
+= 1.1.20 =
+* Updated endpoint url to retrieve the whitelisted IP's for CheckView SaaS.
+* Updated SaaS IP address checks.
+
+= 1.1.19 =
+* Added internal logs to track API calls for delete endpoint.
+* Resolved Cloudflare Turnstile bypass in WPForms latest updates.
+* Added cron to delete CheckView test results after 7 days.
+
+= 1.1.18 =
+* Added internal logs to track IP address bypass.
+* Updated IP validation checks.
+* Added hCaptcha whitelisting for SaaS IP address.
+* Added functions to handle parallel sessions for all forms.
+* Added functions to handle parallel sessions for WooCommerce.
+
+= 1.1.17 =
+* Removed wp_die from IP address validations.
+* Added internal logs to track IP address bypass.
+
 = 1.1.16 =
 * Added hCaptcha bypass in Ninja Forms.
 * Updated SaaS public key address.
@@ -190,6 +310,7 @@ Here is the reversed changelog:
 * Added validations for SaaS IP addresses.
 * Added checks to avoid default product duplications.
 * Added auto restore from trash feature for the default product.
+
 = 1.1.15 =
 * Added filter for invalid URLs in CF7 and Ninja Forms.
 * Added new endpoint to pull additional site info.

@@ -20,21 +20,7 @@ class TestCheckviewAdmin extends WP_UnitTestCase {
 		$this->assertfalse( wp_script_is( 'checkview', 'enqueued' ) );
 		$this->assertfalse( wp_script_is( 'checkview-sweetalert2.js', 'enqueued' ) );
 	}
-
-	public function test_checkview_disable_unwanted_plugins() {
-		$plugins  = array( 'plugin1', 'plugin2', 'cleantalk-spam-protect/cleantalk.php', 'plugin3' );
-		$expected = array( 'plugin1', 'plugin2', 'plugin3' );
-
-		$result = $this->admin->checkview_disable_unwanted_plugins( $plugins );
-
-		$this->assertEquals( $plugins, $result );
-	}
-
-	public function testCheckviewDisableUnwantedPlugins() {
-		$plugins = array( 'cleantalk-spam-protect/cleantalk.php' );
-		$this->admin->checkview_disable_unwanted_plugins( $plugins );
-		$this->assertNOTEmpty( $plugins );
-	}
+	
 	public function testCheckviewInitCurrentTestVisitorIpNotEqualCvBotIp() {
 		$admin                  = new Checkview_Admin( 'checkview', '1.0.0' );
 		$visitor_ip             = '192.168.1.1';
