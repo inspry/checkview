@@ -213,7 +213,7 @@ class Checkview_Admin {
 		// $visitor_ip = $cv_bot_ip;
 		// skip if visitor ip not equal to CV Bot IP.
 		if ( is_array( $cv_bot_ip ) && ! in_array( $visitor_ip, $cv_bot_ip ) ) {
-			return;
+			// return;
 		}
 
 		// if clean talk plugin active whitelist check form API IP.
@@ -279,23 +279,27 @@ class Checkview_Admin {
 			if ( ! defined( 'CV_TEST_ID' ) ) {
 				define( 'CV_TEST_ID', $cv_test_id );
 			}
-			delete_transient( 'checkview_forms_test_transient' );
-			delete_transient( 'checkview_store_orders_transient' );
-			if ( is_plugin_active( 'gravityforms/gravityforms.php' ) ) {
-				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-gforms-helper.php';
-			}
-			if ( is_plugin_active( 'fluentform/fluentform.php' ) ) {
-				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-fluent-forms-helper.php';
-			}
-			if ( is_plugin_active( 'ninja-forms/ninja-forms.php' ) ) {
-				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-ninja-forms-helper.php';
-			}
-			if ( is_plugin_active( 'wpforms/wpforms.php' ) || is_plugin_active( 'wpforms-lite/wpforms.php' ) ) {
-				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-wpforms-helper.php';
-			}
-			if ( is_plugin_active( 'formidable/formidable.php' ) ) {
-				require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-formidable-helper.php';
-			}
+		}
+		delete_transient( 'checkview_forms_test_transient' );
+		delete_transient( 'checkview_store_orders_transient' );
+		if ( is_plugin_active( 'gravityforms/gravityforms.php' ) ) {
+			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-gforms-helper.php';
+		}
+		if ( is_plugin_active( 'fluentform/fluentform.php' ) ) {
+			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-fluent-forms-helper.php';
+		}
+		if ( is_plugin_active( 'ninja-forms/ninja-forms.php' ) ) {
+			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-ninja-forms-helper.php';
+		}
+		if ( is_plugin_active( 'wpforms/wpforms.php' ) || is_plugin_active( 'wpforms-lite/wpforms.php' ) ) {
+			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-wpforms-helper.php';
+		}
+		if ( is_plugin_active( 'formidable/formidable.php' ) ) {
+			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-formidable-helper.php';
+		}
+
+		if ( is_plugin_active( 'ws-form/ws-form.php' ) ) {
+			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-wsf-helper.php';
 		}
 	}
 }
