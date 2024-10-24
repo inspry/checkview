@@ -215,7 +215,6 @@ class Checkview_Admin {
 		if ( is_array( $cv_bot_ip ) && ! in_array( $visitor_ip, $cv_bot_ip ) ) {
 			return;
 		}
-
 		// if clean talk plugin active whitelist check form API IP.
 		if ( is_plugin_active( 'cleantalk-spam-protect/cleantalk.php' ) ) {
 			checkview_whitelist_api_ip();
@@ -255,7 +254,7 @@ class Checkview_Admin {
 		}
 
 		$cv_session = checkview_get_cv_session( $visitor_ip, $cv_test_id );
-
+		$send_to    = CHECKVIEW_EMAIL;
 		// stop if session not found.
 		if ( ! empty( $cv_session ) ) {
 
@@ -267,18 +266,16 @@ class Checkview_Admin {
 				$test_form = json_decode( $test_form, true );
 			}
 
-			$send_to = CHECKVIEW_EMAIL;
 			if ( isset( $test_form['send_to'] ) && '' !== $test_form['send_to'] ) {
 				$send_to = $test_form['send_to'];
-			}
-
-			if ( ! defined( 'TEST_EMAIL' ) ) {
-				define( 'TEST_EMAIL', $send_to );
 			}
 
 			if ( ! defined( 'CV_TEST_ID' ) ) {
 				define( 'CV_TEST_ID', $cv_test_id );
 			}
+		}
+		if ( ! defined( 'TEST_EMAIL' ) ) {
+			define( 'TEST_EMAIL', $send_to );
 		}
 		delete_transient( 'checkview_forms_test_transient' );
 		delete_transient( 'checkview_store_orders_transient' );

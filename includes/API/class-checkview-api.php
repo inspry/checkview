@@ -119,10 +119,10 @@ class CheckView_Api {
 			'checkview/v1',
 			'/forms/formstestresults',
 			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'checkview_get_available_forms_test_results' ),
+				'methods'  => 'GET',
+				'callback' => array( $this, 'checkview_get_available_forms_test_results' ),
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'                => array(
+				'args'     => array(
 					'uid'              => array(
 						'required' => true,
 					),
@@ -1800,7 +1800,7 @@ class CheckView_Api {
 
 						$results[] = array(
 							'field_id'    => $row->meta_key,
-							'field_value' => $row->meta_value,
+							'field_value' => maybe_unserialize( $row->meta_value ),
 						);
 					}
 				}
