@@ -213,7 +213,7 @@ class Checkview_Admin {
 		// $visitor_ip = $cv_bot_ip;
 		// skip if visitor ip not equal to CV Bot IP.
 		if ( is_array( $cv_bot_ip ) && ! in_array( $visitor_ip, $cv_bot_ip ) ) {
-			// return;
+			return;
 		}
 
 		// if clean talk plugin active whitelist check form API IP.

@@ -70,6 +70,16 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 					4
 				);
 			}
+
+			add_filter(
+				'wsf_pre_render',
+				array(
+					$this,
+					'checkview_remove_unwanted_fields',
+				),
+				99,
+				2
+			);
 		}
 
 		/**
@@ -144,6 +154,41 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 
 			// Test completed So Clear sessions.
 			complete_checkview_test( $checkview_test_id );
+		}
+
+		/**
+		 * Undocumented function
+		 *
+		 * @param [Form Object] $form Form Object The form object.
+
+		 * @param [bool]        $preview Boolean Whether the form rendering is in preview mode.
+		 * @return Object $form form object.
+		 */
+		public function checkview_remove_unwanted_fields( $form, $preview ) {
+			$fields = WS_Form_Common::get_fields_from_form( $form, true );
+
+			// Process fields.
+			foreach ( $fields as $field ) {
+
+				if ( ! isset( $field->type ) ) {
+					continue;
+				}
+				switch ( $field->type ) {
+					case 'recaptcha':
+					case 'hcaptcha':
+					case 'turnstile':
+						// Get keys.
+						$field_key   = $field->field_key;
+						$section_key = $field->section_key;
+						$group_key   = $field->group_key;
+						unset( $form->groups[ $group_key ]->sections[ $section_key ]->fields[ $field_key ] );
+						break;
+					default:
+						break;
+				}
+			}
+			// Return value.
+			return $form;
 		}
 	}
 
