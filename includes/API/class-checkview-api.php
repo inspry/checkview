@@ -119,10 +119,10 @@ class CheckView_Api {
 			'checkview/v1',
 			'/forms/formstestresults',
 			array(
-				'methods'  => 'GET',
-				'callback' => array( $this, 'checkview_get_available_forms_test_results' ),
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'checkview_get_available_forms_test_results' ),
 				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'     => array(
+				'args'                => array(
 					'uid'              => array(
 						'required' => true,
 					),
@@ -1702,7 +1702,7 @@ class CheckView_Api {
 						) 
 						AND post_status = 'publish' 
 						AND post_type NOT IN ('kadence_wootemplate', 'revision')",
-							'%wp:ws_form/guten-block {"formId":"' . $row->id . '"%',
+							'%wp:wsf-block/form-add {"form_id":"' . $row->id . '"%',
 							'%[ws_form id="' . $row->id . '"%',
 							'%[ws_form id=' . $row->id . '%',
 							'%[ws_form id=' . $row->id . '%'
