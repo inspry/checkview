@@ -119,6 +119,8 @@ Here is the reversed changelog:
 
 * Updated container IP addresses.
 
+* Added WS Form integration.
+
 = 1.1.22 =
 * Added a patch to ensure the Contact Form 7 module loads during AJAX requests.
 * Resolved CAPTCHA errors for Contact Form 7.
@@ -278,6 +280,8 @@ Here is the reversed changelog:
 * Resolved Cloudflare Turnstile validation errors in FluentForms.
 
 * Updated container IP addresses.
+
+* Added WS Form integration.
 
 = 1.1.22 =
 * Added a patch to ensure the Contact Form 7 module loads during AJAX requests.

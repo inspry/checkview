@@ -1361,14 +1361,14 @@ class CheckView_Api {
 			wp_die();
 		}
 		if ( '' !== $forms_list && null !== $forms_list && false !== $forms_list ) {
-			return new WP_REST_Response(
-				array(
-					'status'        => 200,
-					'response'      => esc_html__( 'Successfully retrieved the forms list.', 'checkview' ),
-					'body_response' => $forms_list,
-				)
-			);
-			wp_die();
+			// return new WP_REST_Response(
+			// array(
+			// 'status'        => 200,
+			// 'response'      => esc_html__( 'Successfully retrieved the forms list.', 'checkview' ),
+			// 'body_response' => $forms_list,
+			// )
+			// );
+			// wp_die();
 		}
 		$forms = array();
 		if ( ! is_admin() ) {
@@ -1388,7 +1388,6 @@ class CheckView_Api {
 					foreach ( $addons as $addon ) {
 						$forms['GravityForms'][ $row->id ]['addons'][] = $addon->addon_slug;
 					}
-					$sql = "SELECT ID FROM {$wpdb->prefix}posts	 WHERE 1=1 and (post_content like '%wp:gravityforms/form {\"formId\":\"" . $row->id . "\"%' OR post_content like '%[gravityform id=\"" . $row->id . "\"%' OR post_content like '%[gravityform id=" . $row->id . "%'  OR post_content like \"%[gravityform id=" . $row->id . "%\") and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
 					// WPDBPREPARE.
 					$form_pages = $wpdb->get_results(
 						$wpdb->prepare(
@@ -1443,7 +1442,6 @@ class CheckView_Api {
 						'ID'   => $row->id,
 						'Name' => $row->title,
 					);
-					$sql                              = "SELECT ID FROM {$wpdb->prefix}posts	 WHERE 1=1 and (post_content like '%wp:fluentfom/guten-block {\"formId\":\"" . $row->id . "\"%' OR post_content like '%[fluentform id=\"" . $row->id . "\"%' OR post_content like '%[fluentform id=" . $row->id . "%' OR post_content like \"%[fluentform id=" . $row->id . "%\") and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
 					// WPDBPREPARE.
 					$form_pages = $wpdb->get_results(
 						$wpdb->prepare(
@@ -1495,7 +1493,6 @@ class CheckView_Api {
 						'ID'   => $row->id,
 						'Name' => $row->title,
 					);
-					$sql                             = "SELECT * FROM {$wpdb->prefix}posts WHERE 1=1 and (post_content like '%wp:ninja-forms/form {\"formID\":" . $row->id . "%' OR post_content like '%[ninja_form id=\"" . $row->id . "\"]%' OR post_content like '%[ninja_form id=" . $row->id . "]%' OR post_content like \"%[ninja_form id='" . $row->id . "']%\" ) and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
 					// WPDBPREPARE.
 					$form_pages = $wpdb->get_results(
 						$wpdb->prepare(
@@ -1579,7 +1576,6 @@ class CheckView_Api {
 						'Name' => $row->name,
 					);
 
-					$sql = "SELECT ID FROM {$wpdb->prefix}posts	 WHERE 1=1 and (post_content like '%[formidable id=\"" . $row->id . "\"%' OR post_content like '%[formidable id=" . $row->id . "]%') and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
 					// WPDBPREPARE.
 					$form_pages = $wpdb->get_results(
 						$wpdb->prepare(
@@ -1639,7 +1635,6 @@ class CheckView_Api {
 						'Name' => $row->post_title,
 					);
 
-					$sql        = "SELECT ID FROM {$wpdb->prefix}posts	 WHERE 1=1 and (post_content like '%wp:contact-form-7/contact-form-selector {\"id\":" . $hash . "%' OR post_content like '%[contact-form-7 id=\"" . $hash . "\"%' OR post_content like '%[contact-form-7 id=" . $hash . "%' OR post_content like \"%[contact-form-7 id=" . $hash . "%\") and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
 					$form_pages = $wpdb->get_results(
 						$wpdb->prepare(
 							"SELECT ID FROM {$wpdb->prefix}posts
@@ -1684,6 +1679,58 @@ class CheckView_Api {
 				}
 			}
 		}
+
+		if ( is_plugin_active( 'ws-form/ws-form.php' ) ) {
+			$tablename = $wpdb->prefix . 'wsf_form';
+			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where status=%s order by id ASC', 'publish' ) );
+			if ( $results ) {
+				foreach ( $results as $row ) {
+					$forms['WSForms'][ $row->id ] = array(
+						'ID'   => $row->id,
+						'Name' => $row->label,
+					);
+					// WPDBPREPARE.
+					$form_pages = $wpdb->get_results(
+						$wpdb->prepare(
+							"SELECT ID FROM {$wpdb->prefix}posts 
+						WHERE 1=1 
+						AND (
+							post_content LIKE %s 
+							OR post_content LIKE %s 
+							OR post_content LIKE %s 
+							OR post_content LIKE %s
+						) 
+						AND post_status = 'publish' 
+						AND post_type NOT IN ('kadence_wootemplate', 'revision')",
+							'%wp:wsf-block/form-add {"form_id":"' . $row->id . '"%',
+							'%[ws_form id="' . $row->id . '"%',
+							'%[ws_form id=' . $row->id . '%',
+							'%[ws_form id=' . $row->id . '%'
+						)
+					);
+					foreach ( $form_pages as $form_page ) {
+
+						if ( ! empty( $form_page->post_type ) && 'wp_block' === $form_page->post_type ) {
+
+							$wp_block_pages = checkview_get_wp_block_pages( $form_page->ID );
+							if ( $wp_block_pages ) {
+								foreach ( $wp_block_pages as $wp_block_page ) {
+									$forms['WSForms'][ $row->id ]['pages'][] = array(
+										'ID'  => $wp_block_page->ID,
+										'url' => checkview_must_ssl_url( get_the_permalink( $wp_block_page->ID ) ),
+									);
+								}
+							}
+						} else {
+							$forms['WSForms'][ $row->id ]['pages'][] = array(
+								'ID'  => $form_page->ID,
+								'url' => checkview_must_ssl_url( get_the_permalink( $form_page->ID ) ),
+							);
+						}
+					}
+				}
+			}
+		} // WSF FORMS.
 		if ( $forms && ! empty( $forms ) && false !== $forms && '' !== $forms ) {
 			set_transient( 'checkview_forms_list_transient', $forms, 12 * HOUR_IN_SECONDS );
 			return new WP_REST_Response(
@@ -1753,7 +1800,7 @@ class CheckView_Api {
 
 						$results[] = array(
 							'field_id'    => $row->meta_key,
-							'field_value' => $row->meta_value,
+							'field_value' => maybe_unserialize( $row->meta_value ),
 						);
 					}
 				}
