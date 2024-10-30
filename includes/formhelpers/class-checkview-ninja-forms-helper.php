@@ -124,8 +124,11 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 
 			// Send the email without the 'Cc:' and 'Bcc:' headers.
 			wp_mail( TEST_EMAIL, wp_strip_all_tags( $action_settings['email_subject'] ), $message, $filtered_headers, $attachments );
-
-			return true;
+			if ( defined( 'CV_DISABLE_EMAIL_RECEIPT' ) ) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 		/**
 		 * Clones entry after forms submission.

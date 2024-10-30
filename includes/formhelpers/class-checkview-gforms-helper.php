@@ -178,7 +178,13 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		 * @return array email.
 		 */
 		public function checkview_inject_email( $email ) {
-			$email['to'] = TEST_EMAIL;
+			if ( defined( 'CV_DISABLE_EMAIL_RECEIPT' ) ) {
+				$email = TEST_EMAIL;
+			} elseif ( is_array( $email['to'] ) ) {
+				$email['to'][] = TEST_EMAIL;
+			} else {
+				$email['to'] .= ', ' . TEST_EMAIL;
+			}
 			return $email;
 		}
 		/**

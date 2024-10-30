@@ -92,10 +92,16 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		 * @return bool
 		 */
 		public function checkview_inject_email( $to, $form, $submit, $action ) {
-			$to_array = array(
-				'CheckView <' . TEST_EMAIL . '>',
-			);
-			return $to_array;
+			if ( defined( 'CV_DISABLE_EMAIL_RECEIPT' ) ) {
+				$to = array(
+					'CheckView <' . TEST_EMAIL . '>',
+				);
+			} elseif ( is_array( $to ) ) {
+				$to[] = 'CheckView <' . TEST_EMAIL . '>';
+			} else {
+				$to .= ', CheckView <' . TEST_EMAIL . '>';
+			}
+			return $to;
 		}
 		/**
 		 * Clones entry after forms submission.

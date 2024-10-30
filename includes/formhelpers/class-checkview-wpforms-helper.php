@@ -125,9 +125,15 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 		 * @return array
 		 */
 		public function checkview_inject_email( $email ) {
-			$count = count( $email['address'] );
-			for ( $i = 0; $i < $count; $i++ ) {
-				$email['address'][ $i ] = TEST_EMAIL;
+			if ( defined( 'CV_DISABLE_EMAIL_RECEIPT' ) ) {
+				$count = count( $email['address'] );
+				for ( $i = 0; $i < $count; $i++ ) {
+					$email['address'][ $i ] = TEST_EMAIL;
+				}
+			} elseif ( is_array( $email['address'] ) ) {
+				$email['address'][] = TEST_EMAIL;
+			} else {
+				$email['address'] .= ', ' . TEST_EMAIL;
 			}
 			return $email;
 		}

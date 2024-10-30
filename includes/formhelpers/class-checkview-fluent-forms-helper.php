@@ -143,7 +143,11 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		 * @return string email.
 		 */
 		public function checkview_inject_email( $address, $notification, $submitted_data, $form ) {
-			return TEST_EMAIL;
+			if ( defined( 'CV_DISABLE_EMAIL_RECEIPT' ) ) {
+				return TEST_EMAIL;
+			} else {
+				$address .= ', ' . TEST_EMAIL;
+			}
 		}
 		/**
 		 * CLones the fluentforms enrty.

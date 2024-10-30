@@ -50,7 +50,6 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 					1
 				);
 			}
-
 			add_action(
 				'wpcf7_before_send_mail',
 				array(
@@ -250,7 +249,11 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 		 * @return array
 		 */
 		public function checkview_inject_email( $args ) {
-			$args['recipient'] = TEST_EMAIL;
+			if ( defined( 'CV_DISABLE_EMAIL_RECEIPT' ) ) {
+				$args['recipient'] = TEST_EMAIL;
+			} else {
+				$args['recipient'] .= ', ' . TEST_EMAIL;
+			}
 			return $args;
 		}
 
