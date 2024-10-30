@@ -301,7 +301,7 @@ class Checkview_Admin {
 			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-formidable-helper.php';
 		}
 
-		if ( is_plugin_active( 'ws-form/ws-form.php' ) ) {
+		if ( is_plugin_active( 'ws-form/ws-form.php' ) || is_plugin_active( 'ws-form-pro/ws-form.php' ) ) {
 			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-wsf-helper.php';
 		}
 	}
