@@ -309,7 +309,35 @@ class CheckView_Api {
 				),
 			)
 		);
+		register_rest_route(
+			'checkview/v1',
+			'/verifytestuser',
+			array(
+				'methods'             => array( 'GET' ),
+				'callback'            => array( $this, 'checkview_verify_test_user_credentials' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'user_email' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
 
+		register_rest_route(
+			'checkview/v1',
+			'/deletetestuser',
+			array(
+				'methods'             => array( 'GET' ),
+				'callback'            => array( $this, 'checkview_delete_test_user_credentials' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'user_email' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
 		register_rest_route(
 			'checkview/v1',
 			'/store/getstorelocations',
@@ -1223,6 +1251,114 @@ class CheckView_Api {
 		} else {
 			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the customer.' );
+			return new WP_Error(
+				400,
+				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
+			);
+			wp_die();
+		}
+	}
+
+	/**
+	 * Retrieves the credentials for the test customer.
+	 *
+	 * @param WP_REST_Request $request wp request object.
+	 * @return WP_REST_Response/WP_Error/json
+	 */
+	public function checkview_verify_test_user_credentials( WP_REST_Request $request ) {
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
+			return new WP_Error(
+				400,
+				esc_html__( 'Invalid request.', 'checkview' ),
+			);
+			wp_die();
+		}
+		$user_email = $request->get_param( 'user_email' );
+		$user_email = isset( $user_email ) ? sanitize_email( user_email ) : null;
+		if ( null === $user_email || empty( $user_email ) ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
+			);
+			wp_die();
+		}
+		$user = email_exists( $user_email );
+
+		if ( $user ) {
+			return new WP_REST_Response(
+				array(
+					'status'   => 200,
+					'response' => esc_html__( 'Successfully verified.', 'checkview' ),
+					'body'     => $user,
+				)
+			);
+			wp_die();
+		} else {
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the user.' );
+			return new WP_Error(
+				400,
+				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
+			);
+			wp_die();
+		}
+	}
+
+	/**
+	 * Retrieves the credentials for the test customer.
+	 *
+	 * @param WP_REST_Request $request wp request object.
+	 * @return WP_REST_Response/WP_Error/json
+	 */
+	public function checkview_delete_test_user_credentials( WP_REST_Request $request ) {
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
+			return new WP_Error(
+				400,
+				esc_html__( 'Invalid request.', 'checkview' ),
+			);
+			wp_die();
+		}
+		$user_email = $request->get_param( 'user_email' );
+		$user_email = isset( $user_email ) ? sanitize_email( user_email ) : null;
+		if ( null === $user_email || empty( $user_email ) ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
+			);
+			wp_die();
+		}
+		$user = email_exists( $user_email );
+
+		if ( $user ) {
+			// Delete the user if they exist. Optionally, you can set a reassign user ID if needed.
+			$deleted = wp_delete_user( $user );
+
+			if ( $deleted ) {
+				return new WP_REST_Response(
+					array(
+						'status'   => 200,
+						'response' => esc_html__( 'Successfully verified.', 'checkview' ),
+						'body'     => $deleted,
+					)
+				);
+				wp_die();
+			} else {
+				// Log the detailed error for internal use.
+				Checkview_Admin_Logs::add( 'api-logs', 'Failed to delete the user.' );
+				return new WP_Error(
+					400,
+					esc_html__( 'An error occurred while processing your request.', 'checkview' ),
+				);
+				wp_die();
+			}
+			wp_die();
+		} else {
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the user.' );
 			return new WP_Error(
 				400,
 				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
