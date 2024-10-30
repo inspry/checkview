@@ -1680,7 +1680,7 @@ class CheckView_Api {
 			}
 		}
 
-		if ( is_plugin_active( 'ws-form/ws-form.php' ) ) {
+		if ( is_plugin_active( 'ws-form/ws-form.php' ) || is_plugin_active( 'ws-form-pro/ws-form.php' ) ) {
 			$tablename = $wpdb->prefix . 'wsf_form';
 			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where status=%s order by id ASC', 'publish' ) );
 			if ( $results ) {
