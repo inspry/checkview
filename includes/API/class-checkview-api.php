@@ -899,45 +899,47 @@ class CheckView_Api {
 		$shipping_zones = new WC_Shipping_Zones();
 		$zones          = $shipping_zones->get_zones();
 
-		if ( ! empty( $zones ) ) {
-			foreach ( $zones as $zone ) {
+		if ( empty( $zones ) ) {
+			wp_die();
+		}
+		foreach ( $zones as $zone ) {
 
-				$obj = array(
-					'countries'   => array(),
-					'postalCodes' => array(),
-					'states'      => array(),
-					'methods'     => array(),
-				);
+			$obj = array(
+				'countries'   => array(),
+				'postalCodes' => array(),
+				'states'      => array(),
+				'methods'     => array(),
+			);
 
-				if ( ! empty( $zone['zone_locations'] ) ) {
-					foreach ( $zone['zone_locations'] as $location ) {
-						if ( 'country' === $location->type ) {
-							$obj['countries'][] = $location->code;
-						} elseif ( 'postcode' === $location->type ) {
-							$obj['postalCodes'][] = $location->code;
-						} elseif ( 'state' === $location->type ) {
-							$p               = explode( ':', $location->code );
-							$obj['states'][] = array(
-								'country' => $p[0],
-								'state'   => $p[1],
-							);
-						}
+			if ( ! empty( $zone['zone_locations'] ) ) {
+				foreach ( $zone['zone_locations'] as $location ) {
+					if ( 'country' === $location->type ) {
+						$obj['countries'][] = $location->code;
+					} elseif ( 'postcode' === $location->type ) {
+						$obj['postalCodes'][] = $location->code;
+					} elseif ( 'state' === $location->type ) {
+						$p               = explode( ':', $location->code );
+						$obj['states'][] = array(
+							'country' => $p[0],
+							'state'   => $p[1],
+						);
 					}
-				}
-
-				if ( ! empty( $zone['shipping_methods'] ) ) {
-					foreach ( $zone['shipping_methods'] as $method ) {
-						if ( 'yes' === $method->enabled ) {
-							$obj['methods'][] = $method->id;
-						}
-					}
-				}
-
-				if ( ! empty( $obj['methods'] ) ) {
-					$shipping_details['zones'][] = $obj;
 				}
 			}
+
+			if ( ! empty( $zone['shipping_methods'] ) ) {
+				foreach ( $zone['shipping_methods'] as $method ) {
+					if ( 'yes' === $method->enabled ) {
+						$obj['methods'][] = $method->id;
+					}
+				}
+			}
+
+			if ( ! empty( $obj['methods'] ) ) {
+				$shipping_details['zones'][] = $obj;
+			}
 		}
+
 		if ( $shipping_details && ( isset( $shipping_details['methods'] ) || isset( $shipping_details['zones'] ) ) ) {
 			set_transient( 'checkview_store_shipping_transient', $shipping_details, 12 * HOUR_IN_SECONDS );
 			return new WP_REST_Response(
