@@ -282,7 +282,9 @@ class Checkview_Admin {
 
 		if ( ! defined( 'CV_DISABLE_EMAIL_RECEIPT' ) && $disable_email_receipt ) {
 			define( 'CV_DISABLE_EMAIL_RECEIPT', 'true' );
+			update_option( 'disable_email_receipt', 'true', true );
 		}
+
 		delete_transient( 'checkview_forms_test_transient' );
 		delete_transient( 'checkview_store_orders_transient' );
 		if ( is_plugin_active( 'gravityforms/gravityforms.php' ) ) {
@@ -303,6 +305,9 @@ class Checkview_Admin {
 
 		if ( is_plugin_active( 'ws-form/ws-form.php' ) || is_plugin_active( 'ws-form-pro/ws-form.php' ) ) {
 			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-wsf-helper.php';
+		}
+		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) ) {
+			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
 		}
 	}
 }
