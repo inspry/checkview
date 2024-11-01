@@ -453,7 +453,6 @@ if ( ! function_exists( 'checkview_get_cv_session' ) ) {
 		global $wpdb;
 
 		$session_table = $wpdb->prefix . 'cv_session';
-		$query         = 'Select * from ' . $session_table . ' where visitor_ip=%s and test_id=%s LIMIT 1';
 		// WPDBPREPARE.
 		$result = $wpdb->get_results(
 			$wpdb->prepare(
@@ -480,8 +479,6 @@ if ( ! function_exists( 'checkview_get_wp_block_pages' ) ) {
 	 */
 	function checkview_get_wp_block_pages( $block_id ) {
 		global $wpdb;
-
-		$sql = "SELECT * FROM {$wpdb->prefix}posts WHERE 1=1 and (post_content like '%wp:block {\"ref\":" . $block_id . "}%') and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
 		// WPDBPREPARE.
 		return $wpdb->get_results(
 			$wpdb->prepare(
