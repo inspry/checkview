@@ -2105,9 +2105,10 @@ class CheckView_Api {
 
 		// Combine all data.
 		$response = array(
-			'plugins' => $plugin_list,
-			'themes'  => $theme_list,
-			'core'    => $core_info,
+			'plugins'  => $plugin_list,
+			'themes'   => $theme_list,
+			'core'     => $core_info,
+			'ajax_url' => admin_url( 'admin-ajax.php' ),
 		);
 		if ( $response ) {
 				return new WP_REST_Response(
@@ -2256,6 +2257,23 @@ class CheckView_Api {
 		}
 		global $wpdb;
 		$cv_used_nonces = $wpdb->prefix . 'cv_used_nonces';
+		// Query to check if the table exists.
+		$table_exists = $wpdb->get_var(
+			$wpdb->prepare(
+				'SHOW TABLES LIKE %s',
+				$cv_used_nonces
+			)
+		);
+		if ( $table_exists !== $cv_used_nonces ) {
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'api-logs', 'Nonce table absent.' );
+			return new WP_Error(
+				403,
+				esc_html__( 'Invalid request.', 'checkview' ),
+				''
+			);
+			wp_die();
+		}
 		// Check if the nonce exists.
 		$nonce_exists = $wpdb->get_var(
 			$wpdb->prepare(
