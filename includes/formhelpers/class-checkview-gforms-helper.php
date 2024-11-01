@@ -178,7 +178,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		 * @return array email.
 		 */
 		public function checkview_inject_email( $email ) {
-			if ( defined( 'CV_DISABLE_EMAIL_RECEIPT' ) ) {
+			if ( get_option( 'disable_email_receipt' ) == true ) {
 				$email = TEST_EMAIL;
 			} elseif ( is_array( $email['to'] ) ) {
 				$email['to'][] = TEST_EMAIL;
