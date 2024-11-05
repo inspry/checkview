@@ -74,6 +74,11 @@ class CheckView_Api {
 	 * @since    1.0.0
 	 */
 	public function checkview_register_rest_route() {
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			// Suppress errors for REST API requests.
+			ini_set( 'display_errors', '0' );
+			error_reporting( E_ALL & ~E_NOTICE & ~E_WARNING );
+		}
 		register_rest_route(
 			'checkview/v1',
 			'/forms/formslist',
@@ -1498,15 +1503,18 @@ class CheckView_Api {
 			);
 			wp_die();
 		}
+		// Temporarily suppress errors
+		$previous_error_reporting = error_reporting( 0 );
+
 		if ( '' !== $forms_list && null !== $forms_list && false !== $forms_list ) {
-			// return new WP_REST_Response(
-			// array(
-			// 'status'        => 200,
-			// 'response'      => esc_html__( 'Successfully retrieved the forms list.', 'checkview' ),
-			// 'body_response' => $forms_list,
-			// )
-			// );
-			// wp_die();
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the forms list.', 'checkview' ),
+					'body_response' => $forms_list,
+				)
+			);
+			wp_die();
 		}
 		$forms = array();
 		if ( ! is_admin() ) {
