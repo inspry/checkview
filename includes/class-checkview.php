@@ -176,7 +176,7 @@ class Checkview {
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
 		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) ) ) {
-			$send_to               = CHECKVIEW_EMAIL;
+			$send_to = CHECKVIEW_EMAIL;
 			return;
 			// if clean talk plugin active whitelist check form API IP. .
 			if ( is_plugin_active( 'cleantalk-spam-protect/cleantalk.php' ) ) {
@@ -432,6 +432,19 @@ class Checkview {
 				if ( CHECKVIEW_BASE_DIR === $plugin ) {
 					// Your action if it is your plugin.
 					checkview_reset_cache( true );
+					$cv_used_nonces = $wpdb->prefix . 'cv_used_nonces';
+
+					$charset_collate = $wpdb->get_charset_collate();
+					if ( $wpdb->get_var( $wpdb->prepare( 'show tables like %s', $cv_used_nonces ) ) !== $cv_used_nonces ) {
+						$sql = "CREATE TABLE $cv_used_nonces (
+								id BIGINT(20) NOT NULL AUTO_INCREMENT,
+								nonce VARCHAR(255) NOT NULL,
+								used_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+								PRIMARY KEY (id),
+								UNIQUE KEY nonce (nonce)
+							) $charset_collate;";
+						dbDelta( $sql );
+					}
 				}
 			}
 		}
