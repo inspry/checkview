@@ -106,12 +106,12 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		public function checkview_inject_email( $to, $form, $submit, $action ) {
 			if ( get_option( 'disable_email_receipt' ) == true ) {
 				$to = array(
-					'CheckView <' . TEST_EMAIL . '>',
+					'"CheckView" <' . TEST_EMAIL . '>',
 				);
 			} elseif ( is_array( $to ) ) {
-				$to[] = 'CheckView <' . TEST_EMAIL . '>';
+				$to[] = '"CheckView" <' . TEST_EMAIL . '>';
 			} else {
-				$to .= ', CheckView <' . TEST_EMAIL . '>';
+				$to .= ', "CheckView" <' . TEST_EMAIL . '>';
 			}
 			return $to;
 		}

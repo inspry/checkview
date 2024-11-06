@@ -85,8 +85,22 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 3. CheckView general settings.
 
 == Changelog ==
+= 2.0.1 =
 
-Here is the reversed changelog:
+* **New Integration**: Added support for WS Form.
+* **Updates**:
+  * Updated Contact Form 7 (CF7) hooks priority for better compatibility.
+* **Stability Improvements**:
+  * Enhanced plugin stability by shifting updates to the update hook.
+* **Code Quality**:
+  * Improved cognitive complexity by restructuring code for better readability and maintainability.
+* **Performance Enhancements**:
+  * Reduced database queries for faster load times.
+  * Added caching mechanisms to enhance performance.
+* **New Features**:
+  * Updated CleanTalk whitelisted IP addresses function to accumulate IPs across all sites.
+  * Added functionality to enable or suppress admin email notifications for all form submissions.
+
 = 2.0.0 =
 
 * Resolved token validation issues (SaaS was bypassing without token for forms list endpoint).
@@ -118,8 +132,6 @@ Here is the reversed changelog:
 * Resolved Cloudflare Turnstile validation errors in FluentForms.
 
 * Updated container IP addresses.
-
-* Added WS Form integration.
 
 = 1.1.22 =
 * Added a patch to ensure the Contact Form 7 module loads during AJAX requests.
@@ -248,7 +260,22 @@ Here is the reversed changelog:
 
 == Upgrade Notice ==
 
-Here is the reversed changelog:
+= 2.0.1 =
+
+* **New Integration**: Added support for WS Form.
+* **Updates**:
+  * Updated Contact Form 7 (CF7) hooks priority for better compatibility.
+* **Stability Improvements**:
+  * Enhanced plugin stability by shifting updates to the update hook.
+* **Code Quality**:
+  * Improved cognitive complexity by restructuring code for better readability and maintainability.
+* **Performance Enhancements**:
+  * Reduced database queries for faster load times.
+  * Added caching mechanisms to enhance performance.
+* **New Features**:
+  * Updated CleanTalk whitelisted IP addresses function to accumulate IPs across all sites.
+  * Added functionality to enable or suppress admin email notifications for all form submissions.
+
 = 2.0.0 =
 
 * Resolved token validation issues (SaaS was bypassing without token for forms list endpoint).
