@@ -133,6 +133,10 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 * Updated container IP addresses.
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 407ca45ba8b8d7b18fd659a99ad190150538572e
 = 1.1.22 =
 * Added a patch to ensure the Contact Form 7 module loads during AJAX requests.
 * Resolved CAPTCHA errors for Contact Form 7.
@@ -307,8 +311,6 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Resolved Cloudflare Turnstile validation errors in FluentForms.
 
 * Updated container IP addresses.
-
-* Added WS Form integration.
 
 = 1.1.22 =
 * Added a patch to ensure the Contact Form 7 module loads during AJAX requests.
