@@ -757,13 +757,17 @@ class Checkview_Woo_Automated_Testing {
 		);
 		if ( empty( $orders ) ) {
 			$args = array(
-				'limit'          => -1,
-				'payment_method' => 'checkview',
-				'meta_query'     => array(
+				'limit'      => -1,
+				'meta_query' => array(
 					array(
-						'relation' => 'AND', // Use 'AND' for both conditions to apply.
+						'relation' => 'OR', // Use 'AND' for both conditions to apply.
 						array(
 							'key'     => 'payment_made_by', // Meta key for payment method.
+							'value'   => 'checkview', // Replace with your actual payment gateway ID.
+							'compare' => '=', // Use '=' for exact match.
+						),
+						array(
+							'key'     => 'payment_method', // Meta key for payment method.
 							'value'   => 'checkview', // Replace with your actual payment gateway ID.
 							'compare' => '=', // Use '=' for exact match.
 						),
@@ -774,32 +778,34 @@ class Checkview_Woo_Automated_Testing {
 				$orders = wc_get_orders( $args );
 			}
 		}
+
 		// Delete orders.
 		if ( ! empty( $orders ) ) {
 			foreach ( $orders as $order ) {
 
 				try {
-					$order_object = new WC_Order( $order->id );
-					$customer_id  = $order_object->get_customer_id();
+					$order_id     = is_a( $order, 'WC_Order' ) ? $order->get_id() : $order->ID;
+					$order_object = wc_get_order( $order_id );
 
 					// Delete order.
 					if ( $order_object ) {
+						$customer_id = $order_object->get_customer_id();
 						$order_object->delete( true );
 						delete_transient( 'checkview_store_orders_transient' );
-					}
 
-					$order_object = null;
-					$current_user = get_user_by( 'id', $customer_id );
-					// Delete customer if available.
-					if ( $customer_id && isset( $current_user->roles ) && ! in_array( 'administrator', $current_user->roles ) ) {
-						$customer = new WC_Customer( $customer_id );
+						$order_object = null;
+						$current_user = get_user_by( 'id', $customer_id );
+						// Delete customer if available.
+						if ( $customer_id && isset( $current_user->roles ) && isset( $current_user->roles ) && ! in_array( 'administrator', $current_user->roles, true ) ) {
+							$customer = new WC_Customer( $customer_id );
 
-						if ( ! function_exists( 'wp_delete_user' ) ) {
-							require_once ABSPATH . 'wp-admin/includes/user.php';
+							if ( ! function_exists( 'wp_delete_user' ) ) {
+								require_once ABSPATH . 'wp-admin/includes/user.php';
+							}
+
+							$res      = $customer->delete( true );
+							$customer = null;
 						}
-
-						$res      = $customer->delete( true );
-						$customer = null;
 					}
 				} catch ( \Exception $e ) {
 					if ( ! class_exists( 'Checkview_Admin_Logs' ) ) {
