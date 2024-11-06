@@ -74,6 +74,11 @@ class CheckView_Api {
 	 * @since    1.0.0
 	 */
 	public function checkview_register_rest_route() {
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			// Suppress errors for REST API requests.
+			ini_set( 'display_errors', '0' );
+			error_reporting( E_ALL & ~E_NOTICE & ~E_WARNING );
+		}
 		register_rest_route(
 			'checkview/v1',
 			'/forms/formslist',
@@ -309,7 +314,35 @@ class CheckView_Api {
 				),
 			)
 		);
+		register_rest_route(
+			'checkview/v1',
+			'/verifytestuser',
+			array(
+				'methods'             => array( 'GET' ),
+				'callback'            => array( $this, 'checkview_verify_test_user_credentials' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'user_email' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
 
+		register_rest_route(
+			'checkview/v1',
+			'/deletetestuser',
+			array(
+				'methods'             => array( 'GET' ),
+				'callback'            => array( $this, 'checkview_delete_test_user_credentials' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'user_email' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
 		register_rest_route(
 			'checkview/v1',
 			'/store/getstorelocations',
@@ -871,45 +904,47 @@ class CheckView_Api {
 		$shipping_zones = new WC_Shipping_Zones();
 		$zones          = $shipping_zones->get_zones();
 
-		if ( ! empty( $zones ) ) {
-			foreach ( $zones as $zone ) {
+		if ( empty( $zones ) ) {
+			wp_die();
+		}
+		foreach ( $zones as $zone ) {
 
-				$obj = array(
-					'countries'   => array(),
-					'postalCodes' => array(),
-					'states'      => array(),
-					'methods'     => array(),
-				);
+			$obj = array(
+				'countries'   => array(),
+				'postalCodes' => array(),
+				'states'      => array(),
+				'methods'     => array(),
+			);
 
-				if ( ! empty( $zone['zone_locations'] ) ) {
-					foreach ( $zone['zone_locations'] as $location ) {
-						if ( 'country' === $location->type ) {
-							$obj['countries'][] = $location->code;
-						} elseif ( 'postcode' === $location->type ) {
-							$obj['postalCodes'][] = $location->code;
-						} elseif ( 'state' === $location->type ) {
-							$p               = explode( ':', $location->code );
-							$obj['states'][] = array(
-								'country' => $p[0],
-								'state'   => $p[1],
-							);
-						}
+			if ( ! empty( $zone['zone_locations'] ) ) {
+				foreach ( $zone['zone_locations'] as $location ) {
+					if ( 'country' === $location->type ) {
+						$obj['countries'][] = $location->code;
+					} elseif ( 'postcode' === $location->type ) {
+						$obj['postalCodes'][] = $location->code;
+					} elseif ( 'state' === $location->type ) {
+						$p               = explode( ':', $location->code );
+						$obj['states'][] = array(
+							'country' => $p[0],
+							'state'   => $p[1],
+						);
 					}
-				}
-
-				if ( ! empty( $zone['shipping_methods'] ) ) {
-					foreach ( $zone['shipping_methods'] as $method ) {
-						if ( 'yes' === $method->enabled ) {
-							$obj['methods'][] = $method->id;
-						}
-					}
-				}
-
-				if ( ! empty( $obj['methods'] ) ) {
-					$shipping_details['zones'][] = $obj;
 				}
 			}
+
+			if ( ! empty( $zone['shipping_methods'] ) ) {
+				foreach ( $zone['shipping_methods'] as $method ) {
+					if ( 'yes' === $method->enabled ) {
+						$obj['methods'][] = $method->id;
+					}
+				}
+			}
+
+			if ( ! empty( $obj['methods'] ) ) {
+				$shipping_details['zones'][] = $obj;
+			}
 		}
+
 		if ( $shipping_details && ( isset( $shipping_details['methods'] ) || isset( $shipping_details['zones'] ) ) ) {
 			set_transient( 'checkview_store_shipping_transient', $shipping_details, 12 * HOUR_IN_SECONDS );
 			return new WP_REST_Response(
@@ -1232,6 +1267,114 @@ class CheckView_Api {
 	}
 
 	/**
+	 * Retrieves the credentials for the test customer.
+	 *
+	 * @param WP_REST_Request $request wp request object.
+	 * @return WP_REST_Response/WP_Error/json
+	 */
+	public function checkview_verify_test_user_credentials( WP_REST_Request $request ) {
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
+			return new WP_Error(
+				400,
+				esc_html__( 'Invalid request.', 'checkview' ),
+			);
+			wp_die();
+		}
+		$user_email = $request->get_param( 'user_email' );
+		$user_email = isset( $user_email ) ? sanitize_email( user_email ) : null;
+		if ( null === $user_email || empty( $user_email ) ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
+			);
+			wp_die();
+		}
+		$user = email_exists( $user_email );
+
+		if ( $user ) {
+			return new WP_REST_Response(
+				array(
+					'status'   => 200,
+					'response' => esc_html__( 'Successfully verified.', 'checkview' ),
+					'body'     => $user,
+				)
+			);
+			wp_die();
+		} else {
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the user.' );
+			return new WP_Error(
+				400,
+				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
+			);
+			wp_die();
+		}
+	}
+
+	/**
+	 * Retrieves the credentials for the test customer.
+	 *
+	 * @param WP_REST_Request $request wp request object.
+	 * @return WP_REST_Response/WP_Error/json
+	 */
+	public function checkview_delete_test_user_credentials( WP_REST_Request $request ) {
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
+			return new WP_Error(
+				400,
+				esc_html__( 'Invalid request.', 'checkview' ),
+			);
+			wp_die();
+		}
+		$user_email = $request->get_param( 'user_email' );
+		$user_email = isset( $user_email ) ? sanitize_email( user_email ) : null;
+		if ( null === $user_email || empty( $user_email ) ) {
+			return new WP_Error(
+				400,
+				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
+			);
+			wp_die();
+		}
+		$user = email_exists( $user_email );
+
+		if ( $user ) {
+			// Delete the user if they exist. Optionally, you can set a reassign user ID if needed.
+			$deleted = wp_delete_user( $user );
+
+			if ( $deleted ) {
+				return new WP_REST_Response(
+					array(
+						'status'   => 200,
+						'response' => esc_html__( 'Successfully verified.', 'checkview' ),
+						'body'     => $deleted,
+					)
+				);
+				wp_die();
+			} else {
+				// Log the detailed error for internal use.
+				Checkview_Admin_Logs::add( 'api-logs', 'Failed to delete the user.' );
+				return new WP_Error(
+					400,
+					esc_html__( 'An error occurred while processing your request.', 'checkview' ),
+				);
+				wp_die();
+			}
+			wp_die();
+		} else {
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the user.' );
+			return new WP_Error(
+				400,
+				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
+			);
+			wp_die();
+		}
+	}
+
+	/**
 	 * Retrieves the store locations.
 	 *
 	 * @return WP_REST_Response/json
@@ -1360,15 +1503,18 @@ class CheckView_Api {
 			);
 			wp_die();
 		}
+		// Temporarily suppress errors
+		$previous_error_reporting = error_reporting( 0 );
+
 		if ( '' !== $forms_list && null !== $forms_list && false !== $forms_list ) {
-			// return new WP_REST_Response(
-			// array(
-			// 'status'        => 200,
-			// 'response'      => esc_html__( 'Successfully retrieved the forms list.', 'checkview' ),
-			// 'body_response' => $forms_list,
-			// )
-			// );
-			// wp_die();
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the forms list.', 'checkview' ),
+					'body_response' => $forms_list,
+				)
+			);
+			wp_die();
 		}
 		$forms = array();
 		if ( ! is_admin() ) {
@@ -1967,9 +2113,10 @@ class CheckView_Api {
 
 		// Combine all data.
 		$response = array(
-			'plugins' => $plugin_list,
-			'themes'  => $theme_list,
-			'core'    => $core_info,
+			'plugins'  => $plugin_list,
+			'themes'   => $theme_list,
+			'core'     => $core_info,
+			'ajax_url' => admin_url( 'admin-ajax.php' ),
 		);
 		if ( $response ) {
 				return new WP_REST_Response(
@@ -2118,6 +2265,23 @@ class CheckView_Api {
 		}
 		global $wpdb;
 		$cv_used_nonces = $wpdb->prefix . 'cv_used_nonces';
+		// Query to check if the table exists.
+		$table_exists = $wpdb->get_var(
+			$wpdb->prepare(
+				'SHOW TABLES LIKE %s',
+				$cv_used_nonces
+			)
+		);
+		if ( $table_exists !== $cv_used_nonces ) {
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'api-logs', 'Nonce table absent.' );
+			return new WP_Error(
+				403,
+				esc_html__( 'Invalid request.', 'checkview' ),
+				''
+			);
+			wp_die();
+		}
 		// Check if the nonce exists.
 		$nonce_exists = $wpdb->get_var(
 			$wpdb->prepare(

@@ -101,7 +101,13 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		 * @return string email.
 		 */
 		public function checkview_inject_email( $email ) {
-			$email = TEST_EMAIL;
+			if ( defined( 'CV_DISABLE_EMAIL_RECEIPT' ) ) {
+				$email = TEST_EMAIL;
+			} elseif ( is_array( $email ) ) {
+				$email[] = TEST_EMAIL;
+			} else {
+				$email .= ', ' . TEST_EMAIL;
+			}
 			return $email;
 		}
 

@@ -39,13 +39,26 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
-			if ( defined( 'TEST_EMAIL' ) ) {
+			if ( defined( 'TEST_EMAIL' ) && get_option( 'disable_email_receipt' ) == false ) {
 				// Change Email address to our test email.
 				add_filter(
 					'fluentform/email_to',
 					array(
 						$this,
 						'checkview_inject_email',
+					),
+					99,
+					4
+				);
+			}
+
+			if ( defined( 'TEST_EMAIL' ) && get_option( 'disable_email_receipt' ) == true ) {
+				// Change Email address to our test email.
+				add_filter(
+					'fluentform/email_to',
+					array(
+						$this,
+						'checkview_remove_receipt',
 					),
 					99,
 					4
@@ -143,6 +156,24 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		 * @return string email.
 		 */
 		public function checkview_inject_email( $address, $notification, $submitted_data, $form ) {
+			if ( is_array( $address ) ) {
+				$address[] = TEST_EMAIL;
+			} else {
+				$address .= ', ' . TEST_EMAIL;
+			}
+			return $address;
+		}
+
+		/**
+		 * Removes email to fluentform supported emails.
+		 *
+		 * @param string $address email address.
+		 * @param string $notification email notification.
+		 * @param array  $submitted_data fluentforms submitted data.
+		 * @param object $form fluentforms form object.
+		 * @return string email.
+		 */
+		public function checkview_remove_receipt( $address, $notification, $submitted_data, $form ) {
 			return TEST_EMAIL;
 		}
 		/**

@@ -7,7 +7,7 @@ Tested up to: 6.6.1
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -85,8 +85,22 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 3. CheckView general settings.
 
 == Changelog ==
+= 2.0.1 =
 
-Here is the reversed changelog:
+* **New Integration**: Added support for WS Form.
+* **Updates**:
+  * Updated Contact Form 7 (CF7) hooks priority for better compatibility.
+* **Stability Improvements**:
+  * Enhanced plugin stability by shifting updates to the update hook.
+* **Code Quality**:
+  * Improved cognitive complexity by restructuring code for better readability and maintainability.
+* **Performance Enhancements**:
+  * Reduced database queries for faster load times.
+  * Added caching mechanisms to enhance performance.
+* **New Features**:
+  * Updated CleanTalk whitelisted IP addresses function to accumulate IPs across all sites.
+  * Added functionality to enable or suppress admin email notifications for all form submissions.
+
 = 2.0.0 =
 
 * Resolved token validation issues (SaaS was bypassing without token for forms list endpoint).
@@ -119,7 +133,10 @@ Here is the reversed changelog:
 
 * Updated container IP addresses.
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> 407ca45ba8b8d7b18fd659a99ad190150538572e
 = 1.1.22 =
 * Added a patch to ensure the Contact Form 7 module loads during AJAX requests.
 * Resolved CAPTCHA errors for Contact Form 7.
@@ -247,7 +264,22 @@ Here is the reversed changelog:
 
 == Upgrade Notice ==
 
-Here is the reversed changelog:
+= 2.0.1 =
+
+* **New Integration**: Added support for WS Form.
+* **Updates**:
+  * Updated Contact Form 7 (CF7) hooks priority for better compatibility.
+* **Stability Improvements**:
+  * Enhanced plugin stability by shifting updates to the update hook.
+* **Code Quality**:
+  * Improved cognitive complexity by restructuring code for better readability and maintainability.
+* **Performance Enhancements**:
+  * Reduced database queries for faster load times.
+  * Added caching mechanisms to enhance performance.
+* **New Features**:
+  * Updated CleanTalk whitelisted IP addresses function to accumulate IPs across all sites.
+  * Added functionality to enable or suppress admin email notifications for all form submissions.
+
 = 2.0.0 =
 
 * Resolved token validation issues (SaaS was bypassing without token for forms list endpoint).

@@ -80,8 +80,20 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 				99,
 				2
 			);
+			add_filter( 'wsf_config_meta_keys', array( $this, 'config_meta_keys' ), 10, 2 );
 		}
 
+		/**
+		 * Hides honey pot.
+		 *
+		 * @param array   $meta_keys meta keys.
+		 * @param integer $form_id form id.
+		 * @return array
+		 */
+		public function config_meta_keys( $meta_keys = array(), $form_id = 0 ) {
+			$meta_keys['honeypot'] = array();
+			return (array) $meta_keys;
+		}
 		/**
 		 * Injects email to WS forms supported emails.
 		 *
@@ -92,10 +104,16 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		 * @return bool
 		 */
 		public function checkview_inject_email( $to, $form, $submit, $action ) {
-			$to_array = array(
-				'CheckView <' . TEST_EMAIL . '>',
-			);
-			return $to_array;
+			if ( get_option( 'disable_email_receipt' ) == true ) {
+				$to = array(
+					'"CheckView" <' . TEST_EMAIL . '>',
+				);
+			} elseif ( is_array( $to ) ) {
+				$to[] = '"CheckView" <' . TEST_EMAIL . '>';
+			} else {
+				$to .= ', "CheckView" <' . TEST_EMAIL . '>';
+			}
+			return $to;
 		}
 		/**
 		 * Clones entry after forms submission.
@@ -166,7 +184,6 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		 */
 		public function checkview_remove_unwanted_fields( $form, $preview ) {
 			$fields = WS_Form_Common::get_fields_from_form( $form, true );
-
 			// Process fields.
 			foreach ( $fields as $field ) {
 

@@ -222,6 +222,8 @@ class Checkview_Admin {
 
 		$cv_test_id = isset( $_REQUEST['checkview_test_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) : '';
 
+		$disable_email_receipt = isset( $_REQUEST['disable_email_receipt'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['disable_email_receipt'] ) ) : false;
+
 		$referrer_url = sanitize_url( wp_get_raw_referer(), array( 'http', 'https' ) );
 
 		// If not Ajax submission and found test_id.
@@ -277,6 +279,12 @@ class Checkview_Admin {
 		if ( ! defined( 'TEST_EMAIL' ) ) {
 			define( 'TEST_EMAIL', $send_to );
 		}
+
+		if ( ! defined( 'CV_DISABLE_EMAIL_RECEIPT' ) && $disable_email_receipt ) {
+			define( 'CV_DISABLE_EMAIL_RECEIPT', 'true' );
+			update_option( 'disable_email_receipt', 'true', true );
+		}
+
 		delete_transient( 'checkview_forms_test_transient' );
 		delete_transient( 'checkview_store_orders_transient' );
 		if ( is_plugin_active( 'gravityforms/gravityforms.php' ) ) {
@@ -297,6 +305,9 @@ class Checkview_Admin {
 
 		if ( is_plugin_active( 'ws-form/ws-form.php' ) || is_plugin_active( 'ws-form-pro/ws-form.php' ) ) {
 			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-wsf-helper.php';
+		}
+		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) ) {
+			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
 		}
 	}
 }

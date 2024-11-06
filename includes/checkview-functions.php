@@ -145,6 +145,7 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 		delete_option( $visitor_ip );
 		setcookie( 'checkview_test_id', '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
 		setcookie( 'checkview_test_id' . $checkview_test_id, '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
+		delete_option( 'disable_email_receipt' );
 	}
 }
 if ( ! function_exists( 'checkview_get_publickey' ) ) {
@@ -290,10 +291,8 @@ if ( ! function_exists( 'checkview_get_cleantalk_whitelisted_ips' ) ) {
 		if ( isset( $whitelisted_ips['data'] ) && ! empty( $whitelisted_ips['data'] ) ) {
 			// Loop through and add IPs to the array.
 			foreach ( $whitelisted_ips['data'] as $entry ) {
-				if ( isset( $entry['record'] ) && ! in_array( $entry['record'], $ip_array ) ) {
-					// Add the IP address (from the 'record' key) to the array.
-					$ip_array[] = $entry['record'];
-				}
+				// Add the IP address (from the 'record' key) to the array.
+				$ip_array[ $entry['hostname'] ][] = $entry['record'];
 			}
 		}
 		set_transient( 'checkview_whitelisted_ips', $ip_array, 12 * HOUR_IN_SECONDS );
@@ -318,8 +317,9 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 		$api_ip     = checkview_get_api_ip();
 
 		if ( is_array( $api_ip ) && in_array( $current_ip, $api_ip ) ) {
-			$ips = checkview_get_cleantalk_whitelisted_ips();
-			if ( is_array( $ips ) && in_array( $current_ip, $ips ) ) {
+			$ips       = checkview_get_cleantalk_whitelisted_ips();
+			$host_name = parse_url( home_url(), PHP_URL_HOST );
+			if ( is_array( $ips[ $host_name ] ) && in_array( $current_ip, $ips[ $host_name ] ) ) {
 				return;
 			}
 			$response = wp_remote_get(
@@ -329,24 +329,23 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 					'timeout' => 500,
 				)
 			);
-			if ( is_array( $ips ) && ! in_array( 'checkview.io', $ips ) ) {
-				$response = wp_remote_get(
-					'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=4&status=allow&note=Checkview Bot&records=checkview.io',
-					array(
-						'method'  => 'GET',
-						'timeout' => 500,
-					)
-				);
-			}
-			if ( is_array( $ips ) && ! in_array( 'test-mail.checkview.io', $ips ) ) {
-				$response = wp_remote_get(
-					'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=4&status=allow&note=Checkview Bot&records=test-mail.checkview.io',
-					array(
-						'method'  => 'GET',
-						'timeout' => 500,
-					)
-				);
-			}
+
+			$response = wp_remote_get(
+				'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=4&status=allow&note=Checkview Bot&records=checkview.io',
+				array(
+					'method'  => 'GET',
+					'timeout' => 500,
+				)
+			);
+
+			$response = wp_remote_get(
+				'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=4&status=allow&note=Checkview Bot&records=test-mail.checkview.io',
+				array(
+					'method'  => 'GET',
+					'timeout' => 500,
+				)
+			);
+
 			// Check if the response is a WP_Error object.
 			if ( is_wp_error( $response ) ) {
 				// Handle the error here.
@@ -454,7 +453,6 @@ if ( ! function_exists( 'checkview_get_cv_session' ) ) {
 		global $wpdb;
 
 		$session_table = $wpdb->prefix . 'cv_session';
-		$query         = 'Select * from ' . $session_table . ' where visitor_ip=%s and test_id=%s LIMIT 1';
 		// WPDBPREPARE.
 		$result = $wpdb->get_results(
 			$wpdb->prepare(
@@ -481,8 +479,6 @@ if ( ! function_exists( 'checkview_get_wp_block_pages' ) ) {
 	 */
 	function checkview_get_wp_block_pages( $block_id ) {
 		global $wpdb;
-
-		$sql = "SELECT * FROM {$wpdb->prefix}posts WHERE 1=1 and (post_content like '%wp:block {\"ref\":" . $block_id . "}%') and post_status='publish' AND post_type NOT IN ('kadence_wootemplate', 'revision')";
 		// WPDBPREPARE.
 		return $wpdb->get_results(
 			$wpdb->prepare(
@@ -706,4 +702,103 @@ if ( ! function_exists( 'checkview_delete_tables_data' ) ) {
 
 	// Attach the function to the cron event.
 	add_action( 'checkview_delete_table_cron_hook', 'checkview_delete_tables_data' );
+}
+add_action(
+	'wp_ajax_checkview_get_status',
+	'checkview_get_option_data_handler'
+);          // For logged-in users.
+add_action(
+	'wp_ajax_nopriv_checkview_get_status',
+	'checkview_get_option_data_handler'
+);   // For non-logged-in users.
+if ( ! function_exists( 'checkview_get_option_data_handler' ) ) {
+	/**
+	 * Verifies helper loading.
+	 *
+	 * @return void
+	 */
+	function checkview_get_option_data_handler() {
+		if ( ! isset( $_POST['_checkview_token'] ) || empty( $_POST['_checkview_token'] ) ) {
+			Checkview_Admin_Logs::add( 'api-logs', 'Token absent.' );
+			wp_send_json_error( esc_html__( 'There was a technical error while processing your request.', 'checkview' ) );
+			wp_die();
+		}
+		// Current Vsitor IP.
+		$visitor_ip = checkview_get_visitor_ip();
+		$api_ip     = checkview_get_api_ip();
+		if ( ! is_array( $api_ip ) || ! in_array( $visitor_ip, $api_ip ) ) {
+			Checkview_Admin_Logs::add( 'api-logs', 'Not SaaS.' );
+			wp_send_json_error( esc_html__( 'There was a technical error while processing your request.', 'checkview' ) );
+			wp_die();
+		}
+
+		$token       = sanitize_text_field( wp_unslash( $_POST['_checkview_token'] ) );
+		$nonce_token = checkview_validate_jwt_token( $token );
+		// checking for JWT token.
+		if ( ! isset( $nonce_token ) || empty( $nonce_token ) || is_wp_error( $nonce_token ) ) {
+			$this->jwt_error = $nonce_token;
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'api-logs', 'Invalid token.' );
+			wp_send_json_error( esc_html__( 'There was a technical error while processing your request.', 'checkview' ) );
+			wp_die();
+		}
+		if ( ! checkview_is_valid_uuid( $nonce_token ) ) {
+			// Nonce already used, return an error response.
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'api-logs', 'Invalid nonce format.' );
+			wp_send_json_error( esc_html__( 'There was a technical error while processing your request.', 'checkview' ) );
+			wp_die();
+		}
+		global $wpdb;
+		$cv_used_nonces = $wpdb->prefix . 'cv_used_nonces';
+		// Query to check if the table exists.
+		$table_exists = $wpdb->get_var(
+			$wpdb->prepare(
+				'SHOW TABLES LIKE %s',
+				$cv_used_nonces
+			)
+		);
+		if ( $table_exists !== $cv_used_nonces ) {
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'api-logs', 'Nonce table absent.' );
+			wp_send_json_error( esc_html__( 'There was a technical error while processing your request.', 'checkview' ) );
+			wp_die();
+		}
+		// Check if the nonce exists.
+		$nonce_exists = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM $cv_used_nonces WHERE nonce = %s",
+				$nonce_token
+			)
+		);
+
+		if ( $nonce_exists ) {
+			// Nonce already used, return an error response.
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'api-logs', 'This nonce has already been used.' );
+			wp_send_json_error( esc_html__( 'There was a technical error while processing your request.', 'checkview' ) );
+			wp_die();
+		} else {
+			// Store the nonce in the database.
+			$response = $wpdb->insert( $cv_used_nonces, array( 'nonce' => $nonce_token ) );
+			if ( is_wp_error( $response ) ) {
+				Checkview_Admin_Logs::add( 'api-logs', 'Not able to add nonce.' );
+				wp_send_json_error( esc_html__( 'There was a technical error while processing your request.', 'checkview' ) );
+			}
+		}
+
+		if ( get_option( $visitor_ip ) == true ) {
+			// Send the option value as a JSON response.
+			wp_send_json_success(
+				array(
+					'helper_loaded' => true,
+				)
+			);
+
+			wp_die(); // Required to terminate properly in WordPress AJAX.
+		} else {
+			wp_send_json_error( esc_html__( 'Helper not loaded.', 'checkview' ) );
+			wp_die();
+		}
+	}
 }
