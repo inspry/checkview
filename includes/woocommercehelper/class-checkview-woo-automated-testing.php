@@ -541,11 +541,11 @@ class Checkview_Woo_Automated_Testing {
 		Checkview_Admin_Logs::add( 'ip-logs', wp_json_encode( $cv_bot_ip ) . 'bot IP' );
 		Checkview_Admin_Logs::add( 'ip-logs', wp_json_encode( $visitor_ip ) . 'visitor IP' );
 		if ( ! is_array( $cv_bot_ip ) || ! in_array( $visitor_ip, $cv_bot_ip ) ) {
+
 			return;
 		}
 
 		if ( ! is_admin() && class_exists( 'WooCommerce' ) ) {
-
 			// Always use Stripe test mode when on dev or staging.
 			add_filter(
 				'option_woocommerce_stripe_settings',
@@ -630,7 +630,11 @@ class Checkview_Woo_Automated_Testing {
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
 		if ( ( isset( $_REQUEST['checkview_test_id'] ) || ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) ) || ( 'checkview' === $payment_method || 'checkview' === $payment_made_by ) ) {
-			return CHECKVIEW_EMAIL;
+			if ( get_option( 'disable_email_receipt' ) == true ) {
+				return CHECKVIEW_EMAIL;
+			} else {
+				$recipient = $recipient . ', ' . CHECKVIEW_EMAIL;
+			}
 		}
 
 		return $recipient;
@@ -819,7 +823,6 @@ class Checkview_Woo_Automated_Testing {
 			$order->save();
 			unset( $_COOKIE['checkview_test_id'] );
 			setcookie( 'checkview_test_id', '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
-
 		}
 	}
 
