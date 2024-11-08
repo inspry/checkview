@@ -80,7 +80,12 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 				99,
 				2
 			);
-			add_filter( 'wsf_config_meta_keys', array( $this, 'config_meta_keys' ), 10, 2 );
+			add_filter(
+				'wsf_config_meta_keys',
+				array( $this, 'config_meta_keys' ),
+				10,
+				2
+			);
 		}
 
 		/**
@@ -104,7 +109,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		 * @return bool
 		 */
 		public function checkview_inject_email( $to, $form, $submit, $action ) {
-			if ( get_option( 'disable_email_receipt' ) == true ) {
+			if ( get_option( 'disable_email_receipt', false ) == false ) {
 				$to = array(
 					'"CheckView" <' . TEST_EMAIL . '>',
 				);

@@ -50,6 +50,15 @@ class Checkview_Woo_Automated_Testing {
 	private $suppress_email;
 
 	/**
+	 * Suppresses webhooks.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      bool/class    $suppress_webhook    The hooks loader of this plugin.
+	 */
+	private $suppress_webhook;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
@@ -59,11 +68,11 @@ class Checkview_Woo_Automated_Testing {
 	 */
 	public function __construct( $plugin_name, $version, $loader ) {
 
-		$this->plugin_name    = $plugin_name;
-		$this->version        = $version;
-		$this->loader         = $loader;
-		$this->suppress_email = get_option( 'disable_email_receipt', false );
-
+		$this->plugin_name      = $plugin_name;
+		$this->version          = $version;
+		$this->loader           = $loader;
+		$this->suppress_email   = get_option( 'disable_email_receipt', false );
+		$this->suppress_webhook = get_option( 'disable_webhooks', false );
 		if ( $this->loader ) {
 			$this->loader->add_action(
 				'admin_init',
@@ -642,9 +651,9 @@ class Checkview_Woo_Automated_Testing {
 		$cv_bot_ip = checkview_get_api_ip();
 		if ( ( isset( $_REQUEST['checkview_test_id'] ) || ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) ) || ( 'checkview' === $payment_method || 'checkview' === $payment_made_by ) ) {
 			if ( get_option( 'disable_email_receipt' ) == true || get_option( 'disable_email_receipt' ) == 'true' || defined( 'CV_DISABLE_EMAIL_RECEIPT' ) || $this->suppress_email ) {
-				return CHECKVIEW_EMAIL;
-			} else {
 				$recipient = $recipient . ', ' . CHECKVIEW_EMAIL;
+			} else {
+				return CHECKVIEW_EMAIL;
 			}
 		}
 
@@ -671,7 +680,7 @@ class Checkview_Woo_Automated_Testing {
 			if ( ! empty( $order ) ) {
 				$payment_method  = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
 				$payment_made_by = $order->get_meta( 'payment_made_by' );
-				if ( ( $payment_method && 'checkview' === $payment_method ) || ( 'checkview' === $payment_made_by ) ) {
+				if ( ( $payment_method && 'checkview' === $payment_method && ( true === $this->suppress_webhook || 'true' === $this->suppress_webhook ) ) || ( 'checkview' === $payment_made_by && ( true === $this->suppress_webhook || 'true' === $this->suppress_webhook ) ) ) {
 					return false;
 				}
 			}
@@ -682,7 +691,7 @@ class Checkview_Woo_Automated_Testing {
 			if ( ! empty( $order ) ) {
 				$payment_method  = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
 				$payment_made_by = is_object( $order ) ? $order->get_meta( 'payment_made_by' ) : '';
-				if ( ( $payment_method && 'checkview' === $payment_method ) || ( 'checkview' === $payment_made_by ) ) {
+				if ( ( $payment_method && 'checkview' === $payment_method && ( true === $this->suppress_webhook || 'true' === $this->suppress_webhook ) ) || ( 'checkview' === $payment_made_by && ( true === $this->suppress_webhook || 'true' === $this->suppress_webhook ) ) ) {
 					return false;
 				}
 			}

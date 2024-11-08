@@ -41,11 +41,12 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			$this->loader = new Checkview_Loader();
 			if ( defined( 'TEST_EMAIL' ) && get_option( 'disable_email_receipt' ) == false ) {
 				// Change Email address to our test email.
+				// Change Email address to our test email.
 				add_filter(
 					'fluentform/email_to',
 					array(
 						$this,
-						'checkview_inject_email',
+						'checkview_remove_receipt',
 					),
 					99,
 					4
@@ -53,12 +54,13 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			}
 
 			if ( defined( 'TEST_EMAIL' ) && get_option( 'disable_email_receipt' ) == true ) {
+
 				// Change Email address to our test email.
 				add_filter(
 					'fluentform/email_to',
 					array(
 						$this,
-						'checkview_remove_receipt',
+						'checkview_inject_email',
 					),
 					99,
 					4

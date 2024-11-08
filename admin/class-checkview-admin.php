@@ -224,6 +224,8 @@ class Checkview_Admin {
 
 		$disable_email_receipt = isset( $_REQUEST['disable_email_receipt'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['disable_email_receipt'] ) ) : false;
 
+		$disable_webhooks = isset( $_REQUEST['disable_webhooks'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['disable_webhooks'] ) ) : false;
+
 		$referrer_url = sanitize_url( wp_get_raw_referer(), array( 'http', 'https' ) );
 
 		// If not Ajax submission and found test_id.
@@ -283,6 +285,11 @@ class Checkview_Admin {
 		if ( ! defined( 'CV_DISABLE_EMAIL_RECEIPT' ) && $disable_email_receipt ) {
 			define( 'CV_DISABLE_EMAIL_RECEIPT', 'true' );
 			update_option( 'disable_email_receipt', 'true', true );
+		}
+
+		if ( ! defined( 'CV_DISABLE_WEBHOOKS' ) && $disable_webhooks ) {
+			define( 'CV_DISABLE_WEBHOOKS', 'true' );
+			update_option( 'disable_webhooks', 'true', true );
 		}
 
 		delete_transient( 'checkview_forms_test_transient' );

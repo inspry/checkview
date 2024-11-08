@@ -146,6 +146,7 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 		setcookie( 'checkview_test_id', '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
 		setcookie( 'checkview_test_id' . $checkview_test_id, '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
 		delete_option( 'disable_email_receipt' );
+		delete_option( 'disable_webhooks' );
 	}
 }
 if ( ! function_exists( 'checkview_get_publickey' ) ) {
