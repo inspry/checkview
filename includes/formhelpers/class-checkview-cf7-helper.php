@@ -250,9 +250,9 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 		 */
 		public function checkview_inject_email( $args ) {
 			if ( defined( 'CV_DISABLE_EMAIL_RECEIPT' ) ) {
-				$args['recipient'] = TEST_EMAIL;
-			} else {
 				$args['recipient'] .= ', ' . TEST_EMAIL;
+			} else {
+				$args['recipient'] = TEST_EMAIL;
 			}
 			return $args;
 		}

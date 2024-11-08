@@ -104,7 +104,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		 * @return bool
 		 */
 		public function checkview_inject_email( $to, $form, $submit, $action ) {
-			if ( get_option( 'disable_email_receipt' ) == true ) {
+			if ( get_option( 'disable_email_receipt', false ) == false ) {
 				$to = array(
 					'"CheckView" <' . TEST_EMAIL . '>',
 				);
