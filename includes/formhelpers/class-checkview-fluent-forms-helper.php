@@ -45,7 +45,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 					'fluentform/email_to',
 					array(
 						$this,
-						'checkview_inject_email',
+						'checkview_remove_receipt',
 					),
 					99,
 					4
@@ -58,7 +58,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 					'fluentform/email_to',
 					array(
 						$this,
-						'checkview_remove_receipt',
+						'checkview_inject_email',
 					),
 					99,
 					4
