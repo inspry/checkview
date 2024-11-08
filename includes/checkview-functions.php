@@ -787,7 +787,7 @@ if ( ! function_exists( 'checkview_get_option_data_handler' ) ) {
 			}
 		}
 
-		if ( get_option( $visitor_ip ) == true ) {
+		if ( 'checkview-saas' === get_option( $visitor_ip ) ) {
 			// Send the option value as a JSON response.
 			wp_send_json_success(
 				array(
