@@ -119,7 +119,10 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				array( $this, 'maybe_hide_recaptcha' )
 			);
 			// bypass hcaptcha.
-			add_filter( 'hcap_activate', '__return_false' );
+			add_filter(
+				'hcap_activate',
+				'__return_false'
+			);
 			// bypass akimet.
 			add_filter(
 				'akismet_get_api_key',
@@ -270,29 +273,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		 * @return array
 		 */
 		public function checkview_disable_addons_feed( $feeds, $entry, $form ) {
-			$form_id = rgar( $form, 'id' );
-			if ( $feeds ) {
-				foreach ( $feeds as &$feed ) {
-					if ( isset( $feed['meta'] ) ) {
-						$feed['meta']['feed_condition_conditional_logic']        = true;
-						$feed['meta']['feed_condition_conditional_logic_object'] = array(
-							'conditionalLogic' => array(
-								'actionType' => 'show',
-								'logicType'  => 'all',
-								'rules'      =>
-								array(
-									array(
-										'fieldId'  => 1,
-										'operator' => 'is',
-										'value'    => esc_html__( 'Check Form Helper', 'checkview' ),
-									),
-								),
-							),
-						);
-					}
-				}
-			}
-			return $feeds;
+			return array();
 		}
 	}
 	$checkview_gforms_helper = new Checkview_Gforms_Helper();
