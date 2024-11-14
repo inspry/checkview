@@ -207,7 +207,7 @@ class CheckView_Api {
 			array(
 				'methods'             => 'GET',
 				'callback'            => array( $this, 'checkview_get_available_products' ),
-				//'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
 				'args'                => array(
 					'_checkview_token'       => array(
 						'required' => false,
@@ -762,8 +762,10 @@ class CheckView_Api {
 		$args = array(
 			'post_type'           => 'product',
 			'post_status'         => 'publish',
+			'posts_per_page'      => 1000,
 			'ignore_sticky_posts' => 1,
-			'posts_per_page'      => -1,
+			'orderby'             => 'modified',        // Order by last modified date.
+			'order'               => 'DESC',
 		);
 		if ( ! empty( $checkview_keyword ) && null !== $checkview_keyword ) {
 
