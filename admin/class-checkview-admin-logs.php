@@ -1,6 +1,6 @@
 <?php
 /**
- * Logs important actions of our plugin
+ * TODO: Grayson
  *
  * @link       https://inspry.com
  * @since      1.0.0
@@ -10,11 +10,7 @@
  */
 
 /**
- * Logs important actions of our plugin
- *
- * It is important that we save some events that take place on the plugin, this class
- * handles the addition of messages to our log file
- * We are going to use this feature in future.
+ * TODO: Grayson
  *
  * @author      CheckView
  * @category    Incldues
@@ -24,7 +20,7 @@
 class Checkview_Admin_Logs {
 
 	/**
-	 * Stores open file _handles.
+	 * TODO: Grayson
 	 *
 	 * @var array
 	 * @access private
@@ -32,14 +28,14 @@ class Checkview_Admin_Logs {
 	private static $_handles;
 
 	/**
-	 * Constructor for the logger.
+	 * TODO: Grayson
 	 */
 	public function __construct() {
 		self::$_handles = array();
 	}
 
 	/**
-	 * Destructor.
+	 * TODO: Grayson
 	 */
 	public function __destruct() {
 		foreach ( self::$_handles as $handle ) {
@@ -50,7 +46,7 @@ class Checkview_Admin_Logs {
 	}
 
 	/**
-	 * Returns the uplaods directory
+	 * TODO: Grayson
 	 *
 	 * @return string
 	 */
@@ -62,7 +58,7 @@ class Checkview_Admin_Logs {
 	} // end get_uplaods_folder;
 
 	/**
-	 * Save Plugin Settings Admin ajax formsa
+	 * TODO: Grayson
 	 *
 	 * @return void
 	 */
@@ -87,7 +83,7 @@ class Checkview_Admin_Logs {
 	}
 
 	/**
-	 * Returns the logs folder
+	 * TODO: Grayson
 	 *
 	 * @return string
 	 */
@@ -99,7 +95,7 @@ class Checkview_Admin_Logs {
 	} // end get_logs_folder;
 
 	/**
-	 * Creates Logs folder.
+	 * TODO: Grayson
 	 *
 	 * @return void
 	 */
@@ -136,7 +132,7 @@ class Checkview_Admin_Logs {
 	} // end create_logs_folder;
 
 	/**
-	 * Get the log contents
+	 * TODO: Grayson
 	 *
 	 * @since  1.6.0
 	 * @param  string  $handle file handle.
@@ -171,7 +167,7 @@ class Checkview_Admin_Logs {
 	} // end read_lines;
 
 	/**
-	 * Open log file for writing.
+	 * TODO: Grayson
 	 *
 	 * @since  1.2.0 Checks if the directory exists
 	 * @since  0.0.1
@@ -201,7 +197,7 @@ class Checkview_Admin_Logs {
 	}
 
 	/**
-	 * Add a log entry to chosen file.
+	 * TODO: Grayson
 	 *
 	 * @param string $handle file handle.
 	 * @param string $message log to write.
@@ -217,7 +213,7 @@ class Checkview_Admin_Logs {
 	}
 
 	/**
-	 * Get the NOW relative to our timezone
+	 * TODO: Grayson
 	 *
 	 * @since 1.5.1
 	 * @param string $type type of date.
@@ -229,7 +225,7 @@ class Checkview_Admin_Logs {
 	}
 
 	/**
-	 * Returns the current time from the network
+	 * TODO: Grayson
 	 *
 	 * @param string $type date type.
 	 * @return date
@@ -251,7 +247,7 @@ class Checkview_Admin_Logs {
 	} // end get_current_time;
 
 	/**
-	 * Clear entries from chosen file.
+	 * TODO: Grayson
 	 *
 	 * @param mixed $handle file handle.
 	 */

@@ -1,6 +1,6 @@
 <?php
 /**
- * Fired if Wpforms is active.
+ * TODO: Grayson
  *
  * @link       https://checkview.io
  * @since      1.0.0
@@ -16,9 +16,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 	/**
-	 * The public-facing functionality of the plugin.
-	 *
-	 * Helps in Wpforms management.
+	 * TODO: Grayson
 	 *
 	 * @package    Checkview
 	 * @subpackage Checkview/includes/formhelpers
@@ -26,8 +24,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 	 */
 	class Checkview_Wpforms_Helper {
 		/**
-		 * The loader that's responsible for maintaining and registering all hooks that power
-		 * the plugin.
+		 * TODO: Grayson
 		 *
 		 * @since    1.0.0
 		 * @access   protected
@@ -35,7 +32,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 		 */
 		protected $loader;
 		/**
-		 * Initializes the class constructor.
+		 * TODO: Grayson
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -119,7 +116,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 		}
 
 		/**
-		 * Injects email to WP forms supported emails.
+		 * TODO: Grayson
 		 *
 		 * @param array $email email address details.
 		 * @return array
@@ -138,7 +135,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 			return $email;
 		}
 		/**
-		 * Logs entry for WP forms.
+		 * TODO: Grayson
 		 *
 		 * @param array $form_fields array form fields.
 		 * @param array $entry form entry details.

@@ -1,6 +1,6 @@
 <?php
 /**
- * Fires to expose plugins helper functions.
+ * TODO: Grayson
  *
  * @link       https://checkview.io
  * @since      1.0.0
@@ -10,7 +10,7 @@
  */
 
 /**
- * Validates IP address.
+ * TODO: Grayson
  *
  * @param IP $ip IP address.
  * @return bool
@@ -28,7 +28,7 @@ function checkview_validate_ip( $ip ) {
 }
 
 /**
- * Filter hCaptcha activation flag.
+ * TODO: Grayson
  *
  * @param bool $activate Activate flag.
  *
@@ -59,8 +59,7 @@ add_filter( 'hcap_activate', 'checkview_my_hcap_activate' );
 
 if ( ! function_exists( 'checkview_hcap_whitelist_ip' ) ) {
 	/**
-	 * Filter user IP to check if it is whitelisted.
-	 * For whitelisted IPs, hCaptcha will not be shown.
+	 * TODO: Grayson
 	 *
 	 * @param bool   $whitelisted Whether IP is whitelisted.
 	 * @param string $ip          IP.
@@ -88,7 +87,7 @@ if ( ! function_exists( 'checkview_hcap_whitelist_ip' ) ) {
 	add_filter( 'hcap_whitelist_ip', 'checkview_hcap_whitelist_ip', 10, 2 );
 }
 /**
- * Function to remove the specific action.
+ * TODO: Grayson
  *
  * @return void
  */

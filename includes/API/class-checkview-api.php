@@ -1,6 +1,6 @@
 <?php
 /**
- * Hanldes CPT API functions.
+ * TODO: Grayson
  *
  * @link       https://checkview.io
  * @since      1.0.0
@@ -10,9 +10,7 @@
  */
 
 /**
- * Fired for the plugin Forms API registeration and hadling CURD.
- *
- * This class defines all code necessary to run for handling CheckView Form API CURD operations.
+ * TODO: Grayson
  *
  * @since      1.0.0
  * @package    CheckView
@@ -21,7 +19,7 @@
  */
 class CheckView_Api {
 	/**
-	 * The ID of this plugin.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @access   private
@@ -30,7 +28,7 @@ class CheckView_Api {
 	private $plugin_name;
 
 	/**
-	 * The version of this plugin.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @access   private
@@ -39,7 +37,7 @@ class CheckView_Api {
 	private $version;
 
 	/**
-	 * The woohelper of this plugin.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @access   private
@@ -47,13 +45,13 @@ class CheckView_Api {
 	 */
 	private $woo_helper;
 	/**
-	 * Store errors to display if the JWT Token is wrong
+	 * TODO: Grayson
 	 *
 	 * @var WP_Error
 	 */
 	public $jwt_error = null;
 	/**
-	 * Initialize the class and set its properties.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @param    string $plugin_name       The name of the plugin.
@@ -67,9 +65,7 @@ class CheckView_Api {
 		$this->woo_helper  = $woo_helper;
 	}
 	/**
-	 * Registers the rest api routes for our forms and related data.
-	 *
-	 * Registers the rest api routes for our forms and related data.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 */
@@ -401,7 +397,7 @@ class CheckView_Api {
 		);
 	} // end checkview_register_rest_route
 	/**
-	 * Retrieves the available orders.
+	 * TODO: Grayson
 	 *
 	 * @param WP_REST_Request $request wp request object.
 	 * @return WP_REST_Response/json
@@ -524,7 +520,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Retrieves the available order details by id.
+	 * TODO: Grayson
 	 *
 	 * @param WP_REST_Request $request wp request object.
 	 * @return WP_REST_Response/json
@@ -709,7 +705,7 @@ class CheckView_Api {
 		wp_die();
 	}
 	/**
-	 * Retrieves the available WooCommerce Products.
+	 * TODO: Grayson
 	 *
 	 * @param WP_REST_Request $request wp request object.
 	 * @return WP_REST_Response/json
@@ -840,7 +836,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Retrieves shipping details.
+	 * TODO: Grayson
 	 *
 	 * @return WP_REST_Response
 	 */
@@ -961,7 +957,7 @@ class CheckView_Api {
 		wp_die();
 	}
 	/**
-	 * Deletes all the avaiable test orders made by SaaS.
+	 * TODO: Grayson
 	 *
 	 * @param WP_REST_Request $request wp request object.
 	 * @return WP_REST_Response/WP_Error/json
@@ -1018,9 +1014,6 @@ class CheckView_Api {
 				$results = true;
 			} catch ( \Exception $e ) {
 				if ( ! class_exists( 'Checkview_Admin_Logs' ) ) {
-					/**
-					 * The class responsible for defining all actions that occur in the admin area.
-					 */
 					require_once CHECKVIEW_ADMIN_DIR . '/class-checkview-admin-logs.php';
 				}
 				Checkview_Admin_Logs::add( 'api-logs', 'API failed to delete customer.' );
@@ -1045,7 +1038,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * List Cart details.
+	 * TODO: Grayson
 	 *
 	 * @return WP_REST_Response/WP_Error/json
 	 */
@@ -1124,7 +1117,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * List active payment gateways.
+	 * TODO: Grayson
 	 *
 	 * @return WP_REST_Response/WP_Error/json
 	 */
@@ -1170,7 +1163,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Creates the test customer.
+	 * TODO: Grayson
 	 *
 	 * @return WP_REST_Response/WP_Error/json
 	 */
@@ -1216,7 +1209,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Retrieves the credentials for the test customer.
+	 * TODO: Grayson
 	 *
 	 * @return WP_REST_Response/WP_Error/json
 	 */
@@ -1262,7 +1255,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Retrieves the credentials for the test customer.
+	 * TODO: Grayson
 	 *
 	 * @param WP_REST_Request $request wp request object.
 	 * @return WP_REST_Response/WP_Error/json
@@ -1309,7 +1302,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Retrieves the credentials for the test customer.
+	 * TODO: Grayson
 	 *
 	 * @param WP_REST_Request $request wp request object.
 	 * @return WP_REST_Response/WP_Error/json
@@ -1370,7 +1363,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Retrieves the store locations.
+	 * TODO: Grayson
 	 *
 	 * @return WP_REST_Response/json
 	 */
@@ -1435,7 +1428,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Retrieves the store's test product details.
+	 * TODO: Grayson
 	 *
 	 * @return WP_REST_Response/json
 	 */
@@ -1482,7 +1475,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Retrieves the available forms.
+	 * TODO: Grayson
 	 *
 	 * @return WP_REST_Response/json
 	 */
@@ -1892,7 +1885,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Reterieves all the avaiable test results for forms.
+	 * TODO: Grayson
 	 *
 	 * @param WP_REST_Request $request the request param with the API call.
 	 * @return WP_REST_Response/WP_Error/json
@@ -1972,7 +1965,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Registers form test to be validated.
+	 * TODO: Grayson
 	 *
 	 * @param WP_REST_Request $request Object with the API call.
 	 * @return WP_REST_Response/WP_Error
@@ -2013,7 +2006,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Deletes all the avaiable test results for forms.
+	 * TODO: Grayson
 	 *
 	 * @param WP_REST_Request $request the request param with the API call.
 	 * @return WP_REST_Response/WP_Error/json
@@ -2063,7 +2056,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Returns site info.
+	 * TODO: Grayson
 	 *
 	 * @return WP_Rest_Response forms details.
 	 */
@@ -2128,7 +2121,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Get the plugin version.
+	 * TODO: Grayson
 	 *
 	 * @param WP_REST_Request $request WP_Request object.
 	 * @return Json/WP Error
@@ -2198,7 +2191,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Validates Token.
+	 * TODO: Grayson
 	 *
 	 * @param \WP_REST_Request $request request data with the api call.
 	 * @return json/array

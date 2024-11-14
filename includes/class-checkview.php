@@ -1,9 +1,6 @@
 <?php
 /**
- * The file that defines the core plugin class
- *
- * A class definition that includes attributes and functions used across both the
- * public-facing side of the site and the admin area.
+ * TODO: Grayson
  *
  * @link       https://checkview.io
  * @since      1.0.0
@@ -13,13 +10,7 @@
  */
 
 /**
- * The core plugin class.
- *
- * This is used to define internationalization, admin-specific hooks, and
- * public-facing site hooks.
- *
- * Also maintains the unique identifier of this plugin as well as the current
- * version of the plugin.
+ * TODO: Grayson
  *
  * @since      1.0.0
  * @package    Checkview
@@ -29,8 +20,7 @@
 class Checkview {
 
 	/**
-	 * The loader that's responsible for maintaining and registering all hooks that power
-	 * the plugin.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @access   protected
@@ -39,7 +29,7 @@ class Checkview {
 	protected $loader;
 
 	/**
-	 * The unique identifier of this plugin.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @access   protected
@@ -48,7 +38,7 @@ class Checkview {
 	protected $plugin_name;
 
 	/**
-	 * The current version of the plugin.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @access   protected
@@ -57,7 +47,7 @@ class Checkview {
 	protected $version;
 
 	/**
-	 * The single instance of the plugin.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @access   private
@@ -67,11 +57,7 @@ class Checkview {
 	private static $instance = null;
 
 	/**
-	 * Define the core functionality of the plugin.
-	 *
-	 * Set the plugin name and the plugin version that can be used throughout the plugin.
-	 * Load the dependencies, define the locale, and set the hooks for the admin area and
-	 * the public-facing side of the site.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 */
@@ -90,8 +76,7 @@ class Checkview {
 	}
 
 	/**
-	 * The object is created from within the class itself.
-	 * only if the class has no instance.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @return   self   class instance
@@ -105,17 +90,7 @@ class Checkview {
 	}
 
 	/**
-	 * Load the required dependencies for this plugin.
-	 *
-	 * Include the following files that make up the plugin:
-	 *
-	 * - Checkview_Loader. Orchestrates the hooks of the plugin.
-	 * - Checkview_i18n. Defines internationalization functionality.
-	 * - Checkview_Admin. Defines all hooks for the admin area.
-	 * - Checkview_Public. Defines all hooks for the public side of the site.
-	 *
-	 * Create an instance of the loader which will be used to register the hooks
-	 * with WordPress.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @access   private
@@ -127,48 +102,19 @@ class Checkview {
 		require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
 		require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
 
-		/**
-		 * The class responsible for defining all actions that occur in the public-facing JWT
-		 * side of the site. Exposes the general functions.
-		 */
 		require_once plugin_dir_path( __DIR__ ) . 'includes/vendor/autoload.php';
-		/**
-		 * The class responsible for defining all actions that occur in the public and admin -facing
-		 * side of the site. Exposes the general functions.
-		 */
 		require_once plugin_dir_path( __DIR__ ) . 'includes/checkview-functions.php';
 
-		/**
-		 * The class responsible for orchestrating the actions and filters of the
-		 * core plugin.
-		 */
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-checkview-loader.php';
 
-		/**
-		 * The class responsible for defining internationalization functionality
-		 * of the plugin.
-		 */
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-checkview-i18n.php';
 
-		/**
-		 * The class responsible for defining all actions that occur in the admin area.
-		 */
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-checkview-admin.php';
 
-		/**
-		 * The class responsible for defining and maintaining logs for  all actions that occur in the admin area.
-		 */
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-checkview-admin-logs.php';
 
-		/**
-		 * The class responsible for defining all settings that occur in the admin area.
-		 */
 		require_once plugin_dir_path( __DIR__ ) . 'admin/settings/class-checkview-admin-settings.php';
 
-		/**
-		 * The class responsible for defining all actions that occur in the public-facing
-		 * side of the site.
-		 */
 		require_once plugin_dir_path( __DIR__ ) . 'public/class-checkview-public.php';
 		$this->loader = new Checkview_Loader();
 		// Current Vsitor IP.
@@ -241,10 +187,6 @@ class Checkview {
 		}
 		$woo_helper = '';
 		if ( class_exists( 'WooCommerce' ) ) {
-			/**
-			 * The class responsible for defining all actions that occur in the public-facing
-			 * side of the site. Exposes CheckView payment gateway.
-			 */
 			require_once plugin_dir_path( __DIR__ ) . 'includes/woocommercehelper/class-checkview-woo-automated-testing.php';
 			$woo_helper = new Checkview_Woo_Automated_Testing( $this->get_plugin_name(), $this->get_version(), $this->loader );
 		}
@@ -253,10 +195,6 @@ class Checkview {
 			$this,
 			'checkview_settings_link'
 		);
-		/**
-		 * The class responsible for defining all actions that occur in the public-facing
-		 * side of the site. Exposes the API end points.
-		 */
 		require_once plugin_dir_path( __DIR__ ) . 'includes/API/class-checkview-api.php';
 		$plugin_api = new CheckView_Api( $this->get_plugin_name(), $this->get_version(), $woo_helper );
 		$this->loader->add_action(
@@ -267,10 +205,7 @@ class Checkview {
 	}
 
 	/**
-	 * Define the locale for this plugin for internationalization.
-	 *
-	 * Uses the Checkview_i18n class in order to set the domain and to register the hook
-	 * with WordPress.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @access   private
@@ -286,7 +221,7 @@ class Checkview {
 	}
 
 	/**
-	 * Add settings link on plugin page.
+	 * TODO: Grayson
 	 *
 	 * @since  1.0.0
 	 * @param array $links href to settings pages.
@@ -298,8 +233,7 @@ class Checkview {
 		return $links;
 	}
 	/**
-	 * Register all of the hooks related to the admin area functionality
-	 * of the plugin.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @access   private
@@ -381,8 +315,7 @@ class Checkview {
 	}
 
 	/**
-	 * Register all of the hooks related to the public-facing functionality
-	 * of the plugin.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @access   private
@@ -417,7 +350,7 @@ class Checkview {
 		}
 	}
 	/**
-	 * Tracks core version updates. Resets CheckView cache.
+	 * TODO: Grayson
 	 *
 	 * @param [object] $upgrader_object class upgrader.
 	 * @param [array]  $options array.
@@ -437,7 +370,7 @@ class Checkview {
 		}
 	}
 	/**
-	 * Run the loader to execute all of the hooks with WordPress.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 */
@@ -446,8 +379,7 @@ class Checkview {
 	}
 
 	/**
-	 * The name of the plugin used to uniquely identify it within the context of
-	 * WordPress and to define internationalization functionality.
+	 * TODO: Grayson
 	 *
 	 * @since     1.0.0
 	 * @return    string    The name of the plugin.
@@ -457,7 +389,7 @@ class Checkview {
 	}
 
 	/**
-	 * The reference to the class that orchestrates the hooks with the plugin.
+	 * TODO: Grayson
 	 *
 	 * @since     1.0.0
 	 * @return    Checkview_Loader    Orchestrates the hooks of the plugin.
@@ -467,7 +399,7 @@ class Checkview {
 	}
 
 	/**
-	 * Retrieve the version number of the plugin.
+	 * TODO: Grayson
 	 *
 	 * @since     1.0.0
 	 * @return    string    The version number of the plugin.

@@ -1,6 +1,6 @@
 <?php
 /**
- * Fired during Formidableis active.
+ * TODO: Grayson
  *
  * @link       https://checkview.io
  * @since      1.0.0
@@ -15,9 +15,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 	/**
-	 * The public-facing functionality of the plugin.
-	 *
-	 * Helps in Formidable management.
+	 * TODO: Grayson
 	 *
 	 * @package    Checkview
 	 * @subpackage Checkview/includes/formhelpers
@@ -25,8 +23,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 	 */
 	class Checkview_Formidable_Helper {
 		/**
-		 * The loader that's responsible for maintaining and registering all hooks that power
-		 * the plugin.
+		 * TODO: Grayson
 		 *
 		 * @since    1.0.0
 		 * @access   protected
@@ -34,7 +31,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		 */
 		protected $loader;
 		/**
-		 * Initializes the class constructor.
+		 * TODO: Grayson
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -95,7 +92,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			);
 		}
 		/**
-		 * Injects email to Formidableis supported emails.
+		 * TODO: Grayson
 		 *
 		 * @param string $email address.
 		 * @return string email.
@@ -112,7 +109,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		}
 
 		/**
-		 * Logs Test entry
+		 * TODO: Grayson
 		 *
 		 * @param int $entry_id form's id.
 		 * @param int $form_id forms entry id.
@@ -250,7 +247,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		}
 
 		/**
-		 * List of Form fields.
+		 * TODO: Grayson
 		 *
 		 * @param int $form_id id of the form.
 		 * @return array
@@ -362,7 +359,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			return $fields;
 		}
 		/**
-		 * Removes captcha fields from the list of fields.
+		 * TODO: Grayson
 		 *
 		 * @param array $fields Array of fields.
 		 * @param form  $form form.

@@ -1,6 +1,6 @@
 <?php
 /**
- * Hanldes Checkview payment Gateway options.
+ * TODO: Grayson
  *
  * @link       https://checkview.io
  * @since      1.0.0
@@ -12,35 +12,35 @@
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
 
 /**
- * Checkview Payments Blocks integration
+ * TODO: Grayson
  *
  * @since 1.0.3
  */
 final class Checkview_Blocks_Payment_Gateway extends AbstractPaymentMethodType {
 
 	/**
-	 * The gateway instance.
+	 * TODO: Grayson
 	 *
 	 * @var Checkview_Blocks_Payment_Gateway
 	 */
 	private $gateway;
 
 	/**
-	 * Payment method name/id/slug.
+	 * TODO: Grayson
 	 *
 	 * @var string
 	 */
 	protected $name = 'checkview';
 
 	/**
-	 * Support the gateway provides.
+	 * TODO: Grayson
 	 *
 	 * @var array
 	 */
 	protected $supports = array( 'checkview' );
 
 	/**
-	 * Initializes the payment method type.
+	 * TODO: Grayson
 	 */
 	public function initialize() {
 		$this->settings = get_option( 'woocommerce_checkview_settings', array() );
@@ -49,7 +49,7 @@ final class Checkview_Blocks_Payment_Gateway extends AbstractPaymentMethodType {
 	}
 
 	/**
-	 * Returns if this payment method should be active. If false, the scripts will not be enqueued.
+	 * TODO: Grayson
 	 *
 	 * @return boolean
 	 */
@@ -58,7 +58,7 @@ final class Checkview_Blocks_Payment_Gateway extends AbstractPaymentMethodType {
 	}
 
 	/**
-	 * Returns an array of scripts/handles to be registered for this payment method.
+	 * TODO: Grayson
 	 *
 	 * @return array
 	 */
@@ -89,7 +89,7 @@ final class Checkview_Blocks_Payment_Gateway extends AbstractPaymentMethodType {
 	}
 
 	/**
-	 * Returns an array of key=>value pairs of data made available to the payment methods script.
+	 * TODO: Grayson
 	 *
 	 * @return array
 	 */

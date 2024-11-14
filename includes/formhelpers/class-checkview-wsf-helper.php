@@ -1,6 +1,6 @@
 <?php
 /**
- * Fired if WSforms is active.
+ * TODO: Grayson
  *
  * @link       https://checkview.io
  * @since      1.0.0
@@ -16,9 +16,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 	/**
-	 * The public-facing functionality of the plugin.
-	 *
-	 * Helps in WS Forms management.
+	 * TODO: Grayson
 	 *
 	 * @package    Checkview
 	 * @subpackage Checkview/includes/formhelpers
@@ -26,16 +24,16 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 	 */
 	class Checkview_WSF_Helper {
 		/**
-		 * The loader that's responsible for maintaining and registering all hooks that power
-		 * the plugin.
+		 * TODO: Grayson
 		 *
 		 * @since    1.0.0
 		 * @access   protected
 		 * @var      Checkview_Loader    $loader    Maintains and registers all hooks for the plugin.
 		 */
 		public $loader;
+
 		/**
-		 * Initializes the class constructor.
+		 * TODO: Grayson
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -83,7 +81,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		}
 
 		/**
-		 * Injects email to WS forms supported emails.
+		 * TODO: Grayson
 		 *
 		 * @param array  $to An array of email addresses in RFC 2822 format to send the email to.
 		 * @param object $form The form object.
@@ -104,7 +102,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 			return $to;
 		}
 		/**
-		 * Clones entry after forms submission.
+		 * TODO: Grayson
 		 *
 		 * @param array $form_data form data.
 		 * @return void
@@ -163,7 +161,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		}
 
 		/**
-		 * Undocumented function
+		 * TODO: Grayson
 		 *
 		 * @param [Form Object] $form Form Object The form object.
 

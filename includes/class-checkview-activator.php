@@ -1,6 +1,6 @@
 <?php
 /**
- * Fired during plugin activation
+ * TODO: Grayson
  *
  * @link       https://checkview.io
  * @since      1.0.0
@@ -10,9 +10,7 @@
  */
 
 /**
- * Fired during plugin activation.
- *
- * This class defines all code necessary to run during the plugin's activation.
+ * TODO: Grayson
  *
  * @since      1.0.0
  * @package    Checkview
@@ -22,9 +20,7 @@
 class Checkview_Activator {
 
 	/**
-	 * Creates table for the plugin and sets transients.
-	 *
-	 * Long Description.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 */
@@ -35,7 +31,7 @@ class Checkview_Activator {
 	}
 
 	/**
-	 * Creates table for the plugin.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @return void

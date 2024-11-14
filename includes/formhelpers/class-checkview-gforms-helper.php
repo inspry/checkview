@@ -1,6 +1,6 @@
 <?php
 /**
- * Fired during Gforms is active.
+ * TODO: Grayson
  *
  * @link       https://checkview.io
  * @since      1.0.0
@@ -15,9 +15,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 	/**
-	 * The public-facing functionality of the plugin.
-	 *
-	 * Helps in Gforms management.
+	 * TODO: Grayson
 	 *
 	 * @package    Checkview
 	 * @subpackage Checkview/includes/formhelpers
@@ -25,8 +23,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 	 */
 	class Checkview_Gforms_Helper {
 		/**
-		 * The loader that's responsible for maintaining and registering all hooks that power
-		 * the plugin.
+		 * TODO: Grayson
 		 *
 		 * @since    1.0.0
 		 * @access   protected
@@ -34,7 +31,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		 */
 		protected $loader;
 		/**
-		 * Initializes the class constructor.
+		 * TODO: Grayson
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -128,7 +125,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 			);
 		}
 		/**
-		 * Bypasses recaptcha .
+		 * TODO: Grayson
 		 *
 		 * @param [Ninaja form] $form form object.
 		 * @return form.
@@ -150,7 +147,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		}
 
 		/**
-		 * Clones entry to DB.
+		 * TODO: Grayson
 		 *
 		 * @param array  $entry form entry data.
 		 * @param object $form form object.
@@ -172,7 +169,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 			complete_checkview_test( $checkview_test_id );
 		}
 		/**
-		 * Injects email to Formidableis supported emails.
+		 * TODO: Grayson
 		 *
 		 * @param array $email address.
 		 * @return array email.
@@ -188,7 +185,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 			return $email;
 		}
 		/**
-		 * Clone Gravity form Entry
+		 * TODO: Grayson
 		 *
 		 * @param int $entry_id entry id of the form.
 		 * @param int $form_id form submitted id.
@@ -221,7 +218,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		}
 
 		/**
-		 * Disable Zeror Spam Addon
+		 * TODO: Grayson
 		 *
 		 * @param int    $form_id form's id.
 		 * @param int    $should_check_key_field check for filed.
@@ -234,7 +231,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		}
 
 		/**
-		 * Disable Pdf Addon.
+		 * TODO: Grayson
 		 *
 		 * @param array $settings settinfs for form helper.
 		 * @param int   $form_id id of the form submitted.
@@ -262,7 +259,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		}
 
 		/**
-		 * Disable addons feed.
+		 * TODO: Grayson
 		 *
 		 * @param array  $feeds form feeds.
 		 * @param array  $entry form entry data.

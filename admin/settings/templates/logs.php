@@ -1,6 +1,6 @@
 <?php
 /**
- * General Options.
+ * TODO: Grayson
  *
  * @package Logs
  */

@@ -2,7 +2,7 @@
 class Test_Checkview_General extends WP_UnitTestCase {
 
 	/**
-	 * Test that the function deletes the session from the database.
+	 * TODO: Grayson
 	 */
 	public function test_delete_session_from_database() {
 		global $wpdb;
@@ -40,7 +40,7 @@ class Test_Checkview_General extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test that the function deletes the test key option.
+	 * TODO: Grayson
 	 */
 	public function test_delete_test_key_option() {
 		global $wpdb;
@@ -66,7 +66,7 @@ class Test_Checkview_General extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test that the function deletes the visitor IP option.
+	 * TODO: Grayson
 	 */
 	public function test_delete_visitor_ip_option() {
 		$test_id    = 'test_id_123';
@@ -83,7 +83,7 @@ class Test_Checkview_General extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test that the function updates the use_stripe option.
+	 * TODO: Grayson
 	 */
 	public function test_update_use_stripe_option() {
 		$test_id    = 'test_id_123';
@@ -100,7 +100,7 @@ class Test_Checkview_General extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test that the function returns an array with states for a country that has states.
+	 * TODO: Grayson
 	 */
 	public function test_add_states_to_locations_with_states() {
 		$locations = array(
@@ -142,7 +142,7 @@ class Test_Checkview_General extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test that the function returns an array with an empty stdClass object for a country that has no states.
+	 * TODO: Grayson
 	 */
 	public function test_add_states_to_locations_without_states() {
 		$locations = array(
@@ -174,7 +174,7 @@ class Test_Checkview_General extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test that the function returns an empty array when passed an empty array.
+	 * TODO: Grayson
 	 */
 	public function test_add_states_to_locations_empty_array() {
 		$locations = array();

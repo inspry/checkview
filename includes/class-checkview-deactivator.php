@@ -1,6 +1,6 @@
 <?php
 /**
- * Fired during plugin deactivation
+ * TODO: Grayson
  *
  * @link       https://checkview.io
  * @since      1.0.0
@@ -10,9 +10,7 @@
  */
 
 /**
- * Fired during plugin deactivation.
- *
- * This class defines all code necessary to run during the plugin's deactivation.
+ * TODO: Grayson
  *
  * @since      1.0.0
  * @package    Checkview
@@ -22,7 +20,7 @@
 class Checkview_Deactivator {
 
 	/**
-	 * Clear the cron job and remove the IP from the whitelist.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 */

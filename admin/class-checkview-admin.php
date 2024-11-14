@@ -1,6 +1,6 @@
 <?php
 /**
- * The admin-specific functionality of the plugin.
+ * TODO: Grayson
  *
  * @link       https://checkview.io
  * @since      1.0.0
@@ -10,10 +10,7 @@
  */
 
 /**
- * The admin-specific functionality of the plugin.
- *
- * Defines the plugin name, version, and two examples hooks for how to
- * enqueue the admin-specific stylesheet and JavaScript.
+ * TODO: Grayson
  *
  * @package    Checkview
  * @subpackage Checkview/admin
@@ -22,7 +19,7 @@
 class Checkview_Admin {
 
 	/**
-	 * The ID of this plugin.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @access   private
@@ -31,7 +28,7 @@ class Checkview_Admin {
 	private $plugin_name;
 
 	/**
-	 * The version of this plugin.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @access   private
@@ -40,7 +37,7 @@ class Checkview_Admin {
 	private $version;
 
 	/**
-	 * Initialize the class and set its properties.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @param      string $plugin_name       The name of this plugin.
@@ -62,7 +59,7 @@ class Checkview_Admin {
 	}
 
 	/**
-	 * Deletes expired nonces.
+	 * TODO: Grayson
 	 *
 	 * @return void
 	 */
@@ -83,7 +80,7 @@ class Checkview_Admin {
 	}
 
 	/**
-	 * Schedules nonce cleanup process.
+	 * TODO: Grayson
 	 *
 	 * @return void
 	 */
@@ -93,22 +90,14 @@ class Checkview_Admin {
 		}
 	}
 	/**
-	 * Register the stylesheets for the admin area.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
 
 		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Checkview_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Checkview_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
+		 * TODO: Grayson
 		 */
 		$screen = get_current_screen();
 		if ( 'checkview-options' !== $screen->base && 'settings_page_checkview-options' !== $screen->base ) {
@@ -140,22 +129,14 @@ class Checkview_Admin {
 	}
 
 	/**
-	 * Register the JavaScript for the admin area.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
 
 		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Checkview_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Checkview_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
+		 * TODO: Grayson
 		 */
 		$screen = get_current_screen();
 		if ( 'checkview-options' !== $screen->base && 'settings_page_checkview-options' !== $screen->base ) {
@@ -197,7 +178,7 @@ class Checkview_Admin {
 	}
 
 	/**
-	 * Loads Form Test and helper classes.
+	 * TODO: Grayson
 	 *
 	 * @return void
 	 */

@@ -1,8 +1,6 @@
 <?php
 /**
- * CheckView Options
- *
- * Displays the CheckView Options.
+ * TODO: Grayson
  *
  * @author   CheckView
  * @category Admin
@@ -15,19 +13,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Checkview_Admin_Settings
+ * TODO: Grayson
  *
  * @since 1.0.0
  */
 class Checkview_Admin_Settings {
 	/**
-	 * Contains the tab name for current settings tab.
+	 * TODO: Grayson
 	 *
 	 * @var string
 	 */
 	public $page_tab;
 	/**
-	 * The unique identifier of this plugin.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @access   protected
@@ -36,7 +34,7 @@ class Checkview_Admin_Settings {
 	protected $plugin_name;
 
 	/**
-	 * The current version of the plugin.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @access   protected
@@ -44,7 +42,7 @@ class Checkview_Admin_Settings {
 	 */
 	protected $version;
 	/**
-	 * Hook in tabs.
+	 * TODO: Grayson
 	 *
 	 * @param string $plugin_name name of the plugin.
 	 * @param string $version version number of the plugin.
@@ -57,7 +55,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * Adds admin notices.
+	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
 	 * @return void
@@ -90,7 +88,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * Advance settings save.
+	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
 	 * @return void
@@ -121,7 +119,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * Ajax function to sync cache.
+	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
 	 */
@@ -148,7 +146,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * Ajax function to sync cache.
+	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
 	 */
@@ -157,7 +155,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * Add plugin's menu.
+	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
 	 */
@@ -172,7 +170,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * Setting page data.
+	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
 	 */
@@ -224,7 +222,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * CheckView Settings Sections.
+	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
 	 *
@@ -261,7 +259,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * Add footer branding.
+	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
 	 * @param string $footer_text footer text.

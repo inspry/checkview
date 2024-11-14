@@ -1,6 +1,6 @@
 <?php
 /**
- * Fired during Fluentforms is active.
+ * TODO: Grayson
  *
  * @link       https://checkview.io
  * @since      1.0.0
@@ -15,9 +15,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 	/**
-	 * The public-facing functionality of the plugin.
-	 *
-	 * Helps in Fluentforms management.
+	 * TODO: Grayson
 	 *
 	 * @package    Checkview
 	 * @subpackage Checkview/includes/formhelpers
@@ -25,8 +23,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 	 */
 	class Checkview_Fluent_Forms_Helper {
 		/**
-		 * The loader that's responsible for maintaining and registering all hooks that power
-		 * the plugin.
+		 * TODO: Grayson
 		 *
 		 * @since    1.0.0
 		 * @access   protected
@@ -35,7 +32,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		public $loader;
 
 		/**
-		 * Initializes the class constructor.
+		 * TODO: Grayson
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -147,7 +144,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		}
 
 		/**
-		 * Injects email to fluentform supported emails.
+		 * TODO: Grayson
 		 *
 		 * @param string $address email address.
 		 * @param string $notification email notification.
@@ -165,7 +162,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		}
 
 		/**
-		 * Removes email to fluentform supported emails.
+		 * TODO: Grayson
 		 *
 		 * @param string $address email address.
 		 * @param string $notification email notification.
@@ -177,7 +174,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			return TEST_EMAIL;
 		}
 		/**
-		 * CLones the fluentforms enrty.
+		 * TODO: Grayson
 		 *
 		 * @param int    $entry_id fluentform ID.
 		 * @param array  $form_data fluentform data.

@@ -1,6 +1,6 @@
 <?php
 /**
- * Fired if ninjaforms is active.
+ * TODO: Grayson
  *
  * @link       https://checkview.io
  * @since      1.0.0
@@ -16,9 +16,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 	/**
-	 * The public-facing functionality of the plugin.
-	 *
-	 * Helps in Ninjaforms management.
+	 * TODO: Grayson
 	 *
 	 * @package    Checkview
 	 * @subpackage Checkview/includes/formhelpers
@@ -26,8 +24,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 	 */
 	class Checkview_Ninja_Forms_Helper {
 		/**
-		 * The loader that's responsible for maintaining and registering all hooks that power
-		 * the plugin.
+		 * TODO: Grayson
 		 *
 		 * @since    1.0.0
 		 * @access   protected
@@ -35,7 +32,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		 */
 		public $loader;
 		/**
-		 * Initializes the class constructor.
+		 * TODO: Grayson
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -95,7 +92,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		}
 
 		/**
-		 * Injects email to Ninja forms supported emails.
+		 * TODO: Grayson
 		 *
 		 * @param string $sent status of email.
 		 * @param array  $action_settings settings for actions.
@@ -131,7 +128,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 			}
 		}
 		/**
-		 * Clones entry after forms submission.
+		 * TODO: Grayson
 		 *
 		 * @param array $form_data form data.
 		 * @return void
@@ -188,7 +185,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		}
 
 		/**
-		 * Remove v2 reCAPTCHA fields if still configured, when using the v3 Action
+		 * TODO: Grayson
 		 *
 		 * @param array $fields fields of the form.
 		 *

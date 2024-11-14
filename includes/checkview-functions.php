@@ -1,6 +1,6 @@
 <?php
 /**
- * Fires to expose plugins general functions.
+ * TODO: Grayson
  *
  * @link       https://checkview.io
  * @since      1.0.0
@@ -18,7 +18,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 if ( ! function_exists( 'checkview_validate_jwt_token' ) ) {
 	/**
-	 * Decodes JWT TOKEN.
+	 * TODO: Grayson
 	 *
 	 * @param string $token jwt token to valiate.
 	 * @return string/bool/void/WP_Error
@@ -82,7 +82,7 @@ if ( ! function_exists( 'checkview_validate_jwt_token' ) ) {
 }
 if ( ! function_exists( 'get_checkview_test_id' ) ) {
 	/**
-	 * Get Test Id.
+	 * TODO: Grayson
 	 *
 	 * @return int the test ID.
 	 */
@@ -114,7 +114,7 @@ if ( ! function_exists( 'get_checkview_test_id' ) ) {
 }
 if ( ! function_exists( 'complete_checkview_test' ) ) {
 	/**
-	 * Remove sessions after test completion.
+	 * TODO: Grayson
 	 *
 	 * @param string $checkview_test_id test id.
 	 * @return void
@@ -150,7 +150,7 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 }
 if ( ! function_exists( 'checkview_get_publickey' ) ) {
 	/**
-	 * Get JWT Public KEY.
+	 * TODO: Grayson
 	 *
 	 * @return array
 	 * @since    1.0.0
@@ -173,7 +173,7 @@ if ( ! function_exists( 'checkview_get_publickey' ) ) {
 }
 if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 	/**
-	 * Get IP address of CheckView.
+	 * TODO: Grayson
 	 *
 	 * @return string/void
 	 * @since    1.0.0
@@ -224,7 +224,7 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 
 if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
 	/**
-	 * Get Visitor IP.
+	 * TODO: Grayson
 	 *
 	 * @return string ip address of visitor.
 	 * @since    1.0.0
@@ -251,7 +251,7 @@ if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
 
 if ( ! function_exists( 'checkview_get_cleantalk_whitelisted_ips' ) ) {
 	/**
-	 * Retrieves whitelisted IP's from CleanTalk.
+	 * TODO: Grayson
 	 *
 	 * @return array list of ips.
 	 */
@@ -302,9 +302,7 @@ if ( ! function_exists( 'checkview_get_cleantalk_whitelisted_ips' ) ) {
 
 if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 	/**
-	 * Whitelist checkview Bot IP.
-	 *
-	 * Only run first time or if ip get changed.
+	 * TODO: Grayson
 	 *
 	 * @return json/array/void
 	 * @since    1.0.0
@@ -360,7 +358,7 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 }
 if ( ! function_exists( 'checkview_must_ssl_url' ) ) {
 	/**
-	 * Convert http to https.
+	 * TODO: Grayson
 	 *
 	 * @param string $url url to sanitize.
 	 * @return string Url to be sanitized.
@@ -375,7 +373,7 @@ if ( ! function_exists( 'checkview_must_ssl_url' ) ) {
 
 if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 	/**
-	 * Create check view Test Session.
+	 * TODO: Grayson
 	 *
 	 * @param string $ip the IP address of the SAAS.
 	 * @param int    $test_id The test ID to be executed.
@@ -442,7 +440,7 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 }
 if ( ! function_exists( 'checkview_get_cv_session' ) ) {
 	/**
-	 * Get check view session from database.
+	 * TODO: Grayson
 	 *
 	 * @param int $ip IP address of the visitor.
 	 * @param int $test_id test id to be conducted.
@@ -471,7 +469,7 @@ if ( ! function_exists( 'checkview_get_cv_session' ) ) {
 
 if ( ! function_exists( 'checkview_get_wp_block_pages' ) ) {
 	/**
-	 * Get pages contact wpblock editor template.
+	 * TODO: Grayson
 	 *
 	 * @param int $block_id ID of GB block.
 	 * @return WPDB object from WPDB.
@@ -491,7 +489,7 @@ if ( ! function_exists( 'checkview_get_wp_block_pages' ) ) {
 }
 if ( ! function_exists( 'checkview_reset_cache' ) ) {
 	/**
-	 * Updates cached data. We cache all API calls from SaaS to save resources.Use this function to reset that.
+	 * TODO: Grayson
 	 *
 	 * @param bool $sync hard sync or not.
 	 * @return bool
@@ -512,7 +510,7 @@ if ( ! function_exists( 'checkview_reset_cache' ) ) {
 
 if ( ! function_exists( 'checkview_deslash' ) ) {
 	/**
-	 * Deslashes double slashes.
+	 * TODO: Grayson
 	 *
 	 * @since  1.1.0
 	 * @param [string] $content content to delash.
@@ -541,7 +539,7 @@ if ( ! function_exists( 'checkview_deslash' ) ) {
 }
 if ( ! function_exists( 'checkview_whitelist_saas_ip_addresses' ) ) {
 	/**
-	 * Whitelists SaaS site using its IP address.
+	 * TODO: Grayson
 	 *
 	 * @return bool
 	 */
@@ -559,7 +557,7 @@ if ( ! function_exists( 'checkview_whitelist_saas_ip_addresses' ) ) {
 }
 if ( ! function_exists( 'checkview_schedule_delete_orders' ) ) {
 	/**
-	 * Sets a crone job to delete orders made by checkview.
+	 * TODO: Grayson
 	 *
 	 * @param integer $order_id WooCommerce order id.
 	 * @return void
@@ -572,7 +570,7 @@ if ( ! function_exists( 'checkview_schedule_delete_orders' ) ) {
 
 if ( ! function_exists( 'checkview_add_states_to_locations' ) ) {
 	/**
-	 * Function to add states to each country in a given locations array.
+	 * TODO: Grayson
 	 *
 	 * @param [array] $locations countries.
 	 * @return array
@@ -602,7 +600,7 @@ if ( ! function_exists( 'checkview_add_states_to_locations' ) ) {
 
 if ( ! function_exists( 'checkview_is_plugin_request' ) ) {
 	/**
-	 * Checks for SaaS Call.
+	 * TODO: Grayson
 	 *
 	 * @return bool
 	 */
@@ -622,7 +620,7 @@ if ( ! function_exists( 'checkview_is_plugin_request' ) ) {
 
 if ( ! function_exists( 'checkview_add_csp_header_for_plugin' ) ) {
 	/**
-	 * Adds csp headers for SaaS API calls.
+	 * TODO: Grayson
 	 *
 	 * @return void
 	 */
@@ -640,7 +638,7 @@ add_action( 'send_headers', 'checkview_add_csp_header_for_plugin' );
 
 if ( ! function_exists( 'checkview_is_valid_uuid' ) ) {
 	/**
-	 * Validates CheckView Test ID.
+	 * TODO: Grayson
 	 *
 	 * @param [string] $uuid checkview_test_id.
 	 * @return bool
@@ -652,7 +650,7 @@ if ( ! function_exists( 'checkview_is_valid_uuid' ) ) {
 
 if ( ! function_exists( 'checkview_schedule_weekly_cleanup' ) ) {
 	/**
-	 * Register the cron event if it's not already scheduled.
+	 * TODO: Grayson
 	 *
 	 * @return void
 	 */
@@ -667,7 +665,7 @@ if ( ! function_exists( 'checkview_schedule_weekly_cleanup' ) ) {
 
 if ( ! function_exists( 'checkview_add_weekly_cron_schedule' ) ) {
 	/**
-	 * Adds custom schedule.
+	 * TODO: Grayson
 	 *
 	 * @param array $schedules array of schedules.
 	 * @return array.
@@ -684,7 +682,7 @@ if ( ! function_exists( 'checkview_add_weekly_cron_schedule' ) ) {
 
 if ( ! function_exists( 'checkview_delete_tables_data' ) ) {
 	/**
-	 * This function will run every 7 days to delete data from the tables.
+	 * TODO: Grayson
 	 *
 	 * @return void
 	 */
@@ -713,7 +711,7 @@ add_action(
 );   // For non-logged-in users.
 if ( ! function_exists( 'checkview_get_option_data_handler' ) ) {
 	/**
-	 * Verifies helper loading.
+	 * TODO: Grayson
 	 *
 	 * @return void
 	 */

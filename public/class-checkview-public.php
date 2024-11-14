@@ -1,6 +1,6 @@
 <?php
 /**
- * The public-facing functionality of the plugin.
+ * TODO: Grayson
  *
  * @link       https://checkview.io
  * @since      1.0.0
@@ -10,10 +10,7 @@
  */
 
 /**
- * The public-facing functionality of the plugin.
- *
- * Defines the plugin name, version, and two examples hooks for how to
- * enqueue the public-facing stylesheet and JavaScript.
+ * TODO: Grayson
  *
  * @package    Checkview
  * @subpackage Checkview/public
@@ -22,7 +19,7 @@
 class Checkview_Public {
 
 	/**
-	 * The ID of this plugin.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @access   private
@@ -31,7 +28,7 @@ class Checkview_Public {
 	private $plugin_name;
 
 	/**
-	 * The version of this plugin.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @access   private
@@ -40,7 +37,7 @@ class Checkview_Public {
 	private $version;
 
 	/**
-	 * Initialize the class and set its properties.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 * @param      string $plugin_name       The name of the plugin.
@@ -53,22 +50,14 @@ class Checkview_Public {
 	}
 
 	/**
-	 * Register the stylesheets for the public-facing side of the site.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
 
 		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Checkview_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Checkview_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
+		 * TODO: Grayson
 		 */
 
 		wp_enqueue_style(
@@ -81,22 +70,14 @@ class Checkview_Public {
 	}
 
 	/**
-	 * Register the JavaScript for the public-facing side of the site.
+	 * TODO: Grayson
 	 *
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
 
 		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Checkview_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Checkview_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
+		 * TODO: Grayson
 		 */
 
 		wp_enqueue_script(

@@ -1,6 +1,6 @@
 <?php
 /**
- * Hanldes Checkview payment Gateway options.
+ * TODO: Grayson
  *
  * @link       https://checkview.io
  * @since      1.0.0
@@ -11,9 +11,7 @@
 
 if ( class_exists( 'WC_Payment_Gateway' ) ) {
 	/**
-	 * Fired to inject custom payment gateway to WooCommerce.
-	 *
-	 * This class defines all code necessary to run for handling CheckView WooCommerce Operations.
+	 * TODO: Grayson
 	 *
 	 * @since      1.0.0
 	 * @package    CheckView
@@ -23,7 +21,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) {
 	class Checkview_Payment_Gateway extends WC_Payment_Gateway {
 
 		/**
-		 * Class constructor.
+		 * TODO: Grayson
 		 */
 		public function __construct() {
 
@@ -44,7 +42,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) {
 		}
 
 		/**
-		 * Initiates settings.
+		 * TODO: Grayson
 		 *
 		 * @return void
 		 */
@@ -54,7 +52,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) {
 		}
 
 		/**
-		 * Renders payments fields.
+		 * TODO: Grayson
 		 *
 		 * @return void
 		 */
@@ -62,7 +60,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) {
 			echo '<p>' . esc_html( $this->description ) . '</p>';
 		}
 		/**
-		 * Processes payment.
+		 * TODO: Grayson
 		 *
 		 * @param integer $order_id WooCommerce order id.
 		 * @return array

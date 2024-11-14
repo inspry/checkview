@@ -1,6 +1,6 @@
 <?php
 /**
- * Fired during CF7 is active.
+ * TODO: Grayson
  *
  * @link       https://checkview.io
  * @since      1.0.0
@@ -15,9 +15,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 	/**
-	 * The public-facing functionality of the plugin.
-	 *
-	 * Helps in CF7 management.
+	 * TODO: Grayson
 	 *
 	 * @package    Checkview
 	 * @subpackage Checkview/includes/formhelpers
@@ -25,8 +23,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 	 */
 	class Checkview_Cf7_Helper {
 		/**
-		 * The loader that's responsible for maintaining and registering all hooks that power
-		 * the plugin.
+		 * TODO: Grayson
 		 *
 		 * @since    1.0.0
 		 * @access   protected
@@ -34,7 +31,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 		 */
 		public $loader;
 		/**
-		 * Initializes class constructor.
+		 * TODO: Grayson
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -104,7 +101,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 		}
 
 		/**
-		 * Adds the entry to DB after form has been saved.
+		 * TODO: Grayson
 		 *
 		 * @param Object $form_tag form object by CFS.
 		 * @return void
@@ -230,7 +227,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 		}
 
 		/**
-		 * Deletes entry from DB.
+		 * TODO: Grayson
 		 *
 		 * @param int $insert_id The inserted ID from CF7 form.
 		 * @return void
@@ -243,7 +240,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 
 
 		/**
-		 * Injects email to CF7 supported emails.
+		 * TODO: Grayson
 		 *
 		 * @param array $args emails array.
 		 * @return array
@@ -258,7 +255,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 		}
 
 		/**
-		 * Returns false.
+		 * TODO: Grayson
 		 *
 		 * @return bool
 		 */
