@@ -2046,10 +2046,11 @@ class CheckView_Api {
 			);
 			wp_die();
 		} else {
-			$tablename = $wpdb->prefix . 'cv_entry';
-			$result    = $wpdb->delete( $tablename, array( 'uid' => $uid ) );
-			$tablename = $wpdb->prefix . 'cv_entry_meta';
-			$rows      = $wpdb->delete( $tablename, array( 'uid' => $uid ) );
+			// $tablename = $wpdb->prefix . 'cv_entry';
+			// $result    = $wpdb->delete( $tablename, array( 'uid' => $uid ) );
+			// $tablename = $wpdb->prefix . 'cv_entry_meta';
+			// $rows      = $wpdb->delete( $tablename, array( 'uid' => $uid ) );
+			$rows = true;
 			if ( $rows ) {
 				return new WP_REST_Response(
 					array(
