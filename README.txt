@@ -97,9 +97,11 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * **Performance Enhancements**:
   * Reduced database queries for faster load times.
   * Added caching mechanisms to enhance performance.
+  * Added limit for WooCommerce Products to first 1000 by date modified.
+  * Updated form delete endpoint to store results for 7 days.
 * **New Features**:
   * Updated CleanTalk whitelisted IP addresses function to accumulate IPs across all sites.
-  * Added functionality to enable or suppress admin email notifications for all form submissions.
+  * Added functionality to enable or disable admin email notifications for all form submissions and WooCommerce orders made by SaaS.
 
 = 2.0.0 =
 
