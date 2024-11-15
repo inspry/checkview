@@ -101,7 +101,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
   * Updated form delete endpoint to store results for 7 days.
 * **New Features**:
   * Updated CleanTalk whitelisted IP addresses function to accumulate IPs across all sites.
-  * Added functionality to enable or suppress admin email notifications for all form submissions.
+  * Added functionality to enable or disable admin email notifications for all form submissions and WooCommerce orders made by SaaS.
 
 = 2.0.0 =
 
