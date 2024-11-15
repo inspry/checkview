@@ -69,7 +69,7 @@ final class Checkview_Blocks_Payment_Gateway extends AbstractPaymentMethodType {
 			? require $script_asset_path
 			: array(
 				'dependencies' => array(),
-				'version'      => '2.0.1',
+				'version'      => '2.0.2',
 			);
 		$script_url        = CHECKVIEW_URI . $script_path;
 
