@@ -762,8 +762,10 @@ class CheckView_Api {
 		$args = array(
 			'post_type'           => 'product',
 			'post_status'         => 'publish',
+			'posts_per_page'      => 1000,
 			'ignore_sticky_posts' => 1,
-			'posts_per_page'      => -1,
+			'orderby'             => 'modified',        // Order by last modified date.
+			'order'               => 'DESC',
 		);
 		if ( ! empty( $checkview_keyword ) && null !== $checkview_keyword ) {
 
@@ -2046,10 +2048,11 @@ class CheckView_Api {
 			);
 			wp_die();
 		} else {
-			$tablename = $wpdb->prefix . 'cv_entry';
-			$result    = $wpdb->delete( $tablename, array( 'uid' => $uid ) );
-			$tablename = $wpdb->prefix . 'cv_entry_meta';
-			$rows      = $wpdb->delete( $tablename, array( 'uid' => $uid ) );
+			// $tablename = $wpdb->prefix . 'cv_entry';
+			// $result    = $wpdb->delete( $tablename, array( 'uid' => $uid ) );
+			// $tablename = $wpdb->prefix . 'cv_entry_meta';
+			// $rows      = $wpdb->delete( $tablename, array( 'uid' => $uid ) );
+			$rows = true;
 			if ( $rows ) {
 				return new WP_REST_Response(
 					array(
