@@ -2277,7 +2277,7 @@ class CheckView_Api {
 		);
 		if ( $table_exists !== $cv_used_nonces ) {
 			// Log the detailed error for internal use.
-			Checkview_Admin_Logs::add( 'api-logs', 'Nonce table absent.' );
+			Checkview_Admin_Logs::add( 'api-logs', 'Nonce table absent updater.' );
 			return new WP_Error(
 				403,
 				esc_html__( 'Invalid request.', 'checkview' ),
