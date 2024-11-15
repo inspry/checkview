@@ -7,7 +7,7 @@ Tested up to: 6.7
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 2.0.3
+Stable tag: 2.0.4
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -85,6 +85,9 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 3. CheckView general settings.
 
 == Changelog ==
+= 2.0.4 =
+* Added nonce table creation function in token verification process.
+
 = 2.0.3 =
 * Added upgrade.php dependencies in upgrader hook.
 * Updated CF7 hooks priority.
@@ -268,6 +271,9 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Initial release.
 
 == Upgrade Notice ==
+= 2.0.4 =
+* Added nonce table creation function in token verification process.
+
 = 2.0.3 =
 * Added upgrade.php dependencies in upgrader hook.
 * Updated CF7 hooks priority.
