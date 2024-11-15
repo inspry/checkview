@@ -424,7 +424,7 @@ class Checkview {
 	 * @return void
 	 */
 	public function checkview_track_updates_notification( $upgrader_object, $options ) {
-
+		global $wpdb;
 		// If an update has taken place and the updated type is plugins and the plugins element exists.
 		if ( 'update' === $options['action'] && 'plugin' === $options['type'] && isset( $options['plugins'] ) ) {
 			// Iterate through the plugins being updated and check if ours is there.
