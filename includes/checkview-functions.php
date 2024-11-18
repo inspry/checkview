@@ -293,7 +293,9 @@ if ( ! function_exists( 'checkview_get_cleantalk_whitelisted_ips' ) ) {
 			// Loop through and add IPs to the array.
 			foreach ( $whitelisted_ips['data'] as $entry ) {
 				// Add the IP address (from the 'record' key) to the array.
-				$ip_array[ $entry['hostname'] ][] = $entry['record'];
+				if ( ! empty( $entry['hostname'] ) ) {
+					$ip_array[ $entry['hostname'] ][] = $entry['record'];
+				}
 			}
 		}
 		set_transient( 'checkview_whitelisted_ips', $ip_array, 12 * HOUR_IN_SECONDS );

@@ -290,29 +290,6 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 			// Test completed So Clear sessions.
 			complete_checkview_test( $checkview_test_id );
 		}
-
-		/**
-		 * Disbale feeds.
-		 *
-		 * @param array $core_class_names classes vaialable.
-		 * @return array
-		 */
-		public function checkview_disable_addons_feed( array $core_class_names ): array {
-			$core_class_names = array(
-				'SMTP\Notifications',
-				'WPCode\WPCode',
-				'WPCode\RegisterLibrary',
-				//'Gutenberg\FormSelector',
-				'WPMailSMTP\Notifications',
-				'WPorg\Translations',
-				'DefaultThemes\DefaultThemes',
-				'Translations\Translations',
-				'DefaultContent\DefaultContent',
-				'PopupMaker\PopupMaker',
-			);
-			return [];
-			return $core_class_names;
-		}
 	}
 	$checkview_wpforms_helper = new Checkview_Wpforms_Helper();
 }
