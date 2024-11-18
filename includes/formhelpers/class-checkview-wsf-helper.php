@@ -80,7 +80,19 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 				99,
 				2
 			);
-			add_filter( 'wsf_config_meta_keys', array( $this, 'config_meta_keys' ), 10, 2 );
+			add_filter(
+				'wsf_config_meta_keys',
+				array( $this, 'config_meta_keys' ),
+				10,
+				2
+			);
+
+			add_filter(
+				'wsf_action_post_do',
+				array( $this, 'checkview_disable_addons_feed' ),
+				99,
+				6
+			);
 		}
 
 		/**
@@ -206,6 +218,25 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 			}
 			// Return value.
 			return $form;
+		}
+
+		/**
+		 * Disable addons feed.
+		 *
+		 * @param boolean $run run action or not.
+		 * @param object  $form form object.
+		 * @param object  $submit submit object.
+		 * @param array   $action_id_filter array of filters.
+		 * @param boolean $database_only save to db.
+		 * @param array   $config config.
+		 * @return boolean
+		 */
+		public function checkview_disable_addons_feed( $run, $form, $submit, $action_id_filter, $database_only, $config ): bool {
+			$skip_actions = array( 'database', 'message', 'email' );
+			if ( in_array( $config['id'], $skip_actions, true ) ) {
+				return true;
+			}
+			return false;
 		}
 	}
 

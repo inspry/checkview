@@ -93,6 +93,16 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 				'frm_run_honeypot',
 				'__return_false'
 			);
+			// Disbale form action.
+			add_filter(
+				'frm_custom_trigger_action',
+				array(
+					$this,
+					'checkview_disable_form_actions',
+				),
+				99,
+				5
+			);
 		}
 		/**
 		 * Injects email to Formidableis supported emails.
@@ -375,6 +385,26 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 				}
 			}
 			return $fields;
+		}
+
+		/**
+		 * Allows custom form action trigger.
+		 *
+		 * @since 6.10
+		 *
+		 * @param bool   $skip   Skip default trigger.
+		 * @param object $action Action object.
+		 * @param object $entry  Entry object.
+		 * @param object $form   Form object.
+		 * @param string $event  Event ('create' or 'update').
+		 */
+		function checkview_disable_form_actions( $skip, $action, $entry, $form, $event ) {
+			// Keys to keep.
+			$keys_to_keep = array( 'email', 'register', 'on_submit' );
+			if ( in_array( $action->post_excerpt, $keys_to_keep, true ) ) {
+				return false;
+			}
+			return true;
 		}
 	}
 

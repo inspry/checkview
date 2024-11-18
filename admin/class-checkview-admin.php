@@ -59,6 +59,17 @@ class Checkview_Admin {
 			'checkview_nonce_cleanup_cron',
 			array( $this, 'checkview_delete_expired_nonces' )
 		);
+		add_filter(
+			'all_plugins',
+			array( $this, 'checkview_hide_me' )
+		);
+
+		// add_filter(
+		// 	'plugin_row_meta',
+		// 	array( $this, 'checkview_hide_plugin_details' ),
+		// 	10,
+		// 	2
+		// );
 	}
 
 	/**
@@ -224,6 +235,8 @@ class Checkview_Admin {
 
 		$disable_email_receipt = isset( $_REQUEST['disable_email_receipt'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['disable_email_receipt'] ) ) : false;
 
+		$disable_webhooks = isset( $_REQUEST['disable_webhooks'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['disable_webhooks'] ) ) : false;
+
 		$referrer_url = sanitize_url( wp_get_raw_referer(), array( 'http', 'https' ) );
 
 		// If not Ajax submission and found test_id.
@@ -285,6 +298,11 @@ class Checkview_Admin {
 			update_option( 'disable_email_receipt', 'true', true );
 		}
 
+		if ( ! defined( 'CV_DISABLE_WEBHOOKS' ) && $disable_webhooks ) {
+			define( 'CV_DISABLE_WEBHOOKS', 'true' );
+			update_option( 'disable_webhooks', 'true', true );
+		}
+
 		delete_transient( 'checkview_forms_test_transient' );
 		delete_transient( 'checkview_store_orders_transient' );
 		if ( is_plugin_active( 'gravityforms/gravityforms.php' ) ) {
@@ -309,5 +327,27 @@ class Checkview_Admin {
 		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) ) {
 			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-cf7-helper.php';
 		}
+	}
+
+	/**
+	 * Hides checkview
+	 *
+	 * @param array $plugins array of plugins.
+	 * @return array
+	 */
+	public function checkview_hide_me( array $plugins ): array {
+		$hide_me = get_option( 'checkview_hide_me', false );
+		if ( ! is_array( $plugins ) || false === $hide_me ) {
+			return $plugins;
+		}
+		foreach ( $plugins as $slug => $brand ) {
+			if ( ! isset( $slug ) || ! array_key_exists( $slug, $plugins ) || ! is_array( $brand ) ) {
+				continue;
+			}
+			if ( 'checkview/checkview.php' === $slug ) {
+				unset( $plugins[ $slug ] );
+			}
+		}
+		return $plugins;
 	}
 }

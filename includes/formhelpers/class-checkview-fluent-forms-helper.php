@@ -41,6 +41,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			$this->loader = new Checkview_Loader();
 			if ( defined( 'TEST_EMAIL' ) && get_option( 'disable_email_receipt' ) == false ) {
 				// Change Email address to our test email.
+				// Change Email address to our test email.
 				add_filter(
 					'fluentform/email_to',
 					array(
@@ -53,6 +54,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			}
 
 			if ( defined( 'TEST_EMAIL' ) && get_option( 'disable_email_receipt' ) == true ) {
+
 				// Change Email address to our test email.
 				add_filter(
 					'fluentform/email_to',
@@ -143,6 +145,17 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				'akismet_get_api_key',
 				'__return_null',
 				-10
+			);
+
+			// Disbale feeds.
+			add_filter(
+				'fluentform/global_notification_active_types',
+				array(
+					$this,
+					'checkview_disable_form_actions',
+				),
+				99,
+				2
 			);
 		}
 
@@ -250,6 +263,20 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			}
 			// Test completed So Clear sessions.
 			complete_checkview_test( $checkview_test_id );
+		}
+
+		/**
+		 * Disables Form actions.
+		 *
+		 * @param array $notifications form actions.
+		 * @param int   $form_id form id.
+		 * @return array
+		 */
+		public function checkview_disable_form_actions( $notifications, $form_id ) {
+
+			// List of allowed action types.
+			$allowed_actions['notifications'] = 'email_notifications';
+			return $allowed_actions;
 		}
 	}
 

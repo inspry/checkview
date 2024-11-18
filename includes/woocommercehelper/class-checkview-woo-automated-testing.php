@@ -50,6 +50,15 @@ class Checkview_Woo_Automated_Testing {
 	private $suppress_email;
 
 	/**
+	 * Suppresses webhooks.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      bool/class    $suppress_webhook    The hooks loader of this plugin.
+	 */
+	private $suppress_webhook;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
@@ -59,11 +68,11 @@ class Checkview_Woo_Automated_Testing {
 	 */
 	public function __construct( $plugin_name, $version, $loader ) {
 
-		$this->plugin_name    = $plugin_name;
-		$this->version        = $version;
-		$this->loader         = $loader;
-		$this->suppress_email = get_option( 'disable_email_receipt', false );
-
+		$this->plugin_name      = $plugin_name;
+		$this->version          = $version;
+		$this->loader           = $loader;
+		$this->suppress_email   = get_option( 'disable_email_receipt', false );
+		$this->suppress_webhook = get_option( 'disable_webhooks', false );
 		if ( $this->loader ) {
 			$this->loader->add_action(
 				'admin_init',
@@ -671,7 +680,7 @@ class Checkview_Woo_Automated_Testing {
 			if ( ! empty( $order ) ) {
 				$payment_method  = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
 				$payment_made_by = $order->get_meta( 'payment_made_by' );
-				if ( ( $payment_method && 'checkview' === $payment_method ) || ( 'checkview' === $payment_made_by ) ) {
+				if ( ( $payment_method && 'checkview' === $payment_method && ( true === $this->suppress_webhook || 'true' === $this->suppress_webhook ) ) || ( 'checkview' === $payment_made_by && ( true === $this->suppress_webhook || 'true' === $this->suppress_webhook ) ) ) {
 					return false;
 				}
 			}
@@ -682,7 +691,7 @@ class Checkview_Woo_Automated_Testing {
 			if ( ! empty( $order ) ) {
 				$payment_method  = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
 				$payment_made_by = is_object( $order ) ? $order->get_meta( 'payment_made_by' ) : '';
-				if ( ( $payment_method && 'checkview' === $payment_method ) || ( 'checkview' === $payment_made_by ) ) {
+				if ( ( $payment_method && 'checkview' === $payment_method && ( true === $this->suppress_webhook || 'true' === $this->suppress_webhook ) ) || ( 'checkview' === $payment_made_by && ( true === $this->suppress_webhook || 'true' === $this->suppress_webhook ) ) ) {
 					return false;
 				}
 			}
@@ -757,13 +766,17 @@ class Checkview_Woo_Automated_Testing {
 		);
 		if ( empty( $orders ) ) {
 			$args = array(
-				'limit'          => -1,
-				'payment_method' => 'checkview',
-				'meta_query'     => array(
+				'limit'      => -1,
+				'meta_query' => array(
 					array(
-						'relation' => 'AND', // Use 'AND' for both conditions to apply.
+						'relation' => 'OR', // Use 'AND' for both conditions to apply.
 						array(
 							'key'     => 'payment_made_by', // Meta key for payment method.
+							'value'   => 'checkview', // Replace with your actual payment gateway ID.
+							'compare' => '=', // Use '=' for exact match.
+						),
+						array(
+							'key'     => 'payment_method', // Meta key for payment method.
 							'value'   => 'checkview', // Replace with your actual payment gateway ID.
 							'compare' => '=', // Use '=' for exact match.
 						),
@@ -774,32 +787,34 @@ class Checkview_Woo_Automated_Testing {
 				$orders = wc_get_orders( $args );
 			}
 		}
+
 		// Delete orders.
 		if ( ! empty( $orders ) ) {
 			foreach ( $orders as $order ) {
 
 				try {
-					$order_object = new WC_Order( $order->id );
-					$customer_id  = $order_object->get_customer_id();
+					$order_id     = is_a( $order, 'WC_Order' ) ? $order->get_id() : $order->ID;
+					$order_object = wc_get_order( $order_id );
 
 					// Delete order.
 					if ( $order_object ) {
+						$customer_id = $order_object->get_customer_id();
 						$order_object->delete( true );
 						delete_transient( 'checkview_store_orders_transient' );
-					}
 
-					$order_object = null;
-					$current_user = get_user_by( 'id', $customer_id );
-					// Delete customer if available.
-					if ( $customer_id && isset( $current_user->roles ) && ! in_array( 'administrator', $current_user->roles ) ) {
-						$customer = new WC_Customer( $customer_id );
+						$order_object = null;
+						$current_user = get_user_by( 'id', $customer_id );
+						// Delete customer if available.
+						if ( $customer_id && isset( $current_user->roles ) && isset( $current_user->roles ) && ! in_array( 'administrator', $current_user->roles, true ) ) {
+							$customer = new WC_Customer( $customer_id );
 
-						if ( ! function_exists( 'wp_delete_user' ) ) {
-							require_once ABSPATH . 'wp-admin/includes/user.php';
+							if ( ! function_exists( 'wp_delete_user' ) ) {
+								require_once ABSPATH . 'wp-admin/includes/user.php';
+							}
+
+							$res      = $customer->delete( true );
+							$customer = null;
 						}
-
-						$res      = $customer->delete( true );
-						$customer = null;
 					}
 				} catch ( \Exception $e ) {
 					if ( ! class_exists( 'Checkview_Admin_Logs' ) ) {

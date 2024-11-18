@@ -103,7 +103,7 @@ if ( ! function_exists( 'get_checkview_test_id' ) ) {
 			if ( $referer_url ) {
 				parse_str( $referer_url, $qry_str );
 			}
-			if ( ! checkview_is_valid_uuid( $qry_str['checkview_test_id'] ) ) {
+			if ( ! empty( $qry_str['checkview_test_id'] ) && ! checkview_is_valid_uuid( $qry_str['checkview_test_id'] ) ) {
 				return false;
 			}
 			if ( isset( $qry_str['checkview_test_id'] ) ) {
@@ -146,6 +146,7 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 		setcookie( 'checkview_test_id', '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
 		setcookie( 'checkview_test_id' . $checkview_test_id, '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
 		delete_option( 'disable_email_receipt' );
+		delete_option( 'disable_webhooks' );
 	}
 }
 if ( ! function_exists( 'checkview_get_publickey' ) ) {
@@ -292,7 +293,9 @@ if ( ! function_exists( 'checkview_get_cleantalk_whitelisted_ips' ) ) {
 			// Loop through and add IPs to the array.
 			foreach ( $whitelisted_ips['data'] as $entry ) {
 				// Add the IP address (from the 'record' key) to the array.
-				$ip_array[ $entry['hostname'] ][] = $entry['record'];
+				if ( ! empty( $entry['hostname'] ) ) {
+					$ip_array[ $entry['hostname'] ][] = $entry['record'];
+				}
 			}
 		}
 		set_transient( 'checkview_whitelisted_ips', $ip_array, 12 * HOUR_IN_SECONDS );
@@ -319,7 +322,7 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 		if ( is_array( $api_ip ) && in_array( $current_ip, $api_ip ) ) {
 			$ips       = checkview_get_cleantalk_whitelisted_ips();
 			$host_name = parse_url( home_url(), PHP_URL_HOST );
-			if ( is_array( $ips[ $host_name ] ) && in_array( $current_ip, $ips[ $host_name ] ) ) {
+			if ( ! empty( $ips[ $host_name ] ) && is_array( $ips[ $host_name ] ) && in_array( $current_ip, $ips[ $host_name ] ) ) {
 				return;
 			}
 			$response = wp_remote_get(
@@ -646,6 +649,9 @@ if ( ! function_exists( 'checkview_is_valid_uuid' ) ) {
 	 * @return bool
 	 */
 	function checkview_is_valid_uuid( $uuid ) {
+		if ( empty( $uuid ) ) {
+			return false;
+		}
 		return preg_match( '/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i', $uuid );
 	}
 }
