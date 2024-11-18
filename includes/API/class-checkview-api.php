@@ -762,8 +762,10 @@ class CheckView_Api {
 		$args = array(
 			'post_type'           => 'product',
 			'post_status'         => 'publish',
+			'posts_per_page'      => 1000,
 			'ignore_sticky_posts' => 1,
-			'posts_per_page'      => -1,
+			'orderby'             => 'modified',        // Order by last modified date.
+			'order'               => 'DESC',
 		);
 		if ( ! empty( $checkview_keyword ) && null !== $checkview_keyword ) {
 
@@ -2274,14 +2276,25 @@ class CheckView_Api {
 			)
 		);
 		if ( $table_exists !== $cv_used_nonces ) {
+			// Include upgrade.php for dbDelta.
+			if ( ! function_exists( 'dbDelta' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+			}
+			$cv_used_nonces = $wpdb->prefix . 'cv_used_nonces';
+
+			$charset_collate = $wpdb->get_charset_collate();
+			if ( $wpdb->get_var( "SHOW TABLES LIKE '{$cv_used_nonces}'" ) !== $cv_used_nonces ) {
+				$sql = "CREATE TABLE $cv_used_nonces (
+						id BIGINT(20) NOT NULL AUTO_INCREMENT,
+						nonce VARCHAR(255) NOT NULL,
+						used_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+						PRIMARY KEY (id),
+						UNIQUE KEY nonce (nonce)
+					) $charset_collate;";
+				dbDelta( $sql );
+			}
 			// Log the detailed error for internal use.
-			Checkview_Admin_Logs::add( 'api-logs', 'Nonce table absent.' );
-			return new WP_Error(
-				403,
-				esc_html__( 'Invalid request.', 'checkview' ),
-				''
-			);
-			wp_die();
+			Checkview_Admin_Logs::add( 'api-logs', 'Nonce table absent updater.' );
 		}
 		// Check if the nonce exists.
 		$nonce_exists = $wpdb->get_var(

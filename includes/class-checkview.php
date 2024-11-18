@@ -424,7 +424,7 @@ class Checkview {
 	 * @return void
 	 */
 	public function checkview_track_updates_notification( $upgrader_object, $options ) {
-
+		global $wpdb;
 		// If an update has taken place and the updated type is plugins and the plugins element exists.
 		if ( 'update' === $options['action'] && 'plugin' === $options['type'] && isset( $options['plugins'] ) ) {
 			// Iterate through the plugins being updated and check if ours is there.
@@ -432,10 +432,14 @@ class Checkview {
 				if ( CHECKVIEW_BASE_DIR === $plugin ) {
 					// Your action if it is your plugin.
 					checkview_reset_cache( true );
+					// Include upgrade.php for dbDelta.
+					if ( ! function_exists( 'dbDelta' ) ) {
+						require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+					}
 					$cv_used_nonces = $wpdb->prefix . 'cv_used_nonces';
 
 					$charset_collate = $wpdb->get_charset_collate();
-					if ( $wpdb->get_var( $wpdb->prepare( 'show tables like %s', $cv_used_nonces ) ) !== $cv_used_nonces ) {
+					if ( $wpdb->get_var( "SHOW TABLES LIKE '{$cv_used_nonces}'" ) !== $cv_used_nonces ) {
 						$sql = "CREATE TABLE $cv_used_nonces (
 								id BIGINT(20) NOT NULL AUTO_INCREMENT,
 								nonce VARCHAR(255) NOT NULL,
