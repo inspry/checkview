@@ -157,6 +157,16 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				99,
 				2
 			);
+
+			// Disbale honeypot.
+			add_filter(
+				'fluentform/honeypot_status',
+				function ( $status, $form_id ) {
+					return false;
+				},
+				999,
+				2
+			);
 		}
 
 		/**
