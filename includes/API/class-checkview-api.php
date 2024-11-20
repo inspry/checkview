@@ -377,10 +377,10 @@ class CheckView_Api {
 			'checkview/v1',
 			'/site-info',
 			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'checkview_saas_get_site_info' ),
-				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'                => array(
+				'methods'  => 'GET',
+				'callback' => array( $this, 'checkview_saas_get_site_info' ),
+				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'     => array(
 					'_checkview_token' => array(
 						'required' => false,
 					),
@@ -1909,9 +1909,26 @@ class CheckView_Api {
 	 */
 	public function checkview_get_available_forms_test_results( WP_REST_Request $request ) {
 		global $wpdb;
-		$uid = $request->get_param( 'uid' );
-		$uid = isset( $uid ) ? sanitize_text_field( $uid ) : null;
-
+		$uid          = $request->get_param( 'uid' );
+		$uid          = isset( $uid ) ? sanitize_text_field( $uid ) : null;
+		$old_settings = array();
+		$old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
+		if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
+			if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' === $old_settings['siteKey'] ) {
+				$old_settings['siteKey']   = get_option( 'checkview_rc-site-key' );
+				$old_settings['secretKey'] = get_option( 'checkview_rc-secret-key' );
+				update_option( '_fluentform_reCaptcha_details', $old_settings );
+			}
+		}
+		$old_settings = array();
+		$old_settings = (array) get_option( '_fluentform_turnstile_details', array() );
+		if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
+			if ( '1x00000000000000000000AA' === $old_settings['siteKey'] ) {
+				$old_settings['siteKey']   = get_option( 'checkview_ff_turnstile-site-key' );
+				$old_settings['secretKey'] = get_option( 'checkview_ff_turnstile-secret-key' );
+				update_option( '_fluentform_turnstile_details', $old_settings );
+			}
+		}
 		$results = array();
 		if ( '' === $uid || null === $uid ) {
 			// Log the detailed error for internal use.
@@ -1922,6 +1939,24 @@ class CheckView_Api {
 			);
 			wp_die();
 		} else {
+			$old_settings = array();
+			$old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
+			if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
+				if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' === $old_settings['siteKey'] ) {
+					$old_settings['siteKey']   = get_option( 'checkview_rc-site-key' );
+					$old_settings['secretKey'] = get_option( 'checkview_rc-secret-key' );
+					update_option( '_fluentform_reCaptcha_details', $old_settings );
+				}
+			}
+			$old_settings = array();
+			$old_settings = (array) get_option( '_fluentform_turnstile_details', array() );
+			if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
+				if ( '1x00000000000000000000AA' === $old_settings['siteKey'] ) {
+					$old_settings['siteKey']   = get_option( 'checkview_ff_turnstile-site-key' );
+					$old_settings['secretKey'] = get_option( 'checkview_ff_turnstile-secret-key' );
+					update_option( '_fluentform_turnstile_details', $old_settings );
+				}
+			}
 			$tablename = $wpdb->prefix . 'cv_entry';
 			$result    = $wpdb->get_row( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s', $uid ) );
 			$tablename = $wpdb->prefix . 'cv_entry_meta';
@@ -2110,16 +2145,29 @@ class CheckView_Api {
 
 		// Get WordPress core version.
 		global $wp_version;
-		$core_info = array(
+		$core_info            = array(
 			'version' => $wp_version,
 		);
+		$wp_filesystem_direct = new WP_Filesystem_Direct( array() );
+		$pad_spaces           = 45;
+		$checkview_options    = get_option( 'checkview_log_options', array() );
 
+		$logs_list = glob( Checkview_Admin_Logs::get_logs_folder() . '*.log' );
+		$logs      = array();
+		foreach ( $logs_list as $file ) {
+			$contents = $file && file_exists( $file ) ? $wp_filesystem_direct->get_contents( $file ) : '--';
+			if ( preg_match( '/\/([^\/]+)\.log$/', $file, $matches ) ) {
+				$file = $matches[1]; // Return the captured group.
+			}
+			$logs[ $file ] = $contents;
+		}
 		// Combine all data.
 		$response = array(
 			'plugins'  => $plugin_list,
 			'themes'   => $theme_list,
 			'core'     => $core_info,
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
+			'logs'     => $logs,
 		);
 		if ( $response ) {
 				return new WP_REST_Response(
