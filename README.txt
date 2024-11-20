@@ -90,6 +90,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Resolved CleanTalk fixes.
 * Exposed helper logs to SaaS via API endpoint.
 * Added Bcc and CC email suppressions FluentForms.
+* Added Flamingo Cf7 support.
 
 = 2.0.4 =
 * Added nonce table creation function in token verification process.
@@ -281,6 +282,8 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Added Honeypot bypass for FluentForms.
 * Resolved CleanTalk fixes.
 * Exposed helper logs to SaaS via API endpoint.
+* Added Bcc and CC email suppressions FluentForms.
+* Added Flamingo Cf7 support.
 
 = 2.0.4 =
 * Added nonce table creation function in token verification process.

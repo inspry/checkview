@@ -87,12 +87,12 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 				2
 			);
 
-			add_filter(
-				'wsf_action_post_do',
-				array( $this, 'checkview_disable_addons_feed' ),
-				99,
-				6
-			);
+			// add_filter(
+			// 	'wsf_action_post_do',
+			// 	array( $this, 'checkview_disable_addons_feed' ),
+			// 	99,
+			// 	6
+			// );
 		}
 
 		/**
