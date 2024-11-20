@@ -63,7 +63,7 @@ class Checkview_Admin {
 			'all_plugins',
 			array( $this, 'checkview_hide_me' )
 		);
-		add_filter( 'debug_information', array( $this, 'checkview_handle_plugin_health_info' ), 10, 1 );
+		// add_filter( 'debug_information', array( $this, 'checkview_handle_plugin_health_info' ), 10, 1 );
 		// add_filter(
 		// 'plugin_row_meta',
 		// array( $this, 'checkview_hide_plugin_details' ),
@@ -354,10 +354,8 @@ class Checkview_Admin {
 		$hide_me = get_option( 'checkview_hide_me', false );
 		if ( ! isset( $plugins['wp-plugins-active'] ) ||
 			! isset( $plugins['wp-plugins-active']['fields'] ) || false === $hide_me ) {
-			// return $plugins;
+			return $plugins;
 		}
-		print_r( $plugins );
-		exit;
 		foreach ( $plugins as $slug => $brand ) {
 			if ( ! isset( $slug ) || ! array_key_exists( $slug, $plugins ) || ! is_array( $brand ) ) {
 				continue;
