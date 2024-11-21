@@ -158,7 +158,7 @@ if ( ! function_exists( 'checkview_disable_addons_feed' ) ) {
 	}
 }
 
-// Bypass Permatters.
+// Bypass Perfmatters.
 add_filter(
 	'perfmatters_rest_api_exceptions',
 	function ( $exceptions ) {
