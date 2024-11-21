@@ -377,10 +377,10 @@ class CheckView_Api {
 			'checkview/v1',
 			'/site-info',
 			array(
-				'methods'  => 'GET',
-				'callback' => array( $this, 'checkview_saas_get_site_info' ),
-				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'     => array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'checkview_saas_get_site_info' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
 					'_checkview_token' => array(
 						'required' => false,
 					),
@@ -1909,26 +1909,8 @@ class CheckView_Api {
 	 */
 	public function checkview_get_available_forms_test_results( WP_REST_Request $request ) {
 		global $wpdb;
-		$uid          = $request->get_param( 'uid' );
-		$uid          = isset( $uid ) ? sanitize_text_field( $uid ) : null;
-		$old_settings = array();
-		$old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
-		if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
-			if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' === $old_settings['siteKey'] ) {
-				$old_settings['siteKey']   = get_option( 'checkview_rc-site-key' );
-				$old_settings['secretKey'] = get_option( 'checkview_rc-secret-key' );
-				update_option( '_fluentform_reCaptcha_details', $old_settings );
-			}
-		}
-		$old_settings = array();
-		$old_settings = (array) get_option( '_fluentform_turnstile_details', array() );
-		if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
-			if ( '1x00000000000000000000AA' === $old_settings['siteKey'] ) {
-				$old_settings['siteKey']   = get_option( 'checkview_ff_turnstile-site-key' );
-				$old_settings['secretKey'] = get_option( 'checkview_ff_turnstile-secret-key' );
-				update_option( '_fluentform_turnstile_details', $old_settings );
-			}
-		}
+		$uid     = $request->get_param( 'uid' );
+		$uid     = isset( $uid ) ? sanitize_text_field( $uid ) : null;
 		$results = array();
 		if ( '' === $uid || null === $uid ) {
 			// Log the detailed error for internal use.

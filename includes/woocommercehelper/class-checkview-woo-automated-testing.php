@@ -753,8 +753,9 @@ class Checkview_Woo_Automated_Testing {
 	public function checkview_delete_orders( $order_id = '' ) {
 
 		global $wpdb;
+		$orders = array();
 		// WPDBPREPARE.
-		$results = $wpdb->get_results(
+		$orders = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT p.id
 			FROM {$wpdb->prefix}posts AS p
@@ -764,9 +765,10 @@ class Checkview_Woo_Automated_Testing {
 				'checkview'
 			)
 		);
-		if ( empty( $orders ) ) {
+		if ( empty( $orders ) || false === $orders ) {
 			$args = array(
 				'limit'      => -1,
+				'type'       => 'shop_order',
 				'meta_query' => array(
 					array(
 						'relation' => 'OR', // Use 'AND' for both conditions to apply.
@@ -797,7 +799,7 @@ class Checkview_Woo_Automated_Testing {
 					$order_object = wc_get_order( $order_id );
 
 					// Delete order.
-					if ( $order_object ) {
+					if ( $order_object && method_exists( $order_object, 'get_customer_id' ) ) {
 						$customer_id = $order_object->get_customer_id();
 						$order_object->delete( true );
 						delete_transient( 'checkview_store_orders_transient' );
@@ -849,6 +851,7 @@ class Checkview_Woo_Automated_Testing {
 			$order->save();
 			unset( $_COOKIE['checkview_test_id'] );
 			setcookie( 'checkview_test_id', '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
+			checkview_schedule_delete_orders( $order_id );
 		}
 	}
 

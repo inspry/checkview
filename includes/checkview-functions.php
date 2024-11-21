@@ -568,7 +568,7 @@ if ( ! function_exists( 'checkview_schedule_delete_orders' ) ) {
 	 * @return void
 	 */
 	function checkview_schedule_delete_orders( $order_id ) {
-		wp_schedule_single_event( time() + 5, 'checkview_delete_orders_action', array( $order_id ) );
+		wp_schedule_single_event( time() + 1 * HOUR_IN_SECONDS, 'checkview_delete_orders_action', array( $order_id ) );
 	}
 }
 
