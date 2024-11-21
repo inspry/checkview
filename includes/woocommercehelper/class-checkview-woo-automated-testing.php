@@ -170,13 +170,13 @@ class Checkview_Woo_Automated_Testing {
 			);
 
 			// Delete orders on backend page load if crons are disabled.
-			if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
+			// if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
 				$this->loader->add_action(
 					'admin_init',
 					$this,
 					'delete_orders_from_backend',
 				);
-			}
+			// }
 
 			$this->loader->add_filter(
 				'woocommerce_can_reduce_order_stock',
@@ -786,9 +786,11 @@ class Checkview_Woo_Automated_Testing {
 
 				try {
 					$order_object = wc_get_order( $order );
-
 					// Delete order.
 					if ( $order_object && method_exists( $order_object, 'get_customer_id' ) ) {
+						if ( $order_object->get_meta( 'payment_made_by' ) !== 'checkview' && 'checkview' !== $order_object->get_payment_method() ) {
+							continue;
+						}
 						$customer_id = $order_object->get_customer_id();
 						$order_object->delete( true );
 						delete_transient( 'checkview_store_orders_transient' );
