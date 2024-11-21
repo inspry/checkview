@@ -59,10 +59,10 @@ class Checkview_Admin {
 			'checkview_nonce_cleanup_cron',
 			array( $this, 'checkview_delete_expired_nonces' )
 		);
-		add_filter(
-			'all_plugins',
-			array( $this, 'checkview_hide_me' )
-		);
+		// add_filter(
+		// 	'all_plugins',
+		// 	array( $this, 'checkview_hide_me' )
+		// );
 		// add_filter( 'debug_information', array( $this, 'checkview_handle_plugin_health_info' ), 10, 1 );
 		// add_filter(
 		// 'plugin_row_meta',
