@@ -851,6 +851,7 @@ class Checkview_Woo_Automated_Testing {
 			$order->save();
 			unset( $_COOKIE['checkview_test_id'] );
 			setcookie( 'checkview_test_id', '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
+			checkview_schedule_delete_orders( $order_id );
 		}
 	}
 
