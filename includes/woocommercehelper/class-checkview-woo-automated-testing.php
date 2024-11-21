@@ -170,13 +170,13 @@ class Checkview_Woo_Automated_Testing {
 			);
 
 			// Delete orders on backend page load if crons are disabled.
-			// if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
+			if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
 				$this->loader->add_action(
 					'admin_init',
 					$this,
 					'delete_orders_from_backend',
 				);
-			// }
+			}
 
 			$this->loader->add_filter(
 				'woocommerce_can_reduce_order_stock',
