@@ -108,10 +108,10 @@ if ( ! function_exists( 'remove_gravityforms_recaptcha_addon' ) ) {
 add_action( 'gform_loaded', 'remove_gravityforms_recaptcha_addon', 1 );
 
 // add_filter(
-// 	'wpforms_load_providers',
-// 	'checkview_disable_addons_providers',
-// 	10,
-// 	1
+// 'wpforms_load_providers',
+// 'checkview_disable_addons_providers',
+// 10,
+// 1
 // );
 if ( ! function_exists( 'checkview_disable_addons_providers' ) ) {
 	/**
@@ -129,10 +129,10 @@ if ( ! function_exists( 'checkview_disable_addons_providers' ) ) {
 
 
 // add_filter(
-// 	'wpforms_integrations_available',
-// 	'checkview_disable_addons_feed',
-// 	99,
-// 	1
+// 'wpforms_integrations_available',
+// 'checkview_disable_addons_feed',
+// 99,
+// 1
 // );
 if ( ! function_exists( 'checkview_disable_addons_feed' ) ) {
 	/**
