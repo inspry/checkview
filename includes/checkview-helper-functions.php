@@ -107,12 +107,12 @@ if ( ! function_exists( 'remove_gravityforms_recaptcha_addon' ) ) {
 // Use a hook with a priority higher than 5 to ensure the action is removed after it is added.
 add_action( 'gform_loaded', 'remove_gravityforms_recaptcha_addon', 1 );
 
-add_filter(
-	'wpforms_load_providers',
-	'checkview_disable_addons_providers',
-	10,
-	1
-);
+// add_filter(
+// 'wpforms_load_providers',
+// 'checkview_disable_addons_providers',
+// 10,
+// 1
+// );
 if ( ! function_exists( 'checkview_disable_addons_providers' ) ) {
 	/**
 	 * Disbales addons for gravity forms.
@@ -128,12 +128,12 @@ if ( ! function_exists( 'checkview_disable_addons_providers' ) ) {
 }
 
 
-add_filter(
-	'wpforms_integrations_available',
-	'checkview_disable_addons_feed',
-	99,
-	1
-);
+// add_filter(
+// 'wpforms_integrations_available',
+// 'checkview_disable_addons_feed',
+// 99,
+// 1
+// );
 if ( ! function_exists( 'checkview_disable_addons_feed' ) ) {
 	/**
 	 * Disbale feeds.

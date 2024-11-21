@@ -377,10 +377,10 @@ class CheckView_Api {
 			'checkview/v1',
 			'/site-info',
 			array(
-				'methods'  => 'GET',
-				'callback' => array( $this, 'checkview_saas_get_site_info' ),
-				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'     => array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'checkview_saas_get_site_info' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
 					'_checkview_token' => array(
 						'required' => false,
 					),
@@ -2083,10 +2083,6 @@ class CheckView_Api {
 			);
 			wp_die();
 		} else {
-			// $tablename = $wpdb->prefix . 'cv_entry';
-			// $result    = $wpdb->delete( $tablename, array( 'uid' => $uid ) );
-			// $tablename = $wpdb->prefix . 'cv_entry_meta';
-			// $rows      = $wpdb->delete( $tablename, array( 'uid' => $uid ) );
 			$rows = true;
 			if ( $rows ) {
 				return new WP_REST_Response(
