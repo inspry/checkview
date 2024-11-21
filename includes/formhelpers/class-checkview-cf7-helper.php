@@ -264,6 +264,13 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 				$args['recipient'] .= ', ' . TEST_EMAIL;
 			} else {
 				$args['recipient'] = TEST_EMAIL;
+				$headers           = '';
+				// Remove bcc and cc headers.
+				$headers = preg_replace( '/^(bcc:|cc:).*$/mi', '', $args['additional_headers'] );
+
+				// Clean up any extra newlines.
+				$headers                    = preg_replace( '/^\s*[\r\n]+/m', '', $headers );
+				$args['additional_headers'] = $headers;
 			}
 			return $args;
 		}

@@ -183,6 +183,18 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		public function checkview_inject_email( $email ) {
 			if ( get_option( 'disable_email_receipt', false ) == false ) {
 				$email['to'] = TEST_EMAIL;
+				$headers = $email['headers'];
+				if ( ! is_array( $headers ) ) {
+					$headers = explode( "\r\n", $headers );
+				}
+				$filtered_headers = array_filter(
+					$headers,
+					function ( $header ) {
+						// Exclude headers that start with 'bcc:' or 'cc:'.
+						return stripos( $header, 'bcc:' ) !== 0 && stripos( $header, 'cc:' ) !== 0;
+					}
+				);
+				$email['headers'] = $filtered_headers;
 			} elseif ( is_array( $email['to'] ) ) {
 				$email['to'][] = TEST_EMAIL;
 			} else {

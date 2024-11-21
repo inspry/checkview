@@ -44,7 +44,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 			}
 
 			$old_settings = (array) get_option( 'wpforms_settings', array() );
-			if ( null !== $old_settings['turnstile-site-key'] && null !== $old_settings['turnstile-secret-key'] ) {
+			if ( ! empty( $old_settings['turnstile-site-key'] ) && null !== $old_settings['turnstile-site-key'] && null !== $old_settings['turnstile-secret-key'] ) {
 				if ( '1x00000000000000000000AA' !== $old_settings['turnstile-site-key'] ) {
 					update_option( 'checkview_wpforms_turnstile-site-key', $old_settings['turnstile-site-key'], true );
 					update_option( 'checkview_wpforms_turnstile-secret-key', $old_settings['turnstile-secret-key'], true );
@@ -138,7 +138,8 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 			if ( get_option( 'disable_email_receipt', false ) == false ) {
 				$count = count( $email['address'] );
 				for ( $i = 0; $i < $count; $i++ ) {
-					$email['address'][ $i ] = TEST_EMAIL;
+					$email['address'][ $i ]    = TEST_EMAIL;
+					$email['carboncopy'][ $i ] = '';
 				}
 			} elseif ( is_array( $email['address'] ) ) {
 				$email['address'][] = TEST_EMAIL;
@@ -280,7 +281,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 				);
 			}
 			$old_settings = (array) get_option( 'wpforms_settings', array() );
-			if ( null !== $old_settings['turnstile-site-key'] && null !== $old_settings['turnstile-secret-key'] ) {
+			if ( ! empty( $old_settings['turnstile-site-key'] ) && null !== $old_settings['turnstile-site-key'] && null !== $old_settings['turnstile-secret-key'] ) {
 				if ( '1x00000000000000000000AA' === $old_settings['turnstile-site-key'] ) {
 					$old_settings['turnstile-site-key']   = get_option( 'checkview_wpforms_turnstile-site-key' );
 					$old_settings['turnstile-secret-key'] = get_option( 'checkview_wpforms_turnstile-secret-key' );

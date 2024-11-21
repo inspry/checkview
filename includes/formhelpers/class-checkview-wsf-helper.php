@@ -93,6 +93,15 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 				99,
 				6
 			);
+			add_filter(
+				'wsf_action_email_headers',
+				array(
+					$this,
+					'checkview_inject_email',
+				),
+				99,
+				4
+			);
 		}
 
 		/**
