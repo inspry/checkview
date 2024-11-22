@@ -140,17 +140,17 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 					update_option( '_fluentform_turnstile_details', $old_settings );
 				}
 			}
-			// $old_settings = array();
-			// $old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
-			// if ( null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
-			// 	if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' !== $old_settings['siteKey'] ) {
-			// 		update_option( 'checkview_rc-site-key', $old_settings['siteKey'], true );
-			// 		update_option( 'checkview_rc-secret-key', $old_settings['secretKey'], true );
-			// 		$old_settings['siteKey']   = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
-			// 		$old_settings['secretKey'] = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
-			// 		update_option( '_fluentform_reCaptcha_details', $old_settings );
-			// 	}
-			// }
+			$old_settings = array();
+			$old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
+			if ( null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
+				if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' !== $old_settings['siteKey'] ) {
+					update_option( 'checkview_rc-site-key', $old_settings['siteKey'], true );
+					update_option( 'checkview_rc-secret-key', $old_settings['secretKey'], true );
+					$old_settings['siteKey']   = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
+					$old_settings['secretKey'] = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
+					update_option( '_fluentform_reCaptcha_details', $old_settings );
+				}
+			}
 			add_filter(
 				'fluentform/recaptcha_v3_ref_score',
 				function ( $score ) {
@@ -169,15 +169,15 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			);
 
 			// Disbale feeds.
-			// add_filter(
-			// 	'fluentform/global_notification_active_types',
-			// 	array(
-			// 		$this,
-			// 		'checkview_disable_form_actions',
-			// 	),
-			// 	99,
-			// 	2
-			// );
+			add_filter(
+				'fluentform/global_notification_active_types',
+				array(
+					$this,
+					'checkview_disable_form_actions',
+				),
+				99,
+				2
+			);
 
 			// Disbale honeypot.
 			add_filter(
