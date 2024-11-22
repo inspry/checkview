@@ -85,18 +85,16 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 3. CheckView general settings.
 
 == Changelog ==
-= 2.0.6 =
-* Added bypass for PerfMatters api barrier.
-* Added function to disable all form actions except CF7.
-* Added Google Recaptcha V2 bypass in FluentForms.
-* Updated getformresults endpoint to turn Recaptcha V2 on after test completion.
-* Added BCC and CC suppressions in all forms.
+
+= 2.0.6 = 
+* Added fix for WooCommerce order deletion global scope issue.
 
 = 2.0.5 =
 * Added Honeypot bypass for FluentForms.
 * Resolved CleanTalk fixes.
 * Exposed helper logs to SaaS via API endpoint.
 * Added Bcc and CC email suppressions FluentForms.
+* Added Flamingo Cf7 support.
 
 = 2.0.4 =
 * Added nonce table creation function in token verification process.
@@ -284,17 +282,21 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Initial release.
 
 == Upgrade Notice ==
-= 2.0.6 =
+= 2.0.7 =
 * Added bypass for PerfMatters api barrier.
 * Added function to disable all form actions except CF7.
 * Added Google Recaptcha V2 bypass in FluentForms.
 * Updated getformresults endpoint to turn Recaptcha V2 on after test completion.
 * Added BCC and CC suppressions in all forms.
+= 2.0.6 = 
+* Added fix for WooCommerce order deletion global scope issue.
 
 = 2.0.5 =
 * Added Honeypot bypass for FluentForms.
 * Resolved CleanTalk fixes.
 * Exposed helper logs to SaaS via API endpoint.
+* Added Bcc and CC email suppressions FluentForms.
+* Added Flamingo Cf7 support.
 
 = 2.0.4 =
 * Added nonce table creation function in token verification process.

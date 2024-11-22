@@ -755,51 +755,42 @@ class Checkview_Woo_Automated_Testing {
 		global $wpdb;
 		$orders = array();
 		// WPDBPREPARE.
-		$orders = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT p.id
-			FROM {$wpdb->prefix}posts AS p
-			LEFT JOIN {$wpdb->prefix}postmeta AS pm ON (p.id = pm.post_id AND pm.meta_key = %s)
-			WHERE pm.meta_value = %s",
-				'_payment_method',
-				'checkview'
-			)
-		);
 		if ( empty( $orders ) || false === $orders ) {
 			$args = array(
-				'limit'      => -1,
-				'type'       => 'shop_order',
-				'meta_query' => array(
-					array(
-						'relation' => 'OR', // Use 'AND' for both conditions to apply.
-						array(
-							'key'     => 'payment_made_by', // Meta key for payment method.
-							'value'   => 'checkview', // Replace with your actual payment gateway ID.
-							'compare' => '=', // Use '=' for exact match.
-						),
-						array(
-							'key'     => 'payment_method', // Meta key for payment method.
-							'value'   => 'checkview', // Replace with your actual payment gateway ID.
-							'compare' => '=', // Use '=' for exact match.
-						),
-					),
-				),
+				'limit'        => -1,
+				'type'         => 'shop_order',
+				'meta_key'     => 'payment_made_by', // Postmeta key field.
+				'meta_value'   => 'checkview', // Postmeta value field.
+				'meta_compare' => '=',
+				'return'       => 'ids',
 			);
 			if ( function_exists( 'wc_get_orders' ) ) {
 				$orders = wc_get_orders( $args );
 			}
-		}
+			$orders_cv = array();
+			$args      = array(
+				'limit'          => -1,
+				'type'           => 'shop_order',
+				'payment_method' => 'checkview',
+				'return'         => 'ids',
+			);
+			if ( function_exists( 'wc_get_orders' ) ) {
+				$orders_cv = wc_get_orders( $args );
+			}
+			$orders = array_unique( array_merge( $orders, $orders_cv ) );
 
+		}
 		// Delete orders.
 		if ( ! empty( $orders ) ) {
 			foreach ( $orders as $order ) {
 
 				try {
-					$order_id     = is_a( $order, 'WC_Order' ) ? $order->get_id() : $order->ID;
-					$order_object = wc_get_order( $order_id );
-
+					$order_object = wc_get_order( $order );
 					// Delete order.
 					if ( $order_object && method_exists( $order_object, 'get_customer_id' ) ) {
+						if ( $order_object->get_meta( 'payment_made_by' ) !== 'checkview' && 'checkview' !== $order_object->get_payment_method() ) {
+							continue;
+						}
 						$customer_id = $order_object->get_customer_id();
 						$order_object->delete( true );
 						delete_transient( 'checkview_store_orders_transient' );

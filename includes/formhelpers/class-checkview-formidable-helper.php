@@ -104,15 +104,15 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 				'__return_false'
 			);
 			// Disbale form action.
-			add_filter(
-				'frm_custom_trigger_action',
-				array(
-					$this,
-					'checkview_disable_form_actions',
-				),
-				99,
-				5
-			);
+			// add_filter(
+			// 	'frm_custom_trigger_action',
+			// 	array(
+			// 		$this,
+			// 		'checkview_disable_form_actions',
+			// 	),
+			// 	99,
+			// 	5
+			// );
 		}
 		/**
 		 * Injects email to Formidableis supported emails.

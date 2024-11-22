@@ -51,15 +51,15 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				);
 			}
 			// disable addons found in forms.
-			add_filter(
-				'gform_addon_pre_process_feeds',
-				array(
-					$this,
-					'checkview_disable_addons_feed',
-				),
-				999,
-				3
-			);
+			// add_filter(
+			// 	'gform_addon_pre_process_feeds',
+			// 	array(
+			// 		$this,
+			// 		'checkview_disable_addons_feed',
+			// 	),
+			// 	999,
+			// 	3
+			// );
 			// disable pdf addon if added to form.
 			add_filter(
 				'gfpdf_pdf_config',
