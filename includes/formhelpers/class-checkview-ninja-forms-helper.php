@@ -94,15 +94,15 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 			}
 
 			// Disable form actions.
-			// add_filter(
-			// 	'ninja_forms_submission_actions',
-			// 	array(
-			// 		$this,
-			// 		'checkview_disable_form_actions',
-			// 	),
-			// 	99,
-			// 	3
-			// );
+			add_filter(
+				'ninja_forms_submission_actions',
+				array(
+					$this,
+					'checkview_disable_form_actions',
+				),
+				99,
+				3
+			);
 		}
 
 		/**
