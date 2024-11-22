@@ -51,6 +51,16 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 				);
 			}
 
+			add_filter(
+				'frm_email_header',
+				array(
+					$this,
+					'checkview_remove_email_header',
+				),
+				99,
+				2
+			);
+
 			add_action(
 				'frm_after_create_entry',
 				array(
@@ -120,7 +130,27 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			}
 			return $email;
 		}
-
+		/**
+		 * Removes email headers.
+		 *
+		 * @param array $headers email header.
+		 * @param array $atts attributes.
+		 * @return array
+		 */
+		public function checkview_remove_email_header( array $headers, array $atts ): array {
+			// Ensure headers are an array.
+			if ( ! is_array( $headers ) ) {
+				$headers = explode( "\r\n", $headers );
+			}
+			$filtered_headers = array_filter(
+				$headers,
+				function ( $header ) {
+					// Exclude headers that start with 'bcc:' or 'cc:'.
+					return stripos( $header, 'BCC:' ) !== 0 && stripos( $header, 'CC:' ) !== 0;
+				}
+			);
+			return array_values( $filtered_headers );
+		}
 		/**
 		 * Logs Test entry
 		 *

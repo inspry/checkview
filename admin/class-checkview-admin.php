@@ -225,6 +225,24 @@ class Checkview_Admin {
 		// $visitor_ip = $cv_bot_ip;
 		// skip if visitor ip not equal to CV Bot IP.
 		if ( is_array( $cv_bot_ip ) && ! in_array( $visitor_ip, $cv_bot_ip ) ) {
+			$old_settings = array();
+			$old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
+			if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
+				if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' === $old_settings['siteKey'] ) {
+					$old_settings['siteKey']   = get_option( 'checkview_rc-site-key' );
+					$old_settings['secretKey'] = get_option( 'checkview_rc-secret-key' );
+					update_option( '_fluentform_reCaptcha_details', $old_settings );
+				}
+			}
+			$old_settings = array();
+			$old_settings = (array) get_option( '_fluentform_turnstile_details', array() );
+			if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
+				if ( '1x00000000000000000000AA' === $old_settings['siteKey'] ) {
+					$old_settings['siteKey']   = get_option( 'checkview_ff_turnstile-site-key' );
+					$old_settings['secretKey'] = get_option( 'checkview_ff_turnstile-secret-key' );
+					update_option( '_fluentform_turnstile_details', $old_settings );
+				}
+			}
 			return;
 		}
 		// if clean talk plugin active whitelist check form API IP.

@@ -1505,7 +1505,7 @@ class CheckView_Api {
 			);
 			wp_die();
 		}
-		// Temporarily suppress errors
+		// Temporarily suppress errors.
 		$previous_error_reporting = error_reporting( 0 );
 
 		if ( '' !== $forms_list && null !== $forms_list && false !== $forms_list ) {
@@ -1909,26 +1909,8 @@ class CheckView_Api {
 	 */
 	public function checkview_get_available_forms_test_results( WP_REST_Request $request ) {
 		global $wpdb;
-		$uid          = $request->get_param( 'uid' );
-		$uid          = isset( $uid ) ? sanitize_text_field( $uid ) : null;
-		$old_settings = array();
-		$old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
-		if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
-			if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' === $old_settings['siteKey'] ) {
-				$old_settings['siteKey']   = get_option( 'checkview_rc-site-key' );
-				$old_settings['secretKey'] = get_option( 'checkview_rc-secret-key' );
-				update_option( '_fluentform_reCaptcha_details', $old_settings );
-			}
-		}
-		$old_settings = array();
-		$old_settings = (array) get_option( '_fluentform_turnstile_details', array() );
-		if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
-			if ( '1x00000000000000000000AA' === $old_settings['siteKey'] ) {
-				$old_settings['siteKey']   = get_option( 'checkview_ff_turnstile-site-key' );
-				$old_settings['secretKey'] = get_option( 'checkview_ff_turnstile-secret-key' );
-				update_option( '_fluentform_turnstile_details', $old_settings );
-			}
-		}
+		$uid     = $request->get_param( 'uid' );
+		$uid     = isset( $uid ) ? sanitize_text_field( $uid ) : null;
 		$results = array();
 		if ( '' === $uid || null === $uid ) {
 			// Log the detailed error for internal use.
@@ -1939,24 +1921,6 @@ class CheckView_Api {
 			);
 			wp_die();
 		} else {
-			$old_settings = array();
-			$old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
-			if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
-				if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' === $old_settings['siteKey'] ) {
-					$old_settings['siteKey']   = get_option( 'checkview_rc-site-key' );
-					$old_settings['secretKey'] = get_option( 'checkview_rc-secret-key' );
-					update_option( '_fluentform_reCaptcha_details', $old_settings );
-				}
-			}
-			$old_settings = array();
-			$old_settings = (array) get_option( '_fluentform_turnstile_details', array() );
-			if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
-				if ( '1x00000000000000000000AA' === $old_settings['siteKey'] ) {
-					$old_settings['siteKey']   = get_option( 'checkview_ff_turnstile-site-key' );
-					$old_settings['secretKey'] = get_option( 'checkview_ff_turnstile-secret-key' );
-					update_option( '_fluentform_turnstile_details', $old_settings );
-				}
-			}
 			$tablename = $wpdb->prefix . 'cv_entry';
 			$result    = $wpdb->get_row( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s', $uid ) );
 			$tablename = $wpdb->prefix . 'cv_entry_meta';
