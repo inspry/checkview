@@ -844,7 +844,7 @@ class Checkview_Woo_Automated_Testing {
 	 * TODO: Grayson
 	 *
 	 * @param bool $prevent Prevent adjustment of stock.
-	 * @param wc_itme $item Item in order.
+	 * @param WC_Order_Item $item Item in order.
 	 * @param int $quantity Quaniity of item.
 	 */
 	public function checkview_woocommerce_prevent_adjust_line_item_product_stock( $prevent, $item, $quantity ) {
