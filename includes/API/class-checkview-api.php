@@ -2061,7 +2061,7 @@ class CheckView_Api {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @return WP_Rest_Response forms details.
+	 * @return WP_Rest_Response Forms details.
 	 */
 	public function checkview_saas_get_site_info() {
 		// Get all plugins.

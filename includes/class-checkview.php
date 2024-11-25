@@ -83,7 +83,7 @@ class Checkview {
 	 *
 	 * @since 1.0.0
 	 * 
-	 * @return self class instance
+	 * @return self Class instance
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {

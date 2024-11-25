@@ -175,7 +175,7 @@ class Checkview_Admin_Logs {
 	 * @access private
 	 * @param mixed $handle File handle.
 	 * @param string $permission File permissions.
-	 * @return bool success
+	 * @return bool Success
 	 */
 	private static function open( $handle, $permission = 'a' ) {
 

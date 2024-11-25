@@ -86,7 +86,7 @@ if ( ! function_exists( 'get_checkview_test_id' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @return int the test ID.
+	 * @return int The test ID.
 	 */
 	function get_checkview_test_id() {
 		global $wpdb;
@@ -232,7 +232,7 @@ if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
 	 *
 	 * @since 1.0.0
 	 * 
-	 * @return string ip address of visitor.
+	 * @return string IP address of visitor.
 	 */
 	function checkview_get_visitor_ip() {
 
@@ -258,7 +258,7 @@ if ( ! function_exists( 'checkview_get_cleantalk_whitelisted_ips' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @return array list of ips.
+	 * @return array List of ips.
 	 */
 	function checkview_get_cleantalk_whitelisted_ips() {
 		$ip_array = get_transient( 'checkview_whitelisted_ips' );
@@ -454,7 +454,7 @@ if ( ! function_exists( 'checkview_get_cv_session' ) ) {
 	 * 
 	 * @param int $ip IP address of the visitor.
 	 * @param int $test_id Test id to be conducted.
-	 * @return array array of results form DB.
+	 * @return array Array of results form DB.
 	 */
 	function checkview_get_cv_session( $ip, $test_id ) {
 		global $wpdb;
@@ -483,7 +483,7 @@ if ( ! function_exists( 'checkview_get_wp_block_pages' ) ) {
 	 * @since 1.0.0
 	 * 
 	 * @param int $block_id ID of GB block.
-	 * @return WPDB object from WPDB.
+	 * @return WPDB Object from WPDB.
 	 */
 	function checkview_get_wp_block_pages( $block_id ) {
 		global $wpdb;

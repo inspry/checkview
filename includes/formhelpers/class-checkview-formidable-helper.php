@@ -95,7 +95,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		 * TODO: Grayson
 		 *
 		 * @param string $email Email address.
-		 * @return string email.
+		 * @return string Email.
 		 */
 		public function checkview_inject_email( $email ) {
 			if ( defined( 'CV_DISABLE_EMAIL_RECEIPT' ) ) {

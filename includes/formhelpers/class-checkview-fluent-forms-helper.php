@@ -150,7 +150,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		 * @param string $notification Email notification.
 		 * @param array $submitted_data Fluent Forms submitted data.
 		 * @param object $form Fluent Forms form object.
-		 * @return string email.
+		 * @return string Email.
 		 */
 		public function checkview_inject_email( $address, $notification, $submitted_data, $form ) {
 			if ( is_array( $address ) ) {
@@ -168,7 +168,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		 * @param string $notification Email notification.
 		 * @param array $submitted_data Fluent Forms submitted data.
 		 * @param object $form Fluent Forms form object.
-		 * @return string email.
+		 * @return string Email.
 		 */
 		public function checkview_remove_receipt( $address, $notification, $submitted_data, $form ) {
 			return TEST_EMAIL;

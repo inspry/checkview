@@ -172,7 +172,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		 * TODO: Grayson
 		 *
 		 * @param array $email Address.
-		 * @return array email.
+		 * @return array Email.
 		 */
 		public function checkview_inject_email( $email ) {
 			if ( get_option( 'disable_email_receipt' ) == true ) {
