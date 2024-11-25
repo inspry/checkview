@@ -378,7 +378,7 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 	 * TODO: Grayson
 	 *
 	 * @param string $ip the IP address of the SAAS.
-	 * @param int    $test_id The test ID to be executed.
+	 * @param int $test_id The test ID to be executed.
 	 * @return void
 	 * @since 1.0.0
 	 */

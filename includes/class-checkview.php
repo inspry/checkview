@@ -79,7 +79,7 @@ class Checkview {
 	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
-	 * @return   self   class instance
+	 * @return self class instance
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -353,7 +353,7 @@ class Checkview {
 	 * TODO: Grayson
 	 *
 	 * @param [object] $upgrader_object class upgrader.
-	 * @param [array]  $options array.
+	 * @param [array] $options array.
 	 * @return void
 	 */
 	public function checkview_track_updates_notification( $upgrader_object, $options ) {
@@ -382,7 +382,7 @@ class Checkview {
 	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
-	 * @return    string    The name of the plugin.
+	 * @return string The name of the plugin.
 	 */
 	public function get_plugin_name() {
 		return $this->plugin_name;
@@ -392,7 +392,7 @@ class Checkview {
 	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
-	 * @return    Checkview_Loader    Orchestrates the hooks of the plugin.
+	 * @return Checkview_Loader Orchestrates the hooks of the plugin.
 	 */
 	public function get_loader() {
 		return $this->loader;
@@ -402,7 +402,7 @@ class Checkview {
 	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
-	 * @return    string    The version number of the plugin.
+	 * @return string The version number of the plugin.
 	 */
 	public function get_version() {
 		return $this->version;

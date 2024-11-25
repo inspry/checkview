@@ -362,7 +362,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		 * TODO: Grayson
 		 *
 		 * @param array $fields Array of fields.
-		 * @param form  $form form.
+		 * @param form $form form.
 		 */
 		public function remove_recaptcha_field_from_list( $fields, $form ) {
 

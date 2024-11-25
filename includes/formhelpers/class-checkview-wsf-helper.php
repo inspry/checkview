@@ -83,10 +83,10 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param array  $to An array of email addresses in RFC 2822 format to send the email to.
+		 * @param array $to An array of email addresses in RFC 2822 format to send the email to.
 		 * @param object $form The form object.
 		 * @param string $submit The submit object.
-		 * @param array  $action The action configuration.
+		 * @param array $action The action configuration.
 		 * @return bool
 		 */
 		public function checkview_inject_email( $to, $form, $submit, $action ) {
@@ -165,7 +165,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		 *
 		 * @param [Form Object] $form Form Object The form object.
 
-		 * @param [bool]        $preview Boolean Whether the form rendering is in preview mode.
+		 * @param [bool] $preview Boolean Whether the form rendering is in preview mode.
 		 * @return Object $form form object.
 		 */
 		public function checkview_remove_unwanted_fields( $form, $preview ) {

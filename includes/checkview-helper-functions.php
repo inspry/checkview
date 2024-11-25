@@ -65,9 +65,8 @@ if ( ! function_exists( 'checkview_hcap_whitelist_ip' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param bool   $whitelisted Whether IP is whitelisted.
-	 * @param string $ip          IP.
-	 *
+	 * @param bool $whitelisted Whether IP is whitelisted.
+	 * @param string $ip IP.
 	 * @return bool
 	 */
 	function checkview_hcap_whitelist_ip( $whitelisted, $ip ) {

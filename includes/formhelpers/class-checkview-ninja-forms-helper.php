@@ -95,10 +95,10 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		 * TODO: Grayson
 		 *
 		 * @param string $sent status of email.
-		 * @param array  $action_settings settings for actions.
+		 * @param array $action_settings settings for actions.
 		 * @param string $message message to be sent.
-		 * @param array  $headers headers details.
-		 * @param array  $attachments attachments if any.
+		 * @param array $headers headers details.
+		 * @param array $attachments attachments if any.
 		 * @return bool
 		 */
 		public function checkview_inject_email( $sent, $action_settings, $message, $headers, $attachments ) {

@@ -41,7 +41,7 @@ class CheckView_Api {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @var bool/class    $woo_helper    The woo helper of this plugin.
+	 * @var bool/class $woo_helper The woo helper of this plugin.
 	 */
 	private $woo_helper;
 	/**
@@ -54,9 +54,9 @@ class CheckView_Api {
 	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
-	 * @param    string $plugin_name       The name of the plugin.
-	 * @param    string $version    The version of this plugin.
-	 * @param    class  $woo_helper The woohelper class.
+	 * @param string $plugin_name The name of the plugin.
+	 * @param string $version The version of this plugin.
+	 * @param class $woo_helper The woohelper class.
 	 */
 	public function __construct( $plugin_name, $version, $woo_helper = '' ) {
 

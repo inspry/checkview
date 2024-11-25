@@ -44,9 +44,9 @@ class Checkview_Woo_Automated_Testing {
 	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
-	 * @param      string $plugin_name       The name of this plugin.
-	 * @param      string $version    The version of this plugin.
-	 * @param      string $loader    Loads the hooks.
+	 * @param string $plugin_name The name of this plugin.
+	 * @param string $version The version of this plugin.
+	 * @param string $loader Loads the hooks.
 	 */
 	public function __construct( $plugin_name, $version, $loader ) {
 
@@ -298,9 +298,9 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param WP_Error $errors   Registration errors.
-	 * @param string   $username Username for the registration.
-	 * @param string   $email    Email for the registration.
+	 * @param WP_Error $errors Registration errors.
+	 * @param string $username Username for the registration.
+	 * @param string $email Email for the registration.
 	 *
 	 * @return WP_Error
 	 */
@@ -319,7 +319,7 @@ class Checkview_Woo_Automated_Testing {
 	 *
 	 * @return string[] Credentials for the test user.
 	 *
-	 * @type string $email    The test user's email address.
+	 * @type string $email The test user's email address.
 	 * @type string $username The test user's username.
 	 * @type string $password The newly-generated password for the test user.
 	 */
@@ -490,7 +490,7 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param bool     $should_publicize bool type.
+	 * @param bool $should_publicize bool type.
 	 * @param \WP_Post $post WordPress post object.
 	 *
 	 * @return bool|array
@@ -607,9 +607,9 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param string   $recipient recipient.
+	 * @param string $recipient recipient.
 	 * @param Wc_order $order WooCommerce order.
-	 * @param Email    $self WooCommerce Email object.
+	 * @param Email $self WooCommerce Email object.
 	 * @return string
 	 */
 	public function checkview_filter_admin_emails( $recipient, $order, $self ) {
@@ -630,9 +630,9 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param bool   $should_deliver delivery status.
+	 * @param bool $should_deliver delivery status.
 	 * @param object $webhook_object wenhook object.
-	 * @param array  $arg args to support.
+	 * @param array $arg args to support.
 	 * @return bool
 	 */
 	public function checkview_filter_webhooks( $should_deliver, $webhook_object, $arg ) {
@@ -790,7 +790,7 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param int    $order_id order id.
+	 * @param int $order_id order id.
 	 * @param string $old_status order old status.
 	 * @param string $new_status order new status.
 	 * @return void
@@ -814,7 +814,7 @@ class Checkview_Woo_Automated_Testing {
 	 * TODO: Grayson
 	 *
 	 * @since 1.5.2
-	 * @param bool     $reduce_stock true/false.
+	 * @param bool $reduce_stock true/false.
 	 * @param WP_Order $order wc order.
 	 * @return bool
 	 */
@@ -839,9 +839,9 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param [bool]  $prevent bool true/false.
+	 * @param [bool] $prevent bool true/false.
 	 * @param wc_itme $item item in order.
-	 * @param int     $quantity quaniity if item.
+	 * @param int $quantity quaniity if item.
 	 */
 	public function checkview_woocommerce_prevent_adjust_line_item_product_stock( $prevent, $item, $quantity ) {
 		// Get order.

@@ -135,8 +135,8 @@ class Checkview_Admin_Logs {
 	 * TODO: Grayson
 	 *
 	 * @since 1.6.0
-	 * @param  string  $handle file handle.
-	 * @param  integer $lines number of line to enter.
+	 * @param string $handle file handle.
+	 * @param integer $lines number of line to enter.
 	 * @return array
 	 */
 	public static function read_lines( $handle, $lines = 10 ) {
@@ -173,7 +173,7 @@ class Checkview_Admin_Logs {
 	 * @since 1.2.0 Checks if the directory exists
 	 *
 	 * @access private
-	 * @param mixed  $handle file handle.
+	 * @param mixed $handle file handle.
 	 * @param string $permission file permissions.
 	 * @return bool success
 	 */

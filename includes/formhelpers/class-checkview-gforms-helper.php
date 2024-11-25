@@ -149,7 +149,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param array  $entry form entry data.
+		 * @param array $entry form entry data.
 		 * @param object $form form object.
 		 * @return void
 		 */
@@ -220,10 +220,10 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param int    $form_id form's id.
-		 * @param int    $should_check_key_field check for filed.
+		 * @param int $form_id form's id.
+		 * @param int $should_check_key_field check for filed.
 		 * @param object $form forms object.
-		 * @param array  $entry entry details.
+		 * @param array $entry entry details.
 		 * @return bool
 		 */
 		public function checkview_disable_zero_spam_addon( $form_id, $should_check_key_field, $form, $entry ) {
@@ -234,7 +234,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		 * TODO: Grayson
 		 *
 		 * @param array $settings settinfs for form helper.
-		 * @param int   $form_id id of the form submitted.
+		 * @param int $form_id id of the form submitted.
 		 * @return array
 		 */
 		public function checkview_disable_pdf_addon( $settings, $form_id ) {
@@ -261,8 +261,8 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param array  $feeds form feeds.
-		 * @param array  $entry form entry data.
+		 * @param array $feeds form feeds.
+		 * @param array $entry form entry data.
 		 * @param object $form form obbject.
 		 * @return array
 		 */

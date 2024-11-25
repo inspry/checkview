@@ -148,7 +148,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		 *
 		 * @param string $address email address.
 		 * @param string $notification email notification.
-		 * @param array  $submitted_data fluentforms submitted data.
+		 * @param array $submitted_data fluentforms submitted data.
 		 * @param object $form fluentforms form object.
 		 * @return string email.
 		 */
@@ -166,7 +166,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		 *
 		 * @param string $address email address.
 		 * @param string $notification email notification.
-		 * @param array  $submitted_data fluentforms submitted data.
+		 * @param array $submitted_data fluentforms submitted data.
 		 * @param object $form fluentforms form object.
 		 * @return string email.
 		 */
@@ -176,8 +176,8 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param int    $entry_id fluentform ID.
-		 * @param array  $form_data fluentform data.
+		 * @param int $entry_id fluentform ID.
+		 * @param array $form_data fluentform data.
 		 * @param object $form fluentform obj.
 		 * @return void
 		 */
