@@ -2,7 +2,6 @@
 /**
  * Checkview_Admin_Logs class
  *
- * @link https://inspry.com
  * @since 1.0.0
  *
  * @package CheckView

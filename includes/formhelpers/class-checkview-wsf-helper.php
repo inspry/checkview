@@ -2,7 +2,6 @@
 /**
  * Checkview_WSF_Helper class
  *
- * @link https://checkview.io
  * @since 1.0.0
  *
  * @package Checkview

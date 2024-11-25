@@ -2,7 +2,6 @@
 /**
  * Checkview_Loader class
  *
- * @link https://checkview.io
  * @since 1.0.0
  *
  * @package Checkview

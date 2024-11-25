@@ -2,7 +2,6 @@
 /**
  * Checkview_Woo_Automated_Testing class
  *
- * @link https://checkview.io
  * @since 1.0.0
  *
  * @package CheckView

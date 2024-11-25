@@ -4,7 +4,6 @@
  * 
  * Various common functions used throughout CheckView.
  *
- * @link https://checkview.io
  * @since 1.0.0
  *
  * @package Checkview
