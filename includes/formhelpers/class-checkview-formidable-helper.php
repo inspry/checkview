@@ -94,7 +94,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param string $email address.
+		 * @param string $email Email address.
 		 * @return string email.
 		 */
 		public function checkview_inject_email( $email ) {
@@ -111,8 +111,8 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param int $entry_id form's id.
-		 * @param int $form_id forms entry id.
+		 * @param int $entry_id Form's ID.
+		 * @param int $form_id Form entry ID.
 		 * @return void
 		 */
 		public function checkview_log_form_test_entry( $entry_id, $form_id ) {
@@ -249,7 +249,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param int $form_id id of the form.
+		 * @param int $form_id ID of the form.
 		 * @return array
 		 */
 		public function get_form_fields( $form_id ) {
@@ -362,7 +362,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		 * TODO: Grayson
 		 *
 		 * @param array $fields Array of fields.
-		 * @param form $form form.
+		 * @param array $form Form.
 		 */
 		public function remove_recaptcha_field_from_list( $fields, $form ) {
 

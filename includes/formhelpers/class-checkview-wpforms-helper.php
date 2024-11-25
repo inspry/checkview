@@ -118,7 +118,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param array $email email address details.
+		 * @param array $email Email address details.
 		 * @return array
 		 */
 		public function checkview_inject_email( $email ) {
@@ -137,10 +137,10 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param array $form_fields array form fields.
-		 * @param array $entry form entry details.
-		 * @param array $form_data form data.
-		 * @param int $entry_id form entry id.
+		 * @param array $form_fields Form fields.
+		 * @param array $entry Form entry details.
+		 * @param array $form_data Form data.
+		 * @param int $entry_id Form entry id.
 		 * @return void
 		 */
 		public function checkview_log_wpform_test_entry( $form_fields, $entry, $form_data, $entry_id ) {

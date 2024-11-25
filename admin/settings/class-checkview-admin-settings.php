@@ -48,8 +48,8 @@ class Checkview_Admin_Settings {
 	 *
 	 * @since 1.0.0
 	 * 
-	 * @param string $plugin_name name of the plugin.
-	 * @param string $version version number of the plugin.
+	 * @param string $plugin_name Name of the plugin.
+	 * @param string $version Version number of the plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
 		$this->plugin_name = $plugin_name;
@@ -268,7 +268,7 @@ class Checkview_Admin_Settings {
 	 *
 	 * @since 1.0.0
 	 * 
-	 * @param string $footer_text footer text.
+	 * @param string $footer_text Footer text.
 	 * @return mixed
 	 */
 	public function checkview_add_footer_admin( $footer_text ) {

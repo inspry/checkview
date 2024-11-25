@@ -104,7 +104,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param array $form_data form data.
+		 * @param array $form_data Form data.
 		 * @return void
 		 */
 		public function checkview_clone_entry( $form_data ) {

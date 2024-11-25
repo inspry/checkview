@@ -135,8 +135,8 @@ class Checkview_Admin_Logs {
 	 *
 	 * @since 1.6.0
 	 * 
-	 * @param string $handle file handle.
-	 * @param integer $lines number of line to enter.
+	 * @param string $handle File handle.
+	 * @param integer $lines Number of line to enter.
 	 * @return array
 	 */
 	public static function read_lines( $handle, $lines = 10 ) {
@@ -173,8 +173,8 @@ class Checkview_Admin_Logs {
 	 * @since 1.2.0 Checks if the directory exists
 	 *
 	 * @access private
-	 * @param mixed $handle file handle.
-	 * @param string $permission file permissions.
+	 * @param mixed $handle File handle.
+	 * @param string $permission File permissions.
 	 * @return bool success
 	 */
 	private static function open( $handle, $permission = 'a' ) {
@@ -199,8 +199,8 @@ class Checkview_Admin_Logs {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param string $handle file handle.
-	 * @param string $message log to write.
+	 * @param string $handle File handle.
+	 * @param string $message Log to write.
 	 */
 	public static function add( $handle, $message ) {
 		if ( self::open( $handle ) && is_resource( self::$_handles[ $handle ] ) ) {
@@ -217,7 +217,7 @@ class Checkview_Admin_Logs {
 	 *
 	 * @since 1.5.1
 	 * 
-	 * @param string $type type of date.
+	 * @param string $type Type of date.
 	 * @return date
 	 */
 	public static function get_now( $type = 'mysql' ) {
@@ -228,7 +228,7 @@ class Checkview_Admin_Logs {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param string $type date type.
+	 * @param string $type Date type.
 	 * @return date
 	 */
 	public static function get_current_time( $type = 'mysql' ) {
@@ -250,7 +250,7 @@ class Checkview_Admin_Logs {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param mixed $handle file handle.
+	 * @param mixed $handle File handle.
 	 */
 	public function clear( $handle ) {
 		if ( self::open( $handle ) && is_resource( self::$_handles[ $handle ] ) ) {

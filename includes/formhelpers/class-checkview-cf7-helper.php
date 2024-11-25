@@ -103,7 +103,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param Object $form_tag form object by CFS.
+		 * @param Object $form_tag Form object by CFS.
 		 * @return void
 		 */
 		public function checkview_cf7_before_send_mail( $form_tag ) {
@@ -242,7 +242,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param array $args emails array.
+		 * @param array $args Emails.
 		 * @return array
 		 */
 		public function checkview_inject_email( $args ) {

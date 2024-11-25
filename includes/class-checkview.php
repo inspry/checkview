@@ -229,8 +229,8 @@ class Checkview {
 	 *
 	 * @since 1.0.0
 	 * 
-	 * @param array $links href to settings pages.
-	 * @return $links href to settings pages.
+	 * @param array $links The `href` value for settings pages.
+	 * @return $links The `href` value for settings pages.
 	 */
 	public function checkview_settings_link( $links ) {
 		$settings_link = '<a href="admin.php?page=checkview-options">' . esc_html__( 'Settings', 'checkview' ) . '</a>';
@@ -357,8 +357,8 @@ class Checkview {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param object $upgrader_object class upgrader.
-	 * @param array $options array.
+	 * @param object $upgrader_object Class upgrader.
+	 * @param array $options Options.
 	 * @return void
 	 */
 	public function checkview_track_updates_notification( $upgrader_object, $options ) {

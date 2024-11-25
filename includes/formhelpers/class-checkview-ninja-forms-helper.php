@@ -94,11 +94,11 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param string $sent status of email.
-		 * @param array $action_settings settings for actions.
-		 * @param string $message message to be sent.
-		 * @param array $headers headers details.
-		 * @param array $attachments attachments if any.
+		 * @param string $sent Status of email.
+		 * @param array $action_settings Settings for actions.
+		 * @param string $message Message to be sent.
+		 * @param array $headers Headers details.
+		 * @param array $attachments Attachments if any.
 		 * @return bool
 		 */
 		public function checkview_inject_email( $sent, $action_settings, $message, $headers, $attachments ) {
@@ -130,7 +130,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param array $form_data form data.
+		 * @param array $form_data Form data.
 		 * @return void
 		 */
 		public function checkview_clone_entry( $form_data ) {
@@ -187,7 +187,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param array $fields fields of the form.
+		 * @param array $fields Fields of the form.
 		 *
 		 * @return array
 		 */

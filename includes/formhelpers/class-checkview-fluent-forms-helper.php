@@ -146,10 +146,10 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param string $address email address.
-		 * @param string $notification email notification.
-		 * @param array $submitted_data fluentforms submitted data.
-		 * @param object $form fluentforms form object.
+		 * @param string $address Email address.
+		 * @param string $notification Email notification.
+		 * @param array $submitted_data Fluent Forms submitted data.
+		 * @param object $form Fluent Forms form object.
 		 * @return string email.
 		 */
 		public function checkview_inject_email( $address, $notification, $submitted_data, $form ) {
@@ -164,10 +164,10 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param string $address email address.
-		 * @param string $notification email notification.
-		 * @param array $submitted_data fluentforms submitted data.
-		 * @param object $form fluentforms form object.
+		 * @param string $address Email address.
+		 * @param string $notification Email notification.
+		 * @param array $submitted_data Fluent Forms submitted data.
+		 * @param object $form Fluent Forms form object.
 		 * @return string email.
 		 */
 		public function checkview_remove_receipt( $address, $notification, $submitted_data, $form ) {
@@ -176,9 +176,9 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param int $entry_id fluentform ID.
-		 * @param array $form_data fluentform data.
-		 * @param object $form fluentform obj.
+		 * @param int $entry_id Fluent Form ID.
+		 * @param array $form_data Fluent Form data.
+		 * @param object $form Fluent Form object.
 		 * @return void
 		 */
 		public function checkview_clone_fluentform_entry( $entry_id, $form_data, $form ) {

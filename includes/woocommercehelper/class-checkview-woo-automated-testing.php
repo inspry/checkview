@@ -458,7 +458,7 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param array $excluded_posts_ids post id's to be excluded.
+	 * @param array $excluded_posts_ids Post id's to be excluded.
 	 *
 	 * @return array[]
 	 */
@@ -493,7 +493,7 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param bool $should_publicize bool type.
+	 * @param bool $should_publicize Publicized or not.
 	 * @param \WP_Post $post WordPress post object.
 	 *
 	 * @return bool|array
@@ -600,7 +600,7 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param bool $activate wether to activate or not.
+	 * @param bool $activate Wether to activate or not.
 	 * @return bool
 	 */
 	public function checkview_return_false( $activate ) {
@@ -610,7 +610,7 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param string $recipient recipient.
+	 * @param string $recipient Recipient.
 	 * @param Wc_order $order WooCommerce order.
 	 * @param Email $self WooCommerce Email object.
 	 * @return string
@@ -633,9 +633,9 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param bool $should_deliver delivery status.
-	 * @param object $webhook_object wenhook object.
-	 * @param array $arg args to support.
+	 * @param bool $should_deliver Delivery status.
+	 * @param object $webhook_object Webhook object.
+	 * @param array $arg Args to support.
 	 * @return bool
 	 */
 	public function checkview_filter_webhooks( $should_deliver, $webhook_object, $arg ) {
@@ -672,7 +672,7 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param string $methods methods to add payments.
+	 * @param string $methods Methods to add payments.
 	 * @return array $methods
 	 */
 	public function checkview_add_payment_gateway( $methods ) {
@@ -793,9 +793,9 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param int $order_id order id.
-	 * @param string $old_status order old status.
-	 * @param string $new_status order new status.
+	 * @param int $order_id Order id.
+	 * @param string $old_status Order's old status.
+	 * @param string $new_status Order's new status.
 	 * @return void
 	 */
 	public function checkview_add_custom_fields_after_purchase( $order_id, $old_status, $new_status ) {
@@ -818,8 +818,8 @@ class Checkview_Woo_Automated_Testing {
 	 *
 	 * @since 1.5.2
 	 * 
-	 * @param bool $reduce_stock true/false.
-	 * @param WP_Order $order wc order.
+	 * @param bool $reduce_stock Reduce stock or not.
+	 * @param WP_Order $order WooCommerce order object.
 	 * @return bool
 	 */
 	public static function checkview_maybe_not_reduce_stock( $reduce_stock, $order ) {
@@ -843,9 +843,9 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param bool $prevent bool true/false.
-	 * @param wc_itme $item item in order.
-	 * @param int $quantity quaniity if item.
+	 * @param bool $prevent Prevent adjustment of stock.
+	 * @param wc_itme $item Item in order.
+	 * @param int $quantity Quaniity of item.
 	 */
 	public function checkview_woocommerce_prevent_adjust_line_item_product_stock( $prevent, $item, $quantity ) {
 		// Get order.

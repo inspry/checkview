@@ -23,7 +23,7 @@ if ( ! function_exists( 'checkview_validate_jwt_token' ) ) {
 	 *
 	 * @since 1.0.0
 	 * 
-	 * @param string $token jwt token to valiate.
+	 * @param string $token JWT to valiate.
 	 * @return string/bool/void/WP_Error
 	 */
 	function checkview_validate_jwt_token( $token ) {
@@ -118,7 +118,7 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param string $checkview_test_id test id.
+	 * @param string $checkview_test_id Test id.
 	 * @return void
 	 */
 	function complete_checkview_test( $checkview_test_id = '' ) {
@@ -368,8 +368,8 @@ if ( ! function_exists( 'checkview_must_ssl_url' ) ) {
 	 *
 	 * @since 1.0.0
 	 * 
-	 * @param string $url url to sanitize.
-	 * @return string Url to be sanitized.
+	 * @param string $url URL to sanitize.
+	 * @return string URL to be sanitized.
 	 */
 	function checkview_must_ssl_url( $url ) {
 
@@ -384,8 +384,8 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 	 *
 	 * @since 1.0.0
 	 * 
-	 * @param string $ip the IP address of the SAAS.
-	 * @param int $test_id The test ID to be executed.
+	 * @param string $ip IP address of the SAAS.
+	 * @param int $test_id Test ID to be executed.
 	 * @return void
 	 */
 	function checkview_create_cv_session( $ip, $test_id ) {
@@ -453,7 +453,7 @@ if ( ! function_exists( 'checkview_get_cv_session' ) ) {
 	 * @since 1.0.0
 	 * 
 	 * @param int $ip IP address of the visitor.
-	 * @param int $test_id test id to be conducted.
+	 * @param int $test_id Test id to be conducted.
 	 * @return array array of results form DB.
 	 */
 	function checkview_get_cv_session( $ip, $test_id ) {
@@ -501,7 +501,7 @@ if ( ! function_exists( 'checkview_reset_cache' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param bool $sync hard sync or not.
+	 * @param bool $sync Hard sync or not.
 	 * @return bool
 	 */
 	function checkview_reset_cache( $sync ) {
@@ -524,7 +524,7 @@ if ( ! function_exists( 'checkview_deslash' ) ) {
 	 *
 	 * @since 1.1.0
 	 * 
-	 * @param string $content content to delash.
+	 * @param string $content Content to delash.
 	 * @return $content string to return.
 	 */
 	function checkview_deslash( $content ) {
@@ -583,7 +583,7 @@ if ( ! function_exists( 'checkview_add_states_to_locations' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param array $locations countries.
+	 * @param array $locations Countries.
 	 * @return array
 	 */
 	function checkview_add_states_to_locations( $locations ) {
@@ -651,7 +651,7 @@ if ( ! function_exists( 'checkview_is_valid_uuid' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param string $uuid checkview_test_id.
+	 * @param string $uuid CheckView test ID.
 	 * @return bool
 	 */
 	function checkview_is_valid_uuid( $uuid ) {
@@ -678,7 +678,7 @@ if ( ! function_exists( 'checkview_add_weekly_cron_schedule' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param array $schedules array of schedules.
+	 * @param array $schedules Schedules.
 	 * @return array.
 	 */
 	function checkview_add_weekly_cron_schedule( $schedules ) {

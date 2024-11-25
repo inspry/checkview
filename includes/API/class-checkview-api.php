@@ -402,7 +402,7 @@ class CheckView_Api {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param WP_REST_Request $request wp request object.
+	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response/json
 	 */
 	public function checkview_get_available_orders( WP_REST_Request $request ) {
@@ -525,7 +525,7 @@ class CheckView_Api {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param WP_REST_Request $request wp request object.
+	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response/json
 	 */
 	public function checkview_get_available_order_details( WP_REST_Request $request ) {
@@ -710,7 +710,7 @@ class CheckView_Api {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param WP_REST_Request $request wp request object.
+	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response/json
 	 */
 	public function checkview_get_available_products( WP_REST_Request $request ) {
@@ -962,7 +962,7 @@ class CheckView_Api {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param WP_REST_Request $request wp request object.
+	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response/WP_Error/json
 	 */
 	public function checkview_delete_orders( WP_REST_Request $request ) {
@@ -1260,7 +1260,7 @@ class CheckView_Api {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param WP_REST_Request $request wp request object.
+	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response/WP_Error/json
 	 */
 	public function checkview_verify_test_user_credentials( WP_REST_Request $request ) {
@@ -1307,7 +1307,7 @@ class CheckView_Api {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param WP_REST_Request $request wp request object.
+	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response/WP_Error/json
 	 */
 	public function checkview_delete_test_user_credentials( WP_REST_Request $request ) {
@@ -1890,7 +1890,7 @@ class CheckView_Api {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param WP_REST_Request $request the request param with the API call.
+	 * @param WP_REST_Request $request Request param with the API call.
 	 * @return WP_REST_Response/WP_Error/json
 	 */
 	public function checkview_get_available_forms_test_results( WP_REST_Request $request ) {
@@ -2011,7 +2011,7 @@ class CheckView_Api {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param WP_REST_Request $request the request param with the API call.
+	 * @param WP_REST_Request $request Request param with the API call.
 	 * @return WP_REST_Response/WP_Error/json
 	 */
 	public function checkview_delete_forms_test_results( WP_REST_Request $request ) {
