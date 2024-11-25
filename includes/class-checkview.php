@@ -230,7 +230,7 @@ class Checkview {
 	 * @since 1.0.0
 	 * 
 	 * @param array $links The `href` value for settings pages.
-	 * @return $links The `href` value for settings pages.
+	 * @return array Modified array of plugin action links with the "Settings" link included.
 	 */
 	public function checkview_settings_link( $links ) {
 		$settings_link = '<a href="admin.php?page=checkview-options">' . esc_html__( 'Settings', 'checkview' ) . '</a>';

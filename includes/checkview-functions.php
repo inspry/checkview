@@ -525,7 +525,7 @@ if ( ! function_exists( 'checkview_deslash' ) ) {
 	 * @since 1.1.0
 	 * 
 	 * @param string $content Content to delash.
-	 * @return $content string to return.
+	 * @return string
 	 */
 	function checkview_deslash( $content ) {
 		// Note: \\\ inside a regex denotes a single backslash.
