@@ -1,6 +1,6 @@
 <?php
 /**
- * TODO: Grayson
+ * CheckView Logs Settings page content
  *
  * @package Logs
  */

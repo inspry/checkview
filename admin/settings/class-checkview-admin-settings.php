@@ -1,6 +1,6 @@
 <?php
 /**
- * TODO: Grayson
+ * Checkview_Admin_Settings class
  *
  * @author   CheckView
  * @category Admin

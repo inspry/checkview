@@ -1,6 +1,6 @@
 <?php
 /**
- * TODO: Grayson
+ * Checkview_Deactivator class
  *
  * @link       https://checkview.io
  * @since      1.0.0

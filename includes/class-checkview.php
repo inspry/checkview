@@ -1,6 +1,6 @@
 <?php
 /**
- * TODO: Grayson
+ * CheckView core: Checkview class
  *
  * @link       https://checkview.io
  * @since      1.0.0

@@ -1,6 +1,6 @@
 <?php
 /**
- * TODO: Grayson
+ * CheckView General Settings page content
  *
  * @package settings
  */

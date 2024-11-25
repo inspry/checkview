@@ -1,6 +1,6 @@
 <?php
 /**
- * TODO: Grayson
+ * CheckView plugin
  *
  * @link              https://checkview.io
  * @since             1.0.0

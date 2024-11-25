@@ -1,6 +1,10 @@
 <?php
 /**
- * TODO: Grayson
+ * CheckView Helper Functions
+ * 
+ * Various helper functions used throughout CheckView.
+ * 
+ * Some functions defined in this file are also attached to actions or filters.
  *
  * @link       https://checkview.io
  * @since      1.0.0
