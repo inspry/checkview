@@ -673,7 +673,7 @@ class Checkview_Woo_Automated_Testing {
 	 * TODO: Grayson
 	 *
 	 * @param string $methods Methods to add payments.
-	 * @return array $methods
+	 * @return array
 	 */
 	public function checkview_add_payment_gateway( $methods ) {
 		$methods[] = 'Checkview_Payment_Gateway';
