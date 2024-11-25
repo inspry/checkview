@@ -118,7 +118,7 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param string $checkview_test_id Test id.
+	 * @param string $checkview_test_id Test ID.
 	 * @return void
 	 */
 	function complete_checkview_test( $checkview_test_id = '' ) {
@@ -453,7 +453,7 @@ if ( ! function_exists( 'checkview_get_cv_session' ) ) {
 	 * @since 1.0.0
 	 * 
 	 * @param int $ip IP address of the visitor.
-	 * @param int $test_id Test id to be conducted.
+	 * @param int $test_id Test ID to be conducted.
 	 * @return array Array of results form DB.
 	 */
 	function checkview_get_cv_session( $ip, $test_id ) {
@@ -570,7 +570,7 @@ if ( ! function_exists( 'checkview_schedule_delete_orders' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param integer $order_id WooCommerce order id.
+	 * @param integer $order_id WooCommerce order ID.
 	 * @return void
 	 */
 	function checkview_schedule_delete_orders( $order_id ) {

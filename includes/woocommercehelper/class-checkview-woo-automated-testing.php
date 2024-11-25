@@ -458,7 +458,7 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param array $excluded_posts_ids Post id's to be excluded.
+	 * @param array $excluded_posts_ids Post IDs to be excluded.
 	 *
 	 * @return array[]
 	 */
@@ -716,7 +716,7 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param integer $order_id Woocommerce Order Id.
+	 * @param integer $order_id Woocommerce Order ID.
 	 * @return bool
 	 */
 	public function checkview_delete_orders( $order_id = '' ) {
@@ -793,7 +793,7 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param int $order_id Order id.
+	 * @param int $order_id Order ID.
 	 * @param string $old_status Order's old status.
 	 * @param string $new_status Order's new status.
 	 * @return void

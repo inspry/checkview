@@ -140,7 +140,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 		 * @param array $form_fields Form fields.
 		 * @param array $entry Form entry details.
 		 * @param array $form_data Form data.
-		 * @param int $entry_id Form entry id.
+		 * @param int $entry_id Form entry ID.
 		 * @return void
 		 */
 		public function checkview_log_wpform_test_entry( $form_fields, $entry, $form_data, $entry_id ) {

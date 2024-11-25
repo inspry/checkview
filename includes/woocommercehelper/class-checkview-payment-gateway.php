@@ -61,7 +61,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param integer $order_id WooCommerce order id.
+		 * @param integer $order_id WooCommerce order ID.
 		 * @return array
 		 */
 		public function process_payment( $order_id ) {

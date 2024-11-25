@@ -187,9 +187,9 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param int $entry_id Entry id of the form.
-		 * @param int $form_id Form submitted id.
-		 * @param int $uid User submitted id.
+		 * @param int $entry_id Entry ID of the form.
+		 * @param int $form_id Form submitted ID.
+		 * @param int $uid User submitted ID.
 		 * @return void
 		 */
 		public function checkview_clone_gf_entry( $entry_id, $form_id, $uid ) {
@@ -220,7 +220,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @param int $form_id Form's id.
+		 * @param int $form_id Form's ID.
 		 * @param int $should_check_key_field Check for filed.
 		 * @param object $form Forms object.
 		 * @param array $entry Entry details.
