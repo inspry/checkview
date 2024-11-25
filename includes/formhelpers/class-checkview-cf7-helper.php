@@ -26,6 +26,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 		 *
 		 * @since 1.0.0
 		 * @access protected
+		 * 
 		 * @var Checkview_Loader $loader Maintains and registers all hooks for the plugin.
 		 */
 		public $loader;

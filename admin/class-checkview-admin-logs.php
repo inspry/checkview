@@ -134,6 +134,7 @@ class Checkview_Admin_Logs {
 	 * TODO: Grayson
 	 *
 	 * @since 1.6.0
+	 * 
 	 * @param string $handle file handle.
 	 * @param integer $lines number of line to enter.
 	 * @return array
@@ -215,6 +216,7 @@ class Checkview_Admin_Logs {
 	 * TODO: Grayson
 	 *
 	 * @since 1.5.1
+	 * 
 	 * @param string $type type of date.
 	 * @return date
 	 */

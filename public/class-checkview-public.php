@@ -22,6 +22,7 @@ class Checkview_Public {
 	 *
 	 * @since 1.0.0
 	 * @access private
+	 * 
 	 * @var string $plugin_name The ID of this plugin.
 	 */
 	private $plugin_name;
@@ -31,6 +32,7 @@ class Checkview_Public {
 	 *
 	 * @since 1.0.0
 	 * @access private
+	 * 
 	 * @var string $version The current version of this plugin.
 	 */
 	private $version;
@@ -39,6 +41,7 @@ class Checkview_Public {
 	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
+	 * 
 	 * @param string $plugin_name The name of the plugin.
 	 * @param string $version The version of this plugin.
 	 */

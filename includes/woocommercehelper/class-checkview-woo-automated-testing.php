@@ -17,6 +17,7 @@ class Checkview_Woo_Automated_Testing {
 	 *
 	 * @since 1.0.0
 	 * @access private
+	 * 
 	 * @var string $plugin_name The ID of this plugin.
 	 */
 	private $plugin_name;
@@ -26,6 +27,7 @@ class Checkview_Woo_Automated_Testing {
 	 *
 	 * @since 1.0.0
 	 * @access private
+	 * 
 	 * @var string $version The current version of this plugin.
 	 */
 	private $version;
@@ -35,6 +37,7 @@ class Checkview_Woo_Automated_Testing {
 	 *
 	 * @since 1.0.0
 	 * @access private
+	 * 
 	 * @var bool/class $loader The hooks loader of this plugin.
 	 */
 	private $loader;
@@ -43,6 +46,7 @@ class Checkview_Woo_Automated_Testing {
 	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
+	 * 
 	 * @param string $plugin_name The name of this plugin.
 	 * @param string $version The version of this plugin.
 	 * @param string $loader Loads the hooks.
@@ -813,6 +817,7 @@ class Checkview_Woo_Automated_Testing {
 	 * TODO: Grayson
 	 *
 	 * @since 1.5.2
+	 * 
 	 * @param bool $reduce_stock true/false.
 	 * @param WP_Order $order wc order.
 	 * @return bool

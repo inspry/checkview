@@ -29,6 +29,7 @@ class Checkview_Admin_Settings {
 	 *
 	 * @since 1.0.0
 	 * @access protected
+	 * 
 	 * @var string $plugin_name The string used to uniquely identify this plugin.
 	 */
 	protected $plugin_name;
@@ -38,15 +39,17 @@ class Checkview_Admin_Settings {
 	 *
 	 * @since 1.0.0
 	 * @access protected
+	 * 
 	 * @var string $version The current version of the plugin.
 	 */
 	protected $version;
 	/**
 	 * TODO: Grayson
 	 *
+	 * @since 1.0.0
+	 * 
 	 * @param string $plugin_name name of the plugin.
 	 * @param string $version version number of the plugin.
-	 * @since 1.0.0
 	 */
 	public function __construct( $plugin_name, $version ) {
 		$this->plugin_name = $plugin_name;
@@ -58,6 +61,7 @@ class Checkview_Admin_Settings {
 	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
+	 * 
 	 * @return void
 	 */
 	public function checkview_admin_notices() {
@@ -91,6 +95,7 @@ class Checkview_Admin_Settings {
 	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
+	 * 
 	 * @return void
 	 */
 	public function checkview_admin_advance_settings_save() {
@@ -262,6 +267,7 @@ class Checkview_Admin_Settings {
 	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
+	 * 
 	 * @param string $footer_text footer text.
 	 * @return mixed
 	 */

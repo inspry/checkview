@@ -22,6 +22,7 @@ class CheckView_Api {
 	 *
 	 * @since 1.0.0
 	 * @access private
+	 * 
 	 * @var string $plugin_name The ID of this plugin.
 	 */
 	private $plugin_name;
@@ -31,6 +32,7 @@ class CheckView_Api {
 	 *
 	 * @since 1.0.0
 	 * @access private
+	 * 
 	 * @var string $version The current version of this plugin.
 	 */
 	private $version;
@@ -40,6 +42,7 @@ class CheckView_Api {
 	 *
 	 * @since 1.0.0
 	 * @access private
+	 * 
 	 * @var bool/class $woo_helper The woo helper of this plugin.
 	 */
 	private $woo_helper;
@@ -53,6 +56,7 @@ class CheckView_Api {
 	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
+	 * 
 	 * @param string $plugin_name The name of the plugin.
 	 * @param string $version The version of this plugin.
 	 * @param class $woo_helper The woohelper class.

@@ -33,6 +33,7 @@ class Checkview_Activator {
 	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
+	 * 
 	 * @return void
 	 */
 	public static function checkview_run_sql() {

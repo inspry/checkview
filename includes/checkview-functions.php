@@ -21,9 +21,10 @@ if ( ! function_exists( 'checkview_validate_jwt_token' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
+	 * @since 1.0.0
+	 * 
 	 * @param string $token jwt token to valiate.
 	 * @return string/bool/void/WP_Error
-	 * @since 1.0.0
 	 */
 	function checkview_validate_jwt_token( $token ) {
 
@@ -153,8 +154,9 @@ if ( ! function_exists( 'checkview_get_publickey' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @return array
 	 * @since 1.0.0
+	 * 
+	 * @return array
 	 */
 	function checkview_get_publickey() {
 		$public_key = get_transient( 'checkview_saas_pk' );
@@ -176,8 +178,9 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @return string/void
 	 * @since 1.0.0
+	 * 
+	 * @return string/void
 	 */
 	function checkview_get_api_ip() {
 
@@ -227,8 +230,9 @@ if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @return string ip address of visitor.
 	 * @since 1.0.0
+	 * 
+	 * @return string ip address of visitor.
 	 */
 	function checkview_get_visitor_ip() {
 
@@ -305,8 +309,9 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @return json/array/void
 	 * @since 1.0.0
+	 * 
+	 * @return json/array/void
 	 */
 	function checkview_whitelist_api_ip() {
 
@@ -361,9 +366,10 @@ if ( ! function_exists( 'checkview_must_ssl_url' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
+	 * @since 1.0.0
+	 * 
 	 * @param string $url url to sanitize.
 	 * @return string Url to be sanitized.
-	 * @since 1.0.0
 	 */
 	function checkview_must_ssl_url( $url ) {
 
@@ -376,10 +382,11 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
+	 * @since 1.0.0
+	 * 
 	 * @param string $ip the IP address of the SAAS.
 	 * @param int $test_id The test ID to be executed.
 	 * @return void
-	 * @since 1.0.0
 	 */
 	function checkview_create_cv_session( $ip, $test_id ) {
 		global $wp, $wpdb;
@@ -443,10 +450,11 @@ if ( ! function_exists( 'checkview_get_cv_session' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
+	 * @since 1.0.0
+	 * 
 	 * @param int $ip IP address of the visitor.
 	 * @param int $test_id test id to be conducted.
 	 * @return array array of results form DB.
-	 * @since 1.0.0
 	 */
 	function checkview_get_cv_session( $ip, $test_id ) {
 		global $wpdb;
@@ -472,9 +480,10 @@ if ( ! function_exists( 'checkview_get_wp_block_pages' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
+	 * @since 1.0.0
+	 * 
 	 * @param int $block_id ID of GB block.
 	 * @return WPDB object from WPDB.
-	 * @since 1.0.0
 	 */
 	function checkview_get_wp_block_pages( $block_id ) {
 		global $wpdb;
@@ -514,6 +523,7 @@ if ( ! function_exists( 'checkview_deslash' ) ) {
 	 * TODO: Grayson
 	 *
 	 * @since 1.1.0
+	 * 
 	 * @param [string] $content content to delash.
 	 * @return $content string to return.
 	 */

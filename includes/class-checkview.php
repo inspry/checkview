@@ -23,6 +23,7 @@ class Checkview {
 	 *
 	 * @since 1.0.0
 	 * @access protected
+	 * 
 	 * @var Checkview_Loader $loader Maintains and registers all hooks for the plugin.
 	 */
 	protected $loader;
@@ -32,6 +33,7 @@ class Checkview {
 	 *
 	 * @since 1.0.0
 	 * @access protected
+	 * 
 	 * @var string $plugin_name The string used to uniquely identify this plugin.
 	 */
 	protected $plugin_name;
@@ -41,6 +43,7 @@ class Checkview {
 	 *
 	 * @since 1.0.0
 	 * @access protected
+	 * 
 	 * @var string $version The current version of the plugin.
 	 */
 	protected $version;
@@ -50,6 +53,7 @@ class Checkview {
 	 *
 	 * @since 1.0.0
 	 * @access private
+	 * 
 	 * @var class $instance The instance of the class.
 	 */
 
@@ -78,6 +82,7 @@ class Checkview {
 	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
+	 * 
 	 * @return self class instance
 	 */
 	public static function get_instance() {
@@ -223,6 +228,7 @@ class Checkview {
 	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
+	 * 
 	 * @param array $links href to settings pages.
 	 * @return $links href to settings pages.
 	 */
@@ -381,6 +387,7 @@ class Checkview {
 	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
+	 * 
 	 * @return string The name of the plugin.
 	 */
 	public function get_plugin_name() {
@@ -391,6 +398,7 @@ class Checkview {
 	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
+	 * 
 	 * @return Checkview_Loader Orchestrates the hooks of the plugin.
 	 */
 	public function get_loader() {
@@ -401,6 +409,7 @@ class Checkview {
 	 * TODO: Grayson
 	 *
 	 * @since 1.0.0
+	 * 
 	 * @return string The version number of the plugin.
 	 */
 	public function get_version() {
