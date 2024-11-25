@@ -2,7 +2,7 @@
 /**
  * TODO: Grayson
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/tests
  */
 if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) ) {

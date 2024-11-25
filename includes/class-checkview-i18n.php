@@ -2,20 +2,20 @@
 /**
  * Checkview_I18n class
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @link https://checkview.io
+ * @since 1.0.0
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/includes
  */
 
 /**
  * TODO: Grayson
  *
- * @since      1.0.0
- * @package    Checkview
+ * @since 1.0.0
+ * @package Checkview
  * @subpackage Checkview/includes
- * @author     Check View <support@checkview.io>
+ * @author Check View <support@checkview.io>
  */
 class Checkview_I18n {
 
@@ -23,7 +23,7 @@ class Checkview_I18n {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public function load_plugin_textdomain() {
 

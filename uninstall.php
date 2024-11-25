@@ -2,10 +2,10 @@
 /**
  * CheckView uninstallation
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @link https://checkview.io
+ * @since 1.0.0
  *
- * @package    Checkview
+ * @package Checkview
  */
 
 // If uninstall not called from WordPress, then exit.

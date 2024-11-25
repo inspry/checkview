@@ -2,27 +2,27 @@
 /**
  * Checkview_Activator class
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @link https://checkview.io
+ * @since 1.0.0
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/includes
  */
 
 /**
  * TODO: Grayson
  *
- * @since      1.0.0
- * @package    Checkview
+ * @since 1.0.0
+ * @package Checkview
  * @subpackage Checkview/includes
- * @author     Check View <support@checkview.io>
+ * @author Check View <support@checkview.io>
  */
 class Checkview_Activator {
 
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public static function activate() {
 		self::checkview_run_sql();
@@ -33,7 +33,7 @@ class Checkview_Activator {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public static function checkview_run_sql() {

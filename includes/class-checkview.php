@@ -2,56 +2,56 @@
 /**
  * CheckView core: Checkview class
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @link https://checkview.io
+ * @since 1.0.0
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/includes
  */
 
 /**
  * TODO: Grayson
  *
- * @since      1.0.0
- * @package    Checkview
+ * @since 1.0.0
+ * @package Checkview
  * @subpackage Checkview/includes
- * @author     Check View <support@checkview.io>
+ * @author Check View <support@checkview.io>
  */
 class Checkview {
 
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      Checkview_Loader    $loader    Maintains and registers all hooks for the plugin.
+	 * @since 1.0.0
+	 * @access protected
+	 * @var Checkview_Loader $loader Maintains and registers all hooks for the plugin.
 	 */
 	protected $loader;
 
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
+	 * @since 1.0.0
+	 * @access protected
+	 * @var string $plugin_name The string used to uniquely identify this plugin.
 	 */
 	protected $plugin_name;
 
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      string    $version    The current version of the plugin.
+	 * @since 1.0.0
+	 * @access protected
+	 * @var string $version The current version of the plugin.
 	 */
 	protected $version;
 
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      class    $instance    The instance of the class.
+	 * @since 1.0.0
+	 * @access private
+	 * @var class $instance The instance of the class.
 	 */
 
 	private static $instance = null;
@@ -59,7 +59,7 @@ class Checkview {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		if ( defined( 'CHECKVIEW_VERSION' ) ) {
@@ -78,7 +78,7 @@ class Checkview {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 * @return   self   class instance
 	 */
 	public static function get_instance() {
@@ -92,8 +92,8 @@ class Checkview {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   private
+	 * @since 1.0.0
+	 * @access private
 	 */
 	private function load_dependencies() {
 		if ( ! function_exists( 'is_plugin_active' ) ) {
@@ -207,8 +207,8 @@ class Checkview {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   private
+	 * @since 1.0.0
+	 * @access private
 	 */
 	private function set_locale() {
 
@@ -223,7 +223,7 @@ class Checkview {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since  1.0.0
+	 * @since 1.0.0
 	 * @param array $links href to settings pages.
 	 * @return $links href to settings pages.
 	 */
@@ -235,8 +235,8 @@ class Checkview {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   private
+	 * @since 1.0.0
+	 * @access private
 	 */
 	private function define_admin_hooks() {
 
@@ -317,8 +317,8 @@ class Checkview {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   private
+	 * @since 1.0.0
+	 * @access private
 	 */
 	private function define_public_hooks() {
 
@@ -372,7 +372,7 @@ class Checkview {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public function run() {
 		$this->loader->run();
@@ -381,7 +381,7 @@ class Checkview {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since     1.0.0
+	 * @since 1.0.0
 	 * @return    string    The name of the plugin.
 	 */
 	public function get_plugin_name() {
@@ -391,7 +391,7 @@ class Checkview {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since     1.0.0
+	 * @since 1.0.0
 	 * @return    Checkview_Loader    Orchestrates the hooks of the plugin.
 	 */
 	public function get_loader() {
@@ -401,7 +401,7 @@ class Checkview {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since     1.0.0
+	 * @since 1.0.0
 	 * @return    string    The version number of the plugin.
 	 */
 	public function get_version() {

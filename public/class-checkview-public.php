@@ -2,44 +2,44 @@
 /**
  * Checkview_Public class
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @link https://checkview.io
+ * @since 1.0.0
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/public
  */
 
 /**
  * TODO: Grayson
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/public
- * @author     Check View <support@checkview.io>
+ * @author Check View <support@checkview.io>
  */
 class Checkview_Public {
 
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
+	 * @since 1.0.0
+	 * @access private
+	 * @var string $plugin_name The ID of this plugin.
 	 */
 	private $plugin_name;
 
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
+	 * @since 1.0.0
+	 * @access private
+	 * @var string $version The current version of this plugin.
 	 */
 	private $version;
 
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 * @param      string $plugin_name       The name of the plugin.
 	 * @param      string $version    The version of this plugin.
 	 */
@@ -52,7 +52,7 @@ class Checkview_Public {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public function enqueue_styles() {
 
@@ -72,7 +72,7 @@ class Checkview_Public {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public function enqueue_scripts() {
 

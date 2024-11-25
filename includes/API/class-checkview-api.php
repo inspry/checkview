@@ -2,46 +2,46 @@
 /**
  * CheckView API: CheckView_Api class
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @link https://checkview.io
+ * @since 1.0.0
  *
- * @package    CheckView
+ * @package CheckView
  * @subpackage CheckView/includes/API
  */
 
 /**
  * TODO: Grayson
  *
- * @since      1.0.0
- * @package    CheckView
+ * @since 1.0.0
+ * @package CheckView
  * @subpackage CheckView/includes/API
- * @author     CheckView <checkview> https://checkview.io/
+ * @author CheckView <checkview> https://checkview.io/
  */
 class CheckView_Api {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
+	 * @since 1.0.0
+	 * @access private
+	 * @var string $plugin_name The ID of this plugin.
 	 */
 	private $plugin_name;
 
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
+	 * @since 1.0.0
+	 * @access private
+	 * @var string $version The current version of this plugin.
 	 */
 	private $version;
 
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      bool/class    $woo_helper    The woo helper of this plugin.
+	 * @since 1.0.0
+	 * @access private
+	 * @var bool/class    $woo_helper    The woo helper of this plugin.
 	 */
 	private $woo_helper;
 	/**
@@ -53,7 +53,7 @@ class CheckView_Api {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 * @param    string $plugin_name       The name of the plugin.
 	 * @param    string $version    The version of this plugin.
 	 * @param    class  $woo_helper The woohelper class.
@@ -67,7 +67,7 @@ class CheckView_Api {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public function checkview_register_rest_route() {
 		register_rest_route(

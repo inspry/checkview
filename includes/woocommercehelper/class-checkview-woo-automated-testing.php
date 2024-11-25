@@ -2,10 +2,10 @@
 /**
  * Checkview_Woo_Automated_Testing class
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @link https://checkview.io
+ * @since 1.0.0
  *
- * @package    CheckView
+ * @package CheckView
  * @subpackage CheckView/includes/woocommercehelper
  */
 
@@ -16,34 +16,34 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
+	 * @since 1.0.0
+	 * @access private
+	 * @var string $plugin_name The ID of this plugin.
 	 */
 	private $plugin_name;
 
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
+	 * @since 1.0.0
+	 * @access private
+	 * @var string $version The current version of this plugin.
 	 */
 	private $version;
 
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      bool/class    $loader    The hooks loader of this plugin.
+	 * @since 1.0.0
+	 * @access private
+	 * @var bool/class $loader The hooks loader of this plugin.
 	 */
 	private $loader;
 
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 * @param      string $plugin_name       The name of this plugin.
 	 * @param      string $version    The version of this plugin.
 	 * @param      string $loader    Loads the hooks.

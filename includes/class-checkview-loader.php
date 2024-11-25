@@ -2,44 +2,44 @@
 /**
  * Checkview_Loader class
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @link https://checkview.io
+ * @since 1.0.0
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/includes
  */
 
 /**
  * TODO: Grayson
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/includes
- * @author     Check View <support@checkview.io>
+ * @author Check View <support@checkview.io>
  */
 class Checkview_Loader {
 
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      array    $actions    The actions registered with WordPress to fire when the plugin loads.
+	 * @since 1.0.0
+	 * @access protected
+	 * @var array $actions The actions registered with WordPress to fire when the plugin loads.
 	 */
 	public $actions;
 
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      array    $filters    The filters registered with WordPress to fire when the plugin loads.
+	 * @since 1.0.0
+	 * @access protected
+	 * @var array $filters The filters registered with WordPress to fire when the plugin loads.
 	 */
 	public $filters;
 
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 
@@ -50,7 +50,7 @@ class Checkview_Loader {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 * @param    string $hook             The name of the WordPress action that is being registered.
 	 * @param    object $component        A reference to the instance of the object on which the action is defined.
 	 * @param    string $callback         The name of the function definition on the $component.
@@ -64,7 +64,7 @@ class Checkview_Loader {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 * @param    string $hook             The name of the WordPress filter that is being registered.
 	 * @param    object $component        A reference to the instance of the object on which the filter is defined.
 	 * @param    string $callback         The name of the function definition on the $component.
@@ -78,8 +78,8 @@ class Checkview_Loader {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
-	 * @access   private
+	 * @since 1.0.0
+	 * @access private
 	 * @param    array  $hooks            The collection of hooks that is being registered (that is, actions or filters).
 	 * @param    string $hook             The name of the WordPress filter that is being registered.
 	 * @param    object $component        A reference to the instance of the object on which the filter is defined.
@@ -104,7 +104,7 @@ class Checkview_Loader {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public function run() {
 

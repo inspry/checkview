@@ -2,10 +2,10 @@
 /**
  * Checkview_Wpforms_Helper class
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @link https://checkview.io
+ * @since 1.0.0
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/includes/formhelpers
  */
 
@@ -18,17 +18,17 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @package    Checkview
+	 * @package Checkview
 	 * @subpackage Checkview/includes/formhelpers
-	 * @author     Check View <support@checkview.io>
+	 * @author Check View <support@checkview.io>
 	 */
 	class Checkview_Wpforms_Helper {
 		/**
 		 * TODO: Grayson
 		 *
-		 * @since    1.0.0
-		 * @access   protected
-		 * @var      Checkview_Loader    $loader    Maintains and registers all hooks for the plugin.
+		 * @since 1.0.0
+		 * @access protected
+		 * @var Checkview_Loader $loader Maintains and registers all hooks for the plugin.
 		 */
 		protected $loader;
 		/**
@@ -80,7 +80,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 			/**
 			 * Disable the email address suggestion.
 			 *
-			 * @link  https://wpforms.com/developers/how-to-disable-the-email-suggestion-on-the-email-form-field/
+			 * @link https://wpforms.com/developers/how-to-disable-the-email-suggestion-on-the-email-form-field/
 			 */
 
 			add_filter(

@@ -2,9 +2,9 @@
 /**
  * CheckView plugin
  *
- * @link              https://checkview.io
- * @since             1.0.0
- * @package           CheckView
+ * @link https://checkview.io
+ * @since 1.0.0
+ * @package CheckView
  *
  * @wordpress-plugin
  * Plugin Name:       CheckView
@@ -95,7 +95,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-checkview.php';
 /**
  * TODO: Grayson
  *
- * @since    1.0.0
+ * @since 1.0.0
  */
 function run_checkview() {
 	$plugin = Checkview::get_instance();

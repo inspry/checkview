@@ -2,10 +2,10 @@
 /**
  * Checkview_Payment_Gateway class
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @link https://checkview.io
+ * @since 1.0.0
  *
- * @package    CheckView
+ * @package CheckView
  * @subpackage CheckView/includes/woocommercehelper
  */
 
@@ -13,10 +13,10 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since      1.0.0
-	 * @package    CheckView
+	 * @since 1.0.0
+	 * @package CheckView
 	 * @subpackage CheckView/includes/woocommercehelper
-	 * @author     CheckView <checkview> https://checkview.io/
+	 * @author CheckView <checkview> https://checkview.io/
 	 */
 	class Checkview_Payment_Gateway extends WC_Payment_Gateway {
 

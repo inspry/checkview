@@ -2,20 +2,20 @@
 /**
  * Checkview_Admin_Logs class
  *
- * @link       https://inspry.com
- * @since      1.0.0
+ * @link https://inspry.com
+ * @since 1.0.0
  *
- * @package    CheckView
+ * @package CheckView
  * @subpackage CheckView/admin/
  */
 
 /**
  * TODO: Grayson
  *
- * @author      CheckView
- * @category    Incldues
- * @package     CheckView/admin/
- * @version     1.0.0
+ * @author CheckView
+ * @category Incldues
+ * @package CheckView/admin/
+ * @version 1.0.0
  */
 class Checkview_Admin_Logs {
 
@@ -134,7 +134,7 @@ class Checkview_Admin_Logs {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since  1.6.0
+	 * @since 1.6.0
 	 * @param  string  $handle file handle.
 	 * @param  integer $lines number of line to enter.
 	 * @return array
@@ -169,8 +169,8 @@ class Checkview_Admin_Logs {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @since  1.2.0 Checks if the directory exists
-	 * @since  0.0.1
+	 * @since 0.0.1
+	 * @since 1.2.0 Checks if the directory exists
 	 *
 	 * @access private
 	 * @param mixed  $handle file handle.
