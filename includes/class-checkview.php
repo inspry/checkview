@@ -357,8 +357,8 @@ class Checkview {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param [object] $upgrader_object class upgrader.
-	 * @param [array] $options array.
+	 * @param object $upgrader_object class upgrader.
+	 * @param array $options array.
 	 * @return void
 	 */
 	public function checkview_track_updates_notification( $upgrader_object, $options ) {

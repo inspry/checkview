@@ -843,7 +843,7 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param [bool] $prevent bool true/false.
+	 * @param bool $prevent bool true/false.
 	 * @param wc_itme $item item in order.
 	 * @param int $quantity quaniity if item.
 	 */

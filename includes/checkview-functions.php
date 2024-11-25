@@ -524,7 +524,7 @@ if ( ! function_exists( 'checkview_deslash' ) ) {
 	 *
 	 * @since 1.1.0
 	 * 
-	 * @param [string] $content content to delash.
+	 * @param string $content content to delash.
 	 * @return $content string to return.
 	 */
 	function checkview_deslash( $content ) {
@@ -583,7 +583,7 @@ if ( ! function_exists( 'checkview_add_states_to_locations' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param [array] $locations countries.
+	 * @param array $locations countries.
 	 * @return array
 	 */
 	function checkview_add_states_to_locations( $locations ) {
@@ -651,7 +651,7 @@ if ( ! function_exists( 'checkview_is_valid_uuid' ) ) {
 	/**
 	 * TODO: Grayson
 	 *
-	 * @param [string] $uuid checkview_test_id.
+	 * @param string $uuid checkview_test_id.
 	 * @return bool
 	 */
 	function checkview_is_valid_uuid( $uuid ) {
