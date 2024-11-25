@@ -679,7 +679,7 @@ if ( ! function_exists( 'checkview_add_weekly_cron_schedule' ) ) {
 	 * TODO: Grayson
 	 *
 	 * @param array $schedules Schedules.
-	 * @return array.
+	 * @return array
 	 */
 	function checkview_add_weekly_cron_schedule( $schedules ) {
 		$schedules['weekly'] = array(

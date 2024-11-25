@@ -128,7 +128,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		 * TODO: Grayson
 		 *
 		 * @param array $form Form object.
-		 * @return form.
+		 * @return form
 		 */
 		public function maybe_hide_recaptcha( $form ) {
 
