@@ -166,7 +166,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		 * @param array $form The form object.
 
 		 * @param bool $preview Boolean Whether the form rendering is in preview mode.
-		 * @return Object $form form object.
+		 * @return Object $form Form object.
 		 */
 		public function checkview_remove_unwanted_fields( $form, $preview ) {
 			$fields = WS_Form_Common::get_fields_from_form( $form, true );
