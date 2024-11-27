@@ -15,7 +15,10 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 	/**
-	 * TODO: Grayson
+	 * Adds support for Ninja Forms.
+	 * 
+	 * During CheckView tests, modifies Ninja Forms hooks, overwrites the
+	 * recipient email address, and handles test cleanup.
 	 *
 	 * @package Checkview
 	 * @subpackage Checkview/includes/formhelpers
@@ -23,7 +26,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 	 */
 	class Checkview_Ninja_Forms_Helper {
 		/**
-		 * TODO: Grayson
+		 * Loader.
 		 *
 		 * @since 1.0.0
 		 * @access protected
@@ -32,7 +35,9 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		 */
 		public $loader;
 		/**
-		 * TODO: Grayson
+		 * Constructor.
+		 * 
+		 * Initiates loader property, adds hooks.
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -92,7 +97,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		}
 
 		/**
-		 * TODO: Grayson
+		 * Removes CC and BCC from the form submission email.
 		 *
 		 * @param string $sent Status of email.
 		 * @param array $action_settings Settings for actions.
@@ -115,10 +120,6 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 				}
 			);
 
-			// If needed, you can add replacements for 'Cc:' or 'Bcc:' headers here
-			// Example: Add a custom replacement for 'Cc:'
-			// $filtered_headers[] = 'Cc: replacement@example.com';.
-
 			// Send the email without the 'Cc:' and 'Bcc:' headers.
 			wp_mail( TEST_EMAIL, wp_strip_all_tags( $action_settings['email_subject'] ), $message, $filtered_headers, $attachments );
 			if ( get_option( 'disable_email_receipt' ) == true ) {
@@ -128,7 +129,9 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 			}
 		}
 		/**
-		 * TODO: Grayson
+		 * Stores the test results and finishes the testing session.
+		 * 
+		 * Deletes test submission from Formidable database table.
 		 *
 		 * @param array $form_data Form data.
 		 * @return void
@@ -177,15 +180,13 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 				}
 			}
 
-			// remove test entry from ninja form.
 			wp_delete_post( $entry_id, true );
 
-			// Test completed So Clear sessions.
 			complete_checkview_test( $checkview_test_id );
 		}
 
 		/**
-		 * TODO: Grayson
+		 * Removes ReCAPTCHA fields from the test form.
 		 *
 		 * @param array $fields Fields of the form.
 		 *

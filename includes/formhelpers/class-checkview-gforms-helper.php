@@ -14,7 +14,10 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 	/**
-	 * TODO: Grayson
+	 * Adds support for Gravity Forms.
+	 * 
+	 * During CheckView tests, modifies Gravity Forms hooks, overwrites the
+	 * recipient email address, and handles test cleanup.
 	 *
 	 * @package Checkview
 	 * @subpackage Checkview/includes/formhelpers
@@ -22,7 +25,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 	 */
 	class Checkview_Gforms_Helper {
 		/**
-		 * TODO: Grayson
+		 * Loader.
 		 *
 		 * @since 1.0.0
 		 * @access protected
@@ -31,7 +34,9 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		 */
 		protected $loader;
 		/**
-		 * TODO: Grayson
+		 * Constructor.
+		 * 
+		 * Initiates loader property, adds hooks.
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -47,7 +52,8 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 					1
 				);
 			}
-			// disable addons found in forms.
+
+			// Disable addons found in forms.
 			add_filter(
 				'gform_addon_pre_process_feeds',
 				array(
@@ -57,7 +63,8 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				999,
 				3
 			);
-			// disable pdf addon if added to form.
+
+			// Disable PDF addon if added to form.
 			add_filter(
 				'gfpdf_pdf_config',
 				array(
@@ -67,7 +74,8 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				999,
 				2
 			);
-			// disable zero spam for form testing.
+
+			// Disable Zero Spam addon for form testing.
 			add_filter(
 				'gf_zero_spam_check_key_field',
 				array(
@@ -77,7 +85,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				99,
 				4
 			);
-			// clone entry after submission complete.
+
 			add_action(
 				'gform_after_submission',
 				array(
@@ -93,6 +101,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				'__return_true',
 				999
 			);
+
 			add_filter(
 				'gform_pre_render',
 				array( $this, 'maybe_hide_recaptcha' )
@@ -115,9 +124,11 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				'gform_pre_submission_filter',
 				array( $this, 'maybe_hide_recaptcha' )
 			);
-			// bypass hcaptcha.
+
+			// Bypass hCaptcha.
 			add_filter( 'hcap_activate', '__return_false' );
-			// bypass akimet.
+
+			// Bypass Akismet.
 			add_filter(
 				'akismet_get_api_key',
 				'__return_null',
@@ -125,15 +136,12 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 			);
 		}
 		/**
-		 * TODO: Grayson
+		 * Unsets Captchas from the form.
 		 *
 		 * @param array $form Form object.
 		 * @return form
 		 */
 		public function maybe_hide_recaptcha( $form ) {
-
-			// Add a placeholder to field id 8, is not used with multi-select or radio, will overwrite placeholder set in form editor.
-			// Replace 8 with your actual field id.
 			$fields = $form['fields'];
 
 			foreach ( $form['fields'] as $key => $field ) {
@@ -147,7 +155,9 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		}
 
 		/**
-		 * TODO: Grayson
+		 * Stores the test results and finishes the testing session.
+		 * 
+		 * Deletes test submission from Formidable database table.
 		 *
 		 * @param array $entry Form entry data.
 		 * @param object $form Form object.
@@ -162,14 +172,13 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 			}
 			self::checkview_clone_gf_entry( $entry['id'], $form_id, $checkview_test_id );
 			if ( isset( $entry['id'] ) ) {
-				// Remove entry after submission.
 				GFAPI::delete_entry( $entry['id'] );
 			}
-			// Test completed So Clear sessions.
+
 			complete_checkview_test( $checkview_test_id );
 		}
 		/**
-		 * TODO: Grayson
+		 * Modifies the submission recipient email addreesss.
 		 *
 		 * @param array $email Address.
 		 * @return array Email.
@@ -185,7 +194,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 			return $email;
 		}
 		/**
-		 * TODO: Grayson
+		 * Clones the form submission to CheckView tables.
 		 *
 		 * @param int $entry_id Entry ID of the form.
 		 * @param int $form_id Form submitted ID.
@@ -218,7 +227,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		}
 
 		/**
-		 * TODO: Grayson
+		 * Returns false.
 		 *
 		 * @param int $form_id Form's ID.
 		 * @param int $should_check_key_field Check for filed.
@@ -231,7 +240,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		}
 
 		/**
-		 * TODO: Grayson
+		 * Disables Gravity Forms PDF addons.
 		 *
 		 * @param array $settings Settings for form helper.
 		 * @param int $form_id ID of the form submitted.
@@ -259,7 +268,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		}
 
 		/**
-		 * TODO: Grayson
+		 * Disables conditional logic for feeds.
 		 *
 		 * @param array $feeds Form feeds.
 		 * @param array $entry Form entry data.

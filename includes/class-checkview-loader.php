@@ -9,7 +9,7 @@
  */
 
 /**
- * TODO: Grayson
+ * Manages hooks.
  *
  * @package Checkview
  * @subpackage Checkview/includes
@@ -18,7 +18,7 @@
 class Checkview_Loader {
 
 	/**
-	 * TODO: Grayson
+	 * Stores actions.
 	 *
 	 * @since 1.0.0
 	 * @access protected
@@ -28,7 +28,7 @@ class Checkview_Loader {
 	public $actions;
 
 	/**
-	 * TODO: Grayson
+	 * Stores filters.
 	 *
 	 * @since 1.0.0
 	 * @access protected
@@ -38,7 +38,9 @@ class Checkview_Loader {
 	public $filters;
 
 	/**
-	 * TODO: Grayson
+	 * Constructor.
+	 * 
+	 * Initializes hook class properties.
 	 *
 	 * @since 1.0.0
 	 */
@@ -49,7 +51,7 @@ class Checkview_Loader {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Handles adding an action.
 	 *
 	 * @since 1.0.0
 	 * 
@@ -64,7 +66,7 @@ class Checkview_Loader {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Handles adding a filter.
 	 *
 	 * @since 1.0.0
 	 * 
@@ -79,7 +81,7 @@ class Checkview_Loader {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Handles adding a hook.
 	 *
 	 * @since 1.0.0
 	 * 
@@ -106,7 +108,7 @@ class Checkview_Loader {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Hooks the filters and actions into WordPress.
 	 *
 	 * @since 1.0.0
 	 */

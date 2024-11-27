@@ -13,19 +13,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * TODO: Grayson
+ * Configures CheckView's admin area settings.
  *
  * @since 1.0.0
  */
 class Checkview_Admin_Settings {
 	/**
-	 * TODO: Grayson
+	 * The current tab.
+	 * 
+	 * The CheckView settings page has tabs, where each tab contains its relevant settings.
 	 *
 	 * @var string
 	 */
 	public $page_tab;
 	/**
-	 * TODO: Grayson
+	 * Plugin name.
 	 *
 	 * @since 1.0.0
 	 * @access protected
@@ -35,7 +37,7 @@ class Checkview_Admin_Settings {
 	protected $plugin_name;
 
 	/**
-	 * TODO: Grayson
+	 * Plugin version.
 	 *
 	 * @since 1.0.0
 	 * @access protected
@@ -44,7 +46,9 @@ class Checkview_Admin_Settings {
 	 */
 	protected $version;
 	/**
-	 * TODO: Grayson
+	 * Constructor.
+	 * 
+	 * Sets class properties.
 	 *
 	 * @since 1.0.0
 	 * 
@@ -58,7 +62,9 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Displays admin notices.
+	 * 
+	 * Displays a success notice when a user updates settings within the admin area.
 	 *
 	 * @since 1.0.0
 	 * 
@@ -92,7 +98,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Saves settings to the database.
 	 *
 	 * @since 1.0.0
 	 * 
@@ -124,7 +130,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Clears the CheckView caches.
 	 *
 	 * @since 1.0.0
 	 */
@@ -151,7 +157,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Clears the CheckView caches.
 	 *
 	 * @since 1.0.0
 	 */
@@ -160,7 +166,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Adds the CheckView options page.
 	 *
 	 * @since 1.0.0
 	 */
@@ -175,7 +181,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Renders the CheckView options pages.
 	 *
 	 * @since 1.0.0
 	 */
@@ -227,7 +233,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Retrieves CheckView settings tabs.
 	 *
 	 * @since 1.0.0
 	 *
@@ -264,7 +270,7 @@ class Checkview_Admin_Settings {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Adds Inspry mention in the admin footer text.
 	 *
 	 * @since 1.0.0
 	 * 

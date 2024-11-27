@@ -9,11 +9,14 @@
  */
 
 /**
- * TODO: Grayson
+ * Sets up WooCommerce for CheckView automated testing.
+ * 
+ * Modifies hooks, manages testing product, manages customer account,
+ * handles email recipients, etc.
  */
 class Checkview_Woo_Automated_Testing {
 	/**
-	 * TODO: Grayson
+	 * Plugin name.
 	 *
 	 * @since 1.0.0
 	 * @access private
@@ -23,7 +26,7 @@ class Checkview_Woo_Automated_Testing {
 	private $plugin_name;
 
 	/**
-	 * TODO: Grayson
+	 * Plugin version.
 	 *
 	 * @since 1.0.0
 	 * @access private
@@ -33,7 +36,7 @@ class Checkview_Woo_Automated_Testing {
 	private $version;
 
 	/**
-	 * TODO: Grayson
+	 * Loader.
 	 *
 	 * @since 1.0.0
 	 * @access private
@@ -43,7 +46,9 @@ class Checkview_Woo_Automated_Testing {
 	private $loader;
 
 	/**
-	 * TODO: Grayson
+	 * Constructor.
+	 * 
+	 * Initiates class properties, adds hooks.
 	 *
 	 * @since 1.0.0
 	 * 
@@ -182,7 +187,7 @@ class Checkview_Woo_Automated_Testing {
 
 
 	/**
-	 * TODO: Grayson
+	 * Deletes the stored Woo Product ID option.
 	 *
 	 * @param int $post_id The ID of the post being deleted.
 	 */
@@ -196,7 +201,7 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Untrashes CheckView Test product if it was accidentally trashed.
 	 *
 	 * @param int $post_id The ID of the post being trashed.
 	 */
@@ -205,12 +210,12 @@ class Checkview_Woo_Automated_Testing {
 		$product_id = get_option( 'checkview_woo_product_id' );
 
 		if ( $post_id == $product_id ) {
-			// If the product being trashed matches the stored product ID, delete the option.
+			// If the product being trashed matches the stored product ID, untrash it.
 			wp_untrash_post( $product_id );
 		}
 	}
 	/**
-	 * TODO: Grayson
+	 * Clears the WooCommerce cart.
 	 *
 	 * @return void
 	 */
@@ -230,7 +235,7 @@ class Checkview_Woo_Automated_Testing {
 		}
 	}
 	/**
-	 * TODO: Grayson
+	 * Retrieves active/enabled payment gateways.
 	 *
 	 * @return array
 	 */
@@ -247,7 +252,9 @@ class Checkview_Woo_Automated_Testing {
 
 
 	/**
-	 * TODO: Grayson
+	 * Creates the CheckView test customer.
+	 * 
+	 * If the customer already exists, just return it.
 	 *
 	 * @return WC_Customer
 	 */
@@ -278,7 +285,9 @@ class Checkview_Woo_Automated_Testing {
 
 
 	/**
-	 * TODO: Grayson
+	 * Gets the test customer.
+	 * 
+	 * If no customer was found, return `false`.
 	 *
 	 * @return WC_Customer|false
 	 */
@@ -288,8 +297,6 @@ class Checkview_Woo_Automated_Testing {
 		if ( $customer_id ) {
 			$customer = new WC_Customer( $customer_id );
 
-			// WC_Customer will return a new customer with an ID of 0 if
-			// one could not be found with the given ID.
 			if ( is_a( $customer, 'WC_Customer' ) && 0 !== $customer->get_id() ) {
 				return $customer;
 			}
@@ -299,7 +306,7 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Resets errors when registering CheckView testing customer.
 	 *
 	 * @param WP_Error $errors Registration errors.
 	 * @param string $username Username for the registration.
@@ -318,7 +325,7 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Sets credentials for the CheckView testing customer.
 	 *
 	 * @return string[] Credentials for the test user.
 	 *
@@ -350,7 +357,7 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Generates and saves a new password for the CheckView test user.
 	 */
 	public function checkview_rotate_test_user_credentials() {
 		add_filter( 'pre_wp_mail', '__return_false', PHP_INT_MAX );
@@ -366,7 +373,7 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Rotate test user's password every 15 minutes.
 	 *
 	 * @return void
 	 */
@@ -375,7 +382,9 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Gets the CheckView test product.
+	 * 
+	 * If the testing product is trashed, it untrash it, then return it.
 	 *
 	 * @return WC_Product/bool
 	 */
@@ -423,7 +432,9 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Creates the CheckView testing product.
+	 * 
+	 * If a testing product exists, return it.
 	 *
 	 * @return WC_Product
 	 */
@@ -456,7 +467,7 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Hides testing product from sitemap.
 	 *
 	 * @param array $excluded_posts_ids Post IDs to be excluded.
 	 *
@@ -473,7 +484,7 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Hides testing product from sitemap.
 	 *
 	 * @param array $args Query args.
 	 *
@@ -491,7 +502,7 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Hides testing product from Jetpack.
 	 *
 	 * @param bool $should_publicize Publicized or not.
 	 * @param \WP_Post $post WordPress post object.
@@ -511,7 +522,7 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Adds no index meta tag for test product.
 	 */
 	public function checkview_no_index_for_test_product() {
 		$product_id = get_option( 'checkview_woo_product_id' );
@@ -521,7 +532,7 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Sets up additional hooks for CheckView test submissions.
 	 *
 	 * @return void
 	 */
@@ -598,7 +609,7 @@ class Checkview_Woo_Automated_Testing {
 		}
 	}
 	/**
-	 * TODO: Grayson
+	 * Returns false.
 	 *
 	 * @param bool $activate Wether to activate or not.
 	 * @return bool
@@ -608,10 +619,10 @@ class Checkview_Woo_Automated_Testing {
 		return $activate;
 	}
 	/**
-	 * TODO: Grayson
+	 * Overwrites order email recipients.
 	 *
 	 * @param string $recipient Recipient.
-	 * @param Wc_order $order WooCommerce order.
+	 * @param WC_Order $order WooCommerce order.
 	 * @param Email $self WooCommerce Email object.
 	 * @return string
 	 */
@@ -631,7 +642,7 @@ class Checkview_Woo_Automated_Testing {
 
 
 	/**
-	 * TODO: Grayson
+	 * Stops delivery of webhooks for CheckView orders.
 	 *
 	 * @param bool $should_deliver Delivery status.
 	 * @param object $webhook_object Webhook object.
@@ -670,7 +681,7 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Adds CheckView dummy payment gateway to Woo.
 	 *
 	 * @param string $methods Methods to add payments.
 	 * @return array
@@ -681,7 +692,7 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Declares Block Payment Gateway compatibility.
 	 *
 	 * @return void
 	 */
@@ -700,13 +711,13 @@ class Checkview_Woo_Automated_Testing {
 
 
 	/**
-	 * TODO: Grayson
+	 * Handles deleting orders from the backend.
+	 * 
+	 * Doesn't run on AJAX requests.
 	 *
 	 * @return void
 	 */
 	public function delete_orders_from_backend() {
-
-		// don't run on ajax calls.
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			return;
 		}
@@ -714,7 +725,7 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Deletes CheckView orders from the database.
 	 *
 	 * @param integer $order_id Woocommerce Order ID.
 	 * @return bool
@@ -791,7 +802,7 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Adds custom meta to CheckView test orders.
 	 *
 	 * @param int $order_id Order ID.
 	 * @param string $old_status Order's old status.
@@ -814,7 +825,7 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Prevents reduction of stock for CheckView orders.
 	 *
 	 * @since 1.5.2
 	 * 
@@ -841,7 +852,7 @@ class Checkview_Woo_Automated_Testing {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Prevents adjustment of stock for CheckView orders.
 	 *
 	 * @param bool $prevent Prevent adjustment of stock.
 	 * @param WC_Order_Item $item Item in order.

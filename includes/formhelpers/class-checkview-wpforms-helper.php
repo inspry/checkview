@@ -15,7 +15,10 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 	/**
-	 * TODO: Grayson
+	 * Adds support for WP Forms.
+	 * 
+	 * During CheckView tests, modifies WP Forms hooks, overwrites the
+	 * recipient email address, and handles test cleanup.
 	 *
 	 * @package Checkview
 	 * @subpackage Checkview/includes/formhelpers
@@ -23,7 +26,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 	 */
 	class Checkview_Wpforms_Helper {
 		/**
-		 * TODO: Grayson
+		 * Loader.
 		 *
 		 * @since 1.0.0
 		 * @access protected
@@ -32,7 +35,9 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 		 */
 		protected $loader;
 		/**
-		 * TODO: Grayson
+		 * Constructor.
+		 * 
+		 * Initiates loader property, adds hooks.
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -78,11 +83,10 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 			);
 
 			/**
-			 * Disable the email address suggestion.
+			 * Disables the email address suggestion.
 			 *
 			 * @link https://wpforms.com/developers/how-to-disable-the-email-suggestion-on-the-email-form-field/
 			 */
-
 			add_filter(
 				'wpforms_mailcheck_enabled',
 				'__return_false'
@@ -105,9 +109,11 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 				'__return_true',
 				999
 			);
-			// bypass hcaptcha.
+
+			// Bypass hCaptcha.
 			add_filter( 'hcap_activate', '__return_false' );
-			// bypass akismet.
+
+			// Bypass Akismet.
 			add_filter(
 				'akismet_get_api_key',
 				'__return_null',
@@ -116,7 +122,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 		}
 
 		/**
-		 * TODO: Grayson
+		 * Injects testing email address.
 		 *
 		 * @param array $email Email address details.
 		 * @return array
@@ -135,7 +141,9 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 			return $email;
 		}
 		/**
-		 * TODO: Grayson
+		 * Stores the test results and finishes the testing session.
+		 * 
+		 * Deletes test submission from Formidable database table.
 		 *
 		 * @param array $form_fields Form fields.
 		 * @param array $entry Form entry details.
@@ -248,7 +256,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 				}
 			}
 
-			// remove entry if pro plugin.
+			// Remove entry if Pro plugin.
 			if ( is_plugin_active( 'wpforms/wpforms.php' ) ) {
 				// Remove Test Entry From WpForms Tables.
 				$wpdb->delete(
@@ -274,7 +282,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 					update_option( 'wpforms_settings', $old_settings );
 				}
 			}
-			// Test completed So Clear sessions.
+
 			complete_checkview_test( $checkview_test_id );
 		}
 	}

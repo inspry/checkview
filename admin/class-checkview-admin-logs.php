@@ -9,7 +9,11 @@
  */
 
 /**
- * TODO: Grayson
+ * Handles admin logs.
+ * 
+ * Reads, writes, and clears admin logs. Supports writing to differnt log
+ * files within the logs folder, which is useful for splitting logs depending
+ * on their purpose.
  *
  * @author CheckView
  * @category Incldues
@@ -19,7 +23,7 @@
 class Checkview_Admin_Logs {
 
 	/**
-	 * TODO: Grayson
+	 * Handles/file names for log files.
 	 *
 	 * @var array
 	 * @access private
@@ -27,14 +31,18 @@ class Checkview_Admin_Logs {
 	private static $_handles;
 
 	/**
-	 * TODO: Grayson
+	 * Constructor.
+	 * 
+	 * Defines log handles property as an empty array.
 	 */
 	public function __construct() {
 		self::$_handles = array();
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Destructor.
+	 * 
+	 * Closes file pointers when this class is destroyed.
 	 */
 	public function __destruct() {
 		foreach ( self::$_handles as $handle ) {
@@ -45,7 +53,7 @@ class Checkview_Admin_Logs {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Gets the WordPress uploads folder's path.
 	 *
 	 * @return string
 	 */
@@ -54,10 +62,10 @@ class Checkview_Admin_Logs {
 		$uploads = wp_upload_dir( null, false );
 
 		return isset( $uploads['basedir'] ) && $uploads['basedir'] ? $uploads['basedir'] : '';
-	} // end get_uplaods_folder;
+	}
 
 	/**
-	 * TODO: Grayson
+	 * Handles saving the admin logs options.
 	 *
 	 * @return void
 	 */
@@ -82,7 +90,10 @@ class Checkview_Admin_Logs {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Gets the path of the logs folder.
+	 * 
+	 * Returns the path of the logs folder, which, by default, is located within
+	 * the WordPress Uploads directory.
 	 *
 	 * @return string
 	 */
@@ -91,10 +102,10 @@ class Checkview_Admin_Logs {
 		$path = apply_filters( 'checkview_get_logs_folder', self::get_uploads_folder() . '/checkview-logs/' );
 
 		return $path;
-	} // end get_logs_folder;
+	}
 
 	/**
-	 * TODO: Grayson
+	 * Creates the logs folder.
 	 *
 	 * @return void
 	 */
@@ -128,15 +139,18 @@ class Checkview_Admin_Logs {
 			@fclose( $fp );
 
 		}
-	} // end create_logs_folder;
+	}
 
 	/**
-	 * TODO: Grayson
-	 *
+	 * Reads a log file.
+	 * 
+	 * If given a `$length`, this function will only return the last `$length`
+	 * lines of the chosen log file.
+	 * 
 	 * @since 1.6.0
 	 * 
 	 * @param string $handle File handle.
-	 * @param integer $lines Number of line to enter.
+	 * @param integer $lines Number of line to limit.
 	 * @return array
 	 */
 	public static function read_lines( $handle, $lines = 10 ) {
@@ -160,14 +174,11 @@ class Checkview_Admin_Logs {
 			}
 		}
 
-		// Close the file handle; when you are done using a
-		// resource you should always close it immediately.
-
 		return array_filter( $results );
-	} // end read_lines;
+	}
 
 	/**
-	 * TODO: Grayson
+	 * Tests opening a log file.
 	 *
 	 * @since 0.0.1
 	 * @since 1.2.0 Checks if the directory exists
@@ -175,7 +186,7 @@ class Checkview_Admin_Logs {
 	 * @access private
 	 * @param mixed $handle File handle.
 	 * @param string $permission File permissions.
-	 * @return bool Success
+	 * @return bool True on success, false otherwise.
 	 */
 	private static function open( $handle, $permission = 'a' ) {
 
@@ -197,7 +208,10 @@ class Checkview_Admin_Logs {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Writes to a log file.
+	 * 
+	 * Given a log file's `$handle`, append `$message` to it. Prepends each new
+	 * message with the time the log was written.
 	 *
 	 * @param string $handle File handle.
 	 * @param string $message Log to write.
@@ -213,12 +227,12 @@ class Checkview_Admin_Logs {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Gets the current date-time.
 	 *
 	 * @since 1.5.1
 	 * 
 	 * @param string $type Type of date.
-	 * @return date
+	 * @return mixed
 	 */
 	public static function get_now( $type = 'mysql' ) {
 
@@ -226,7 +240,7 @@ class Checkview_Admin_Logs {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Gets the current timestamp.
 	 *
 	 * @param string $type Date type.
 	 * @return date
@@ -245,10 +259,10 @@ class Checkview_Admin_Logs {
 		}
 
 		return $time;
-	} // end get_current_time;
+	}
 
 	/**
-	 * TODO: Grayson
+	 * Clears a log file.
 	 *
 	 * @param mixed $handle File handle.
 	 */

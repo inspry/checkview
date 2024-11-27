@@ -9,7 +9,7 @@
  */
 
 /**
- * TODO: Grayson
+ * Handles plugin deactivation.
  *
  * @since 1.0.0
  * @package Checkview
@@ -19,7 +19,9 @@
 class Checkview_Deactivator {
 
 	/**
-	 * TODO: Grayson
+	 * Deactivation sequence.
+	 * 
+	 * Clears scheduled jobs and events.
 	 *
 	 * @since 1.0.0
 	 */

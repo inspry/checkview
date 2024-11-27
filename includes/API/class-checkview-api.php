@@ -9,7 +9,7 @@
  */
 
 /**
- * TODO: Grayson
+ * Registers API routes and handles requests.
  *
  * @since 1.0.0
  * @package CheckView
@@ -18,7 +18,7 @@
  */
 class CheckView_Api {
 	/**
-	 * TODO: Grayson
+	 * Plugin name.
 	 *
 	 * @since 1.0.0
 	 * @access private
@@ -28,7 +28,7 @@ class CheckView_Api {
 	private $plugin_name;
 
 	/**
-	 * TODO: Grayson
+	 * Plugin version.
 	 *
 	 * @since 1.0.0
 	 * @access private
@@ -38,22 +38,24 @@ class CheckView_Api {
 	private $version;
 
 	/**
-	 * TODO: Grayson
+	 * Woo Helper class.
 	 *
 	 * @since 1.0.0
 	 * @access private
 	 * 
-	 * @var bool/class $woo_helper The woo helper of this plugin.
+	 * @var bool/Checkview_Woo_Automated_Testing $woo_helper The woo helper of this plugin.
 	 */
 	private $woo_helper;
 	/**
-	 * TODO: Grayson
+	 * Holds the JWT error.
 	 *
 	 * @var WP_Error
 	 */
 	public $jwt_error = null;
 	/**
-	 * TODO: Grayson
+	 * Constructor.
+	 * 
+	 * Sets class properties.
 	 *
 	 * @since 1.0.0
 	 * 
@@ -68,7 +70,9 @@ class CheckView_Api {
 		$this->woo_helper  = $woo_helper;
 	}
 	/**
-	 * TODO: Grayson
+	 * Registers API routes.
+	 * 
+	 * The namespace for the routes is `checkview/v1`.
 	 *
 	 * @since 1.0.0
 	 */
@@ -366,7 +370,7 @@ class CheckView_Api {
 				),
 			)
 		);
-		// stats.
+
 		register_rest_route(
 			'checkview/v1',
 			'/site-info',
@@ -398,9 +402,14 @@ class CheckView_Api {
 				),
 			)
 		);
-	} // end checkview_register_rest_route
+	}
+
 	/**
-	 * TODO: Grayson
+	 * Gets orders created by CheckView.
+	 * 
+	 * Firstly, tried to grab orders from the cache if no special query paremeters
+	 * were set in the request. If no cache was found, the orders are retrieved
+	 * from the database and cached.
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response/json
@@ -430,7 +439,6 @@ class CheckView_Api {
 		$checkview_order_id_before = $request->get_param( 'checkview_order_id_before' );
 		$checkview_order_id_before = isset( $checkview_order_id_before ) ? sanitize_text_field( $checkview_order_id_before ) : '';
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
 			return new WP_Error(
 				400,
@@ -523,7 +531,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Retrieves details about a CheckView order.
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response/json
@@ -543,7 +551,6 @@ class CheckView_Api {
 		$checkview_order_id = $request->get_param( 'checkview_order_id' );
 		$checkview_order_id = isset( $checkview_order_id ) ? intval( $checkview_order_id ) : '';
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
 			return new WP_Error(
 				400,
@@ -557,7 +564,6 @@ class CheckView_Api {
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
-		// Get the order object.
 		$order = wc_get_order( $checkview_order_id );
 
 		$order_details = array();
@@ -708,7 +714,7 @@ class CheckView_Api {
 		wp_die();
 	}
 	/**
-	 * TODO: Grayson
+	 * Retrieves available CheckView products.
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response/json
@@ -731,7 +737,6 @@ class CheckView_Api {
 		$checkview_keyword      = isset( $checkview_keyword ) ? sanitize_text_field( $checkview_keyword ) : null;
 		$checkview_product_type = isset( $checkview_product_type ) ? sanitize_text_field( $checkview_product_type ) : null;
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
 			return new WP_Error(
 				400,
@@ -798,7 +803,6 @@ class CheckView_Api {
 						$variations[] = array(
 							'id'         => $variation['variation_id'],
 							'attributes' => $variation['attributes'],
-							// You can add more variation data here if needed.
 						);
 					}
 				}
@@ -839,7 +843,9 @@ class CheckView_Api {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Retrieve details about available shipping methods.
+	 * 
+	 * Firstly, attempts to retrieve details from the cache.
 	 *
 	 * @return WP_REST_Response
 	 */
@@ -858,7 +864,6 @@ class CheckView_Api {
 		global $wpdb;
 		$shipping_details = get_transient( 'checkview_store_shipping_transient' );
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
 			return new WP_Error(
 				400,
@@ -960,7 +965,7 @@ class CheckView_Api {
 		wp_die();
 	}
 	/**
-	 * TODO: Grayson
+	 * Deletes CheckView orders.
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response/WP_Error/json
@@ -977,7 +982,6 @@ class CheckView_Api {
 			);
 		}
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
 			return new WP_Error(
 				400,
@@ -1041,7 +1045,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Retrieves information from the site's WooCommerce API cart endpoint.
 	 *
 	 * @return WP_REST_Response/WP_Error/json
 	 */
@@ -1057,7 +1061,6 @@ class CheckView_Api {
 			);
 		}
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
 			return new WP_Error(
 				400,
@@ -1065,18 +1068,17 @@ class CheckView_Api {
 			);
 			wp_die();
 		}
-		$url = home_url( 'wp-json/wc/store/v1/cart' ); // WooCommerce cart endpoint.
+		$url = home_url( 'wp-json/wc/store/v1/cart' );
 		$url = get_rest_url() . 'wc/store/v1/cart';
-		// Retrieve the current cookies.
 		$cookies = array();
 		foreach ( $_COOKIE as $name => $value ) {
 			$cookies[] = $name . '=' . $value;
 		}
-		// Add the cookies to the request headers.
+
 		if ( ! empty( $cookies ) ) {
 			$headers['Cookie'] = implode( '; ', $cookies );
 		}
-		// Make the remote GET request.
+
 		$response = wp_safe_remote_get(
 			$url,
 			array(
@@ -1086,7 +1088,6 @@ class CheckView_Api {
 
 		if ( is_wp_error( $response ) ) {
 			$error_message = $response->get_error_message();
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', $error_message );
 			return new WP_Error(
 				400,
@@ -1099,7 +1100,6 @@ class CheckView_Api {
 			foreach ( $cart_details['items'] as &$item ) {
 				$item['name'] = html_entity_decode( $item['name'], ENT_COMPAT, 'UTF-8' );
 			}
-			// Do something with $cart_details.
 		}
 		if ( $cart_details ) {
 			return new WP_REST_Response(
@@ -1120,7 +1120,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Retrieves a list of active payment gateways.
 	 *
 	 * @return WP_REST_Response/WP_Error/json
 	 */
@@ -1136,7 +1136,6 @@ class CheckView_Api {
 			);
 		}
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
 			return new WP_Error(
 				400,
@@ -1155,7 +1154,6 @@ class CheckView_Api {
 			);
 			wp_die();
 		} else {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', 'No results.' );
 			return new WP_Error(
 				400,
@@ -1166,7 +1164,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Creates the testing customer.
 	 *
 	 * @return WP_REST_Response/WP_Error/json
 	 */
@@ -1182,7 +1180,6 @@ class CheckView_Api {
 			);
 		}
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
 			return new WP_Error(
 				400,
@@ -1201,7 +1198,6 @@ class CheckView_Api {
 			);
 			wp_die();
 		} else {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', 'Failed to create the customer.' );
 			return new WP_Error(
 				400,
@@ -1212,7 +1208,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Retrieves credentials about the testing customer.
 	 *
 	 * @return WP_REST_Response/WP_Error/json
 	 */
@@ -1228,7 +1224,6 @@ class CheckView_Api {
 			);
 		}
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
 			return new WP_Error(
 				400,
@@ -1247,7 +1242,6 @@ class CheckView_Api {
 			);
 			wp_die();
 		} else {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the customer.' );
 			return new WP_Error(
 				400,
@@ -1258,14 +1252,15 @@ class CheckView_Api {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Verifies that the CheckView test user exists.
+	 * 
+	 * Checks for the existance of a user with the email from the request parameters.
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response/WP_Error/json
 	 */
 	public function checkview_verify_test_user_credentials( WP_REST_Request $request ) {
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
 			return new WP_Error(
 				400,
@@ -1294,7 +1289,6 @@ class CheckView_Api {
 			);
 			wp_die();
 		} else {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the user.' );
 			return new WP_Error(
 				400,
@@ -1305,14 +1299,13 @@ class CheckView_Api {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Deletes the CheckView testing user.
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response/WP_Error/json
 	 */
 	public function checkview_delete_test_user_credentials( WP_REST_Request $request ) {
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
 			return new WP_Error(
 				400,
@@ -1345,7 +1338,6 @@ class CheckView_Api {
 				);
 				wp_die();
 			} else {
-				// Log the detailed error for internal use.
 				Checkview_Admin_Logs::add( 'api-logs', 'Failed to delete the user.' );
 				return new WP_Error(
 					400,
@@ -1355,7 +1347,6 @@ class CheckView_Api {
 			}
 			wp_die();
 		} else {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the user.' );
 			return new WP_Error(
 				400,
@@ -1366,7 +1357,9 @@ class CheckView_Api {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Retrieves store selling locations.
+	 * 
+	 * Retrieves a list of shipping and selling locations.
 	 *
 	 * @return WP_REST_Response/json
 	 */
@@ -1382,7 +1375,6 @@ class CheckView_Api {
 			);
 		}
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
 			return new WP_Error(
 				400,
@@ -1392,24 +1384,18 @@ class CheckView_Api {
 		}
 		$selling_locations = array();
 
-		// Get selling and shipping countries.
 		$selling_locations  = WC()->countries->get_allowed_countries();
 		$shipping_locations = WC()->countries->get_shipping_countries();
 
 		// Initialize final array to store countries with states.
 		$locations_with_states = array();
 
-		// Add states to selling locations.
 		$selling_locations_with_states = checkview_add_states_to_locations( $selling_locations );
-
-		// Add states to shipping locations.
 		$shipping_locations_with_states = checkview_add_states_to_locations( $shipping_locations );
 
-		// If you want to merge both selling and shipping locations:.
 		$store_locations['selling_locations']  = $selling_locations_with_states;
 		$store_locations['shipping_locations'] = $shipping_locations_with_states;
-		// Output or return your final array as needed.
-		// For example, to print:.
+
 		if ( ! empty( $selling_locations ) || ! empty( $shipping_locations ) ) {
 			return new WP_REST_Response(
 				array(
@@ -1420,7 +1406,6 @@ class CheckView_Api {
 			);
 			wp_die();
 		} else {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the store locations.' );
 			return new WP_Error(
 				400,
@@ -1431,7 +1416,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Retrieves the permalink of the test product.
 	 *
 	 * @return WP_REST_Response/json
 	 */
@@ -1447,7 +1432,6 @@ class CheckView_Api {
 			);
 		}
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
 			return new WP_Error(
 				400,
@@ -1467,7 +1451,6 @@ class CheckView_Api {
 			);
 			wp_die();
 		} else {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the test product.' );
 			return new WP_Error(
 				400,
@@ -1478,7 +1461,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Retrieves a list of supported forms used throughout the site.
 	 *
 	 * @return WP_REST_Response/json
 	 */
@@ -1486,7 +1469,6 @@ class CheckView_Api {
 		global $wpdb;
 		$forms_list = get_transient( 'checkview_forms_list_transient' );
 		if ( null !== $this->jwt_error ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
 			return new WP_Error(
 				400,
@@ -1565,7 +1547,7 @@ class CheckView_Api {
 					}
 				}
 			}
-		} // For Gravity Form
+		}
 
 		if ( is_plugin_active( 'fluentform/fluentform.php' ) ) {
 			$tablename = $wpdb->prefix . 'fluentform_forms';
@@ -1617,7 +1599,8 @@ class CheckView_Api {
 					}
 				}
 			}
-		} // FLUENT FORMS.
+		}
+
 		if ( is_plugin_active( 'ninja-forms/ninja-forms.php' ) ) {
 			$tablename = $wpdb->prefix . 'nf3_forms';
 			$results   = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' order by ID ASC' ) );
@@ -1668,7 +1651,7 @@ class CheckView_Api {
 					}
 				}
 			}
-		} // NINJA FORMS
+		}
 
 		if ( is_plugin_active( 'wpforms/wpforms.php' ) || is_plugin_active( 'wpforms-lite/wpforms.php' ) ) {
 			$args    = array(
@@ -1698,7 +1681,7 @@ class CheckView_Api {
 					}
 				}
 			}
-		} // WP Forms.
+		}
 
 		if ( is_plugin_active( 'formidable/formidable.php' ) ) {
 			$tablename = $wpdb->prefix . 'frm_forms';
@@ -1749,9 +1732,8 @@ class CheckView_Api {
 					}
 				}
 			}
-		} // Formidable.
+		}
 
-		// wpcf7_contact_form.
 		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) ) {
 			$args    = array(
 				'post_type'   => 'wpcf7_contact_form',
@@ -1864,7 +1846,8 @@ class CheckView_Api {
 					}
 				}
 			}
-		} // WSF FORMS.
+		}
+
 		if ( $forms && ! empty( $forms ) && false !== $forms && '' !== $forms ) {
 			set_transient( 'checkview_forms_list_transient', $forms, 12 * HOUR_IN_SECONDS );
 			return new WP_REST_Response(
@@ -1875,7 +1858,6 @@ class CheckView_Api {
 				)
 			);
 		} else {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', 'No forms to show.' );
 			return new WP_REST_Response(
 				array(
@@ -1888,7 +1870,7 @@ class CheckView_Api {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Gets results of a test.
 	 *
 	 * @param WP_REST_Request $request Request param with the API call.
 	 * @return WP_REST_Response/WP_Error/json
@@ -1900,7 +1882,6 @@ class CheckView_Api {
 
 		$results = array();
 		if ( '' === $uid || null === $uid ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
 			return new WP_Error(
 				400,
@@ -1947,7 +1928,6 @@ class CheckView_Api {
 						)
 					);
 				} else {
-					// Log the detailed error for internal use.
 					Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the results.' );
 					return new WP_Error(
 						400,
@@ -1956,7 +1936,6 @@ class CheckView_Api {
 				}
 				wp_die();
 			} else {
-				// Log the detailed error for internal use.
 				Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the results.' );
 				return new WP_Error(
 					400,
@@ -1968,7 +1947,9 @@ class CheckView_Api {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Registers a test.
+	 * 
+	 * Expects form ID, page ID, test type, and the email to send the result to.
 	 *
 	 * @param WP_REST_Request $request Object with the API call.
 	 * @return WP_REST_Response/WP_Error
@@ -2009,7 +1990,9 @@ class CheckView_Api {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Deletes data about a test.
+	 * 
+	 * Given a test ID, delete its information from the database.
 	 *
 	 * @param WP_REST_Request $request Request param with the API call.
 	 * @return WP_REST_Response/WP_Error/json
@@ -2026,7 +2009,6 @@ class CheckView_Api {
 		);
 		$results = array();
 		if ( '' === $uid || null === $uid || false === $uid ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', 'Empty UID.' );
 			return new WP_Error(
 				400,
@@ -2059,12 +2041,14 @@ class CheckView_Api {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Gathers site information.
+	 * 
+	 * Information includes plugins & themes (active or inactive), WordPress core
+	 * version, and the admin AJAX url.
 	 *
 	 * @return WP_Rest_Response Forms details.
 	 */
 	public function checkview_saas_get_site_info() {
-		// Get all plugins.
 		if ( ! function_exists( 'get_plugins' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
@@ -2080,8 +2064,6 @@ class CheckView_Api {
 			);
 		}
 
-		// Get active theme.
-		// Get all themes.
 		$themes     = wp_get_themes();
 		$theme_list = array();
 		foreach ( $themes as $stylesheet => $theme ) {
@@ -2093,7 +2075,6 @@ class CheckView_Api {
 			);
 		}
 
-		// Get WordPress core version.
 		global $wp_version;
 		$core_info = array(
 			'version' => $wp_version,
@@ -2106,6 +2087,7 @@ class CheckView_Api {
 			'core'     => $core_info,
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
 		);
+
 		if ( $response ) {
 				return new WP_REST_Response(
 					array(
@@ -2124,7 +2106,16 @@ class CheckView_Api {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Gets a plugin's version.
+	 * 
+	 * Given a plugin's slug, get its current version. 
+	 * 
+	 * If given a plugin slug of `recapthca`, `turnstile`, `askimet`, assume these
+	 * are Gravity Forms addon plugins. If given `gravityforms-zero-spam`, handle
+	 * slight naming mismatch. If given `hcaptcha-for-forms-and-more`, handle
+	 * that case specially.
+	 * 
+	 * For all other cases, assume the plugin slug matches the plugin's directory name.
 	 *
 	 * @param WP_REST_Request $request WP_Request object.
 	 * @return Json/WP Error
@@ -2147,7 +2138,6 @@ class CheckView_Api {
 		$plugin_slug = $request->get_param( '_plugin_slug' );
 		$plugin_slug = isset( $plugin_slug ) ? sanitize_text_field( $plugin_slug ) : '';
 		if ( empty( $plugin_slug ) ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', 'Missing plugin slug.' );
 			return new WP_Error(
 				'missing_param',
@@ -2194,21 +2184,21 @@ class CheckView_Api {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Determines if an incoming API request is granted access.
+	 * 
+	 * Checks for the `Authorization` header, is SSL, and valid unused nonce token.
+	 * On success, stores the nonce token so it will not be used again.
 	 *
 	 * @param \WP_REST_Request $request request data with the api call.
 	 * @return json/array
 	 */
 	public function checkview_get_items_permissions_check( \WP_REST_Request $request ) {
-		// Wanted to Add JWT AUTH could not add because of limited time.
-		// set no cache header.
 		nocache_headers();
 		// Get the Authorization header.
 		$auth_header = $request->get_header( 'Authorization' );
 		$auth_header = isset( $auth_header ) ? sanitize_text_field( $auth_header ) : '';
-		// checking for JWT token.
+
 		if ( empty( $auth_header ) ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', 'Empty Auth header.' );
 			return new WP_Error(
 				400,
@@ -2217,9 +2207,8 @@ class CheckView_Api {
 			);
 			wp_die();
 		}
-		// Check if the request is made over HTTPS.
+
 		if ( ! is_ssl() ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', 'Insecure request blocked.' );
 			return new WP_Error(
 				'insecure_request',
@@ -2231,7 +2220,7 @@ class CheckView_Api {
 		// checking for JWT token.
 		if ( ! isset( $nonce_token ) || empty( $nonce_token ) || is_wp_error( $nonce_token ) ) {
 			$this->jwt_error = $nonce_token;
-			// Log the detailed error for internal use.
+
 			Checkview_Admin_Logs::add( 'api-logs', 'Invalid token.' );
 			return new WP_Error(
 				400,
@@ -2241,8 +2230,6 @@ class CheckView_Api {
 			wp_die();
 		}
 		if ( ! checkview_is_valid_uuid( $nonce_token ) ) {
-			// Nonce already used, return an error response.
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', 'Invalid nonce format.' );
 			return new WP_Error(
 				403,
@@ -2261,7 +2248,6 @@ class CheckView_Api {
 			)
 		);
 		if ( $table_exists !== $cv_used_nonces ) {
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', 'Nonce table absent.' );
 			return new WP_Error(
 				403,
@@ -2280,7 +2266,6 @@ class CheckView_Api {
 
 		if ( $nonce_exists ) {
 			// Nonce already used, return an error response.
-			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', 'This nonce has already been used.' );
 			return new WP_Error(
 				403,

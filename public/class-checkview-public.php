@@ -9,7 +9,7 @@
  */
 
 /**
- * TODO: Grayson
+ * Handles various public area features.
  *
  * @package Checkview
  * @subpackage Checkview/public
@@ -18,7 +18,7 @@
 class Checkview_Public {
 
 	/**
-	 * TODO: Grayson
+	 * Plugin name.
 	 *
 	 * @since 1.0.0
 	 * @access private
@@ -28,7 +28,7 @@ class Checkview_Public {
 	private $plugin_name;
 
 	/**
-	 * TODO: Grayson
+	 * Plugin version.
 	 *
 	 * @since 1.0.0
 	 * @access private
@@ -38,7 +38,9 @@ class Checkview_Public {
 	private $version;
 
 	/**
-	 * TODO: Grayson
+	 * Constructor.
+	 * 
+	 * Sets class properties.
 	 *
 	 * @since 1.0.0
 	 * 
@@ -52,16 +54,11 @@ class Checkview_Public {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Enqueues public facing styles.
 	 *
 	 * @since 1.0.0
 	 */
 	public function enqueue_styles() {
-
-		/**
-		 * TODO: Grayson
-		 */
-
 		wp_enqueue_style(
 			$this->plugin_name,
 			plugin_dir_url( __FILE__ ) . 'css/checkview-public.css',
@@ -72,16 +69,11 @@ class Checkview_Public {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Enqueues public facing scripts, dequeues CF7 scripts and styles for tests.
 	 *
 	 * @since 1.0.0
 	 */
 	public function enqueue_scripts() {
-
-		/**
-		 * TODO: Grayson
-		 */
-
 		wp_enqueue_script(
 			$this->plugin_name,
 			plugin_dir_url( __FILE__ ) . 'js/checkview-public.js',
@@ -94,13 +86,13 @@ class Checkview_Public {
 		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
-		// procceed if visitor ip is equal to cv bot ip.
+
+		// Procceed if visitor IP is a CheckView bot IP.
 		if ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) {
 			wp_dequeue_script( 'contact-form-7' );
 			wp_dequeue_style( 'contact-form-7' );
 			wp_dequeue_script( 'wpcf7-recaptcha' );
 			wp_dequeue_style( 'wpcf7-recaptcha' );
-			// wp_dequeue_script( 'google-recaptcha' );
 		}
 	}
 }

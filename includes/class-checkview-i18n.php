@@ -9,7 +9,7 @@
  */
 
 /**
- * TODO: Grayson
+ * Plugin internationalization class.
  *
  * @since 1.0.0
  * @package Checkview
@@ -20,7 +20,7 @@ class Checkview_I18n {
 
 
 	/**
-	 * TODO: Grayson
+	 * Loads the CheckView text domain.
 	 *
 	 * @since 1.0.0
 	 */

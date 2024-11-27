@@ -9,7 +9,9 @@
  */
 
 /**
- * TODO: Grayson
+ * Handles various admin area features.
+ * 
+ * Initializes tests, enqueues scripts and styles, schedules nonce cleanup.
  *
  * @package Checkview
  * @subpackage Checkview/admin
@@ -18,7 +20,7 @@
 class Checkview_Admin {
 
 	/**
-	 * TODO: Grayson
+	 * Plugin identifier.
 	 *
 	 * @since 1.0.0
 	 * @access private
@@ -28,7 +30,7 @@ class Checkview_Admin {
 	private $plugin_name;
 
 	/**
-	 * TODO: Grayson
+	 * Plugin version.
 	 *
 	 * @since 1.0.0
 	 * @access private
@@ -38,7 +40,9 @@ class Checkview_Admin {
 	private $version;
 
 	/**
-	 * TODO: Grayson
+	 * Constructor.
+	 * 
+	 * Sets class properties and adds cron cleanup hooks.
 	 *
 	 * @since 1.0.0
 	 * 
@@ -61,7 +65,7 @@ class Checkview_Admin {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Removes expired nonces from the database.
 	 *
 	 * @return void
 	 */
@@ -82,7 +86,7 @@ class Checkview_Admin {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Schedules nonce clean-up on an hourly basis.
 	 *
 	 * @return void
 	 */
@@ -92,15 +96,12 @@ class Checkview_Admin {
 		}
 	}
 	/**
-	 * TODO: Grayson
+	 * Enqueues styles for the admin area.
 	 *
 	 * @since 1.0.0
 	 */
 	public function enqueue_styles() {
-
-		/**
-		 * TODO: Grayson
-		 */
+		// Don't enqueue styles for other admin screens.
 		$screen = get_current_screen();
 		if ( 'checkview-options' !== $screen->base && 'settings_page_checkview-options' !== $screen->base ) {
 			return;
@@ -131,15 +132,12 @@ class Checkview_Admin {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Enqueues scripts for the admin area.
 	 *
 	 * @since 1.0.0
 	 */
 	public function enqueue_scripts() {
-
-		/**
-		 * TODO: Grayson
-		 */
+		// Don't enqueue scripts for other admin screens.
 		$screen = get_current_screen();
 		if ( 'checkview-options' !== $screen->base && 'settings_page_checkview-options' !== $screen->base ) {
 			return;
@@ -180,7 +178,7 @@ class Checkview_Admin {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Initializes a test.
 	 *
 	 * @return void
 	 */
@@ -193,20 +191,24 @@ class Checkview_Admin {
 		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
-		// $visitor_ip = $cv_bot_ip;
-		// skip if visitor ip not equal to CV Bot IP.
+
+		// Skip if visitor ip not equal to CV Bot IP.
 		if ( is_array( $cv_bot_ip ) && ! in_array( $visitor_ip, $cv_bot_ip ) ) {
 			return;
 		}
-		// if clean talk plugin active whitelist check form API IP.
+
+		// If clean talk plugin active whitelist check form API IP.
 		if ( is_plugin_active( 'cleantalk-spam-protect/cleantalk.php' ) ) {
 			checkview_whitelist_api_ip();
 		}
 
+		// Gather test ID.
 		$cv_test_id = isset( $_REQUEST['checkview_test_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) : '';
 
+		// Flag disabling of email receipts.
 		$disable_email_receipt = isset( $_REQUEST['disable_email_receipt'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['disable_email_receipt'] ) ) : false;
 
+		// Sanitize referrer URL.
 		$referrer_url = sanitize_url( wp_get_raw_referer(), array( 'http', 'https' ) );
 
 		// If not Ajax submission and found test_id.
@@ -240,7 +242,7 @@ class Checkview_Admin {
 
 		$cv_session = checkview_get_cv_session( $visitor_ip, $cv_test_id );
 		$send_to    = CHECKVIEW_EMAIL;
-		// stop if session not found.
+
 		if ( ! empty( $cv_session ) ) {
 
 			$test_key = $cv_session[0]['test_key'];

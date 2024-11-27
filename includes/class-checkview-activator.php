@@ -9,7 +9,9 @@
  */
 
 /**
- * TODO: Grayson
+ * Sets up CheckView on plugin activation.
+ * 
+ * Sets up database tables used by the plugin.
  *
  * @since 1.0.0
  * @package Checkview
@@ -19,7 +21,7 @@
 class Checkview_Activator {
 
 	/**
-	 * TODO: Grayson
+	 * Runs the activation sequence.
 	 *
 	 * @since 1.0.0
 	 */
@@ -30,7 +32,7 @@ class Checkview_Activator {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Generates database tables.
 	 *
 	 * @since 1.0.0
 	 * 

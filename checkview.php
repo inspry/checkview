@@ -28,15 +28,15 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Currently plugin version.
- * Start at version 1.0.0 and use SemVer - https://semver.org
- * Rename this for your plugin and update it as you release new versions.
+ * Current plugin version.
+ * 
+ * Start at version 1.0.0 and use SemVer. Rename this for your plugin and
+ * update it as you release new versions.
+ * 
+ * @link https://semver.org
  */
 define( 'CHECKVIEW_VERSION', '2.0.1' );
 
-/**
- * Define constant for plugin settings link
- */
 if ( ! defined( 'CHECKVIEW_BASE_DIR' ) ) {
 	define( 'CHECKVIEW_BASE_DIR', plugin_basename( __FILE__ ) );
 }
@@ -71,7 +71,7 @@ if ( ! defined( 'CHECKVIEW_URI' ) ) {
 	define( 'CHECKVIEW_URI', trailingslashit( plugin_dir_url( __FILE__ ) ) );
 }
 /**
- * TODO: Grayson
+ * Handles CheckView activation.
  */
 function activate_checkview() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-checkview-activator.php';
@@ -79,7 +79,7 @@ function activate_checkview() {
 }
 
 /**
- * TODO: Grayson
+ * Handles CheckView deactivation.
  */
 function deactivate_checkview() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-checkview-deactivator.php';
@@ -89,13 +89,15 @@ function deactivate_checkview() {
 register_activation_hook( __FILE__, 'activate_checkview' );
 register_deactivation_hook( __FILE__, 'deactivate_checkview' );
 
+// Load CheckView Helper Plugins
 require plugin_dir_path( __FILE__ ) . 'includes/checkview-helper-functions.php';
 
+// Load CheckView class
 require plugin_dir_path( __FILE__ ) . 'includes/class-checkview.php';
 
 /**
- * TODO: Grayson
- *
+ * Initiates the main CheckView class.
+ * 
  * @since 1.0.0
  */
 function run_checkview() {
@@ -104,6 +106,11 @@ function run_checkview() {
 }
 add_action( 'plugins_loaded', 'run_checkview', '10' );
 
+/**
+ * Declares compatibility with WooCommerce high-performance order storage.
+ * 
+ * @link https://woocommerce.com/document/high-performance-order-storage/
+ */
 add_action(
 	'before_woocommerce_init',
 	function () {

@@ -14,7 +14,10 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 	/**
-	 * TODO: Grayson
+	 * Adds support for Fluent Forms.
+	 * 
+	 * During CheckView tests, modifies Fluent Forms hooks, overwrites the
+	 * recipient email address, and handles test cleanup.
 	 *
 	 * @package Checkview
 	 * @subpackage Checkview/includes/formhelpers
@@ -22,7 +25,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 	 */
 	class Checkview_Fluent_Forms_Helper {
 		/**
-		 * TODO: Grayson
+		 * Loader.
 		 *
 		 * @since 1.0.0
 		 * @access protected
@@ -32,12 +35,15 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		public $loader;
 
 		/**
-		 * TODO: Grayson
+		 * Constructor.
+		 * 
+		 * Initiates loader property, adds hooks.
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
+
+			// Change Email address to our test email.
 			if ( defined( 'TEST_EMAIL' ) && get_option( 'disable_email_receipt' ) == false ) {
-				// Change Email address to our test email.
 				add_filter(
 					'fluentform/email_to',
 					array(
@@ -49,8 +55,8 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				);
 			}
 
+			// Disable email recipients.
 			if ( defined( 'TEST_EMAIL' ) && get_option( 'disable_email_receipt' ) == true ) {
-				// Change Email address to our test email.
 				add_filter(
 					'fluentform/email_to',
 					array(
@@ -61,7 +67,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 					4
 				);
 			}
-			// clone entry after submission complete.
+
 			add_action(
 				'fluentform/submission_inserted',
 				array(
@@ -133,9 +139,11 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				99,
 				1
 			);
-			// bypass hcaptcha.
+
+			// Bypass hCaptcha.
 			add_filter( 'hcap_activate', '__return_false' );
-			// bypass akismet.
+
+			// Bypass Akismet.
 			add_filter(
 				'akismet_get_api_key',
 				'__return_null',
@@ -144,7 +152,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		}
 
 		/**
-		 * TODO: Grayson
+		 * Appends our test email for test form submissions.
 		 *
 		 * @param string $address Email address.
 		 * @param string $notification Email notification.
@@ -162,7 +170,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		}
 
 		/**
-		 * TODO: Grayson
+		 * Overwrites email recipient for test form submissions.
 		 *
 		 * @param string $address Email address.
 		 * @param string $notification Email notification.
@@ -174,7 +182,9 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			return TEST_EMAIL;
 		}
 		/**
-		 * TODO: Grayson
+		 * Stores the test results and finishes the testing session.
+		 * 
+		 * Deletes test submission from Formidable database table.
 		 *
 		 * @param int $entry_id Fluent Form ID.
 		 * @param array $form_data Fluent Form data.
@@ -191,7 +201,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				$checkview_test_id = $form_id . gmdate( 'Ymd' );
 			}
 
-			// clone entry to check view tables.
+			// Clone entry to check view tables.
 			$tablename = $wpdb->prefix . 'fluentform_entry_details';
 			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where submission_id=%d and form_id=%d order by id ASC', $entry_id, $form_id ) );
 			foreach ( $rows as $row ) {
@@ -242,10 +252,11 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				if ( '1x00000000000000000000AA' === $old_settings['siteKey'] ) {
 					$old_settings['siteKey']   = get_option( 'checkview_ff_turnstile-site-key' );
 					$old_settings['secretKey'] = get_option( 'checkview_ff_turnstile-secret-key' );
+
 					update_option( '_fluentform_turnstile_details', $old_settings );
 				}
 			}
-			// Test completed So Clear sessions.
+
 			complete_checkview_test( $checkview_test_id );
 		}
 	}

@@ -9,7 +9,7 @@
  */
 
 /**
- * TODO: Grayson
+ * Loads plugin dependencies and files, runs hooks.
  *
  * @since 1.0.0
  * @package Checkview
@@ -19,7 +19,7 @@
 class Checkview {
 
 	/**
-	 * TODO: Grayson
+	 * Hook loader.
 	 *
 	 * @since 1.0.0
 	 * @access protected
@@ -29,7 +29,7 @@ class Checkview {
 	protected $loader;
 
 	/**
-	 * TODO: Grayson
+	 * Plugin name.
 	 *
 	 * @since 1.0.0
 	 * @access protected
@@ -39,7 +39,7 @@ class Checkview {
 	protected $plugin_name;
 
 	/**
-	 * TODO: Grayson
+	 * Plugin version.
 	 *
 	 * @since 1.0.0
 	 * @access protected
@@ -49,7 +49,7 @@ class Checkview {
 	protected $version;
 
 	/**
-	 * TODO: Grayson
+	 * Class singleton.
 	 *
 	 * @since 1.0.0
 	 * @access private
@@ -60,7 +60,9 @@ class Checkview {
 	private static $instance = null;
 
 	/**
-	 * TODO: Grayson
+	 * Constructor.
+	 * 
+	 * Sets up class properties, loads dependencies, and hooks up functions.
 	 *
 	 * @since 1.0.0
 	 */
@@ -79,7 +81,9 @@ class Checkview {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Gets the instance of this class.
+	 * 
+	 * Creates an instance of itself if there was not one found before returning.
 	 *
 	 * @since 1.0.0
 	 * 
@@ -94,37 +98,45 @@ class Checkview {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Loads plugin dependencies.
+	 * 
+	 * Loads WordPress Core dependenceis, vendor files, and CheckView classes.
+	 * Additionally sets up more class properties, conditionally loads WooCommerce
+	 * helper, adds admin plugin list action links, and initializes the API class.
 	 *
 	 * @since 1.0.0
 	 * @access private
 	 */
 	private function load_dependencies() {
+		// WordPress Core
 		if ( ! function_exists( 'is_plugin_active' ) ) {
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
+
+		// WordPress Core
 		require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
 		require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
 
+		// Vendor
 		require_once plugin_dir_path( __DIR__ ) . 'includes/vendor/autoload.php';
+
+		// CheckView
 		require_once plugin_dir_path( __DIR__ ) . 'includes/checkview-functions.php';
-
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-checkview-loader.php';
-
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-checkview-i18n.php';
-
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-checkview-admin.php';
-
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-checkview-admin-logs.php';
-
 		require_once plugin_dir_path( __DIR__ ) . 'admin/settings/class-checkview-admin-settings.php';
-
 		require_once plugin_dir_path( __DIR__ ) . 'public/class-checkview-public.php';
+
 		$this->loader = new Checkview_Loader();
+
 		// Current Vsitor IP.
 		$visitor_ip = checkview_get_visitor_ip();
+
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
+
 		if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) && ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) ) ) {
 			$send_to               = CHECKVIEW_EMAIL;
 			return;
@@ -199,8 +211,14 @@ class Checkview {
 			$this,
 			'checkview_settings_link'
 		);
+
+		// Require API class.
 		require_once plugin_dir_path( __DIR__ ) . 'includes/API/class-checkview-api.php';
+
+		// Initialize the plugin's API.
 		$plugin_api = new CheckView_Api( $this->get_plugin_name(), $this->get_version(), $woo_helper );
+
+		// Hook our routes into WordPress.
 		$this->loader->add_action(
 			'rest_api_init',
 			$plugin_api,
@@ -209,7 +227,7 @@ class Checkview {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Sets up i18n.
 	 *
 	 * @since 1.0.0
 	 * @access private
@@ -225,7 +243,7 @@ class Checkview {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Adds a "Settings" link to admin plugin list page.
 	 *
 	 * @since 1.0.0
 	 * 
@@ -238,7 +256,9 @@ class Checkview {
 		return $links;
 	}
 	/**
-	 * TODO: Grayson
+	 * Sets up admin classes and hooks.
+	 * 
+	 * Initializes various admin classes and hooks up methods from those classes.
 	 *
 	 * @since 1.0.0
 	 * @access private
@@ -320,8 +340,10 @@ class Checkview {
 	}
 
 	/**
-	 * TODO: Grayson
-	 *
+	 * Sets up public classes and hooks.
+	 * 
+	 * Initializes various public classes and hooks up methods from those classes.
+	 * 
 	 * @since 1.0.0
 	 * @access private
 	 */
@@ -345,7 +367,8 @@ class Checkview {
 		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
-		// proceed if visitor ip is equal to cv bot ip.
+
+		// Proceed if visitor IP is in SaaS IPs.
 		if ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) {
 			$this->loader->add_action(
 				'pre_option_require_name_email',
@@ -355,27 +378,23 @@ class Checkview {
 		}
 	}
 	/**
-	 * TODO: Grayson
+	 * Resets plugin cache if being updated.
 	 *
 	 * @param object $upgrader_object Class upgrader.
 	 * @param array $options Options.
 	 * @return void
 	 */
 	public function checkview_track_updates_notification( $upgrader_object, $options ) {
-
-		// If an update has taken place and the updated type is plugins and the plugins element exists.
 		if ( 'update' === $options['action'] && 'plugin' === $options['type'] && isset( $options['plugins'] ) ) {
-			// Iterate through the plugins being updated and check if ours is there.
 			foreach ( $options['plugins'] as $plugin ) {
 				if ( CHECKVIEW_BASE_DIR === $plugin ) {
-					// Your action if it is your plugin.
 					checkview_reset_cache( true );
 				}
 			}
 		}
 	}
 	/**
-	 * TODO: Grayson
+	 * Hooks up the actions and filters stored in the loader.
 	 *
 	 * @since 1.0.0
 	 */
@@ -384,7 +403,7 @@ class Checkview {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Gets the plugin name.
 	 *
 	 * @since 1.0.0
 	 * 
@@ -395,7 +414,7 @@ class Checkview {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Gets the loader.
 	 *
 	 * @since 1.0.0
 	 * 
@@ -406,7 +425,7 @@ class Checkview {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Gets the plugin version.
 	 *
 	 * @since 1.0.0
 	 * 

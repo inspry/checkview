@@ -15,7 +15,10 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 	/**
-	 * TODO: Grayson
+	 * Adds support for WS Forms.
+	 * 
+	 * During CheckView tests, modifies WS Forms hooks, overwrites the
+	 * recipient email address, and handles test cleanup.
 	 *
 	 * @package Checkview
 	 * @subpackage Checkview/includes/formhelpers
@@ -23,7 +26,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 	 */
 	class Checkview_WSF_Helper {
 		/**
-		 * TODO: Grayson
+		 * Loader.
 		 *
 		 * @since 1.0.0
 		 * @access protected
@@ -33,7 +36,9 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		public $loader;
 
 		/**
-		 * TODO: Grayson
+		 * Constructor.
+		 * 
+		 * Initiates loader property, adds hooks.
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -81,7 +86,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		}
 
 		/**
-		 * TODO: Grayson
+		 * Injects testing email recipient.
 		 *
 		 * @param array $to An array of email addresses in RFC 2822 format to send the email to.
 		 * @param object $form The form object.
@@ -102,7 +107,9 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 			return $to;
 		}
 		/**
-		 * TODO: Grayson
+		 * Stores the test results and finishes the testing session.
+		 * 
+		 * Deletes test submission from Formidable database table.
 		 *
 		 * @param array $form_data Form data.
 		 * @return void
@@ -150,18 +157,16 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 				}
 			}
 
-			// remove test entry from WS form.
 			$ws_form_submit          = new WS_Form_Submit();
 			$ws_form_submit->id      = $entry_id;
 			$ws_form_submit->form_id = $form_id;
 			$ws_form_submit->db_delete( true, true, true );
 
-			// Test completed So Clear sessions.
 			complete_checkview_test( $checkview_test_id );
 		}
 
 		/**
-		 * TODO: Grayson
+		 * Removes ReCAPTHCAs from the testing form.
 		 *
 		 * @param array $form The form object.
 
@@ -191,7 +196,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 						break;
 				}
 			}
-			// Return value.
+
 			return $form;
 		}
 	}

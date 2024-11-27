@@ -14,7 +14,10 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 	/**
-	 * TODO: Grayson
+	 * Adds support for Formidable.
+	 * 
+	 * During CheckView tests, modifies Formidable hooks, overwrites the
+	 * recipient email address, and handles test cleanup.
 	 *
 	 * @package Checkview
 	 * @subpackage Checkview/includes/formhelpers
@@ -22,7 +25,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 	 */
 	class Checkview_Formidable_Helper {
 		/**
-		 * TODO: Grayson
+		 * Loader.
 		 *
 		 * @since 1.0.0
 		 * @access protected
@@ -31,7 +34,9 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		 */
 		protected $loader;
 		/**
-		 * TODO: Grayson
+		 * Constructor.
+		 * 
+		 * Initiates loader property, adds hooks.
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -92,7 +97,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			);
 		}
 		/**
-		 * TODO: Grayson
+		 * Sets our email for test submissions.
 		 *
 		 * @param string $email Email address.
 		 * @return string Email.
@@ -109,7 +114,9 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		}
 
 		/**
-		 * TODO: Grayson
+		 * Stores the test results and finishes the testing session.
+		 * 
+		 * Deletes test submission from Formidable database table.
 		 *
 		 * @param int $entry_id Form's ID.
 		 * @param int $form_id Form entry ID.
@@ -124,7 +131,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 				$checkview_test_id = $form_id . gmdate( 'Ymd' );
 			}
 
-			// insert entry.
+			// Insert entry.
 			$entry_data  = array(
 				'form_id'      => $form_id,
 				'status'       => 'publish',
@@ -138,7 +145,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			$wpdb->insert( $entry_table, $entry_data );
 			$inserted_entry_id = $wpdb->insert_id;
 
-			// insert entry meta.
+			// Insert entry meta.
 			$entry_meta_table = $wpdb->prefix . 'cv_entry_meta';
 			$fields           = $this->get_form_fields( $form_id );
 			$tablename        = $wpdb->prefix . 'frm_item_metas';
@@ -238,16 +245,15 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 				}
 			}
 
-			// remove test entry form Form Tables.
+			// Remove test entry form Formidable
 			$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . 'frm_item_metas WHERE item_id=%d', $entry_id ) );
 			$result = $wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . 'frm_items WHERE id=%d', $entry_id ) );
 
-			// Test completed So Clear sessions.
 			complete_checkview_test( $checkview_test_id );
 		}
 
 		/**
-		 * TODO: Grayson
+		 * Retrieves form fields for a form.
 		 *
 		 * @param int $form_id ID of the form.
 		 * @return array
@@ -359,7 +365,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			return $fields;
 		}
 		/**
-		 * TODO: Grayson
+		 * Removes ReCAPTCHA field from form fields and form validation.
 		 *
 		 * @param array $fields Array of fields.
 		 * @param array $form Form.

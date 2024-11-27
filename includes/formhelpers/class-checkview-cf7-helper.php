@@ -14,7 +14,10 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 	/**
-	 * TODO: Grayson
+	 * Adds support for Contact Form 7.
+	 * 
+	 * During CheckView tests, modifies Contact Form 7 hooks, overwrites the
+	 * recipient email address, and handles test cleanup.
 	 *
 	 * @package Checkview
 	 * @subpackage Checkview/includes/formhelpers
@@ -22,7 +25,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 	 */
 	class Checkview_Cf7_Helper {
 		/**
-		 * TODO: Grayson
+		 * Loader.
 		 *
 		 * @since 1.0.0
 		 * @access protected
@@ -31,7 +34,9 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 		 */
 		public $loader;
 		/**
-		 * TODO: Grayson
+		 * Constructor.
+		 * 
+		 * Initiates loader property, adds hooks.
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -56,7 +61,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 				99,
 				1
 			);
-			// remove test entry from cf7 submission table.
+
 			add_action(
 				'cfdb7_after_save_data',
 				array(
@@ -96,12 +101,13 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 				'__return_null',
 				-10
 			);
-			// bypass hcaptcha.
+
+			// Bypass hCaptcha.
 			add_filter( 'hcap_activate', '__return_false' );
 		}
 
 		/**
-		 * TODO: Grayson
+		 * Stores the test results and finishes the testing session.
 		 *
 		 * @param Object $form_tag Form object by CFS.
 		 * @return void
@@ -221,26 +227,24 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 					$wpdb->insert( $entry_meta_table, $entry_metadata );
 				}
 
-				// Test completed So Clear sessions.
 				complete_checkview_test( $checkview_test_id );
 			}
 		}
 
 		/**
-		 * TODO: Grayson
+		 * Deletes the form entry from the database.
 		 *
 		 * @param int $insert_id The inserted ID from CF7 form.
 		 * @return void
 		 */
 		public function checkview_delete_entry( $insert_id ) {
 			global $wpdb;
-			// Remove Test Entry From WpForms Tables.
 			$wpdb->delete( $wpdb->prefix . 'db7_forms', array( 'form_id' => $insert_id ) );
 		}
 
 
 		/**
-		 * TODO: Grayson
+		 * Injects testing email recipient.
 		 *
 		 * @param array $args Emails.
 		 * @return array
@@ -255,7 +259,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 		}
 
 		/**
-		 * TODO: Grayson
+		 * Returns false.
 		 *
 		 * @return bool
 		 */

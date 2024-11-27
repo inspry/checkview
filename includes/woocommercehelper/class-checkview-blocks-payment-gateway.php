@@ -11,35 +11,35 @@
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
 
 /**
- * TODO: Grayson
+ * Creates CheckView Blocks payment gateway.
  *
  * @since 1.0.3
  */
 final class Checkview_Blocks_Payment_Gateway extends AbstractPaymentMethodType {
 
 	/**
-	 * TODO: Grayson
+	 * Payment gateway.
 	 *
 	 * @var Checkview_Blocks_Payment_Gateway
 	 */
 	private $gateway;
 
 	/**
-	 * TODO: Grayson
+	 * Payment gateway name.
 	 *
 	 * @var string
 	 */
 	protected $name = 'checkview';
 
 	/**
-	 * TODO: Grayson
+	 * Payment gateway compatibilities.
 	 *
 	 * @var array
 	 */
 	protected $supports = array( 'checkview' );
 
 	/**
-	 * TODO: Grayson
+	 * Initializes the payment gateway.
 	 */
 	public function initialize() {
 		$this->settings = get_option( 'woocommerce_checkview_settings', array() );
@@ -48,7 +48,7 @@ final class Checkview_Blocks_Payment_Gateway extends AbstractPaymentMethodType {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Returns true.
 	 *
 	 * @return boolean
 	 */
@@ -57,7 +57,7 @@ final class Checkview_Blocks_Payment_Gateway extends AbstractPaymentMethodType {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Registers scripts for our payment method.
 	 *
 	 * @return array
 	 */
@@ -88,7 +88,7 @@ final class Checkview_Blocks_Payment_Gateway extends AbstractPaymentMethodType {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Gets data from our payment method.
 	 *
 	 * @return array
 	 */
