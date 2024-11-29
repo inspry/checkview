@@ -77,6 +77,11 @@ class CheckView_Api {
 	 * @since 1.0.0
 	 */
 	public function checkview_register_rest_route() {
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			// Suppress errors for REST API requests.
+			ini_set( 'display_errors', '0' );
+			error_reporting( E_ALL & ~E_NOTICE & ~E_WARNING );
+		}
 		register_rest_route(
 			'checkview/v1',
 			'/forms/formslist',
@@ -761,8 +766,10 @@ class CheckView_Api {
 		$args = array(
 			'post_type'           => 'product',
 			'post_status'         => 'publish',
+			'posts_per_page'      => 1000,
 			'ignore_sticky_posts' => 1,
-			'posts_per_page'      => -1,
+			'orderby'             => 'modified',        // Order by last modified date.
+			'order'               => 'DESC',
 		);
 		if ( ! empty( $checkview_keyword ) && null !== $checkview_keyword ) {
 
@@ -1476,15 +1483,18 @@ class CheckView_Api {
 			);
 			wp_die();
 		}
+		// Temporarily suppress errors
+		$previous_error_reporting = error_reporting( 0 );
+
 		if ( '' !== $forms_list && null !== $forms_list && false !== $forms_list ) {
-			// return new WP_REST_Response(
-			// array(
-			// 'status'        => 200,
-			// 'response'      => esc_html__( 'Successfully retrieved the forms list.', 'checkview' ),
-			// 'body_response' => $forms_list,
-			// )
-			// );
-			// wp_die();
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Successfully retrieved the forms list.', 'checkview' ),
+					'body_response' => $forms_list,
+				)
+			);
+			wp_die();
 		}
 		$forms = array();
 		if ( ! is_admin() ) {
@@ -1877,9 +1887,26 @@ class CheckView_Api {
 	 */
 	public function checkview_get_available_forms_test_results( WP_REST_Request $request ) {
 		global $wpdb;
-		$uid = $request->get_param( 'uid' );
-		$uid = isset( $uid ) ? sanitize_text_field( $uid ) : null;
-
+		$uid          = $request->get_param( 'uid' );
+		$uid          = isset( $uid ) ? sanitize_text_field( $uid ) : null;
+		$old_settings = array();
+		$old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
+		if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
+			if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' === $old_settings['siteKey'] ) {
+				$old_settings['siteKey']   = get_option( 'checkview_rc-site-key' );
+				$old_settings['secretKey'] = get_option( 'checkview_rc-secret-key' );
+				update_option( '_fluentform_reCaptcha_details', $old_settings );
+			}
+		}
+		$old_settings = array();
+		$old_settings = (array) get_option( '_fluentform_turnstile_details', array() );
+		if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
+			if ( '1x00000000000000000000AA' === $old_settings['siteKey'] ) {
+				$old_settings['siteKey']   = get_option( 'checkview_ff_turnstile-site-key' );
+				$old_settings['secretKey'] = get_option( 'checkview_ff_turnstile-secret-key' );
+				update_option( '_fluentform_turnstile_details', $old_settings );
+			}
+		}
 		$results = array();
 		if ( '' === $uid || null === $uid ) {
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
@@ -1889,6 +1916,24 @@ class CheckView_Api {
 			);
 			wp_die();
 		} else {
+			$old_settings = array();
+			$old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
+			if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
+				if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' === $old_settings['siteKey'] ) {
+					$old_settings['siteKey']   = get_option( 'checkview_rc-site-key' );
+					$old_settings['secretKey'] = get_option( 'checkview_rc-secret-key' );
+					update_option( '_fluentform_reCaptcha_details', $old_settings );
+				}
+			}
+			$old_settings = array();
+			$old_settings = (array) get_option( '_fluentform_turnstile_details', array() );
+			if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
+				if ( '1x00000000000000000000AA' === $old_settings['siteKey'] ) {
+					$old_settings['siteKey']   = get_option( 'checkview_ff_turnstile-site-key' );
+					$old_settings['secretKey'] = get_option( 'checkview_ff_turnstile-secret-key' );
+					update_option( '_fluentform_turnstile_details', $old_settings );
+				}
+			}
 			$tablename = $wpdb->prefix . 'cv_entry';
 			$result    = $wpdb->get_row( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s', $uid ) );
 			$tablename = $wpdb->prefix . 'cv_entry_meta';
@@ -2016,10 +2061,7 @@ class CheckView_Api {
 			);
 			wp_die();
 		} else {
-			$tablename = $wpdb->prefix . 'cv_entry';
-			$result    = $wpdb->delete( $tablename, array( 'uid' => $uid ) );
-			$tablename = $wpdb->prefix . 'cv_entry_meta';
-			$rows      = $wpdb->delete( $tablename, array( 'uid' => $uid ) );
+			$rows = true;
 			if ( $rows ) {
 				return new WP_REST_Response(
 					array(
@@ -2076,16 +2118,29 @@ class CheckView_Api {
 		}
 
 		global $wp_version;
-		$core_info = array(
+		$core_info            = array(
 			'version' => $wp_version,
 		);
+		$wp_filesystem_direct = new WP_Filesystem_Direct( array() );
+		$pad_spaces           = 45;
+		$checkview_options    = get_option( 'checkview_log_options', array() );
 
+		$logs_list = glob( Checkview_Admin_Logs::get_logs_folder() . '*.log' );
+		$logs      = array();
+		foreach ( $logs_list as $file ) {
+			$contents = $file && file_exists( $file ) ? $wp_filesystem_direct->get_contents( $file ) : '--';
+			if ( preg_match( '/\/([^\/]+)\.log$/', $file, $matches ) ) {
+				$file = $matches[1]; // Return the captured group.
+			}
+			$logs[ $file ] = $contents;
+		}
 		// Combine all data.
 		$response = array(
 			'plugins'  => $plugin_list,
 			'themes'   => $theme_list,
 			'core'     => $core_info,
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
+			'logs'     => $logs,
 		);
 
 		if ( $response ) {
@@ -2248,13 +2303,24 @@ class CheckView_Api {
 			)
 		);
 		if ( $table_exists !== $cv_used_nonces ) {
-			Checkview_Admin_Logs::add( 'api-logs', 'Nonce table absent.' );
-			return new WP_Error(
-				403,
-				esc_html__( 'Invalid request.', 'checkview' ),
-				''
-			);
-			wp_die();
+			// Include upgrade.php for dbDelta.
+			if ( ! function_exists( 'dbDelta' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+			}
+			$cv_used_nonces = $wpdb->prefix . 'cv_used_nonces';
+
+			$charset_collate = $wpdb->get_charset_collate();
+			if ( $wpdb->get_var( "SHOW TABLES LIKE '{$cv_used_nonces}'" ) !== $cv_used_nonces ) {
+				$sql = "CREATE TABLE $cv_used_nonces (
+						id BIGINT(20) NOT NULL AUTO_INCREMENT,
+						nonce VARCHAR(255) NOT NULL,
+						used_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+						PRIMARY KEY (id),
+						UNIQUE KEY nonce (nonce)
+					) $charset_collate;";
+				dbDelta( $sql );
+			}
+			Checkview_Admin_Logs::add( 'api-logs', 'Nonce table absent, created.' );
 		}
 		// Check if the nonce exists.
 		$nonce_exists = $wpdb->get_var(

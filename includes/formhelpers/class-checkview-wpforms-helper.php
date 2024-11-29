@@ -70,7 +70,14 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 				99
 			);
 
-			remove_action( 'wpforms_frontend_output', array( wpforms()->get( 'frontend' ), 'recaptcha' ), 20 );
+			remove_action(
+				'wpforms_frontend_output',
+				array(
+					wpforms()->get( 'frontend' ),
+					'recaptcha',
+				),
+				20
+			);
 
 			add_action(
 				'wpforms_process_complete',
@@ -128,7 +135,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 		 * @return array
 		 */
 		public function checkview_inject_email( $email ) {
-			if ( get_option( 'disable_email_receipt' ) == true ) {
+			if ( get_option( 'disable_email_receipt', false ) == false ) {
 				$count = count( $email['address'] );
 				for ( $i = 0; $i < $count; $i++ ) {
 					$email['address'][ $i ] = TEST_EMAIL;

@@ -3,11 +3,11 @@ Contributors: checkview, inspry
 Donate link: https://checkview.io/
 Tags: testing, monitoring, uptime, tests, woocommerce
 Requires at least: 5.0.1
-Tested up to: 6.6.1
+Tested up to: 6.7
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 2.0.1
+Stable tag: 2.0.6
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -86,7 +86,44 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 == Changelog ==
 
-Here is the reversed changelog:
+= 2.0.6 = 
+* Added fix for WooCommerce order deletion global scope issue.
+
+= 2.0.5 =
+* Added Honeypot bypass for FluentForms.
+* Resolved CleanTalk fixes.
+* Exposed helper logs to SaaS via API endpoint.
+* Added Bcc and CC email suppressions FluentForms.
+* Added Flamingo Cf7 support.
+
+= 2.0.4 =
+* Added nonce table creation function in token verification process.
+
+= 2.0.3 =
+* Added upgrade.php dependencies in upgrader hook.
+* Updated CF7 hooks priority.
+
+= 2.0.2 =
+* Resolved updater hook bug by adding global $wpdb variable.
+
+= 2.0.1 =
+
+* **New Integration**: Added support for WS Form.
+* **Updates**:
+  * Updated Contact Form 7 (CF7) hooks priority for better compatibility.
+* **Stability Improvements**:
+  * Enhanced plugin stability by shifting updates to the update hook.
+* **Code Quality**:
+  * Improved cognitive complexity by restructuring code for better readability and maintainability.
+* **Performance Enhancements**:
+  * Reduced database queries for faster load times.
+  * Added caching mechanisms to enhance performance.
+  * Added limit for WooCommerce Products to first 1000 by date modified.
+  * Updated form delete endpoint to store results for 7 days.
+* **New Features**:
+  * Updated CleanTalk whitelisted IP addresses function to accumulate IPs across all sites.
+  * Added functionality to enable or disable admin email notifications for all form submissions and WooCommerce orders made by SaaS.
+
 = 2.0.0 =
 
 * Resolved token validation issues (SaaS was bypassing without token for forms list endpoint).
@@ -118,8 +155,6 @@ Here is the reversed changelog:
 * Resolved Cloudflare Turnstile validation errors in FluentForms.
 
 * Updated container IP addresses.
-
-* Added WS Form integration.
 
 = 1.1.22 =
 * Added a patch to ensure the Contact Form 7 module loads during AJAX requests.
@@ -247,8 +282,44 @@ Here is the reversed changelog:
 * Initial release.
 
 == Upgrade Notice ==
+= 2.0.6 = 
+* Added fix for WooCommerce order deletion global scope issue.
 
-Here is the reversed changelog:
+= 2.0.5 =
+* Added Honeypot bypass for FluentForms.
+* Resolved CleanTalk fixes.
+* Exposed helper logs to SaaS via API endpoint.
+* Added Bcc and CC email suppressions FluentForms.
+* Added Flamingo Cf7 support.
+
+= 2.0.4 =
+* Added nonce table creation function in token verification process.
+
+= 2.0.3 =
+* Added upgrade.php dependencies in upgrader hook.
+* Updated CF7 hooks priority.
+
+= 2.0.2 =
+* Resolved updater hook bug by adding global $wpdb variable.
+
+= 2.0.1 =
+
+* **New Integration**: Added support for WS Form.
+* **Updates**:
+  * Updated Contact Form 7 (CF7) hooks priority for better compatibility.
+* **Stability Improvements**:
+  * Enhanced plugin stability by shifting updates to the update hook.
+* **Code Quality**:
+  * Improved cognitive complexity by restructuring code for better readability and maintainability.
+* **Performance Enhancements**:
+  * Reduced database queries for faster load times.
+  * Added caching mechanisms to enhance performance.
+  * Added limit for WooCommerce Products to first 1000 by date modified.
+  * Updated form delete endpoint to store results for 7 days.
+* **New Features**:
+  * Updated CleanTalk whitelisted IP addresses function to accumulate IPs across all sites.
+  * Added functionality to enable or disable admin email notifications for all form submissions and WooCommerce orders made by SaaS.
+
 = 2.0.0 =
 
 * Resolved token validation issues (SaaS was bypassing without token for forms list endpoint).
@@ -280,8 +351,6 @@ Here is the reversed changelog:
 * Resolved Cloudflare Turnstile validation errors in FluentForms.
 
 * Updated container IP addresses.
-
-* Added WS Form integration.
 
 = 1.1.22 =
 * Added a patch to ensure the Contact Form 7 module loads during AJAX requests.

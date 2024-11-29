@@ -83,8 +83,25 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 				99,
 				2
 			);
+			add_filter(
+				'wsf_config_meta_keys',
+				array( $this, 'config_meta_keys' ),
+				10,
+				2
+			);
 		}
 
+		/**
+		 * Hides honey pot.
+		 *
+		 * @param array   $meta_keys meta keys.
+		 * @param integer $form_id form id.
+		 * @return array
+		 */
+		public function config_meta_keys( $meta_keys = array(), $form_id = 0 ) {
+			$meta_keys['honeypot'] = array();
+			return (array) $meta_keys;
+		}
 		/**
 		 * Injects testing email recipient.
 		 *
@@ -95,14 +112,14 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		 * @return bool
 		 */
 		public function checkview_inject_email( $to, $form, $submit, $action ) {
-			if ( get_option( 'disable_email_receipt' ) == true ) {
+			if ( get_option( 'disable_email_receipt', false ) == false ) {
 				$to = array(
-					'CheckView <' . TEST_EMAIL . '>',
+					'"CheckView" <' . TEST_EMAIL . '>',
 				);
 			} elseif ( is_array( $to ) ) {
-				$to[] = 'CheckView <' . TEST_EMAIL . '>';
+				$to[] = '"CheckView" <' . TEST_EMAIL . '>';
 			} else {
-				$to .= ', CheckView <' . TEST_EMAIL . '>';
+				$to .= ', "CheckView" <' . TEST_EMAIL . '>';
 			}
 			return $to;
 		}
@@ -175,7 +192,6 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		 */
 		public function checkview_remove_unwanted_fields( $form, $preview ) {
 			$fields = WS_Form_Common::get_fields_from_form( $form, true );
-
 			// Process fields.
 			foreach ( $fields as $field ) {
 
@@ -198,6 +214,25 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 			}
 
 			return $form;
+		}
+
+		/**
+		 * Disable addons feed.
+		 *
+		 * @param boolean $run run action or not.
+		 * @param object  $form form object.
+		 * @param object  $submit submit object.
+		 * @param array   $action_id_filter array of filters.
+		 * @param boolean $database_only save to db.
+		 * @param array   $config config.
+		 * @return boolean
+		 */
+		public function checkview_disable_addons_feed( $run, $form, $submit, $action_id_filter, $database_only, $config ): bool {
+			$skip_actions = array( 'database', 'message', 'email' );
+			if ( in_array( $config['id'], $skip_actions, true ) ) {
+				return true;
+			}
+			return false;
 		}
 	}
 

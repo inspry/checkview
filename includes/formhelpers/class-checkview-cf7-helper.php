@@ -103,7 +103,18 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 			);
 
 			// Bypass hCaptcha.
-			add_filter( 'hcap_activate', '__return_false' );
+			add_filter(
+				'hcap_activate',
+				'__return_false'
+			);
+			add_filter(
+				'wpcf7_flamingo_submit_if',
+				array(
+					$this,
+					'checkview_bypass_flamingo',
+				),
+				99
+			);
 		}
 
 		/**
@@ -251,9 +262,9 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 		 */
 		public function checkview_inject_email( $args ) {
 			if ( defined( 'CV_DISABLE_EMAIL_RECEIPT' ) ) {
-				$args['recipient'] = TEST_EMAIL;
-			} else {
 				$args['recipient'] .= ', ' . TEST_EMAIL;
+			} else {
+				$args['recipient'] = TEST_EMAIL;
 			}
 			return $args;
 		}
@@ -265,6 +276,18 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 		 */
 		public function checkview_return_false() {
 			return false;
+		}
+
+		/**
+		 * Bypass flaimgo.
+		 *
+		 * @param array $cases cases to bypass.
+		 * @return array cases.
+		 */
+		public function checkview_bypass_flamingo( array $cases ): array {
+			$cases   = array();
+			$cases[] = 'checkview_bot';
+			return $cases;
 		}
 	}
 

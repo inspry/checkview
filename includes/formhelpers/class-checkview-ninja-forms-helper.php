@@ -94,6 +94,17 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 					5
 				);
 			}
+
+			// Disable form actions.
+			// add_filter(
+			// 	'ninja_forms_submission_actions',
+			// 	array(
+			// 		$this,
+			// 		'checkview_disable_form_actions',
+			// 	),
+			// 	99,
+			// 	3
+			// );
 		}
 
 		/**
@@ -122,7 +133,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 
 			// Send the email without the 'Cc:' and 'Bcc:' headers.
 			wp_mail( TEST_EMAIL, wp_strip_all_tags( $action_settings['email_subject'] ), $message, $filtered_headers, $attachments );
-			if ( get_option( 'disable_email_receipt' ) == true ) {
+			if ( get_option( 'disable_email_receipt', false ) == false ) {
 				return true;
 			} else {
 				return false;
@@ -200,6 +211,28 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 				}
 			}
 			return $fields;
+		}
+
+		/**
+		 * Disables Form actions.
+		 *
+		 * @param array $form_cache_actions form actions.
+		 * @param array $form_cache form cache.
+		 * @param array $form_data form data.
+		 * @return array
+		 */
+		public function checkview_disable_form_actions( $form_cache_actions, $form_cache, $form_data ) {
+			// List of allowed action types.
+			$allowed_actions = array( 'email', 'successmessage', 'save' );
+
+			// Iterate over each action and check type.
+			foreach ( $form_cache_actions as &$action ) {
+				// Check if the type is in allowed types.
+				if ( ! in_array( $action['settings']['type'], $allowed_actions ) ) {
+					$action['settings']['active'] = 0; // Set active to 0 if type is not in allowed types.
+				}
+			}
+			return $form_cache_actions;
 		}
 	}
 

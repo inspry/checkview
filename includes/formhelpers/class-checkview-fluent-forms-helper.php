@@ -48,10 +48,20 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 					'fluentform/email_to',
 					array(
 						$this,
-						'checkview_inject_email',
+						'checkview_remove_receipt',
 					),
 					99,
 					4
+				);
+
+				add_filter(
+					'fluentform/email_template_header',
+					array(
+						$this,
+						'checkview_remove_email_header',
+					),
+					99,
+					2
 				);
 			}
 
@@ -61,7 +71,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 					'fluentform/email_to',
 					array(
 						$this,
-						'checkview_remove_receipt',
+						'checkview_inject_email',
 					),
 					99,
 					4
@@ -131,6 +141,17 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 					update_option( '_fluentform_turnstile_details', $old_settings );
 				}
 			}
+			// $old_settings = array();
+			// $old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
+			// if ( null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
+			// 	if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' !== $old_settings['siteKey'] ) {
+			// 		update_option( 'checkview_rc-site-key', $old_settings['siteKey'], true );
+			// 		update_option( 'checkview_rc-secret-key', $old_settings['secretKey'], true );
+			// 		$old_settings['siteKey']   = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
+			// 		$old_settings['secretKey'] = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
+			// 		update_option( '_fluentform_reCaptcha_details', $old_settings );
+			// 	}
+			// }
 			add_filter(
 				'fluentform/recaptcha_v3_ref_score',
 				function ( $score ) {
@@ -148,6 +169,27 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				'akismet_get_api_key',
 				'__return_null',
 				-10
+			);
+
+			// Disbale feeds.
+			// add_filter(
+			// 	'fluentform/global_notification_active_types',
+			// 	array(
+			// 		$this,
+			// 		'checkview_disable_form_actions',
+			// 	),
+			// 	99,
+			// 	2
+			// );
+
+			// Disbale honeypot.
+			add_filter(
+				'fluentform/honeypot_status',
+				function ( $status, $form_id ) {
+					return false;
+				},
+				999,
+				2
 			);
 		}
 
@@ -180,6 +222,28 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		 */
 		public function checkview_remove_receipt( $address, $notification, $submitted_data, $form ) {
 			return TEST_EMAIL;
+		}
+
+		/**
+		 * Removes email headers.
+		 *
+		 * @param array $headers email header.
+		 * @param array $notification .notifications.
+		 * @return array
+		 */
+		public function checkview_remove_email_header( array $headers, array $notification ): array {
+			// Ensure headers are an array.
+			if ( ! is_array( $headers ) ) {
+				$headers = explode( "\r\n", $headers );
+			}
+			$filtered_headers = array_filter(
+				$headers,
+				function ( $header ) {
+					// Exclude headers that start with 'bcc:' or 'cc:'.
+					return stripos( $header, 'bcc:' ) !== 0 && stripos( $header, 'cc:' ) !== 0;
+				}
+			);
+			return array_values( $filtered_headers );
 		}
 		/**
 		 * Stores the test results and finishes the testing session.
@@ -247,8 +311,18 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			->where( 'form_id', $form_id )
 			->where( 'submission_id', '=', $entry_id )
 			->delete();
+			$old_settings = array();
+			$old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
+			if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
+				if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' === $old_settings['siteKey'] ) {
+					$old_settings['siteKey']   = get_option( 'checkview_rc-site-key' );
+					$old_settings['secretKey'] = get_option( 'checkview_rc-secret-key' );
+					update_option( '_fluentform_reCaptcha_details', $old_settings );
+				}
+			}
+			$old_settings = array();
 			$old_settings = (array) get_option( '_fluentform_turnstile_details', array() );
-			if ( null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
+			if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
 				if ( '1x00000000000000000000AA' === $old_settings['siteKey'] ) {
 					$old_settings['siteKey']   = get_option( 'checkview_ff_turnstile-site-key' );
 					$old_settings['secretKey'] = get_option( 'checkview_ff_turnstile-secret-key' );
@@ -258,6 +332,20 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			}
 
 			complete_checkview_test( $checkview_test_id );
+		}
+
+		/**
+		 * Disables Form actions.
+		 *
+		 * @param array $notifications form actions.
+		 * @param int   $form_id form id.
+		 * @return array
+		 */
+		public function checkview_disable_form_actions( $notifications, $form_id ) {
+
+			// List of allowed action types.
+			$allowed_actions['notifications'] = 'email_notifications';
+			return $allowed_actions;
 		}
 	}
 

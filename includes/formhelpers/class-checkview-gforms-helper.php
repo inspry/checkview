@@ -52,18 +52,16 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 					1
 				);
 			}
-
 			// Disable addons found in forms.
-			add_filter(
-				'gform_addon_pre_process_feeds',
-				array(
-					$this,
-					'checkview_disable_addons_feed',
-				),
-				999,
-				3
-			);
-
+			// add_filter(
+			// 	'gform_addon_pre_process_feeds',
+			// 	array(
+			// 		$this,
+			// 		'checkview_disable_addons_feed',
+			// 	),
+			// 	999,
+			// 	3
+			// );
 			// Disable PDF addon if added to form.
 			add_filter(
 				'gfpdf_pdf_config',
@@ -124,10 +122,11 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				'gform_pre_submission_filter',
 				array( $this, 'maybe_hide_recaptcha' )
 			);
-
 			// Bypass hCaptcha.
-			add_filter( 'hcap_activate', '__return_false' );
-
+			add_filter(
+				'hcap_activate',
+				'__return_false'
+			);
 			// Bypass Akismet.
 			add_filter(
 				'akismet_get_api_key',
@@ -184,7 +183,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		 * @return array Email.
 		 */
 		public function checkview_inject_email( $email ) {
-			if ( get_option( 'disable_email_receipt' ) == true ) {
+			if ( get_option( 'disable_email_receipt', false ) == false ) {
 				$email['to'] = TEST_EMAIL;
 			} elseif ( is_array( $email['to'] ) ) {
 				$email['to'][] = TEST_EMAIL;
@@ -276,29 +275,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		 * @return array
 		 */
 		public function checkview_disable_addons_feed( $feeds, $entry, $form ) {
-			$form_id = rgar( $form, 'id' );
-			if ( $feeds ) {
-				foreach ( $feeds as &$feed ) {
-					if ( isset( $feed['meta'] ) ) {
-						$feed['meta']['feed_condition_conditional_logic']        = true;
-						$feed['meta']['feed_condition_conditional_logic_object'] = array(
-							'conditionalLogic' => array(
-								'actionType' => 'show',
-								'logicType'  => 'all',
-								'rules'      =>
-								array(
-									array(
-										'fieldId'  => 1,
-										'operator' => 'is',
-										'value'    => esc_html__( 'Check Form Helper', 'checkview' ),
-									),
-								),
-							),
-						);
-					}
-				}
-			}
-			return $feeds;
+			return array();
 		}
 	}
 	$checkview_gforms_helper = new Checkview_Gforms_Helper();

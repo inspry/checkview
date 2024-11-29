@@ -117,7 +117,9 @@ The API requires authentication using a valid JWT token. Include the JWT token i
 - **Endpoint:** `/forms/formslist` (GET)
 - **Description:** Retrieve the list of available forms.
 - **Parameters:**
-  - `_checkview_token` (required): Valid JWT token for authentication.
+  - `_checkview_token` (not required): Valid JWT token for authentication.
+- **Headers:**
+  - `_checkview_token` (required): Valid JWT token bearer for authentication.
 - **Usage:**
   ```bash
   GET /wp-json/checkview/v1/forms/formslist?_checkview_token=your_jwt_token
@@ -157,8 +159,10 @@ The API requires authentication using a valid JWT token. Include the JWT token i
 
 - **Endpoint:** `/forms/registerformtest` (PUT)
 - **Description:** Register a form test for validation.
+- **Headers:**
+  - `_checkview_token` (required): Valid JWT token bearer for authentication.
 - **Parameters:**
-  - `_checkview_token` (required): Valid JWT token for authentication.
+  - `_checkview_token` (not required): Valid JWT token for authentication.
   - `frm_id` (required): Form ID.
   - `pg_id` (required): Page ID.
   - `type` (required): Test type.
@@ -183,9 +187,11 @@ The API requires authentication using a valid JWT token. Include the JWT token i
 
 - **Endpoint:** `/forms/formstestresults` (GET)
 - **Description:** Retrieve test results for a specific form.
+- **Headers:**
+  - `_checkview_token` (required): Valid JWT token bearer for authentication.
 - **Parameters:**
   - `uid` (required): User ID.
-  - `_checkview_token` (required): Valid JWT token for authentication.
+  - `_checkview_token` (not required): Valid JWT token for authentication.
 - **Usage:**
   ```bash
   GET /wp-json/checkview/v1/forms/formstestresults?uid=123&_checkview_token=your_jwt_token
@@ -210,9 +216,11 @@ The API requires authentication using a valid JWT token. Include the JWT token i
 
 - **Endpoint:** `/forms/deleteformstest` (DELETE)
 - **Description:** Delete test results for a specific form.
+- **Headers:**
+  - `_checkview_token` (required): Valid JWT token bearer for authentication.
 - **Parameters:**
   - `uid` (required): User ID.
-  - `_checkview_token` (required): Valid JWT token for authentication.
+  - `_checkview_token` (not required): Valid JWT token for authentication.
 - **Usage:**
   ```bash
   DELETE /wp-json/checkview/v1/forms/deleteformstest?uid=123&_checkview_token=your_jwt_token
@@ -258,10 +266,11 @@ The Checkview API provides endpoints to retrieve information about orders, produ
 ```plaintext
 GET /checkview/v1/store/orders
 ```
-
+- **Headers:**
+  - `_checkview_token` (required): Valid JWT token bearer for authentication.
 #### Parameters
 
-- `_checkview_token` (required): JWT token for authentication.
+- `_checkview_token` (not required): JWT token for authentication.
 - `checkview_order_last_modified_since` (optional): Retrieve orders modified since this date.
 - `checkview_order_last_modified_until` (optional): Retrieve orders modified until this date.
 - `checkview_order_id_after` (optional): Retrieve orders with IDs greater than this value.
@@ -300,10 +309,11 @@ curl -X GET "https://your-api-domain.com/checkview/v1/store/orders?_checkview_to
 ```plaintext
 GET /checkview/v1/store/products
 ```
-
+- **Headers:**
+  - `_checkview_token` (required): Valid JWT token bearer for authentication.
 #### Parameters
 
-- `_checkview_token` (required): JWT token for authentication.
+- `_checkview_token` (not required): JWT token for authentication.
 - `checkview_keyword` (optional): Keyword to search for products.
 - `checkview_product_type` (optional): Product type to filter results.
 
@@ -340,10 +350,12 @@ curl -X GET "https://your-api-domain.com/checkview/v1/store/products?_checkview_
 ```plaintext
 GET /checkview/v1/store/shippingdetails
 ```
+- **Headers:**
+  - `_checkview_token` (required): Valid JWT token bearer for authentication.
 
 #### Parameters
 
-- `_checkview_token` (required): JWT token for authentication.
+- `_checkview_token` (not required): JWT token for authentication.
 
 #### Usage
 
@@ -378,10 +390,12 @@ curl -X GET "https://your-api-domain.com/checkview/v1/store/shippingdetails?_che
 ```plaintext
 DELETE /checkview/v1/store/deleteorders
 ```
+- **Headers:**
+  - `_checkview_token` (required): Valid JWT token bearer for authentication.
 
 #### Parameters
 
-- `_checkview_token` (required): JWT token for authentication.
+- `_checkview_token` (not required): JWT token for authentication.
 
 #### Usage
 
@@ -413,8 +427,10 @@ Get shipping details and related data.
 
 - **Endpoint**: `/checkview/v1/store/shippingdetails`
 - **HTTP Method**: GET
+- **Headers:**
+  - `_checkview_token` (required): Valid JWT token bearer for authentication.
 - **Parameters**:
-  - `_checkview_token` (required): JWT token for authentication.
+  - `_checkview_token` (not required): JWT token for authentication.
 - **Usage**:
   ```bash
   curl -X GET "https://your-wordpress-site.com/checkview/v1/store/shippingdetails?_checkview_token=your-jwt-token"
@@ -429,8 +445,10 @@ Lists cart details.
 
 - **Endpoint**: `/checkview/v1/store/cartdetails`
 - **HTTP Method**: GET
+- **Headers:**
+  - `_checkview_token` (required): Valid JWT token bearer for authentication.
 - **Parameters**:
-  - `_checkview_token` (required): JWT token for authentication.
+  - `_checkview_token` (not required): JWT token for authentication.
   - `cookie` (required): cookies from the browser.
 - **Usage**:
   ```bash
@@ -453,8 +471,10 @@ Lists active payment gateways.
 
 - **Endpoint**: `/checkview/v1/store/activegateways`
 - **HTTP Method**: PUT, GET
+- **Headers:**
+  - `_checkview_token` (required): Valid JWT token bearer for authentication.
 - **Parameters**:
-  - `_checkview_token` (required): JWT token for authentication.
+  - `_checkview_token` (not required): JWT token for authentication.
 - **Usage**:
   ```bash
   curl -X PUT "https://your-wordpress-site.com/checkview/v1/store/activegateways?_checkview_token=your-jwt-token"
@@ -477,8 +497,10 @@ Creates a test customer.
 
 - **Endpoint**: `/checkview/v1/store/createtestcustomer`
 - **HTTP Method**: POST
+- **Headers:**
+  - `_checkview_token` (required): Valid JWT token bearer for authentication.
 - **Parameters**:
-  - `_checkview_token` (required): JWT token for authentication.
+  - `_checkview_token` (not required): JWT token for authentication.
 - **Usage**:
   ```bash
   curl -X POST "https://your-wordpress-site.com/checkview/v1/store/createtestcustomer?_checkview_token=your-jwt-token"
@@ -493,8 +515,10 @@ Retrieves test customer credentials.
 
 - **Endpoint**: `/checkview/v1/store/gettestcustomer`
 - **HTTP Method**: GET
+- **Headers:**
+  - `_checkview_token` (required): Valid JWT token bearer for authentication.
 - **Parameters**:
-  - `_checkview_token` (required): JWT token for authentication.
+  - `_checkview_token` (not required): JWT token for authentication.
 - **Usage**:
   ```bash
   curl -X GET "https://your-wordpress-site.com/checkview/v1/store/gettestcustomer?_checkview_token=your-jwt-token"
@@ -519,8 +543,10 @@ Retrieves store locations.
 
 - **Endpoint**: `/checkview/v1/store/getstorelocations`
 - **HTTP Method**: GET
+- **Headers:**
+  - `_checkview_token` (required): Valid JWT token bearer for authentication.
 - **Parameters**:
-  - `_checkview_token` (required): JWT token for authentication.
+  - `_checkview_token` (not required): JWT token for authentication.
 - **Usage**:
   ```bash
   curl -X GET "https://your-wordpress-site.com/checkview/v1/store/getstorelocations?_checkview_token=your-jwt-token"
@@ -537,8 +563,10 @@ Retrieves a list of all installed plugins, themes, and the WordPress core versio
 
 - **Endpoint**: `/checkview/v1/site-info`
 - **HTTP Method**: GET
+- **Headers:**
+  - `_checkview_token` (required): Valid JWT token bearer for authentication.
 - **Parameters**:
-  - `_checkview_token` (required): JWT token for authentication.
+  - `_checkview_token` (not required): JWT token for authentication.
 - **Usage**:
   ```bash
   curl -X GET "https://your-wordpress-site.com/wp-json/checkview/v1/site-info?_checkview_token=your-jwt-token"
@@ -615,11 +643,11 @@ Retrieves a list of all installed plugins, themes, and the WordPress core versio
 ```
 
 - **Notes**:
-  - The `_checkview_token` parameter is required and must be a valid JWT token. If the token is missing or invalid, the request will return a `403 Forbidden` status.
+  - The `_checkview_token` parameter is required in headers and must be a valid JWT token. If the token is missing or invalid, the request will return a `403 Forbidden` status.
   - The `"active"` field in the plugins and themes list indicates whether the plugin or theme is currently active.
   - The `"version"` field in the plugins and themes list indicates the version of the plugin or theme.
 
-Below is the updated documentation reflecting the added authentication using the `_checkview_token` parameter.
+Below is the updated documentation reflecting the added authentication using the `_checkview_token` in header.
 ### Validate Token
 
 #### Endpoint
@@ -627,10 +655,12 @@ Below is the updated documentation reflecting the added authentication using the
 ```plaintext
 GET /checkview/v1/validate/token
 ```
+- **Headers:**
+  - `_checkview_token` (required): Valid JWT token bearer for authentication.
 
 #### Parameters
 
-- `_checkview_token` (required): JWT token for validation.
+- `_checkview_token` (optional): JWT token for validation.
 
 #### Usage
 
@@ -669,10 +699,12 @@ curl -X GET "https://your-api-domain.com/checkview/v1/validate/token?_checkview_
 ```plaintext
 GET /checkview/v1/permissions/check
 ```
+- **Headers:**
+  - `_checkview_token` (required): Valid JWT token bearer for authentication.
 
 #### Parameters
 
-- `_checkview_token` (required): JWT token for validation.
+- `_checkview_token` (optional): JWT token for validation.
 
 #### Usage
 
@@ -710,6 +742,7 @@ curl -X GET "https://your-api-domain.com/checkview/v1/permissions/check?_checkvi
 ## Notes
 
 - JWT authentication is required for all endpoints.
+- A unique nonce must be included in all requests.
 - Results are cached for 12 hours to improve performance.
 
 
