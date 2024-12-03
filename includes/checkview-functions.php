@@ -551,12 +551,13 @@ if ( ! function_exists( 'checkview_whitelist_saas_ip_addresses' ) ) {
 	 */
 	function checkview_whitelist_saas_ip_addresses() {
 		$api_ip = checkview_get_api_ip();
-		if ( ! empty( $_SERVER['REMOTE_ADDR'] ) && ! filter_var( sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ), FILTER_VALIDATE_IP ) ) {
+		$visitor_ip = checkview_get_visitor_ip();
+		if ( ! empty( $visitor_ip ) && ! filter_var( sanitize_text_field( wp_unslash( $visitor_ip ) ), FILTER_VALIDATE_IP ) ) {
 			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'ip-logs', esc_html__( 'Invalid IP Address.', 'checkview' ) );
 			return false;
 		}
-		if ( is_array( $api_ip ) && in_array( isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '', $api_ip, true ) ) {
+		if ( is_array( $api_ip ) && in_array( isset( $visitor_ip ) ? sanitize_text_field( wp_unslash( $visitor_ip ) ) : '', $api_ip, true ) ) {
 			return true;
 		}
 	}

@@ -397,7 +397,7 @@ class Checkview_Admin {
 	 *
 	 * @param [array]  $plugin_metas plugin metas.
 	 * @param [string] $slug plugin slug.
-	 * @return void
+	 * @return array
 	 */
 	public function checkview_hide_plugin_details( $plugin_metas, $slug ) {
 		$hide_me = get_option( 'checkview_hide_me', false );

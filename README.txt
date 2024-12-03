@@ -86,11 +86,16 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 == Changelog ==
 = 2.0.7 =
-* Added bypass for PerfMatters api barrier.
+* Added bypass for PerfMatters API barrier.
 * Added function to disable all form actions except CF7.
 * Added Google Recaptcha V2 bypass in FluentForms.
-* Updated getformresults endpoint to turn Recaptcha V2 on after test completion.
+* Updated the init hook to re-enable Recaptcha V2 and Cloudflare Turnstile after test completion.
 * Added BCC and CC suppressions in all forms.
+* Updated IP address check function to adapt to different server settings.
+* Added support to hide/show plugin details.
+* Updated logs saving and retrieval method.
+* Added a new endpoint to share helper logs.
+* Added function to delete logs after 7 days.
 
 = 2.0.6 = 
 * Added fix for WooCommerce order deletion global scope issue.
@@ -289,11 +294,17 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 == Upgrade Notice ==
 = 2.0.7 =
-* Added bypass for PerfMatters api barrier.
+* Added bypass for PerfMatters API barrier.
 * Added function to disable all form actions except CF7.
 * Added Google Recaptcha V2 bypass in FluentForms.
-* Updated getformresults endpoint to turn Recaptcha V2 on after test completion.
+* Updated the init hook to re-enable Recaptcha V2 and Cloudflare Turnstile after test completion.
 * Added BCC and CC suppressions in all forms.
+* Updated IP address check function to adapt to different server settings.
+* Added support to hide/show plugin details.
+* Updated logs saving and retrieval method.
+* Added a new endpoint to share helper logs.
+* Added function to delete logs after 7 days.
+
 
 = 2.0.6 = 
 * Added fix for WooCommerce order deletion global scope issue.
