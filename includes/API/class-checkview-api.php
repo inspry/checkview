@@ -409,9 +409,9 @@ class CheckView_Api {
 			'checkview/v1',
 			'/get-logs',
 			array(
-				'callback' => array( $this, 'checkview_saas_get_helper_logs' ),
-				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
-				'args'     => array(
+				'callback'            => array( $this, 'checkview_saas_get_helper_logs' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
 					'_checkview_token' => array(
 						'required' => false,
 					),
