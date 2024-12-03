@@ -404,6 +404,20 @@ class CheckView_Api {
 				),
 			)
 		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/get-logs',
+			array(
+				'callback'            => array( $this, 'checkview_saas_get_helper_logs' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token' => array(
+						'required' => false,
+					),
+				),
+			)
+		);
 	} // end checkview_register_rest_route
 	/**
 	 * Retrieves the available orders.
@@ -1167,10 +1181,13 @@ class CheckView_Api {
 			wp_die();
 		} else {
 			// Log the detailed error for internal use.
-			Checkview_Admin_Logs::add( 'api-logs', 'No results.' );
-			return new WP_Error(
-				400,
-				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
+			Checkview_Admin_Logs::add( 'api-logs', 'No payment methods found.' );
+			return new WP_REST_Response(
+				array(
+					'status'   => 200,
+					'response' => esc_html__( 'An error occurred while processing your request.', 'checkview' ),
+					'body'     => array(),
+				)
 			);
 			wp_die();
 		}
@@ -2212,6 +2229,64 @@ class CheckView_Api {
 				array(
 					'status' => 404,
 				)
+			);
+		}
+	}
+	/**
+	 * Returns plugin logs.
+	 *
+	 * @return WP_Rest_Response log details.
+	 */
+	public function checkview_saas_get_helper_logs() {
+		// Get all plugins.
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		// Define the threshold timestamp (7 days ago).
+		$threshold_time = strtotime( '-7 days' );
+
+		$wp_filesystem_direct = new WP_Filesystem_Direct( array() );
+		$pad_spaces           = 45;
+		$checkview_options    = get_option( 'checkview_log_options', array() );
+
+		$logs_list = glob( Checkview_Admin_Logs::get_logs_folder() . '*.log' );
+		$logs      = array();
+		foreach ( $logs_list as $file ) {
+			$contents = $file && file_exists( $file ) ? $wp_filesystem_direct->get_contents( $file ) : '--';
+			if ( preg_match( '/\/([^\/]+)\.log$/', $file, $matche ) ) {
+				// Extract the date from the filename (e.g., log-YYYY-MM-DD.log).
+				if ( preg_match( '/log-(\d{4}-\d{2}-\d{2})\.log$/', $file, $matches ) ) {
+					$file_date = strtotime( $matches[1] );
+
+					// If the file's date is older than 7 days, delete the file.
+					if ( $file_date < $threshold_time ) {
+						unlink( $file );
+					} else {
+						$file          = $matche[1]; // Return the captured group.
+						$logs[ $file ] = $contents;
+					}
+				} else {
+					unlink( $file );
+				}
+			}
+		}
+		// Combine all data.
+		$response = array(
+			'logs' => $logs,
+		);
+		if ( $response ) {
+				return new WP_REST_Response(
+					array(
+						'status'        => 200,
+						'response'      => esc_html__( 'Successfully retrieved the site info.', 'checkview' ),
+						'body_response' => $response,
+					)
+				);
+		} else {
+			Checkview_Admin_Logs::add( 'api-logs', sanitize_text_field( 'Failed to retrieve the site info.' ) );
+			return new WP_Error(
+				400,
+				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 			);
 		}
 	}

@@ -207,6 +207,7 @@ class Checkview_Admin_Logs {
 	 * @param string $message log to write.
 	 */
 	public static function add( $handle, $message ) {
+		$handle = $handle . '-log-' . gmdate( 'Y-m-d' );
 		if ( self::open( $handle ) && is_resource( self::$_handles[ $handle ] ) ) {
 			$time   = self::get_now()->format( 'm-d-Y @ H:i:s -' ); // Grab Time.
 			$result = @fwrite( self::$_handles[ $handle ], $time . ' ' . $message . "\n" );

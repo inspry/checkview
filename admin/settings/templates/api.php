@@ -231,6 +231,20 @@ $allow_dev         = ! empty( $checkview_options['checkview_allowed_extensions']
 
 				<tr valign="top">
 					<th scope="row" >
+						<label for="checkview_get_helper_logs">
+							<?php esc_html_e( 'Get helper logs', 'checkview' ); ?>
+						</label>
+						<p class="make-lib-description"><?php esc_html_e( 'Use this endpoint to get helper logs.', 'checkview' ); ?></p>
+					</th>
+					<td class="checkview-make-library-box">
+					<label  for="checkview_get_helper_logs">
+						<p class="make-lib-description"><?php echo esc_url_raw( get_rest_url() . 'checkview/v1/get-logs' ); ?></p>
+					</label>
+					</td>
+				</tr>
+
+				<tr valign="top">
+					<th scope="row" >
 						<label for="checkview_verify_test_user_credentials">
 							<?php esc_html_e( 'Verify user', 'checkview' ); ?>
 						</label>

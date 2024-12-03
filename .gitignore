@@ -6,3 +6,6 @@ wordpress
 applications
 public_html/
 web
+site/*
+site*
+site/

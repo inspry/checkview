@@ -49,6 +49,28 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 					99,
 					1
 				);
+				// Divert and suppress postmark.
+				add_filter(
+					'gform_postmark_email',
+					array(
+						$this,
+						'checkview_modify_postmark_email',
+					),
+					99,
+					1
+				);
+
+				// Divert and suppress postmark.
+				add_filter(
+					'gform_sendgrid_email',
+					array(
+						$this,
+						'checkview_modify_sendgrid_email',
+					),
+					99,
+					1
+				);
+
 			}
 			// disable addons found in forms.
 			add_filter(
@@ -183,7 +205,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		public function checkview_inject_email( $email ) {
 			if ( get_option( 'disable_email_receipt', false ) == false ) {
 				$email['to'] = TEST_EMAIL;
-				$headers = $email['headers'];
+				$headers     = $email['headers'];
 				if ( ! is_array( $headers ) ) {
 					$headers = explode( "\r\n", $headers );
 				}
@@ -199,6 +221,53 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				$email['to'][] = TEST_EMAIL;
 			} else {
 				$email['to'] .= ', ' . TEST_EMAIL;
+			}
+			return $email;
+		}
+
+		/**
+		 * Modifies Sendgrid email.
+		 *
+		 * @param array $email modifies sendgrid emails.
+		 * @return array
+		 */
+		public function checkview_modify_sendgrid_email( array $email ): array {
+			if ( get_option( 'disable_email_receipt', false ) == false ) {
+				$email['personalizations'][0]['to']  = TEST_EMAIL;
+				$email['personalizations'][0]['cc']  = '';
+				$email['personalizations'][0]['bcc'] = '';
+			} else {
+				$email['personalizations'][0]['to'][] = TEST_EMAIL;
+			}
+			return $email;
+		}
+		/**
+		 * Modifies PM emails.
+		 *
+		 * @param array $email post mark email.
+		 * @return array
+		 */
+		public function checkview_modify_postmark_email( array $email ): array {
+			if ( get_option( 'disable_email_receipt', false ) == false ) {
+				$email['To'] = TEST_EMAIL;
+				$headers     = $email['Headers'];
+				if ( ! is_array( $headers ) ) {
+					$headers = explode( "\r\n", $headers );
+				}
+				$filtered_headers = array_filter(
+					$headers,
+					function ( $header ) {
+						// Exclude headers that start with 'bcc:' or 'cc:'.
+						return stripos( $header, 'Bcc:' ) !== 0 && stripos( $header, 'CC:' ) !== 0;
+					}
+				);
+				$email['Headers'] = $filtered_headers;
+				$email['Bcc']     = '';
+				$email['CC']      = '';
+			} elseif ( is_array( $email['To'] ) ) {
+				$email['To'][] = TEST_EMAIL;
+			} else {
+				$email['To'] .= ', ' . TEST_EMAIL;
 			}
 			return $email;
 		}
