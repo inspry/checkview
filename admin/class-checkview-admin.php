@@ -60,17 +60,17 @@ class Checkview_Admin {
 			array( $this, 'checkview_delete_expired_nonces' )
 		);
 
-		// add_filter(
-		// 'all_plugins',
-		// array( $this, 'checkview_hide_me' )
-		// );
-		// add_filter( 'debug_information', array( $this, 'checkview_handle_plugin_health_info' ), 10, 1 );
-		// add_filter(
-		// 'plugin_row_meta',
-		// array( $this, 'checkview_hide_plugin_details' ),
-		// 10,
-		// 2
-		// );
+		add_filter(
+			'all_plugins',
+			array( $this, 'checkview_hide_me' )
+		);
+		add_filter( 'debug_information', array( $this, 'checkview_handle_plugin_health_info' ), 10, 1 );
+		add_filter(
+			'plugin_row_meta',
+			array( $this, 'checkview_hide_plugin_details' ),
+			10,
+			2
+		);
 	}
 
 	/**
@@ -356,7 +356,7 @@ class Checkview_Admin {
 	 */
 	public function checkview_hide_me( array $plugins ): array {
 		$hide_me = get_option( 'checkview_hide_me', false );
-		if ( ! is_array( $plugins ) || false === $hide_me ) {
+		if ( ! is_array( $plugins ) || false == $hide_me ) {
 			return $plugins;
 		}
 		foreach ( $plugins as $slug => $brand ) {
@@ -369,19 +369,48 @@ class Checkview_Admin {
 		}
 		return $plugins;
 	}
+	/**
+	 * Hides plugin health Info.
+	 *
+	 * @param array $plugins array of plugins.
+	 * @return array
+	 */
 	public function checkview_handle_plugin_health_info( $plugins ) {
 		$hide_me = get_option( 'checkview_hide_me', false );
 		if ( ! isset( $plugins['wp-plugins-active'] ) ||
-			! isset( $plugins['wp-plugins-active']['fields'] ) || false === $hide_me ) {
+			! isset( $plugins['wp-plugins-active']['fields'] ) || false == $hide_me ) {
 			return $plugins;
 		}
 		foreach ( $plugins as $slug => $brand ) {
 			if ( ! isset( $slug ) || ! array_key_exists( $slug, $plugins ) || ! is_array( $brand ) ) {
 				continue;
 			}
-			if ( 'checkview/checkview.php' === $slug ) {
-				unset( $plugins[ $slug ] );
+			if ( ! empty( $plugins['wp-plugins-active']['fields']['CheckView'] ) ) {
+				unset( $plugins['wp-plugins-active']['fields']['CheckView'] );
 			}
 		}
+		return $plugins;
+	}
+
+	/**
+	 * Hides Plugin Details.
+	 *
+	 * @param [array]  $plugin_metas plugin metas.
+	 * @param [string] $slug plugin slug.
+	 * @return void
+	 */
+	public function checkview_hide_plugin_details( $plugin_metas, $slug ) {
+		$hide_me = get_option( 'checkview_hide_me', false );
+		if ( ! is_array( $plugin_metas ) || false == $hide_me || 'checkview' !== $slug ) {
+			return $plugin_metas;
+		}
+
+		foreach ( $plugin_metas as $plugin_key => $plugin_value ) {
+			if ( strpos( $plugin_value, sprintf( '>%s<', translate( 'View details' ) ) ) ) {
+				unset( $plugin_metas[ $plugin_key ] );
+				break;
+			}
+		}
+		return $plugin_metas;
 	}
 }

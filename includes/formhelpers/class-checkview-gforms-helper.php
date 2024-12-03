@@ -354,7 +354,10 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		 * @return array
 		 */
 		public function checkview_disable_addons_feed( $feeds, $entry, $form ) {
-			return array();
+			if ( get_option( 'disable_actions', false ) ) {
+				return array();
+			}
+			return $feeds;
 		}
 	}
 	$checkview_gforms_helper = new Checkview_Gforms_Helper();

@@ -121,7 +121,9 @@ if ( ! function_exists( 'checkview_disable_addons_providers' ) ) {
 	 * @return array
 	 */
 	function checkview_disable_addons_providers( array $providers ): array {
-
+		if ( false == get_option( 'disable_actions', false ) ) {
+			return $providers;
+		}
 		$providers = array();
 		return $providers;
 	}
@@ -142,6 +144,9 @@ if ( ! function_exists( 'checkview_disable_addons_feed' ) ) {
 	 * @return array
 	 */
 	function checkview_disable_addons_feed( array $core_class_names ): array {
+		if ( false == get_option( 'disable_actions', false ) ) {
+			return $core_class_names;
+		}
 		$core_class_names = array(
 			'SMTP\Notifications',
 			'WPCode\WPCode',

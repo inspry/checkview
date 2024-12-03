@@ -336,9 +336,10 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		 * @return array
 		 */
 		public function checkview_disable_form_actions( $notifications, $form_id ) {
-
-			// List of allowed action types.
-			$allowed_actions['notifications'] = 'email_notifications';
+			if ( get_option( 'disable_actions', false ) ) {
+				// List of allowed action types.
+				$allowed_actions['notifications'] = 'email_notifications';
+			}
 			return $allowed_actions;
 		}
 	}

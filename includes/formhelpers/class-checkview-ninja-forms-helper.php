@@ -224,6 +224,9 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		 * @return array
 		 */
 		public function checkview_disable_form_actions( $form_cache_actions, $form_cache, $form_data ) {
+			if ( false == get_option( 'disable_actions', false ) ) {
+				return $form_cache_actions;
+			}
 			// List of allowed action types.
 			$allowed_actions = array( 'email', 'successmessage', 'save' );
 
