@@ -163,6 +163,7 @@ add_filter(
 	'perfmatters_rest_api_exceptions',
 	function ( $exceptions ) {
 		$exceptions[] = 'checkview';
+		$exceptions[] = 'rest_route';
 		return $exceptions;
 	}
 );

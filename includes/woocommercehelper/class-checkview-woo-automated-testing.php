@@ -558,13 +558,12 @@ class Checkview_Woo_Automated_Testing {
 		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
-		Checkview_Admin_Logs::add( 'ip-logs', wp_json_encode( $cv_bot_ip ) . 'bot IP' );
-		Checkview_Admin_Logs::add( 'ip-logs', wp_json_encode( $visitor_ip ) . 'visitor IP' );
 		if ( ! is_array( $cv_bot_ip ) || ! in_array( $visitor_ip, $cv_bot_ip ) ) {
 
 			return;
 		}
-
+		Checkview_Admin_Logs::add( 'ip-logs', wp_json_encode( $cv_bot_ip ) . 'bot IP' );
+		Checkview_Admin_Logs::add( 'ip-logs', wp_json_encode( $visitor_ip ) . 'visitor IP' );
 		if ( ! is_admin() && class_exists( 'WooCommerce' ) ) {
 			// Always use Stripe test mode when on dev or staging.
 			add_filter(

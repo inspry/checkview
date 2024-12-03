@@ -97,7 +97,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 				'wsf_action_email_headers',
 				array(
 					$this,
-					'checkview_inject_email',
+					'checkview_remove_email_header',
 				),
 				99,
 				4
@@ -135,6 +135,34 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 				$to .= ', "CheckView" <' . TEST_EMAIL . '>';
 			}
 			return $to;
+		}
+
+		/**
+		 * Injects email to WS forms supported emails.
+		 *
+		 * @param array  $headers An array of email addresses in RFC 2822 format to send the email to.
+		 * @param object $form The form object.
+		 * @param string $submit_parse The submit object.
+		 * @param array  $config The action configuration.
+		 * @return bool
+		 */
+		public function checkview_remove_email_header( $headers, $form, $submit_parse, $config ) {
+			if ( get_option( 'disable_email_receipt', false ) !== false ) {
+				return $headers;
+
+			}
+			// Ensure headers are an array.
+			if ( ! is_array( $headers ) ) {
+				$headers = explode( "\r\n", $headers );
+			}
+			$filtered_headers = array_filter(
+				$headers,
+				function ( $header ) {
+					// Exclude headers that start with 'bcc:' or 'cc:'.
+					return stripos( $header, 'bcc:' ) !== 0 && stripos( $header, 'cc:' ) !== 0;
+				}
+			);
+			return array_values( $filtered_headers );
 		}
 		/**
 		 * Clones entry after forms submission.

@@ -231,8 +231,10 @@ if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
 	 * @since    1.0.0
 	 */
 	function checkview_get_visitor_ip() {
-
-		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
+		if ( ! empty( $_SERVER['HTTP_X_REAL_IP'] ) ) {
+			// check real ip.
+			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REAL_IP'] ) );
+		} elseif ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
 			// check ip from share internet.
 			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ) );
 		} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
@@ -245,7 +247,6 @@ if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
 		if ( ! checkview_validate_ip( $ip ) ) {
 			return false;
 		}
-
 		return $ip;
 	}
 }
