@@ -86,7 +86,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 == Changelog ==
 = 2.0.7 =
-* Updated IP address check function to adap different server configurations.
+* Updated IP address check function to adapt to different server configurations.
 
 = 2.0.6 = 
 * Added fix for WooCommerce order deletion global scope issue.
@@ -285,7 +285,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 == Upgrade Notice ==
 = 2.0.7 =
-* Updated IP address check function to adap different server configurations.
+* Updated IP address check function to adapt to different server configurations.
 
 = 2.0.6 = 
 * Added fix for WooCommerce order deletion global scope issue.
