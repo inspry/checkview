@@ -550,7 +550,7 @@ if ( ! function_exists( 'checkview_whitelist_saas_ip_addresses' ) ) {
 	 * @return bool
 	 */
 	function checkview_whitelist_saas_ip_addresses() {
-		$api_ip = checkview_get_api_ip();
+		$api_ip     = checkview_get_api_ip();
 		$visitor_ip = checkview_get_visitor_ip();
 		if ( ! empty( $visitor_ip ) && ! filter_var( sanitize_text_field( wp_unslash( $visitor_ip ) ), FILTER_VALIDATE_IP ) ) {
 			// Log the detailed error for internal use.

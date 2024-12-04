@@ -194,6 +194,8 @@ class Checkview_Woo_Automated_Testing {
 				3
 			);
 		}
+
+		add_filter( 'wp_mail', array( $this, 'checkview_filter_wp_mail' ), 99 );
 		$this->checkview_test_mode();
 	}
 
@@ -895,4 +897,18 @@ class Checkview_Woo_Automated_Testing {
 
 		return $prevent;
 	}
+
+	/**
+	 * Emails suppression for Woo orders.
+	 *
+	 * @param [array] $args mail args.
+	 * @return array
+	 */
+	public function checkview_filter_wp_mail( $args ) {
+		// Suppress all order-related notifications except for new orders.
+		if ( strpos( $args['subject'], 'order' ) !== false && ! strpos( $args['subject'], 'New order' ) ) {
+			$args['to'] = ''; // Return empty array to suppress email.
+		}
+		return $args;
+	}//end checkview_filter_wp_mail()
 }
