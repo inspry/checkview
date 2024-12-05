@@ -1,30 +1,29 @@
 <?php
 /**
- * Fired during plugin deactivation
+ * Checkview_Deactivator class
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @since 1.0.0
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/includes
  */
 
 /**
- * Fired during plugin deactivation.
+ * Handles plugin deactivation.
  *
- * This class defines all code necessary to run during the plugin's deactivation.
- *
- * @since      1.0.0
- * @package    Checkview
+ * @since 1.0.0
+ * @package Checkview
  * @subpackage Checkview/includes
- * @author     Check View <support@checkview.io>
+ * @author Check View <support@checkview.io>
  */
 class Checkview_Deactivator {
 
 	/**
-	 * Clear the cron job and remove the IP from the whitelist.
+	 * Deactivation sequence.
+	 * 
+	 * Clears scheduled jobs and events.
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public static function deactivate() {
 		// Clear the cron job.

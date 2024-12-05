@@ -1,11 +1,10 @@
 <?php
 /**
- * Fired during Fluentforms is active.
+ * Checkview_Fluent_Forms_Helper class
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @since 1.0.0
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/includes/formhelpers
  */
 
@@ -15,33 +14,36 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 	/**
-	 * The public-facing functionality of the plugin.
+	 * Adds support for Fluent Forms.
 	 *
-	 * Helps in Fluentforms management.
+	 * During CheckView tests, modifies Fluent Forms hooks, overwrites the
+	 * recipient email address, and handles test cleanup.
 	 *
-	 * @package    Checkview
+	 * @package Checkview
 	 * @subpackage Checkview/includes/formhelpers
-	 * @author     Check View <support@checkview.io>
+	 * @author Check View <support@checkview.io>
 	 */
 	class Checkview_Fluent_Forms_Helper {
 		/**
-		 * The loader that's responsible for maintaining and registering all hooks that power
-		 * the plugin.
+		 * Loader.
 		 *
-		 * @since    1.0.0
-		 * @access   protected
-		 * @var      Checkview_Loader    $loader    Maintains and registers all hooks for the plugin.
+		 * @since 1.0.0
+		 * @access protected
+		 *
+		 * @var Checkview_Loader $loader Maintains and registers all hooks for the plugin.
 		 */
 		public $loader;
 
 		/**
-		 * Initializes the class constructor.
+		 * Constructor.
+		 *
+		 * Initiates loader property, adds hooks.
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
+
+			// Change Email address to our test email.
 			if ( defined( 'TEST_EMAIL' ) && get_option( 'disable_email_receipt' ) == false ) {
-				// Change Email address to our test email.
-				// Change Email address to our test email.
 				add_filter(
 					'fluentform/email_to',
 					array(
@@ -63,9 +65,8 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				);
 			}
 
+			// Disable email recipients.
 			if ( defined( 'TEST_EMAIL' ) && get_option( 'disable_email_receipt' ) == true ) {
-
-				// Change Email address to our test email.
 				add_filter(
 					'fluentform/email_to',
 					array(
@@ -76,7 +77,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 					4
 				);
 			}
-			// clone entry after submission complete.
+
 			add_action(
 				'fluentform/submission_inserted',
 				array(
@@ -159,9 +160,11 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				99,
 				1
 			);
-			// bypass hcaptcha.
+
+			// Bypass hCaptcha.
 			add_filter( 'hcap_activate', '__return_false' );
-			// bypass akismet.
+
+			// Bypass Akismet.
 			add_filter(
 				'akismet_get_api_key',
 				'__return_null',
@@ -191,13 +194,13 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		}
 
 		/**
-		 * Injects email to fluentform supported emails.
+		 * Appends our test email for test form submissions.
 		 *
-		 * @param string $address email address.
-		 * @param string $notification email notification.
-		 * @param array  $submitted_data fluentforms submitted data.
-		 * @param object $form fluentforms form object.
-		 * @return string email.
+		 * @param string $address Email address.
+		 * @param string $notification Email notification.
+		 * @param array  $submitted_data Fluent Forms submitted data.
+		 * @param object $form Fluent Forms form object.
+		 * @return string Email.
 		 */
 		public function checkview_inject_email( $address, $notification, $submitted_data, $form ) {
 			if ( is_array( $address ) ) {
@@ -209,13 +212,13 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		}
 
 		/**
-		 * Removes email to fluentform supported emails.
+		 * Overwrites email recipient for test form submissions.
 		 *
-		 * @param string $address email address.
-		 * @param string $notification email notification.
-		 * @param array  $submitted_data fluentforms submitted data.
-		 * @param object $form fluentforms form object.
-		 * @return string email.
+		 * @param string $address Email address.
+		 * @param string $notification Email notification.
+		 * @param array  $submitted_data Fluent Forms submitted data.
+		 * @param object $form Fluent Forms form object.
+		 * @return string Email.
 		 */
 		public function checkview_remove_receipt( $address, $notification, $submitted_data, $form ) {
 			return TEST_EMAIL;
@@ -243,11 +246,13 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			return array_values( $filtered_headers );
 		}
 		/**
-		 * CLones the fluentforms enrty.
+		 * Stores the test results and finishes the testing session.
 		 *
-		 * @param int    $entry_id fluentform ID.
-		 * @param array  $form_data fluentform data.
-		 * @param object $form fluentform obj.
+		 * Deletes test submission from Formidable database table.
+		 *
+		 * @param int    $entry_id Fluent Form ID.
+		 * @param array  $form_data Fluent Form data.
+		 * @param object $form Fluent Form object.
 		 * @return void
 		 */
 		public function checkview_clone_fluentform_entry( $entry_id, $form_data, $form ) {
@@ -260,7 +265,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				$checkview_test_id = $form_id . gmdate( 'Ymd' );
 			}
 
-			// clone entry to check view tables.
+			// Clone entry to check view tables.
 			$tablename = $wpdb->prefix . 'fluentform_entry_details';
 			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where submission_id=%d and form_id=%d order by id ASC', $entry_id, $form_id ) );
 			foreach ( $rows as $row ) {
@@ -321,10 +326,11 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				if ( '1x00000000000000000000AA' === $old_settings['siteKey'] ) {
 					$old_settings['siteKey']   = get_option( 'checkview_ff_turnstile-site-key' );
 					$old_settings['secretKey'] = get_option( 'checkview_ff_turnstile-secret-key' );
+
 					update_option( '_fluentform_turnstile_details', $old_settings );
 				}
 			}
-			// Test completed So Clear sessions.
+
 			complete_checkview_test( $checkview_test_id );
 		}
 
@@ -338,9 +344,9 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		public function checkview_disable_form_actions( $notifications, $form_id ) {
 			if ( get_option( 'disable_actions', false ) ) {
 				// List of allowed action types.
-				$allowed_actions['notifications'] = 'email_notifications';
+				$notifications['notifications'] = 'email_notifications';
 			}
-			return $allowed_actions;
+			return $notifications;
 		}
 	}
 

@@ -1,11 +1,10 @@
 <?php
 /**
- * Fired if WSforms is active.
+ * Checkview_WSF_Helper class
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @since 1.0.0
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/includes/formhelpers
  */
 
@@ -16,26 +15,30 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 	/**
-	 * The public-facing functionality of the plugin.
+	 * Adds support for WS Forms.
 	 *
-	 * Helps in WS Forms management.
+	 * During CheckView tests, modifies WS Forms hooks, overwrites the
+	 * recipient email address, and handles test cleanup.
 	 *
-	 * @package    Checkview
+	 * @package Checkview
 	 * @subpackage Checkview/includes/formhelpers
-	 * @author     Check View <support@checkview.io>
+	 * @author Check View <support@checkview.io>
 	 */
 	class Checkview_WSF_Helper {
 		/**
-		 * The loader that's responsible for maintaining and registering all hooks that power
-		 * the plugin.
+		 * Loader.
 		 *
-		 * @since    1.0.0
-		 * @access   protected
-		 * @var      Checkview_Loader    $loader    Maintains and registers all hooks for the plugin.
+		 * @since 1.0.0
+		 * @access protected
+		 *
+		 * @var Checkview_Loader $loader Maintains and registers all hooks for the plugin.
 		 */
 		public $loader;
+
 		/**
-		 * Initializes the class constructor.
+		 * Constructor.
+		 *
+		 * Initiates loader property, adds hooks.
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -116,7 +119,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 			return (array) $meta_keys;
 		}
 		/**
-		 * Injects email to WS forms supported emails.
+		 * Injects testing email recipient.
 		 *
 		 * @param array  $to An array of email addresses in RFC 2822 format to send the email to.
 		 * @param object $form The form object.
@@ -165,9 +168,11 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 			return array_values( $filtered_headers );
 		}
 		/**
-		 * Clones entry after forms submission.
+		 * Stores the test results and finishes the testing session.
 		 *
-		 * @param array $form_data form data.
+		 * Deletes test submission from Formidable database table.
+		 *
+		 * @param array $form_data Form data.
 		 * @return void
 		 */
 		public function checkview_clone_entry( $form_data ) {
@@ -213,23 +218,21 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 				}
 			}
 
-			// remove test entry from WS form.
 			$ws_form_submit          = new WS_Form_Submit();
 			$ws_form_submit->id      = $entry_id;
 			$ws_form_submit->form_id = $form_id;
 			$ws_form_submit->db_delete( true, true, true );
 
-			// Test completed So Clear sessions.
 			complete_checkview_test( $checkview_test_id );
 		}
 
 		/**
-		 * Undocumented function
+		 * Removes ReCAPTHCAs from the testing form.
 		 *
-		 * @param [Form Object] $form Form Object The form object.
+		 * @param array $form The form object.
 
-		 * @param [bool]        $preview Boolean Whether the form rendering is in preview mode.
-		 * @return Object $form form object.
+		 * @param bool  $preview Boolean Whether the form rendering is in preview mode.
+		 * @return Object Form object.
 		 */
 		public function checkview_remove_unwanted_fields( $form, $preview ) {
 			$fields = WS_Form_Common::get_fields_from_form( $form, true );
@@ -253,7 +256,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 						break;
 				}
 			}
-			// Return value.
+
 			return $form;
 		}
 
@@ -269,6 +272,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		 * @return boolean
 		 */
 		public function checkview_disable_addons_feed( $run, $form, $submit, $action_id_filter, $database_only, $config ): bool {
+			print_r($config);
 			$skip_actions = array( 'database', 'message', 'email' );
 			if ( false == get_option( 'disable_actions', false ) ) {
 				return true;
@@ -276,6 +280,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 			if ( in_array( $config['id'], $skip_actions, true ) ) {
 				return true;
 			}
+
 			return false;
 		}
 	}

@@ -1,11 +1,10 @@
 <?php
 /**
- * Fired if Wpforms is active.
+ * Checkview_Wpforms_Helper class
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @since 1.0.0
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/includes/formhelpers
  */
 
@@ -16,26 +15,29 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 	/**
-	 * The public-facing functionality of the plugin.
+	 * Adds support for WP Forms.
+	 * 
+	 * During CheckView tests, modifies WP Forms hooks, overwrites the
+	 * recipient email address, and handles test cleanup.
 	 *
-	 * Helps in Wpforms management.
-	 *
-	 * @package    Checkview
+	 * @package Checkview
 	 * @subpackage Checkview/includes/formhelpers
-	 * @author     Check View <support@checkview.io>
+	 * @author Check View <support@checkview.io>
 	 */
 	class Checkview_Wpforms_Helper {
 		/**
-		 * The loader that's responsible for maintaining and registering all hooks that power
-		 * the plugin.
+		 * Loader.
 		 *
-		 * @since    1.0.0
-		 * @access   protected
-		 * @var      Checkview_Loader    $loader    Maintains and registers all hooks for the plugin.
+		 * @since 1.0.0
+		 * @access protected
+		 * 
+		 * @var Checkview_Loader $loader Maintains and registers all hooks for the plugin.
 		 */
 		protected $loader;
 		/**
-		 * Initializes the class constructor.
+		 * Constructor.
+		 * 
+		 * Initiates loader property, adds hooks.
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -88,11 +90,10 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 			);
 
 			/**
-			 * Disable the email address suggestion.
+			 * Disables the email address suggestion.
 			 *
-			 * @link  https://wpforms.com/developers/how-to-disable-the-email-suggestion-on-the-email-form-field/
+			 * @link https://wpforms.com/developers/how-to-disable-the-email-suggestion-on-the-email-form-field/
 			 */
-
 			add_filter(
 				'wpforms_mailcheck_enabled',
 				'__return_false'
@@ -115,12 +116,11 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 				'__return_true',
 				999
 			);
-			// bypass hcaptcha.
-			add_filter(
-				'hcap_activate',
-				'__return_false'
-			);
-			// bypass akismet.
+
+			// Bypass hCaptcha.
+			add_filter( 'hcap_activate', '__return_false' );
+
+			// Bypass Akismet.
 			add_filter(
 				'akismet_get_api_key',
 				'__return_null',
@@ -129,9 +129,9 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 		}
 
 		/**
-		 * Injects email to WP forms supported emails.
+		 * Injects testing email address.
 		 *
-		 * @param array $email email address details.
+		 * @param array $email Email address details.
 		 * @return array
 		 */
 		public function checkview_inject_email( $email ) {
@@ -149,12 +149,14 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 			return $email;
 		}
 		/**
-		 * Logs entry for WP forms.
+		 * Stores the test results and finishes the testing session.
+		 * 
+		 * Deletes test submission from Formidable database table.
 		 *
-		 * @param array $form_fields array form fields.
-		 * @param array $entry form entry details.
-		 * @param array $form_data form data.
-		 * @param int   $entry_id form entry id.
+		 * @param array $form_fields Form fields.
+		 * @param array $entry Form entry details.
+		 * @param array $form_data Form data.
+		 * @param int $entry_id Form entry ID.
 		 * @return void
 		 */
 		public function checkview_log_wpform_test_entry( $form_fields, $entry, $form_data, $entry_id ) {
@@ -262,7 +264,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 				}
 			}
 
-			// remove entry if pro plugin.
+			// Remove entry if Pro plugin.
 			if ( is_plugin_active( 'wpforms/wpforms.php' ) ) {
 				// Remove Test Entry From WpForms Tables.
 				$wpdb->delete(
@@ -288,7 +290,7 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 					update_option( 'wpforms_settings', $old_settings );
 				}
 			}
-			// Test completed So Clear sessions.
+
 			complete_checkview_test( $checkview_test_id );
 		}
 	}

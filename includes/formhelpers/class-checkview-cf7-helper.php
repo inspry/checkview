@@ -1,11 +1,10 @@
 <?php
 /**
- * Fired during CF7 is active.
+ * Checkview_Cf7_Helper class
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @since 1.0.0
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/includes/formhelpers
  */
 
@@ -15,26 +14,29 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 	/**
-	 * The public-facing functionality of the plugin.
+	 * Adds support for Contact Form 7.
+	 * 
+	 * During CheckView tests, modifies Contact Form 7 hooks, overwrites the
+	 * recipient email address, and handles test cleanup.
 	 *
-	 * Helps in CF7 management.
-	 *
-	 * @package    Checkview
+	 * @package Checkview
 	 * @subpackage Checkview/includes/formhelpers
-	 * @author     Check View <support@checkview.io>
+	 * @author Check View <support@checkview.io>
 	 */
 	class Checkview_Cf7_Helper {
 		/**
-		 * The loader that's responsible for maintaining and registering all hooks that power
-		 * the plugin.
+		 * Loader.
 		 *
-		 * @since    1.0.0
-		 * @access   protected
-		 * @var      Checkview_Loader    $loader    Maintains and registers all hooks for the plugin.
+		 * @since 1.0.0
+		 * @access protected
+		 * 
+		 * @var Checkview_Loader $loader Maintains and registers all hooks for the plugin.
 		 */
 		public $loader;
 		/**
-		 * Initializes class constructor.
+		 * Constructor.
+		 * 
+		 * Initiates loader property, adds hooks.
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -59,7 +61,7 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 				99,
 				1
 			);
-			// remove test entry from cf7 submission table.
+
 			add_action(
 				'cfdb7_after_save_data',
 				array(
@@ -99,7 +101,8 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 				'__return_null',
 				-10
 			);
-			// bypass hcaptcha.
+
+			// Bypass hCaptcha.
 			add_filter(
 				'hcap_activate',
 				'__return_false'
@@ -115,9 +118,9 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 		}
 
 		/**
-		 * Adds the entry to DB after form has been saved.
+		 * Stores the test results and finishes the testing session.
 		 *
-		 * @param Object $form_tag form object by CFS.
+		 * @param Object $form_tag Form object by CFS.
 		 * @return void
 		 */
 		public function checkview_cf7_before_send_mail( $form_tag ) {
@@ -235,28 +238,26 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 					$wpdb->insert( $entry_meta_table, $entry_metadata );
 				}
 
-				// Test completed So Clear sessions.
 				complete_checkview_test( $checkview_test_id );
 			}
 		}
 
 		/**
-		 * Deletes entry from DB.
+		 * Deletes the form entry from the database.
 		 *
 		 * @param int $insert_id The inserted ID from CF7 form.
 		 * @return void
 		 */
 		public function checkview_delete_entry( $insert_id ) {
 			global $wpdb;
-			// Remove Test Entry From WpForms Tables.
 			$wpdb->delete( $wpdb->prefix . 'db7_forms', array( 'form_id' => $insert_id ) );
 		}
 
 
 		/**
-		 * Injects email to CF7 supported emails.
+		 * Injects testing email recipient.
 		 *
-		 * @param array $args emails array.
+		 * @param array $args Emails.
 		 * @return array
 		 */
 		public function checkview_inject_email( $args ) {

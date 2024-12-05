@@ -1,17 +1,20 @@
 <?php
 /**
- * Fires to expose plugins helper functions.
+ * CheckView Helper Functions
+ * 
+ * Various helper functions used throughout CheckView.
+ * 
+ * Some functions defined in this file are also attached to actions or filters.
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @since 1.0.0
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/includes
  */
 
 if ( ! function_exists( 'checkview_validate_ip' ) ) {
 	/**
-	 * Validates IP address.
+	 * Validates an IP address.
 	 *
 	 * @param IP $ip IP address.
 	 * @return bool
@@ -30,18 +33,17 @@ if ( ! function_exists( 'checkview_validate_ip' ) ) {
 }
 if ( ! function_exists( 'checkview_my_hcap_activate' ) ) {
 	/**
-	 * Filter hCaptcha activation flag.
+	 * Disable hCaptcha for checkview tests.
 	 *
 	 * @param bool $activate Activate flag.
 	 *
 	 * @return bool
 	 */
 	function checkview_my_hcap_activate( $activate ) {
+		// Determine the IP of the request
 		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
-			// check ip from share internet.
 			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ) );
 		} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-			// to check ip is pass from proxy.
 			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
 		} else {
 			$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
@@ -51,6 +53,7 @@ if ( ! function_exists( 'checkview_my_hcap_activate' ) ) {
 			return $activate;
 		}
 
+	// Deactive for tests
 		if ( isset( $_REQUEST['checkview_test_id'] ) || 'checkview-saas' === get_option( $ip ) ) {
 			return false;
 		}
@@ -62,12 +65,10 @@ add_filter( 'hcap_activate', 'checkview_my_hcap_activate' );
 
 if ( ! function_exists( 'checkview_hcap_whitelist_ip' ) ) {
 	/**
-	 * Filter user IP to check if it is whitelisted.
-	 * For whitelisted IPs, hCaptcha will not be shown.
+	 * Whitelists CheckView SaaS IPs in hCaptcha.
 	 *
-	 * @param bool   $whitelisted Whether IP is whitelisted.
-	 * @param string $ip          IP.
-	 *
+	 * @param bool $whitelisted Whether IP is currently whitelisted.
+	 * @param string $ip IP.
 	 * @return bool
 	 */
 	function checkview_hcap_whitelist_ip( $whitelisted, $ip ) {
@@ -76,12 +77,15 @@ if ( ! function_exists( 'checkview_hcap_whitelist_ip' ) ) {
 		if ( false === $ip ) {
 			return true;
 		}
+
+		// Get SaaS IPs
 		if ( function_exists( 'checkview_get_api_ip' ) ) {
 			$cv_bot_ip = checkview_get_api_ip();
 		} else {
 			return $whitelisted;
 		}
-		// Whitelist some other IPs.
+		
+		// Whitelist our IPs.
 		if ( is_array( $cv_bot_ip ) && in_array( $ip, $cv_bot_ip ) ) {
 			return true;
 		}
@@ -93,7 +97,7 @@ if ( ! function_exists( 'checkview_hcap_whitelist_ip' ) ) {
 
 if ( ! function_exists( 'remove_gravityforms_recaptcha_addon' ) ) {
 	/**
-	 * Function to remove the specific action.
+	 * Removes ReCAPTCHA from GravityForms during CheckView tests.
 	 *
 	 * @return void
 	 */

@@ -1,11 +1,10 @@
 <?php
 /**
- * Fired during Formidableis active.
+ * Checkview_Formidable_Helper class
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @since 1.0.0
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/includes/formhelpers
  */
 
@@ -15,26 +14,29 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 	/**
-	 * The public-facing functionality of the plugin.
+	 * Adds support for Formidable.
+	 * 
+	 * During CheckView tests, modifies Formidable hooks, overwrites the
+	 * recipient email address, and handles test cleanup.
 	 *
-	 * Helps in Formidable management.
-	 *
-	 * @package    Checkview
+	 * @package Checkview
 	 * @subpackage Checkview/includes/formhelpers
-	 * @author     Check View <support@checkview.io>
+	 * @author Check View <support@checkview.io>
 	 */
 	class Checkview_Formidable_Helper {
 		/**
-		 * The loader that's responsible for maintaining and registering all hooks that power
-		 * the plugin.
+		 * Loader.
 		 *
-		 * @since    1.0.0
-		 * @access   protected
-		 * @var      Checkview_Loader    $loader    Maintains and registers all hooks for the plugin.
+		 * @since 1.0.0
+		 * @access protected
+		 * 
+		 * @var Checkview_Loader $loader Maintains and registers all hooks for the plugin.
 		 */
 		protected $loader;
 		/**
-		 * Initializes the class constructor.
+		 * Constructor.
+		 * 
+		 * Initiates loader property, adds hooks.
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -115,10 +117,10 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			);
 		}
 		/**
-		 * Injects email to Formidableis supported emails.
+		 * Sets our email for test submissions.
 		 *
-		 * @param string $email address.
-		 * @return string email.
+		 * @param string $email Email address.
+		 * @return string Email.
 		 */
 		public function checkview_inject_email( $email ) {
 			if ( ! defined( 'CV_DISABLE_EMAIL_RECEIPT' ) ) {
@@ -152,10 +154,12 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			return array_values( $filtered_headers );
 		}
 		/**
-		 * Logs Test entry
+		 * Stores the test results and finishes the testing session.
+		 * 
+		 * Deletes test submission from Formidable database table.
 		 *
-		 * @param int $entry_id form's id.
-		 * @param int $form_id forms entry id.
+		 * @param int $entry_id Form's ID.
+		 * @param int $form_id Form entry ID.
 		 * @return void
 		 */
 		public function checkview_log_form_test_entry( $entry_id, $form_id ) {
@@ -167,7 +171,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 				$checkview_test_id = $form_id . gmdate( 'Ymd' );
 			}
 
-			// insert entry.
+			// Insert entry.
 			$entry_data  = array(
 				'form_id'      => $form_id,
 				'status'       => 'publish',
@@ -181,7 +185,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			$wpdb->insert( $entry_table, $entry_data );
 			$inserted_entry_id = $wpdb->insert_id;
 
-			// insert entry meta.
+			// Insert entry meta.
 			$entry_meta_table = $wpdb->prefix . 'cv_entry_meta';
 			$fields           = $this->get_form_fields( $form_id );
 			$tablename        = $wpdb->prefix . 'frm_item_metas';
@@ -281,18 +285,17 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 				}
 			}
 
-			// remove test entry form Form Tables.
+			// Remove test entry form Formidable
 			$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . 'frm_item_metas WHERE item_id=%d', $entry_id ) );
 			$result = $wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . 'frm_items WHERE id=%d', $entry_id ) );
 
-			// Test completed So Clear sessions.
 			complete_checkview_test( $checkview_test_id );
 		}
 
 		/**
-		 * List of Form fields.
+		 * Retrieves form fields for a form.
 		 *
-		 * @param int $form_id id of the form.
+		 * @param int $form_id ID of the form.
 		 * @return array
 		 */
 		public function get_form_fields( $form_id ) {
@@ -402,10 +405,10 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			return $fields;
 		}
 		/**
-		 * Removes captcha fields from the list of fields.
+		 * Removes ReCAPTCHA field from form fields and form validation.
 		 *
 		 * @param array $fields Array of fields.
-		 * @param form  $form form.
+		 * @param array $form Form.
 		 */
 		public function remove_recaptcha_field_from_list( $fields, $form ) {
 
