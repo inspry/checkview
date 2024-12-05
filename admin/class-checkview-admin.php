@@ -80,7 +80,7 @@ class Checkview_Admin {
 	 */
 	public function checkview_delete_expired_nonces() {
 		global $wpdb;
-		$table_name = $wpdb->prefix . 'used_nonces';
+		$table_name = $wpdb->prefix . 'cv_used_nonces';
 
 		// Define the expiration period (e.g., 24 hours).
 		$expiration = gmdate( 'Y-m-d H:i:s', strtotime( '-24 hours' ) );

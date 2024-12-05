@@ -85,7 +85,8 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 3. CheckView general settings.
 
 == Changelog ==
-= 2.0.7 =
+
+= 2.0.8 =
 * Added bypass for PerfMatters API barrier.
 * Added function to disable all form actions except CF7.
 * Added Google Recaptcha V2 bypass in FluentForms.
@@ -96,6 +97,9 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Updated logs saving and retrieval method.
 * Added a new endpoint to share helper logs.
 * Added function to delete logs after 7 days.
+
+= 2.0.7 =
+* Updated IP address check function to adapt to different server configurations.
 
 = 2.0.6 = 
 * Added fix for WooCommerce order deletion global scope issue.
@@ -293,7 +297,8 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Initial release.
 
 == Upgrade Notice ==
-= 2.0.7 =
+
+= 2.0.8 =
 * Added bypass for PerfMatters API barrier.
 * Added function to disable all form actions except CF7.
 * Added Google Recaptcha V2 bypass in FluentForms.
@@ -304,6 +309,9 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Updated logs saving and retrieval method.
 * Added a new endpoint to share helper logs.
 * Added function to delete logs after 7 days.
+
+= 2.0.7 =
+* Updated IP address check function to adapt to different server configurations.
 
 
 = 2.0.6 = 
