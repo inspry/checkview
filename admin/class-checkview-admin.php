@@ -1,50 +1,53 @@
 <?php
 /**
- * The admin-specific functionality of the plugin.
+ * Checkview_Admin class
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @since 1.0.0
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/admin
  */
 
 /**
- * The admin-specific functionality of the plugin.
+ * Handles various admin area features.
  *
- * Defines the plugin name, version, and two examples hooks for how to
- * enqueue the admin-specific stylesheet and JavaScript.
+ * Initializes tests, enqueues scripts and styles, schedules nonce cleanup.
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/admin
- * @author     Check View <support@checkview.io>
+ * @author Check View <support@checkview.io>
  */
 class Checkview_Admin {
 
 	/**
-	 * The ID of this plugin.
+	 * Plugin identifier.
 	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
+	 * @since 1.0.0
+	 * @access private
+	 *
+	 * @var string $plugin_name The ID of this plugin.
 	 */
 	private $plugin_name;
 
 	/**
-	 * The version of this plugin.
+	 * Plugin version.
 	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
+	 * @since 1.0.0
+	 * @access private
+	 *
+	 * @var string $version The current version of this plugin.
 	 */
 	private $version;
 
 	/**
-	 * Initialize the class and set its properties.
+	 * Constructor.
 	 *
-	 * @since    1.0.0
-	 * @param      string $plugin_name       The name of this plugin.
-	 * @param      string $version    The version of this plugin.
+	 * Sets class properties and adds cron cleanup hooks.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $plugin_name The name of this plugin.
+	 * @param string $version The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
 
@@ -64,7 +67,15 @@ class Checkview_Admin {
 			'all_plugins',
 			array( $this, 'checkview_hide_me' )
 		);
-		add_filter( 'debug_information', array( $this, 'checkview_handle_plugin_health_info' ), 10, 1 );
+		add_filter(
+			'debug_information',
+			array(
+				$this,
+				'checkview_handle_plugin_health_info',
+			),
+			10,
+			1
+		);
 		add_filter(
 			'plugin_row_meta',
 			array( $this, 'checkview_hide_plugin_details' ),
@@ -74,7 +85,7 @@ class Checkview_Admin {
 	}
 
 	/**
-	 * Deletes expired nonces.
+	 * Removes expired nonces from the database.
 	 *
 	 * @return void
 	 */
@@ -95,7 +106,7 @@ class Checkview_Admin {
 	}
 
 	/**
-	 * Schedules nonce cleanup process.
+	 * Schedules nonce clean-up on an hourly basis.
 	 *
 	 * @return void
 	 */
@@ -105,23 +116,12 @@ class Checkview_Admin {
 		}
 	}
 	/**
-	 * Register the stylesheets for the admin area.
+	 * Enqueues styles for the admin area.
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public function enqueue_styles() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Checkview_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Checkview_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
+		// Don't enqueue styles for other admin screens.
 		$screen = get_current_screen();
 		if ( 'checkview-options' !== $screen->base && 'settings_page_checkview-options' !== $screen->base ) {
 			return;
@@ -152,23 +152,12 @@ class Checkview_Admin {
 	}
 
 	/**
-	 * Register the JavaScript for the admin area.
+	 * Enqueues scripts for the admin area.
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public function enqueue_scripts() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Checkview_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Checkview_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
+		// Don't enqueue scripts for other admin screens.
 		$screen = get_current_screen();
 		if ( 'checkview-options' !== $screen->base && 'settings_page_checkview-options' !== $screen->base ) {
 			return;
@@ -209,7 +198,7 @@ class Checkview_Admin {
 	}
 
 	/**
-	 * Loads Form Test and helper classes.
+	 * Initializes a test.
 	 *
 	 * @return void
 	 */
@@ -222,8 +211,8 @@ class Checkview_Admin {
 		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
-		// $visitor_ip = $cv_bot_ip;
-		// skip if visitor ip not equal to CV Bot IP.
+
+		// Skip if visitor ip not equal to CV Bot IP.
 		if ( is_array( $cv_bot_ip ) && ! in_array( $visitor_ip, $cv_bot_ip ) ) {
 			$old_settings = array();
 			$old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
@@ -245,13 +234,16 @@ class Checkview_Admin {
 			}
 			return;
 		}
-		// if clean talk plugin active whitelist check form API IP.
+
+		// If clean talk plugin active whitelist check form API IP.
 		if ( is_plugin_active( 'cleantalk-spam-protect/cleantalk.php' ) ) {
 			checkview_whitelist_api_ip();
 		}
 
+		// Gather test ID.
 		$cv_test_id = isset( $_REQUEST['checkview_test_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) : '';
 
+		// Flag disabling of email receipts.
 		$disable_email_receipt = isset( $_REQUEST['disable_email_receipt'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['disable_email_receipt'] ) ) : false;
 
 		$disable_webhooks = isset( $_REQUEST['disable_webhooks'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['disable_webhooks'] ) ) : false;
@@ -289,7 +281,7 @@ class Checkview_Admin {
 
 		$cv_session = checkview_get_cv_session( $visitor_ip, $cv_test_id );
 		$send_to    = CHECKVIEW_EMAIL;
-		// stop if session not found.
+
 		if ( ! empty( $cv_session ) ) {
 
 			$test_key = $cv_session[0]['test_key'];

@@ -3,7 +3,7 @@
 class Test_Checkview_I18n extends WP_UnitTestCase {
 
 	/**
-	 * @var Checkview_I18n
+	 * TODO: Grayson
 	 */
 	private $i18n;
 
@@ -13,7 +13,7 @@ class Test_Checkview_I18n extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test that the plugin text domain is loaded
+	 * TODO: Grayson
 	 */
 	public function test_load_plugin_textdomain() {
 		$this->i18n->load_plugin_textdomain();
@@ -21,7 +21,7 @@ class Test_Checkview_I18n extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test that the plugin text domain is loaded with the correct path
+	 * TODO: Grayson
 	 */
 	public function test_load_plugin_textdomain_path() {
 		$load_plugin_textdomain_called = false;
@@ -44,7 +44,7 @@ class Test_Checkview_I18n extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test that the plugin text domain is not loaded if already loaded
+	 * TODO: Grayson
 	 */
 	public function test_load_plugin_textdomain_already_loaded() {
 		load_plugin_textdomain( 'checkview', false, dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/' );

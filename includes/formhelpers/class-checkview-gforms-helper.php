@@ -1,11 +1,10 @@
 <?php
 /**
- * Fired during Gforms is active.
+ * Checkview_Gforms_Helper class
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @since 1.0.0
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/includes/formhelpers
  */
 
@@ -15,26 +14,29 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 	/**
-	 * The public-facing functionality of the plugin.
+	 * Adds support for Gravity Forms.
 	 *
-	 * Helps in Gforms management.
+	 * During CheckView tests, modifies Gravity Forms hooks, overwrites the
+	 * recipient email address, and handles test cleanup.
 	 *
-	 * @package    Checkview
+	 * @package Checkview
 	 * @subpackage Checkview/includes/formhelpers
-	 * @author     Check View <support@checkview.io>
+	 * @author Check View <support@checkview.io>
 	 */
 	class Checkview_Gforms_Helper {
 		/**
-		 * The loader that's responsible for maintaining and registering all hooks that power
-		 * the plugin.
+		 * Loader.
 		 *
-		 * @since    1.0.0
-		 * @access   protected
-		 * @var      Checkview_Loader    $loader    Maintains and registers all hooks for the plugin.
+		 * @since 1.0.0
+		 * @access protected
+		 *
+		 * @var Checkview_Loader $loader Maintains and registers all hooks for the plugin.
 		 */
 		protected $loader;
 		/**
-		 * Initializes the class constructor.
+		 * Constructor.
+		 *
+		 * Initiates loader property, adds hooks.
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -72,7 +74,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				);
 
 			}
-			// disable addons found in forms.
+			// Disable addons found in forms.
 			add_filter(
 				'gform_addon_pre_process_feeds',
 				array(
@@ -82,7 +84,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				999,
 				3
 			);
-			// disable pdf addon if added to form.
+			// Disable PDF addon if added to form.
 			add_filter(
 				'gfpdf_pdf_config',
 				array(
@@ -92,7 +94,8 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				999,
 				2
 			);
-			// disable zero spam for form testing.
+
+			// Disable Zero Spam addon for form testing.
 			add_filter(
 				'gf_zero_spam_check_key_field',
 				array(
@@ -102,7 +105,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				99,
 				4
 			);
-			// clone entry after submission complete.
+
 			add_action(
 				'gform_after_submission',
 				array(
@@ -118,6 +121,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				'__return_true',
 				999
 			);
+
 			add_filter(
 				'gform_pre_render',
 				array( $this, 'maybe_hide_recaptcha' )
@@ -140,12 +144,12 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				'gform_pre_submission_filter',
 				array( $this, 'maybe_hide_recaptcha' )
 			);
-			// bypass hcaptcha.
+			// Bypass hCaptcha.
 			add_filter(
 				'hcap_activate',
 				'__return_false'
 			);
-			// bypass akimet.
+			// Bypass Akismet.
 			add_filter(
 				'akismet_get_api_key',
 				'__return_null',
@@ -153,15 +157,12 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 			);
 		}
 		/**
-		 * Bypasses recaptcha .
+		 * Unsets Captchas from the form.
 		 *
-		 * @param [Ninaja form] $form form object.
-		 * @return form.
+		 * @param array $form Form object.
+		 * @return form
 		 */
 		public function maybe_hide_recaptcha( $form ) {
-
-			// Add a placeholder to field id 8, is not used with multi-select or radio, will overwrite placeholder set in form editor.
-			// Replace 8 with your actual field id.
 			$fields = $form['fields'];
 
 			foreach ( $form['fields'] as $key => $field ) {
@@ -175,10 +176,12 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		}
 
 		/**
-		 * Clones entry to DB.
+		 * Stores the test results and finishes the testing session.
 		 *
-		 * @param array  $entry form entry data.
-		 * @param object $form form object.
+		 * Deletes test submission from Formidable database table.
+		 *
+		 * @param array  $entry Form entry data.
+		 * @param object $form Form object.
 		 * @return void
 		 */
 		public function checkview_clone_entry( $entry, $form ) {
@@ -190,17 +193,16 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 			}
 			self::checkview_clone_gf_entry( $entry['id'], $form_id, $checkview_test_id );
 			if ( isset( $entry['id'] ) ) {
-				// Remove entry after submission.
 				GFAPI::delete_entry( $entry['id'] );
 			}
-			// Test completed So Clear sessions.
+
 			complete_checkview_test( $checkview_test_id );
 		}
 		/**
-		 * Injects email to Formidableis supported emails.
+		 * Modifies the submission recipient email addreesss.
 		 *
-		 * @param array $email address.
-		 * @return array email.
+		 * @param array $email Address.
+		 * @return array Email.
 		 */
 		public function checkview_inject_email( $email ) {
 			if ( get_option( 'disable_email_receipt', false ) == false ) {
@@ -272,11 +274,11 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 			return $email;
 		}
 		/**
-		 * Clone Gravity form Entry
+		 * Clones the form submission to CheckView tables.
 		 *
-		 * @param int $entry_id entry id of the form.
-		 * @param int $form_id form submitted id.
-		 * @param int $uid user submitted id.
+		 * @param int $entry_id Entry ID of the form.
+		 * @param int $form_id Form submitted ID.
+		 * @param int $uid User submitted ID.
 		 * @return void
 		 */
 		public function checkview_clone_gf_entry( $entry_id, $form_id, $uid ) {
@@ -305,12 +307,12 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		}
 
 		/**
-		 * Disable Zeror Spam Addon
+		 * Returns false.
 		 *
-		 * @param int    $form_id form's id.
-		 * @param int    $should_check_key_field check for filed.
-		 * @param object $form forms object.
-		 * @param array  $entry entry details.
+		 * @param int    $form_id Form's ID.
+		 * @param int    $should_check_key_field Check for filed.
+		 * @param object $form Forms object.
+		 * @param array  $entry Entry details.
 		 * @return bool
 		 */
 		public function checkview_disable_zero_spam_addon( $form_id, $should_check_key_field, $form, $entry ) {
@@ -318,10 +320,10 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		}
 
 		/**
-		 * Disable Pdf Addon.
+		 * Disables Gravity Forms PDF addons.
 		 *
-		 * @param array $settings settinfs for form helper.
-		 * @param int   $form_id id of the form submitted.
+		 * @param array $settings Settings for form helper.
+		 * @param int   $form_id ID of the form submitted.
 		 * @return array
 		 */
 		public function checkview_disable_pdf_addon( $settings, $form_id ) {
@@ -346,11 +348,11 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		}
 
 		/**
-		 * Disable addons feed.
+		 * Disables conditional logic for feeds.
 		 *
-		 * @param array  $feeds form feeds.
-		 * @param array  $entry form entry data.
-		 * @param object $form form obbject.
+		 * @param array  $feeds Form feeds.
+		 * @param array  $entry Form entry data.
+		 * @param object $form Form object.
 		 * @return array
 		 */
 		public function checkview_disable_addons_feed( $feeds, $entry, $form ) {

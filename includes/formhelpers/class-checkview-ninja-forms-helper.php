@@ -1,11 +1,10 @@
 <?php
 /**
- * Fired if ninjaforms is active.
+ * Checkview_Ninja_Forms_Helper class
  *
- * @link       https://checkview.io
- * @since      1.0.0
+ * @since 1.0.0
  *
- * @package    Checkview
+ * @package Checkview
  * @subpackage Checkview/includes/formhelpers
  */
 
@@ -16,26 +15,29 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 	/**
-	 * The public-facing functionality of the plugin.
+	 * Adds support for Ninja Forms.
+	 * 
+	 * During CheckView tests, modifies Ninja Forms hooks, overwrites the
+	 * recipient email address, and handles test cleanup.
 	 *
-	 * Helps in Ninjaforms management.
-	 *
-	 * @package    Checkview
+	 * @package Checkview
 	 * @subpackage Checkview/includes/formhelpers
-	 * @author     Check View <support@checkview.io>
+	 * @author Check View <support@checkview.io>
 	 */
 	class Checkview_Ninja_Forms_Helper {
 		/**
-		 * The loader that's responsible for maintaining and registering all hooks that power
-		 * the plugin.
+		 * Loader.
 		 *
-		 * @since    1.0.0
-		 * @access   protected
-		 * @var      Checkview_Loader    $loader    Maintains and registers all hooks for the plugin.
+		 * @since 1.0.0
+		 * @access protected
+		 * 
+		 * @var Checkview_Loader $loader Maintains and registers all hooks for the plugin.
 		 */
 		public $loader;
 		/**
-		 * Initializes the class constructor.
+		 * Constructor.
+		 * 
+		 * Initiates loader property, adds hooks.
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
@@ -106,13 +108,13 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		}
 
 		/**
-		 * Injects email to Ninja forms supported emails.
+		 * Removes CC and BCC from the form submission email.
 		 *
-		 * @param string $sent status of email.
-		 * @param array  $action_settings settings for actions.
-		 * @param string $message message to be sent.
-		 * @param array  $headers headers details.
-		 * @param array  $attachments attachments if any.
+		 * @param string $sent Status of email.
+		 * @param array $action_settings Settings for actions.
+		 * @param string $message Message to be sent.
+		 * @param array $headers Headers details.
+		 * @param array $attachments Attachments if any.
 		 * @return bool
 		 */
 		public function checkview_inject_email( $sent, $action_settings, $message, $headers, $attachments ) {
@@ -129,10 +131,6 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 				}
 			);
 
-			// If needed, you can add replacements for 'Cc:' or 'Bcc:' headers here
-			// Example: Add a custom replacement for 'Cc:'
-			// $filtered_headers[] = 'Cc: replacement@example.com';.
-
 			// Send the email without the 'Cc:' and 'Bcc:' headers.
 			wp_mail( TEST_EMAIL, wp_strip_all_tags( $action_settings['email_subject'] ), $message, $filtered_headers, $attachments );
 			if ( get_option( 'disable_email_receipt', false ) == false ) {
@@ -142,9 +140,11 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 			}
 		}
 		/**
-		 * Clones entry after forms submission.
+		 * Stores the test results and finishes the testing session.
+		 * 
+		 * Deletes test submission from Formidable database table.
 		 *
-		 * @param array $form_data form data.
+		 * @param array $form_data Form data.
 		 * @return void
 		 */
 		public function checkview_clone_entry( $form_data ) {
@@ -191,17 +191,15 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 				}
 			}
 
-			// remove test entry from ninja form.
 			wp_delete_post( $entry_id, true );
 
-			// Test completed So Clear sessions.
 			complete_checkview_test( $checkview_test_id );
 		}
 
 		/**
-		 * Remove v2 reCAPTCHA fields if still configured, when using the v3 Action
+		 * Removes ReCAPTCHA fields from the test form.
 		 *
-		 * @param array $fields fields of the form.
+		 * @param array $fields Fields of the form.
 		 *
 		 * @return array
 		 */
