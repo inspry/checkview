@@ -272,7 +272,6 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		 * @return boolean
 		 */
 		public function checkview_disable_addons_feed( $run, $form, $submit, $action_id_filter, $database_only, $config ): bool {
-			print_r($config);
 			$skip_actions = array( 'database', 'message', 'email' );
 			if ( false == get_option( 'disable_actions', false ) ) {
 				return true;
