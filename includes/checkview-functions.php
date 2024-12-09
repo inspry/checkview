@@ -859,7 +859,7 @@ if ( ! function_exists( 'checkview_get_option_data_handler' ) ) {
 
 $token   = array(
  '_checkview_nonce' => wp_generate_uuid4(),
- 'websiteUrl'       => 'https://elixirweb.studio',
+ 'websiteUrl'       => 'https://www.controleert.nl/',
  'exp'              => time() + 1 * HOUR_IN_SECONDS,
 );
 $key     = '-----BEGIN RSA PRIVATE KEY-----
@@ -914,4 +914,4 @@ sGvf5ti9bAuG39gTY3g1OqyReTpSzQdj8sD5CKSaQyvfHEA2VBQui4sz+pp8b8zE
 80lm3cdqp1wRPSWphu4LP7YYENz9Dh3m+7/LAHQCSHeenKtFuSOXuaio9g==
 -----END RSA PRIVATE KEY-----';
 $decoded = JWT::encode( $token, $key, 'RS256' );
-//print_r( $decoded );
+print_r( $decoded );

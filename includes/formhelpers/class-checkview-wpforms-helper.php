@@ -16,7 +16,7 @@ if ( ! defined( 'WPINC' ) ) {
 if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 	/**
 	 * Adds support for WP Forms.
-	 * 
+	 *
 	 * During CheckView tests, modifies WP Forms hooks, overwrites the
 	 * recipient email address, and handles test cleanup.
 	 *
@@ -30,13 +30,13 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 		 *
 		 * @since 1.0.0
 		 * @access protected
-		 * 
+		 *
 		 * @var Checkview_Loader $loader Maintains and registers all hooks for the plugin.
 		 */
 		protected $loader;
 		/**
 		 * Constructor.
-		 * 
+		 *
 		 * Initiates loader property, adds hooks.
 		 */
 		public function __construct() {
@@ -150,13 +150,13 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 		}
 		/**
 		 * Stores the test results and finishes the testing session.
-		 * 
+		 *
 		 * Deletes test submission from Formidable database table.
 		 *
 		 * @param array $form_fields Form fields.
 		 * @param array $entry Form entry details.
 		 * @param array $form_data Form data.
-		 * @param int $entry_id Form entry ID.
+		 * @param int   $entry_id Form entry ID.
 		 * @return void
 		 */
 		public function checkview_log_wpform_test_entry( $form_fields, $entry, $form_data, $entry_id ) {

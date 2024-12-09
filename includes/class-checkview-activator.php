@@ -10,7 +10,7 @@
 
 /**
  * Sets up CheckView on plugin activation.
- * 
+ *
  * Sets up database tables used by the plugin.
  *
  * @since 1.0.0
@@ -35,7 +35,7 @@ class Checkview_Activator {
 	 * Generates database tables.
 	 *
 	 * @since 1.0.0
-	 * 
+	 *
 	 * @return void
 	 */
 	public static function checkview_run_sql() {

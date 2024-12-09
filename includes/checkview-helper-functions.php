@@ -1,9 +1,9 @@
 <?php
 /**
  * CheckView Helper Functions
- * 
+ *
  * Various helper functions used throughout CheckView.
- * 
+ *
  * Some functions defined in this file are also attached to actions or filters.
  *
  * @since 1.0.0
@@ -40,7 +40,7 @@ if ( ! function_exists( 'checkview_my_hcap_activate' ) ) {
 	 * @return bool
 	 */
 	function checkview_my_hcap_activate( $activate ) {
-		// Determine the IP of the request
+		// Determine the IP of the request.
 		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
 			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ) );
 		} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
@@ -53,7 +53,7 @@ if ( ! function_exists( 'checkview_my_hcap_activate' ) ) {
 			return $activate;
 		}
 
-	// Deactive for tests
+		// Deactive for tests.
 		if ( isset( $_REQUEST['checkview_test_id'] ) || 'checkview-saas' === get_option( $ip ) ) {
 			return false;
 		}
@@ -67,7 +67,7 @@ if ( ! function_exists( 'checkview_hcap_whitelist_ip' ) ) {
 	/**
 	 * Whitelists CheckView SaaS IPs in hCaptcha.
 	 *
-	 * @param bool $whitelisted Whether IP is currently whitelisted.
+	 * @param bool   $whitelisted Whether IP is currently whitelisted.
 	 * @param string $ip IP.
 	 * @return bool
 	 */
@@ -78,13 +78,13 @@ if ( ! function_exists( 'checkview_hcap_whitelist_ip' ) ) {
 			return true;
 		}
 
-		// Get SaaS IPs
+		// Get SaaS IPs.
 		if ( function_exists( 'checkview_get_api_ip' ) ) {
 			$cv_bot_ip = checkview_get_api_ip();
 		} else {
 			return $whitelisted;
 		}
-		
+
 		// Whitelist our IPs.
 		if ( is_array( $cv_bot_ip ) && in_array( $ip, $cv_bot_ip ) ) {
 			return true;
