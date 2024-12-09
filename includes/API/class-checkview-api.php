@@ -2345,12 +2345,30 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Sets status for helper plugin.
+	 * Sets status for test product..
 	 *
 	 * @param \WP_REST_Request $request wp request object.
 	 * @return WP_Error/WP_REST_RESPONSE
 	 */
 	public function checkview_saas_set_test_product_status( \WP_REST_Request $request ) {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			Checkview_Admin_Logs::add( 'api-logs', 'WooCommerce not found.' );
+			return new WP_REST_Response(
+				array(
+					'status'        => 200,
+					'response'      => esc_html__( 'Dependency not found.', 'checkview' ),
+					'body_response' => false,
+				)
+			);
+		}
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
+			return new WP_Error(
+				400,
+				esc_html__( 'Invalid request.', 'checkview' ),
+			);
+			wp_die();
+		}
 		// Get the status from the request parameters.
 		$checkview_status = $request->get_param( '_checkview_status' );
 		$checkview_status = sanitize_text_field( $checkview_status );
@@ -2363,17 +2381,24 @@ class CheckView_Api {
 				array( 'status' => 400 )
 			);
 		}
-		if ( 'publish' === $checkview_status ) {
-			update_option( 'checkview_hide_me', 'true' );
+		$product    = $this->woo_helper->checkview_get_test_product();
+		$product_id = ! empty( $product->get_id() ) ? $product->get_id() : false;
+		$status     = checkview_update_woocommerce_product_status( $product_id, $checkview_status );
+		if ( 0 != $status && ! is_wp_error( $product_id ) ) {
+			return new WP_REST_Response(
+				array(
+					'_checkview_status' => 'updated',
+				),
+				200
+			);
 		} else {
-			update_option( 'checkview_hide_me', false );
+			Checkview_Admin_Logs::add( 'api-logs', 'Product status was not updated successfully.' . wp_json_encode( $product_id ) );
+			return new WP_Error(
+				'operation_failed',
+				esc_html__( 'Invalid request.', 'checkview' ),
+				array( 'status' => 400 )
+			);
 		}
-		return new WP_REST_Response(
-			array(
-				'_checkview_status' => 'updated',
-			),
-			200
-		);
 	}
 	/**
 	 * Determines if an incoming API request is granted access.

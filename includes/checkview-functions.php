@@ -856,3 +856,26 @@ if ( ! function_exists( 'checkview_get_option_data_handler' ) ) {
 		}
 	}
 }
+if ( ! defined( 'checkview_update_woocommerce_product_status' ) ) {
+	/**
+	 * Update status of test product.
+	 *
+	 * @param [int]    $product_id test product id.
+	 * @param [string] $status status to set.
+	 * @return bool/WP_ERROR
+	 */
+	function checkview_update_woocommerce_product_status( $product_id, $status ) {
+		// Check if the product ID is valid and status is either 'publish' or 'draft'.
+		$updated = 0;
+		if ( get_post_type( $product_id ) === 'product' && in_array( $status, array( 'publish', 'draft' ) ) ) {
+			// Update the post status.
+			$updated = wp_update_post(
+				array(
+					'ID'          => $product_id,
+					'post_status' => $status,
+				)
+			);
+		}
+		return $updated;
+	}
+}
