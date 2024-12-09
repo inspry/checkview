@@ -438,6 +438,23 @@ class CheckView_Api {
 				),
 			)
 		);// end checkview_register_rest_route.
+
+		register_rest_route(
+			'checkview/v1',
+			'/set-status',
+			array(
+				'callback'            => array( $this, 'checkview_saas_set_test_product_status' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token'  => array(
+						'required' => false,
+					),
+					'_checkview_status' => array(
+						'required' => true,
+					),
+				),
+			)
+		);// end checkview_register_rest_route.
 	}
 
 	/**
@@ -2315,6 +2332,38 @@ class CheckView_Api {
 			);
 		}
 		if ( 'hide' === $checkview_status ) {
+			update_option( 'checkview_hide_me', 'true' );
+		} else {
+			update_option( 'checkview_hide_me', false );
+		}
+		return new WP_REST_Response(
+			array(
+				'_checkview_status' => 'updated',
+			),
+			200
+		);
+	}
+
+	/**
+	 * Sets status for helper plugin.
+	 *
+	 * @param \WP_REST_Request $request wp request object.
+	 * @return WP_Error/WP_REST_RESPONSE
+	 */
+	public function checkview_saas_set_test_product_status( \WP_REST_Request $request ) {
+		// Get the status from the request parameters.
+		$checkview_status = $request->get_param( '_checkview_status' );
+		$checkview_status = sanitize_text_field( $checkview_status );
+		if ( empty( $checkview_status ) ) {
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'api-logs', 'Missing status parameter.' );
+			return new WP_Error(
+				'missing_param',
+				esc_html__( 'Invalid request.', 'checkview' ),
+				array( 'status' => 400 )
+			);
+		}
+		if ( 'publish' === $checkview_status ) {
 			update_option( 'checkview_hide_me', 'true' );
 		} else {
 			update_option( 'checkview_hide_me', false );
