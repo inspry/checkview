@@ -455,6 +455,16 @@ class CheckView_Api {
 				),
 			)
 		);// end checkview_register_rest_route.
+
+		register_rest_route(
+			'checkview/v1',
+			'/confirm-site',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'checkview_confirm_site_callback' ),
+				'permission_callback' => '__return_true', // Restrict access as needed.
+			)
+		);
 	}
 
 	/**
@@ -2399,6 +2409,67 @@ class CheckView_Api {
 				array( 'status' => 400 )
 			);
 		}
+	}
+
+	/**
+	 * Callback to Handle Site Confirmation
+	 *
+	 * @param WP_REST_Request $request request object.
+	 * @return array
+	 */
+	public function checkview_confirm_site_callback( WP_REST_Request $request ) {
+		$nonce = $request->get_header( 'X-WP-Nonce' );
+
+		if ( ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
+			Checkview_Admin_Logs::add( 'api-logs', 'Invalid nonce.' );
+			return new WP_Error(
+				'rest_forbidden',
+				esc_html__( 'Invalid request.', 'checkview' ),
+				array( 'status' => 403 )
+			);
+		}
+		$site_url = $request->get_param( 'site_url' );
+
+		if ( empty( $site_url ) ) {
+			Checkview_Admin_Logs::add( 'api-logs', 'Site URL is required.' );
+			return new WP_REST_Response(
+				array(
+					'success' => false,
+					'message' => esc_html__( 'invalid url.', 'checkview' ),
+				),
+				400
+			);
+		}
+
+		// Simulate sending the site URL to SaaS.
+		$response = wp_remote_post(
+			'https://webhook.site/e56102ab-19c9-4f72-8605-85c11362cf56',
+			array(
+				'body'    => json_encode( array( 'site_url' => $site_url ) ),
+				'headers' => array( 'Content-Type' => 'application/json' ),
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			return new WP_REST_Response(
+				array(
+					'success' => false,
+					'message' => esc_html__( 'Failed to send site URL.', 'checkview' ),
+				),
+				500
+			);
+		}
+
+		// On success, mark the site as confirmed.
+		update_option( 'checkview_site_confirmed', 1 );
+
+		return new WP_REST_Response(
+			array(
+				'success' => true,
+				'message' => esc_html__( 'Site successfully connected.', 'checkview' ),
+			),
+			200
+		);
 	}
 	/**
 	 * Determines if an incoming API request is granted access.
