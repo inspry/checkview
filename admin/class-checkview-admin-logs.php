@@ -144,7 +144,7 @@ class Checkview_Admin_Logs {
 	/**
 	 * Reads a log file.
 	 * 
-	 * If given a `$length`, this function will only return the last `$length`
+	 * If given a `$lines`, this function will only return the last `$lines`
 	 * lines of the chosen log file.
 	 * 
 	 * @since 1.6.0

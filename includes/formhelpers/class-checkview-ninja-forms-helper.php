@@ -16,7 +16,7 @@ if ( ! defined( 'WPINC' ) ) {
 if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 	/**
 	 * Adds support for Ninja Forms.
-	 * 
+	 *
 	 * During CheckView tests, modifies Ninja Forms hooks, overwrites the
 	 * recipient email address, and handles test cleanup.
 	 *
@@ -30,13 +30,13 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		 *
 		 * @since 1.0.0
 		 * @access protected
-		 * 
+		 *
 		 * @var Checkview_Loader $loader Maintains and registers all hooks for the plugin.
 		 */
 		public $loader;
 		/**
 		 * Constructor.
-		 * 
+		 *
 		 * Initiates loader property, adds hooks.
 		 */
 		public function __construct() {
@@ -111,10 +111,10 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		 * Removes CC and BCC from the form submission email.
 		 *
 		 * @param string $sent Status of email.
-		 * @param array $action_settings Settings for actions.
+		 * @param array  $action_settings Settings for actions.
 		 * @param string $message Message to be sent.
-		 * @param array $headers Headers details.
-		 * @param array $attachments Attachments if any.
+		 * @param array  $headers Headers details.
+		 * @param array  $attachments Attachments if any.
 		 * @return bool
 		 */
 		public function checkview_inject_email( $sent, $action_settings, $message, $headers, $attachments ) {
@@ -141,7 +141,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		}
 		/**
 		 * Stores the test results and finishes the testing session.
-		 * 
+		 *
 		 * Deletes test submission from Formidable database table.
 		 *
 		 * @param array $form_data Form data.

@@ -21,7 +21,7 @@ if ( class_exists( 'WC_Payment_Gateway' ) ) {
 
 		/**
 		 * Constructor.
-		 * 
+		 *
 		 * Sets up class properties, hooks into Woo payment gateway options.
 		 */
 		public function __construct() {

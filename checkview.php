@@ -89,10 +89,10 @@ function deactivate_checkview() {
 register_activation_hook( __FILE__, 'activate_checkview' );
 register_deactivation_hook( __FILE__, 'deactivate_checkview' );
 
-// Load CheckView Helper Plugins
+// Load CheckView Helper Plugins.
 require plugin_dir_path( __FILE__ ) . 'includes/checkview-helper-functions.php';
 
-// Load CheckView class
+// Load CheckView class.
 require plugin_dir_path( __FILE__ ) . 'includes/class-checkview.php';
 
 /**

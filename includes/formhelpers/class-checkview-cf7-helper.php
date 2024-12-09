@@ -15,7 +15,7 @@ if ( ! defined( 'WPINC' ) ) {
 if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 	/**
 	 * Adds support for Contact Form 7.
-	 * 
+	 *
 	 * During CheckView tests, modifies Contact Form 7 hooks, overwrites the
 	 * recipient email address, and handles test cleanup.
 	 *
@@ -29,13 +29,13 @@ if ( ! class_exists( 'Checkview_Cf7_Helper' ) ) {
 		 *
 		 * @since 1.0.0
 		 * @access protected
-		 * 
+		 *
 		 * @var Checkview_Loader $loader Maintains and registers all hooks for the plugin.
 		 */
 		public $loader;
 		/**
 		 * Constructor.
-		 * 
+		 *
 		 * Initiates loader property, adds hooks.
 		 */
 		public function __construct() {

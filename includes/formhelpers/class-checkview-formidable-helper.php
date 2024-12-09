@@ -15,7 +15,7 @@ if ( ! defined( 'WPINC' ) ) {
 if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 	/**
 	 * Adds support for Formidable.
-	 * 
+	 *
 	 * During CheckView tests, modifies Formidable hooks, overwrites the
 	 * recipient email address, and handles test cleanup.
 	 *
@@ -29,13 +29,13 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		 *
 		 * @since 1.0.0
 		 * @access protected
-		 * 
+		 *
 		 * @var Checkview_Loader $loader Maintains and registers all hooks for the plugin.
 		 */
 		protected $loader;
 		/**
 		 * Constructor.
-		 * 
+		 *
 		 * Initiates loader property, adds hooks.
 		 */
 		public function __construct() {
@@ -155,7 +155,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		}
 		/**
 		 * Stores the test results and finishes the testing session.
-		 * 
+		 *
 		 * Deletes test submission from Formidable database table.
 		 *
 		 * @param int $entry_id Form's ID.

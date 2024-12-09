@@ -22,7 +22,7 @@ class Checkview_Loader {
 	 *
 	 * @since 1.0.0
 	 * @access protected
-	 * 
+	 *
 	 * @var array $actions The actions registered with WordPress to fire when the plugin loads.
 	 */
 	public $actions;
@@ -32,14 +32,14 @@ class Checkview_Loader {
 	 *
 	 * @since 1.0.0
 	 * @access protected
-	 * 
+	 *
 	 * @var array $filters The filters registered with WordPress to fire when the plugin loads.
 	 */
 	public $filters;
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * Initializes hook class properties.
 	 *
 	 * @since 1.0.0
@@ -54,7 +54,7 @@ class Checkview_Loader {
 	 * Handles adding an action.
 	 *
 	 * @since 1.0.0
-	 * 
+	 *
 	 * @param string $hook          The name of the WordPress action that is being registered.
 	 * @param object $component     A reference to the instance of the object on which the action is defined.
 	 * @param string $callback      The name of the function definition on the $component.
@@ -69,7 +69,7 @@ class Checkview_Loader {
 	 * Handles adding a filter.
 	 *
 	 * @since 1.0.0
-	 * 
+	 *
 	 * @param string $hook          The name of the WordPress filter that is being registered.
 	 * @param object $component     A reference to the instance of the object on which the filter is defined.
 	 * @param string $callback      The name of the function definition on the $component.
@@ -84,7 +84,7 @@ class Checkview_Loader {
 	 * Handles adding a hook.
 	 *
 	 * @since 1.0.0
-	 * 
+	 *
 	 * @access private
 	 * @param  array  $hooks         The collection of hooks that is being registered (that is, actions or filters).
 	 * @param  string $hook          The name of the WordPress filter that is being registered.

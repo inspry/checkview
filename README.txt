@@ -97,6 +97,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Updated logs saving and retrieval method.
 * Added a new endpoint to share helper logs.
 * Added function to delete logs after 7 days.
+* Added endpoint to update status of test product.
 
 = 2.0.7 =
 * Updated IP address check function to adapt to different server configurations.
