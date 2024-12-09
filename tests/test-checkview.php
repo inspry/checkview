@@ -3,15 +3,15 @@
 class Test_Checkview_Bootstrap extends WP_UnitTestCase {
 
 	/**
-	 * TODO: Grayson
+	 * Test that the plugin version is defined
 	 */
 	public function test_plugin_version_defined() {
 		$this->assertTrue( defined( 'CHECKVIEW_VERSION' ) );
-		$this->assertEquals( '2.0.8', CHECKVIEW_VERSION );
+		$this->assertEquals( '2.0.7', CHECKVIEW_VERSION );
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Test that the plugin directories are defined
 	 */
 	public function test_plugin_directories_defined() {
 		$this->assertTrue( defined( 'CHECKVIEW_BASE_DIR' ) );
@@ -26,7 +26,7 @@ class Test_Checkview_Bootstrap extends WP_UnitTestCase {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Test that the activation and deactivation functions are registered
 	 */
 	public function test_activation_deactivation_functions_registered() {
 		$this->assertTrue( has_action( 'activate_' . CHECKVIEW_BASE_DIR ) );
@@ -37,7 +37,7 @@ class Test_Checkview_Bootstrap extends WP_UnitTestCase {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Test that the run_checkview function is registered
 	 */
 	public function test_run_checkview_function_registered() {
 		$this->assertEquals( 10, has_action( 'plugins_loaded', 'run_checkview' ) );

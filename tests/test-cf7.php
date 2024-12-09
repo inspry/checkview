@@ -1,8 +1,8 @@
 <?php
 /**
- * TODO: Grayson
+ * Test case for the Checkview_Cf7_Helper class.
  *
- * @package Checkview
+ * @package    Checkview
  * @subpackage Checkview/tests
  */
 if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) && ! class_exists( 'checkview_cf7_helper' ) ) {
@@ -17,7 +17,7 @@ use WP_Post;
 class Checkview_Cf7_Helper_Test extends WP_UnitTestCase {
 
 	/**
-	 * TODO: Grayson
+	 * Test that the constructor sets up the loader and hooks.
 	 */
 	public function test_constructor() {
 		$helper = new Checkview_Cf7_Helper();
@@ -41,7 +41,7 @@ class Checkview_Cf7_Helper_Test extends WP_UnitTestCase {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Test that checkview_cf7_before_send_mail adds an entry to the DB.
 	 */
 	public function test_checkview_cf7_before_send_mail() {
 		$tags = array( 'tag1', 'tag2', 'tag3' );
@@ -70,7 +70,7 @@ class Checkview_Cf7_Helper_Test extends WP_UnitTestCase {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Test that checkview_delete_entry deletes an entry from the DB.
 	 */
 	public function test_checkview_delete_entry() {
 		global $wpdb;
@@ -82,7 +82,7 @@ class Checkview_Cf7_Helper_Test extends WP_UnitTestCase {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Test that checkview_inject_email injects an email into the CF7 email array.
 	 */
 	public function test_checkview_inject_email() {
 		$helper = new Checkview_Cf7_Helper();
@@ -92,7 +92,7 @@ class Checkview_Cf7_Helper_Test extends WP_UnitTestCase {
 	}
 
 	/**
-	 * TODO: Grayson
+	 * Test that checkview_return_false returns false.
 	 */
 	public function test_checkview_return_false() {
 		$helper = new Checkview_Cf7_Helper();
