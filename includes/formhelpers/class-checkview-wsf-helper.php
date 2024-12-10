@@ -34,7 +34,6 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		 * @var Checkview_Loader $loader Maintains and registers all hooks for the plugin.
 		 */
 		public $loader;
-
 		/**
 		 * Constructor.
 		 *
@@ -48,7 +47,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 					$this,
 					'checkview_clone_entry',
 				),
-				10,
+				999,
 				1
 			);
 			add_filter(
@@ -139,7 +138,6 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 			}
 			return $to;
 		}
-
 		/**
 		 * Injects email to WS forms supported emails.
 		 *
@@ -273,13 +271,9 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		 */
 		public function checkview_disable_addons_feed( $run, $form, $submit, $action_id_filter, $database_only, $config ): bool {
 			$skip_actions = array( 'database', 'message', 'email' );
-			if ( false == get_option( 'disable_actions', false ) ) {
-				return true;
-			}
 			if ( in_array( $config['id'], $skip_actions, true ) ) {
 				return true;
 			}
-
 			return false;
 		}
 	}
