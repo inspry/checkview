@@ -56,7 +56,7 @@ if ( ! function_exists( 'checkview_validate_jwt_token' ) ) {
 		// Remove "Bearer " prefix.
 		$token = substr( $token, 7 );
 
-		// Attempt decoding
+		// Attempt decoding.
 		try {
 			$decoded = JWT::decode( $token, new Key( $key, 'RS256' ) );
 		} catch ( Exception $e ) {
@@ -87,7 +87,7 @@ if ( ! function_exists( 'checkview_validate_jwt_token' ) ) {
 			return false;
 		}
 
-		// Return determined token
+		// Return determined token.
 		return $jwt['_checkview_nonce'];
 	}
 }
@@ -159,6 +159,17 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 				'test_id'    => $checkview_test_id,
 			)
 		);
+		$entry_id = get_option( $checkview_test_id . '_wsf_entry_id', '' );
+		$form_id  = get_option( $checkview_test_id . '_wsf_frm_id', '' );
+		if ( ! empty( $form_id ) && ! empty( $entry_id ) ) {
+			$ws_form_submit          = new WS_Form_Submit();
+			$ws_form_submit->id      = $entry_id;
+			$ws_form_submit->form_id = $form_id;
+			$ws_form_submit->db_delete( true, true, true );
+			delete_option( $checkview_test_id . '_wsf_entry_id' );
+			delete_option( $checkview_test_id . '_wsf_frm_id' );
+		}
+
 		delete_option( $visitor_ip );
 		setcookie( 'checkview_test_id', '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
 		setcookie( 'checkview_test_id' . $checkview_test_id, '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
@@ -690,7 +701,7 @@ if ( ! function_exists( 'checkview_is_valid_uuid' ) ) {
 	 * @return bool
 	 */
 	function checkview_is_valid_uuid( $uuid ) {
-		if ( empty( $uuid ) ) {
+		if ( empty( $uuid ) || is_wp_error( $uuid ) ) {
 			return false;
 		}
 		return preg_match( '/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i', $uuid );

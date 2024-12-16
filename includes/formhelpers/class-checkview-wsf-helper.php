@@ -215,12 +215,8 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 					$wpdb->insert( $entry_meta_table, $entry_metadata );
 				}
 			}
-
-			$ws_form_submit          = new WS_Form_Submit();
-			$ws_form_submit->id      = $entry_id;
-			$ws_form_submit->form_id = $form_id;
-			$ws_form_submit->db_delete( true, true, true );
-
+			update_option( $checkview_test_id . '_wsf_entry_id', $entry_id );
+			update_option( $checkview_test_id . '_wsf_frm_id', $form_id );
 			complete_checkview_test( $checkview_test_id );
 		}
 
