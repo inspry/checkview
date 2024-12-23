@@ -188,10 +188,15 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			// Insert entry meta.
 			$entry_meta_table = $wpdb->prefix . 'cv_entry_meta';
 			$fields           = $this->get_form_fields( $form_id );
-			$tablename        = $wpdb->prefix . 'frm_item_metas';
-			$form_fields      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where item_id=%d', $entry_id ) );
+			if ( empty( $fields ) ) {
+				return;
+			}
+			$tablename   = $wpdb->prefix . 'frm_item_metas';
+			$form_fields = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where item_id=%d', $entry_id ) );
 			foreach ( $form_fields as $field ) {
-
+				if ( empty( $field->field_id ) ) {
+					continue;
+				}
 				if ( 'name' === $fields[ $field->field_id ]['type'] ) {
 
 					$field_values = maybe_unserialize( $field->meta_value );
@@ -285,7 +290,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 				}
 			}
 
-			// Remove test entry form Formidable
+			// Remove test entry form Formidable.
 			$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . 'frm_item_metas WHERE item_id=%d', $entry_id ) );
 			$result = $wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . 'frm_items WHERE id=%d', $entry_id ) );
 

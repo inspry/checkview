@@ -455,6 +455,16 @@ class CheckView_Api {
 				),
 			)
 		);// end checkview_register_rest_route.
+
+		register_rest_route(
+			'checkview/v1',
+			'/confirm-site',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'checkview_confirm_site_callback' ),
+				'permission_callback' => '__return_true', // Restrict access as needed.
+			)
+		);
 	}
 
 	/**
@@ -1910,6 +1920,67 @@ class CheckView_Api {
 			}
 		}
 
+		if ( is_plugin_active( 'forminator/forminator.php' ) ) {
+			$args    = array(
+				'post_type'   => 'forminator_forms',
+				'post_status' => 'publish',
+				'order'       => 'ASC',
+				'orderby'     => 'ID',
+				'numberposts' => -1,
+			);
+			$results = get_posts( $args );
+			if ( $results ) {
+				foreach ( $results as $row ) {
+					$forms['ForminatorForms'][ $row->ID ] = array(
+						'ID'   => $row->ID,
+						'Name' => $row->post_title,
+					);
+
+					$form_pages = $wpdb->get_results(
+						$wpdb->prepare(
+							"SELECT ID FROM {$wpdb->prefix}posts
+						WHERE 1=1
+						AND (
+							(post_content LIKE %s OR post_content LIKE %s OR post_content LIKE %s OR post_content LIKE %s)
+							AND post_status = %s
+							AND post_type NOT IN (%s, %s)
+						)",
+							'%wp:forminator/forms {"id":"' . $row->ID . '%',
+							'%[forminator_form id="' . $row->ID . '%',
+							'%[forminator_form id=' . $row->ID . '%',
+							'%[forminator_form id=' . $row->ID . '%',
+							'publish',
+							'kadence_wootemplate',
+							'revision'
+						)
+					);
+					if ( $form_pages ) {
+						foreach ( $form_pages as $form_page ) {
+							if ( ! empty( $form_page->post_type ) && 'wp_block' === $form_page->post_type ) {
+
+								$wp_block_pages = checkview_get_wp_block_pages( $form_page->ID );
+								if ( $wp_block_pages ) {
+									foreach ( $wp_block_pages as $wp_block_page ) {
+										if ( ! empty( checkview_must_ssl_url( get_the_permalink( $wp_block_page->ID ) ) ) ) {
+											$forms['ForminatorForms'][ $row->ID ]['pages'][] = array(
+												'ID'  => $wp_block_page->ID,
+												'url' => checkview_must_ssl_url( get_the_permalink( $wp_block_page->ID ) ),
+											);
+										}
+									}
+								}
+							} elseif ( ! empty( checkview_must_ssl_url( get_the_permalink( $form_page->ID ) ) ) ) {
+								$forms['ForminatorForms'][ $row->ID ]['pages'][] = array(
+									'ID'  => $form_page->ID,
+									'url' => checkview_must_ssl_url( get_the_permalink( $form_page->ID ) ),
+								);
+							}
+						}
+					}
+				}
+			}
+		}
+
 		if ( $forms && ! empty( $forms ) && false !== $forms && '' !== $forms ) {
 			set_transient( 'checkview_forms_list_transient', $forms, 12 * HOUR_IN_SECONDS );
 			return new WP_REST_Response(
@@ -1963,6 +2034,16 @@ class CheckView_Api {
 						);
 
 					} elseif ( 'cf7' === strtolower( $result->form_type ) ) {
+						$value = $row->meta_value;
+						if ( strpos( $value, 'htt' ) !== false ) {
+							$value = html_entity_decode( $value );
+						}
+						$results[] = array(
+							'field_id'    => '',
+							'field_name'  => $row->meta_key,
+							'field_value' => $value,
+						);
+					} elseif ( 'Forminator' === $result->form_type ) {
 						$value = $row->meta_value;
 						if ( strpos( $value, 'htt' ) !== false ) {
 							$value = html_entity_decode( $value );
@@ -2399,6 +2480,67 @@ class CheckView_Api {
 				array( 'status' => 400 )
 			);
 		}
+	}
+
+	/**
+	 * Callback to Handle Site Confirmation
+	 *
+	 * @param WP_REST_Request $request request object.
+	 * @return array
+	 */
+	public function checkview_confirm_site_callback( WP_REST_Request $request ) {
+		$nonce = $request->get_header( 'X-WP-Nonce' );
+
+		if ( ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
+			Checkview_Admin_Logs::add( 'api-logs', 'Invalid nonce.' );
+			return new WP_Error(
+				'rest_forbidden',
+				esc_html__( 'Invalid request.', 'checkview' ),
+				array( 'status' => 403 )
+			);
+		}
+		$site_url = $request->get_param( 'site_url' );
+
+		if ( empty( $site_url ) ) {
+			Checkview_Admin_Logs::add( 'api-logs', 'Site URL is required.' );
+			return new WP_REST_Response(
+				array(
+					'success' => false,
+					'message' => esc_html__( 'invalid url.', 'checkview' ),
+				),
+				400
+			);
+		}
+
+		// Simulate sending the site URL to SaaS.
+		$response = wp_remote_post(
+			'https://webhook.site/e56102ab-19c9-4f72-8605-85c11362cf56',
+			array(
+				'body'    => json_encode( array( 'site_url' => $site_url ) ),
+				'headers' => array( 'Content-Type' => 'application/json' ),
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			return new WP_REST_Response(
+				array(
+					'success' => false,
+					'message' => esc_html__( 'Failed to send site URL.', 'checkview' ),
+				),
+				500
+			);
+		}
+
+		// On success, mark the site as confirmed.
+		update_option( 'checkview_site_confirmed', 1 );
+
+		return new WP_REST_Response(
+			array(
+				'success' => true,
+				'message' => esc_html__( 'Site successfully connected.', 'checkview' ),
+			),
+			200
+		);
 	}
 	/**
 	 * Determines if an incoming API request is granted access.

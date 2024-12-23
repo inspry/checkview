@@ -300,6 +300,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 			$tablename = $wpdb->prefix . 'gf_entry';
 			$row       = $wpdb->get_row( $wpdb->prepare( 'Select * from ' . $tablename . ' where id=%d and form_id=%d LIMIT 1', $entry_id, $form_id ), ARRAY_A );
 			unset( $row['id'] );
+			unset( $row['source_id'] );
 			$table1           = $wpdb->prefix . 'cv_entry';
 			$row['uid']       = $uid;
 			$row['form_type'] = 'GravityForms';

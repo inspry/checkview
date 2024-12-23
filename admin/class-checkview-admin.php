@@ -82,6 +82,15 @@ class Checkview_Admin {
 			10,
 			2
 		);
+		if ( ! get_option( 'checkview_site_confirmed' ) ) {
+			add_action(
+				'admin_notices',
+				array(
+					$this,
+					'checkview_admin_connect_banner',
+				),
+			);
+		}
 	}
 
 	/**
@@ -280,8 +289,17 @@ class Checkview_Admin {
 		}
 
 		$cv_session = checkview_get_cv_session( $visitor_ip, $cv_test_id );
-		$send_to    = CHECKVIEW_EMAIL;
 
+		if ( ! empty( $cv_test_id ) ) {
+			$send_to = $cv_test_id . '@test-mail.checkview.io';
+		} else {
+			$cv_test_id = get_checkview_test_id();
+			if ( ! empty( $cv_test_id ) ) {
+				$send_to = $cv_test_id . '@test-mail.checkview.io';
+			} else {
+				$send_to = CHECKVIEW_EMAIL;
+			}
+		}
 		if ( ! empty( $cv_session ) ) {
 
 			$test_key = $cv_session[0]['test_key'];
@@ -330,6 +348,10 @@ class Checkview_Admin {
 		}
 		if ( is_plugin_active( 'formidable/formidable.php' ) ) {
 			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-formidable-helper.php';
+		}
+
+		if ( is_plugin_active( 'forminator/forminator.php' ) ) {
+			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-forminator-helper.php';
 		}
 
 		if ( is_plugin_active( 'ws-form/ws-form.php' ) || is_plugin_active( 'ws-form-pro/ws-form.php' ) ) {
@@ -404,5 +426,58 @@ class Checkview_Admin {
 			}
 		}
 		return $plugin_metas;
+	}
+
+	/**
+	 * Adds admin banner for CheckView.
+	 *
+	 * @return void
+	 */
+	public function checkview_admin_connect_banner() {
+		?>
+		<div class="notice notice-warning is-dismissible" id="checkview-connect-banner">
+			<p>
+				<strong> <?php esc_html_e( 'Connect CheckView to continue setup.', 'checkview' ); ?></strong> 
+				<a href="#" id="checkview-connect-button" class="button-primary"><?php esc_html_e( 'Connect Now', 'checkview' ); ?></a>
+			</p>
+		</div>
+	
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				const connectButton = document.getElementById('checkview-connect-button');
+				if (connectButton) {
+					connectButton.addEventListener('click', function (e) {
+						e.preventDefault();
+	
+						const siteUrl = '<?php echo esc_url( get_rest_url() ); ?>';
+	
+						// Make an AJAX request to send the URL to your REST route
+						fetch('<?php echo esc_url( rest_url( 'checkview/v1/confirm-site' ) ); ?>', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+								'X-WP-Nonce': '<?php echo esc_html( wp_create_nonce( 'wp_rest' ) ); ?>',
+							},
+							body: JSON.stringify({ site_url: siteUrl })
+						})
+						.then(response => response.json())
+						.then(data => {
+							if (data.success) {
+								alert('CheckView successfully connected!');
+								// Optionally reload to clear the banner
+								location.reload();
+							} else {
+								alert('Connection failed: ' + data.message);
+							}
+						})
+						.catch(error => {
+							console.error('Error:', error);
+							alert('An error occurred. Please try again.');
+						});
+					});
+				}
+			});
+		</script>
+		<?php
 	}
 }

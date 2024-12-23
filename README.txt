@@ -98,6 +98,12 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Added a new endpoint to share helper logs.
 * Added function to delete logs after 7 days.
 * Added endpoint to update status of test product.
+* Delayed checkview entries deletion in WS Form.
+* Appended test id with test emails for SaaS notifications.
+* Added forminator forms integrations.
+* Resolved warnings in Formidable forms and GravityForms.
+* Resolved WSF entry deletion issues by delays entry deletion.
+*
 
 = 2.0.7 =
 * Updated IP address check function to adapt to different server configurations.
