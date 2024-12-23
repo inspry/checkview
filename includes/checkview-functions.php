@@ -254,9 +254,47 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 		}
 		if ( is_array( $ip_address ) ) {
 			$ip_address[] = '::1';
-			$ip_address[] = '119.73.99.244';
+			$ip_address[] = '188.251.23.194';
+			$ip_address[] = '2001:8a0:e5d0:a900:70a5:138a:d159:5054';
 		}
 		return $ip_address;
+	}
+}
+if ( ! defined( 'checkview_get_custom_header_keys_for_ip' ) ) {
+	/**
+	 * Sends custom header keys.
+	 *
+	 * @since 2.0.8
+	 *
+	 * @return array
+	 */
+	function checkview_get_custom_header_keys_for_ip() {
+		return array(
+			'HTTP_CLIENT_IP',
+			'HTTP_CF_CONNECTING_IP',
+			'HTTP_X_FORWARDED_FOR',
+			'HTTP_X_FORWARDED',
+			'HTTP_X_CLUSTER_CLIENT_IP',
+			'HTTP_X_REAL_IP',
+			'HTTP_FORWARDED_FOR',
+			'HTTP_FORWARDED',
+			'REMOTE_ADDR',
+		);
+	}
+}
+
+if ( ! defined( 'checkview_get_server_value' ) ) {
+	/**
+	 * Get any value from the $_SERVER
+	 *
+	 * @since 2.0
+	 *
+	 * @param string $value value.
+	 *
+	 * @return string
+	 */
+	function checkview_get_server_value( $value ) {
+		return isset( $_SERVER[ $value ] ) ? wp_strip_all_tags( wp_unslash( $_SERVER[ $value ] ) ) : '';
 	}
 }
 
@@ -273,23 +311,29 @@ if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
 	 *                      an invalid IP.
 	 */
 	function checkview_get_visitor_ip() {
-		if ( ! empty( $_SERVER['HTTP_X_REAL_IP'] ) ) {
-			// Check real ip.
-			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REAL_IP'] ) );
-		} elseif ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
-			// Check ip from share internet.
-			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ) );
-		} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-			// Check if IP is passed from proxy.
-			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
-		} else {
-			$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+		// Check view Bot IP.
+		$cv_bot_ip  = checkview_get_api_ip();
+		$ip_options = checkview_get_custom_header_keys_for_ip();
+		$ip         = '';
+
+		foreach ( $ip_options as $key ) {
+			if ( ! isset( $_SERVER[ $key ] ) ) {
+				continue;
+			}
+
+			$key = checkview_get_server_value( $key );
+			foreach ( explode( ',', $key ) as $ip ) {
+				// Just to be safe.
+				$ip = trim( $ip );
+
+				if ( checkview_validate_ip( $ip ) && is_array( $cv_bot_ip ) && in_array( $ip, $cv_bot_ip ) ) {
+					Checkview_Admin_Logs::add( 'ip-logs', 'Bypassed ' . $ip );
+					return sanitize_text_field( $ip );
+				}
+			}
 		}
 
-		if ( ! checkview_validate_ip( $ip ) ) {
-			return false;
-		}
-		return $ip;
+		return sanitize_text_field( $ip );
 	}
 }
 
