@@ -289,8 +289,17 @@ class Checkview_Admin {
 		}
 
 		$cv_session = checkview_get_cv_session( $visitor_ip, $cv_test_id );
-		$send_to    = CHECKVIEW_EMAIL;
 
+		if ( ! empty( $cv_test_id ) ) {
+			$send_to = $cv_test_id . '@test-mail.checkview.io';
+		} else {
+			$cv_test_id = get_checkview_test_id();
+			if ( ! empty( $cv_test_id ) ) {
+				$send_to = $cv_test_id . '@test-mail.checkview.io';
+			} else {
+				$send_to = CHECKVIEW_EMAIL;
+			}
+		}
 		if ( ! empty( $cv_session ) ) {
 
 			$test_key = $cv_session[0]['test_key'];
@@ -339,6 +348,10 @@ class Checkview_Admin {
 		}
 		if ( is_plugin_active( 'formidable/formidable.php' ) ) {
 			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-formidable-helper.php';
+		}
+
+		if ( is_plugin_active( 'forminator/forminator.php' ) ) {
+			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-forminator-helper.php';
 		}
 
 		if ( is_plugin_active( 'ws-form/ws-form.php' ) || is_plugin_active( 'ws-form-pro/ws-form.php' ) ) {

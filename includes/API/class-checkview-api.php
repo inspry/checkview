@@ -1920,6 +1920,67 @@ class CheckView_Api {
 			}
 		}
 
+		if ( is_plugin_active( 'forminator/forminator.php' ) ) {
+			$args    = array(
+				'post_type'   => 'forminator_forms',
+				'post_status' => 'publish',
+				'order'       => 'ASC',
+				'orderby'     => 'ID',
+				'numberposts' => -1,
+			);
+			$results = get_posts( $args );
+			if ( $results ) {
+				foreach ( $results as $row ) {
+					$forms['ForminatorForms'][ $row->ID ] = array(
+						'ID'   => $row->ID,
+						'Name' => $row->post_title,
+					);
+
+					$form_pages = $wpdb->get_results(
+						$wpdb->prepare(
+							"SELECT ID FROM {$wpdb->prefix}posts
+						WHERE 1=1
+						AND (
+							(post_content LIKE %s OR post_content LIKE %s OR post_content LIKE %s OR post_content LIKE %s)
+							AND post_status = %s
+							AND post_type NOT IN (%s, %s)
+						)",
+							'%wp:forminator/forms {"id":"' . $row->ID . '%',
+							'%[forminator_form id="' . $row->ID . '%',
+							'%[forminator_form id=' . $row->ID . '%',
+							'%[forminator_form id=' . $row->ID . '%',
+							'publish',
+							'kadence_wootemplate',
+							'revision'
+						)
+					);
+					if ( $form_pages ) {
+						foreach ( $form_pages as $form_page ) {
+							if ( ! empty( $form_page->post_type ) && 'wp_block' === $form_page->post_type ) {
+
+								$wp_block_pages = checkview_get_wp_block_pages( $form_page->ID );
+								if ( $wp_block_pages ) {
+									foreach ( $wp_block_pages as $wp_block_page ) {
+										if ( ! empty( checkview_must_ssl_url( get_the_permalink( $wp_block_page->ID ) ) ) ) {
+											$forms['ForminatorForms'][ $row->ID ]['pages'][] = array(
+												'ID'  => $wp_block_page->ID,
+												'url' => checkview_must_ssl_url( get_the_permalink( $wp_block_page->ID ) ),
+											);
+										}
+									}
+								}
+							} elseif ( ! empty( checkview_must_ssl_url( get_the_permalink( $form_page->ID ) ) ) ) {
+								$forms['ForminatorForms'][ $row->ID ]['pages'][] = array(
+									'ID'  => $form_page->ID,
+									'url' => checkview_must_ssl_url( get_the_permalink( $form_page->ID ) ),
+								);
+							}
+						}
+					}
+				}
+			}
+		}
+
 		if ( $forms && ! empty( $forms ) && false !== $forms && '' !== $forms ) {
 			set_transient( 'checkview_forms_list_transient', $forms, 12 * HOUR_IN_SECONDS );
 			return new WP_REST_Response(
@@ -1973,6 +2034,16 @@ class CheckView_Api {
 						);
 
 					} elseif ( 'cf7' === strtolower( $result->form_type ) ) {
+						$value = $row->meta_value;
+						if ( strpos( $value, 'htt' ) !== false ) {
+							$value = html_entity_decode( $value );
+						}
+						$results[] = array(
+							'field_id'    => '',
+							'field_name'  => $row->meta_key,
+							'field_value' => $value,
+						);
+					} elseif ( 'Forminator' === $result->form_type ) {
 						$value = $row->meta_value;
 						if ( strpos( $value, 'htt' ) !== false ) {
 							$value = html_entity_decode( $value );

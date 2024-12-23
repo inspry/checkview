@@ -166,10 +166,9 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 			$ws_form_submit->id      = $entry_id;
 			$ws_form_submit->form_id = $form_id;
 			$ws_form_submit->db_delete( true, true, true );
-			delete_option( $checkview_test_id . '_wsf_entry_id' );
-			delete_option( $checkview_test_id . '_wsf_frm_id' );
 		}
-
+		delete_option( $checkview_test_id . '_wsf_entry_id' );
+		delete_option( $checkview_test_id . '_wsf_frm_id' );
 		delete_option( $visitor_ip );
 		setcookie( 'checkview_test_id', '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
 		setcookie( 'checkview_test_id' . $checkview_test_id, '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
