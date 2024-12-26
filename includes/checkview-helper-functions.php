@@ -40,21 +40,25 @@ if ( ! function_exists( 'checkview_my_hcap_activate' ) ) {
 	 * @return bool
 	 */
 	function checkview_my_hcap_activate( $activate ) {
-		// Determine the IP of the request.
-		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
-			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ) );
-		} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
+		// Get SaaS IPs.
+		if ( function_exists( 'checkview_get_visitor_ip' ) ) {
+			$ip        = checkview_get_visitor_ip();
+			$cv_bot_ip = checkview_get_api_ip();
 		} else {
-			$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+			return $activate;
 		}
+		// Determine the IP of the request.
+		$ip = checkview_get_visitor_ip();
 		// If validation fails, handle the error appropriately.
 		if ( ! checkview_validate_ip( $ip ) ) {
 			return $activate;
 		}
-
 		// Deactive for tests.
 		if ( isset( $_REQUEST['checkview_test_id'] ) || 'checkview-saas' === get_option( $ip ) ) {
+			return false;
+		}
+		// Whitelist our IPs.
+		if ( is_array( $cv_bot_ip ) && in_array( $ip, $cv_bot_ip ) ) {
 			return false;
 		}
 		return $activate;
@@ -176,3 +180,31 @@ add_filter(
 		return $exceptions;
 	}
 );
+// Bypass WP Security.
+if ( is_plugin_active( 'better-wp-security/better-wp-security.php' ) ) {
+	add_filter(
+		'itsec_white_ips',
+		function ( $whitelisted_ips ) {
+			if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
+				return $whitelisted_ips;
+			}
+			$visitor_ip = checkview_get_visitor_ip();
+			return array_merge( $whitelisted_ips, (array) $visitor_ip );
+		},
+		0
+	);
+
+}
+if ( is_plugin_active( 'defender-security/wp-defender.php' ) ) {
+	add_filter(
+		'ip_lockout_default_whitelist_ip',
+		function ( $whitelisted_ips ) {
+			if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
+				return $whitelisted_ips;
+			}
+			$visitor_ip = checkview_get_visitor_ip();
+			return array_merge( $whitelisted_ips, (array) $visitor_ip );
+		},
+		10
+	);
+}
