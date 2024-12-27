@@ -2574,6 +2574,7 @@ class CheckView_Api {
 				esc_html__( 'Invalid request.', 'checkview' ),
 				array( 'status' => 400 )
 			);
+			wp_die();
 		}
 		$nonce_token = checkview_validate_jwt_token( $auth_header );
 		// checking for JWT token.
@@ -2659,6 +2660,7 @@ class CheckView_Api {
 					)
 				);
 			}
+			wp_die();
 		}
 		return array(
 			'code' => 'jwt_auth_valid_token',

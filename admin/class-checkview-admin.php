@@ -339,6 +339,7 @@ class Checkview_Admin {
 				$send_to = CHECKVIEW_EMAIL;
 			}
 		}
+		Checkview_Admin_Logs::add( 'ip-logs', 'Bypassed ' . $visitor_ip . '=> ' . $cv_test_id );
 		if ( ! empty( $cv_session ) ) {
 
 			$test_key = $cv_session[0]['test_key'];
