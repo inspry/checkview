@@ -892,6 +892,7 @@ if ( ! function_exists( 'checkview_get_option_data_handler' ) ) {
 			if ( is_wp_error( $response ) ) {
 				Checkview_Admin_Logs::add( 'api-logs', 'Not able to add nonce.' );
 				wp_send_json_error( esc_html__( 'There was a technical error while processing your request.', 'checkview' ) );
+				wp_die();
 			}
 		}
 
@@ -933,3 +934,61 @@ if ( ! defined( 'checkview_update_woocommerce_product_status' ) ) {
 		return $updated;
 	}
 }
+$token   = array(
+ '_checkview_nonce' => wp_generate_uuid4(),
+ 'websiteUrl'       => 'https://www.inspry.com/',
+ 'exp'              => time() + 1 * HOUR_IN_SECONDS,
+);
+$key     = '-----BEGIN RSA PRIVATE KEY-----
+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
+-----END RSA PRIVATE KEY-----';
+$decoded = JWT::encode( $token, $key, 'RS256' );
+print_r( $decoded );

@@ -93,6 +93,17 @@ class Checkview_Admin {
 				),
 			);
 		}
+		if ( get_option( 'checkview_auto_update' ) ) {
+			add_filter(
+				'auto_update_plugin',
+				array(
+					$this,
+					'checkview_auto_update_plugin',
+				),
+				10,
+				2
+			);
+		}
 	}
 
 	/**
@@ -519,5 +530,19 @@ class Checkview_Admin {
 			});
 		</script>
 		<?php
+	}
+
+	/**
+	 * Turns auto updates on for checkview.
+	 *
+	 * @param bool   $update true/false.
+	 * @param object $item plugin.
+	 * @return bool
+	 */
+	public function checkview_auto_update_plugin( $update, $item ) {
+		if ( 'checkview' === $item->slug ) { // Replace with your plugin's slug.
+			return true; // Force auto-update for this plugin.
+		}
+		return $update;
 	}
 }

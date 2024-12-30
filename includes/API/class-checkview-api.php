@@ -465,6 +465,24 @@ class CheckView_Api {
 				'permission_callback' => '__return_true', // Restrict access as needed.
 			)
 		);
+
+		register_rest_route(
+			'checkview/v1',
+			'/auto-update',
+			array(
+				'methods'  => array( 'POST', 'GET' ),
+				'callback' => array( $this, 'checkview_plugin_trigger_update' ),
+				// 'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'     => array(
+					'_checkview_token'  => array(
+						'required' => false,
+					),
+					'_checkview_update' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -487,6 +505,7 @@ class CheckView_Api {
 					'body_response' => false,
 				)
 			);
+			wp_die();
 		}
 		global $wpdb;
 		$orders                              = get_transient( 'checkview_store_orders_transient' );
@@ -581,6 +600,7 @@ class CheckView_Api {
 					'body_response' => $orders,
 				)
 			);
+			wp_die();
 		} else {
 			return new WP_REST_Response(
 				array(
@@ -589,6 +609,7 @@ class CheckView_Api {
 					'body_response' => $orders,
 				)
 			);
+			wp_die();
 		}
 		wp_die();
 	}
@@ -609,6 +630,7 @@ class CheckView_Api {
 					'body_response' => false,
 				)
 			);
+			wp_die();
 		}
 		global $wpdb;
 		$checkview_order_id = $request->get_param( 'checkview_order_id' );
@@ -765,6 +787,7 @@ class CheckView_Api {
 					'body_response' => $order_details,
 				)
 			);
+			wp_die();
 		} else {
 			return new WP_REST_Response(
 				array(
@@ -773,6 +796,7 @@ class CheckView_Api {
 					'body_response' => array(),
 				)
 			);
+			wp_die();
 		}
 		wp_die();
 	}
@@ -925,6 +949,7 @@ class CheckView_Api {
 					'body_response' => false,
 				)
 			);
+			wp_die();
 		}
 		global $wpdb;
 		$shipping_details = get_transient( 'checkview_store_shipping_transient' );
@@ -1018,6 +1043,7 @@ class CheckView_Api {
 					'body_response' => $shipping_details,
 				)
 			);
+			wp_die();
 		} else {
 			return new WP_REST_Response(
 				array(
@@ -1045,6 +1071,7 @@ class CheckView_Api {
 					'body_response' => false,
 				)
 			);
+			wp_die();
 		}
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
@@ -1124,6 +1151,7 @@ class CheckView_Api {
 					'body_response' => false,
 				)
 			);
+			wp_die();
 		}
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
@@ -1199,6 +1227,7 @@ class CheckView_Api {
 					'body_response' => false,
 				)
 			);
+			wp_die();
 		}
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
@@ -1247,6 +1276,7 @@ class CheckView_Api {
 					'body_response' => false,
 				)
 			);
+			wp_die();
 		}
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
@@ -1291,6 +1321,7 @@ class CheckView_Api {
 					'body_response' => false,
 				)
 			);
+			wp_die();
 		}
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
@@ -1442,6 +1473,7 @@ class CheckView_Api {
 					'body_response' => false,
 				)
 			);
+			wp_die();
 		}
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
@@ -1990,6 +2022,7 @@ class CheckView_Api {
 					'body_response' => $forms,
 				)
 			);
+			wp_die();
 		} else {
 			Checkview_Admin_Logs::add( 'api-logs', 'No forms to show.' );
 			return new WP_REST_Response(
@@ -2069,6 +2102,7 @@ class CheckView_Api {
 							'body_response' => $results,
 						)
 					);
+					wp_die();
 				} else {
 					Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the results.' );
 					return new WP_Error(
@@ -2248,12 +2282,14 @@ class CheckView_Api {
 					'body_response' => $response,
 				)
 			);
+			wp_die();
 		} else {
 			Checkview_Admin_Logs::add( 'api-logs', sanitize_text_field( 'Failed to retrieve the site info.' ) );
 			return new WP_Error(
 				400,
 				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 			);
+			wp_die();
 		}
 	}
 
@@ -2296,6 +2332,7 @@ class CheckView_Api {
 				esc_html__( 'Invalid request.', 'checkview' ),
 				array( 'status' => 400 )
 			);
+			wp_die();
 		}
 
 		// Format the slug to match the format used in the plugins directory.
@@ -2323,6 +2360,7 @@ class CheckView_Api {
 				),
 				200
 			);
+			wp_die();
 		} else {
 			Checkview_Admin_Logs::add( 'api-logs', sanitize_text_field( 'Plugin not found.' ) );
 			return new WP_Error(
@@ -2332,6 +2370,7 @@ class CheckView_Api {
 					'status' => 404,
 				)
 			);
+			wp_die();
 		}
 	}
 	/**
@@ -2384,12 +2423,14 @@ class CheckView_Api {
 					'body_response' => $response,
 				)
 			);
+			wp_die();
 		} else {
 			Checkview_Admin_Logs::add( 'api-logs', sanitize_text_field( 'Failed to retrieve the site info.' ) );
 			return new WP_Error(
 				400,
 				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 			);
+			wp_die();
 		}
 	}
 
@@ -2411,6 +2452,7 @@ class CheckView_Api {
 				esc_html__( 'Invalid request.', 'checkview' ),
 				array( 'status' => 400 )
 			);
+			wp_die();
 		}
 		if ( 'hide' === $checkview_status ) {
 			update_option( 'checkview_hide_me', 'true' );
@@ -2423,6 +2465,7 @@ class CheckView_Api {
 			),
 			200
 		);
+		wp_die();
 	}
 
 	/**
@@ -2441,6 +2484,7 @@ class CheckView_Api {
 					'body_response' => false,
 				)
 			);
+			wp_die();
 		}
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
@@ -2461,6 +2505,7 @@ class CheckView_Api {
 				esc_html__( 'Invalid request.', 'checkview' ),
 				array( 'status' => 400 )
 			);
+			wp_die();
 		}
 		$product    = $this->woo_helper->checkview_get_test_product();
 		$product_id = ! empty( $product->get_id() ) ? $product->get_id() : false;
@@ -2472,6 +2517,7 @@ class CheckView_Api {
 				),
 				200
 			);
+			wp_die();
 		} else {
 			Checkview_Admin_Logs::add( 'api-logs', 'Product status was not updated successfully.' . wp_json_encode( $product_id ) );
 			return new WP_Error(
@@ -2479,6 +2525,7 @@ class CheckView_Api {
 				esc_html__( 'Invalid request.', 'checkview' ),
 				array( 'status' => 400 )
 			);
+			wp_die();
 		}
 	}
 
@@ -2498,8 +2545,9 @@ class CheckView_Api {
 				esc_html__( 'Invalid request.', 'checkview' ),
 				array( 'status' => 403 )
 			);
+			wp_die();
 		}
-		$site_url = $request->get_param( 'site_url' );
+		$site_url = ! empty( $request->get_param( 'site_url' ) ) ? esc_url_raw( $request->get_param( 'site_url' ) ) : '';
 
 		if ( empty( $site_url ) ) {
 			Checkview_Admin_Logs::add( 'api-logs', 'Site URL is required.' );
@@ -2510,6 +2558,7 @@ class CheckView_Api {
 				),
 				400
 			);
+			wp_die();
 		}
 
 		// Simulate sending the site URL to SaaS.
@@ -2529,6 +2578,7 @@ class CheckView_Api {
 				),
 				500
 			);
+			wp_die();
 		}
 
 		// On success, mark the site as confirmed.
@@ -2541,6 +2591,50 @@ class CheckView_Api {
 			),
 			200
 		);
+		wp_die();
+	}
+	/**
+	 * Turns auto update on/off.
+	 *
+	 * @param \WP_REST_Request $request request data with the api call.
+	 * @return json/array
+	 */
+	public function checkview_plugin_trigger_update( \WP_REST_Request $request ) {
+		$checkview_update = ! empty( $request->get_param( '_checkview_update' ) ) ? sanitize_text_field( $request->get_param( '_checkview_update' ) ) : '';
+		if ( empty( $checkview_update ) ) {
+			Checkview_Admin_Logs::add( 'api-logs', 'Auto update status is required.' );
+			return new WP_REST_Response(
+				array(
+					'success' => false,
+					'message' => esc_html__( 'Invalid request.', 'checkview' ),
+				),
+				400
+			);
+			wp_die();
+		}
+		if ( 'on' == $checkview_update ) {
+			update_option( 'checkview_auto_update', 1 );
+			$output = exec('wp plugin update simple-history 2>&1');
+			echo $output;
+			if ( defined('WP_CLI') && WP_CLI ) {
+				WP_CLI::log("This won't work in HTTP.");
+				WP_CLI::runcommand( 'plugin update simple-history' );
+				$output = shell_exec('wp plugin update simple-history 2>&1');
+			} else {
+				echo 'not avaible';
+			}
+
+		} else {
+			update_option( 'checkview_auto_update', 0 );
+		}
+		return new WP_REST_Response(
+			array(
+				'success' => true,
+				'message' => esc_html__( 'Auto updates status set successfully.', 'checkview' ),
+			),
+			200
+		);
+		wp_die();
 	}
 	/**
 	 * Determines if an incoming API request is granted access.
@@ -2659,8 +2753,8 @@ class CheckView_Api {
 						'status' => 404,
 					)
 				);
+				wp_die();
 			}
-			wp_die();
 		}
 		return array(
 			'code' => 'jwt_auth_valid_token',

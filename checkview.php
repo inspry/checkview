@@ -1,17 +1,21 @@
 <?php
 /**
- * CheckView plugin
+ * The plugin bootstrap file
  *
- * @link https://checkview.io
+ * This file is read by WordPress to generate the plugin information in the plugin
+ * admin area. This file also includes all of the dependencies used by the plugin,
+ * registers the activation and deactivation functions, and defines a function
+ * that starts the plugin.
  *
- * @since 1.0.0
- * @package CheckView
+ * @link              https://checkview.io
+ * @since             1.0.0
+ * @package           CheckView
  *
  * @wordpress-plugin
  * Plugin Name:       CheckView
  * Plugin URI:        https://checkview.io
  * Description:       CheckView is the #1 fully automated solution to test your WordPress forms and detect form problems fast.  Automatically test your WordPress forms to ensure you never miss a lead again.
- * Version:           2.0.8
+ * Version:           2.0.0
  * Author:            CheckView
  * Author URI:        https://checkview.io/
  * License:           GPL-2.0+
@@ -28,15 +32,15 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Current plugin version.
- *
- * Start at version 1.0.0 and use SemVer. Rename this for your plugin and
- * update it as you release new versions.
- *
- * @link https://semver.org
+ * Currently plugin version.
+ * Start at version 1.0.0 and use SemVer - https://semver.org
+ * Rename this for your plugin and update it as you release new versions.
  */
-define( 'CHECKVIEW_VERSION', '2.0.8' );
+define( 'CHECKVIEW_VERSION', '2.0.0' );
 
+/**
+ * Define constant for plugin settings link
+ */
 if ( ! defined( 'CHECKVIEW_BASE_DIR' ) ) {
 	define( 'CHECKVIEW_BASE_DIR', plugin_basename( __FILE__ ) );
 }
@@ -71,7 +75,8 @@ if ( ! defined( 'CHECKVIEW_URI' ) ) {
 	define( 'CHECKVIEW_URI', trailingslashit( plugin_dir_url( __FILE__ ) ) );
 }
 /**
- * Handles CheckView activation.
+ * The code that runs during plugin activation.
+ * This action is documented in includes/class-checkview-activator.php
  */
 function activate_checkview() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-checkview-activator.php';
@@ -79,7 +84,8 @@ function activate_checkview() {
 }
 
 /**
- * Handles CheckView deactivation.
+ * The code that runs during plugin deactivation.
+ * This action is documented in includes/class-checkview-deactivator.php
  */
 function deactivate_checkview() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-checkview-deactivator.php';
@@ -89,33 +95,27 @@ function deactivate_checkview() {
 register_activation_hook( __FILE__, 'activate_checkview' );
 register_deactivation_hook( __FILE__, 'deactivate_checkview' );
 
-// Load CheckView Helper Plugins.
+/**
+ * Helper functions,
+ */
 require plugin_dir_path( __FILE__ ) . 'includes/checkview-helper-functions.php';
-
-// Load CheckView class.
+/**
+ * The core plugin class that is used to define internationalization,
+ * admin-specific hooks, and public-facing site hooks.
+ */
 require plugin_dir_path( __FILE__ ) . 'includes/class-checkview.php';
 
 /**
- * Initiates the main CheckView class.
+ * Begins execution of the plugin.
  *
- * @since 1.0.0
+ * Since everything within the plugin is registered via hooks,
+ * then kicking off the plugin from this point in the file does
+ * not affect the page life cycle.
+ *
+ * @since    1.0.0
  */
 function run_checkview() {
 	$plugin = Checkview::get_instance();
 	$plugin->run();
 }
 add_action( 'plugins_loaded', 'run_checkview', '10' );
-
-/**
- * Declares compatibility with WooCommerce high-performance order storage.
- *
- * @link https://woocommerce.com/document/high-performance-order-storage/
- */
-add_action(
-	'before_woocommerce_init',
-	function () {
-		if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
-			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
-		}
-	}
-);
