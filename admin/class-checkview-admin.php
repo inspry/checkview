@@ -86,13 +86,13 @@ class Checkview_Admin {
 		);
 		if ( ! get_option( 'checkview_site_confirmed' ) ) {
 			// for 2.0.9.
-			// add_action(
-			// 'admin_notices',
-			// array(
-			// $this,
-			// 'checkview_admin_connect_banner',
-			// ),
-			// );
+			add_action(
+				'admin_notices',
+				array(
+					$this,
+					'checkview_admin_connect_banner',
+				),
+			);
 		}
 		if ( get_option( 'checkview_auto_update' ) ) {
 			add_filter(

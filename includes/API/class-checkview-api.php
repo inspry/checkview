@@ -2613,17 +2613,31 @@ class CheckView_Api {
 			wp_die();
 		}
 		if ( 'on' == $checkview_update ) {
-			update_option( 'checkview_auto_update', 1 );
-			$output = exec('wp plugin update simple-history 2>&1');
-			echo $output;
-			if ( defined('WP_CLI') && WP_CLI ) {
-				WP_CLI::log("This won't work in HTTP.");
-				WP_CLI::runcommand( 'plugin update simple-history' );
-				$output = shell_exec('wp plugin update simple-history 2>&1');
-			} else {
-				echo 'not avaible';
+			echo "came";
+			// Include necessary files for plugin updates.
+			/** Load WordPress Bootstrap */
+			require_once ABSPATH . '/wp-load.php';
+			/** Load WordPress Administration APIs */
+require_once ABSPATH . 'wp-admin/includes/admin.php';
+			include_once ABSPATH . 'wp-admin/includes/file.php';
+			include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader-skin.php';
+			include_once ABSPATH . 'wp-admin/includes/plugin.php';
+			include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+
+			// Check for updates.
+			wp_update_plugins();
+
+			// Plugin slug (replace with your actual plugin slug).
+			$plugin_slug = 'simple-history/index.php';
+			$current     = get_site_transient( 'update_plugins' );
+
+			if ( isset( $current->response[ $plugin_slug ] ) ) {
+				$upgrader = new Plugin_Upgrader();
+				$result   = $upgrader->upgrade( $plugin_slug );
+				return $result; // Returns true if update was successful.
 			}
 
+			return false; // No updates available   echo 'not avaible'.
 		} else {
 			update_option( 'checkview_auto_update', 0 );
 		}
