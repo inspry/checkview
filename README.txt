@@ -3,7 +3,7 @@ Contributors: checkview, inspry
 Donate link: https://checkview.io/
 Tags: testing, monitoring, uptime, tests, woocommerce
 Requires at least: 5.0.1
-Tested up to: 6.7
+Tested up to: 6.7.1
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -103,7 +103,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Added forminator forms integrations.
 * Resolved warnings in Formidable forms and GravityForms.
 * Resolved WSF entry deletion issues by delays entry deletion.
-*
+* Whitelisted SaaS IP addresses in WordFence,  All in One Security, SolidWP and Defender Pro.
 
 = 2.0.7 =
 * Updated IP address check function to adapt to different server configurations.
@@ -316,6 +316,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Updated logs saving and retrieval method.
 * Added a new endpoint to share helper logs.
 * Added function to delete logs after 7 days.
+* Whitelisted SaaS IP addresses in WordFence,  All in One Security, SolidWP and Defender Pro.
 
 = 2.0.7 =
 * Updated IP address check function to adapt to different server configurations.

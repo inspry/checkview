@@ -3,7 +3,7 @@
  * CheckView plugin
  *
  * @link https://checkview.io
- * 
+ *
  * @since 1.0.0
  * @package CheckView
  *
@@ -29,10 +29,10 @@ if ( ! defined( 'WPINC' ) ) {
 
 /**
  * Current plugin version.
- * 
+ *
  * Start at version 1.0.0 and use SemVer. Rename this for your plugin and
  * update it as you release new versions.
- * 
+ *
  * @link https://semver.org
  */
 define( 'CHECKVIEW_VERSION', '2.0.8' );
@@ -97,7 +97,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-checkview.php';
 
 /**
  * Initiates the main CheckView class.
- * 
+ *
  * @since 1.0.0
  */
 function run_checkview() {
@@ -108,7 +108,7 @@ add_action( 'plugins_loaded', 'run_checkview', '10' );
 
 /**
  * Declares compatibility with WooCommerce high-performance order storage.
- * 
+ *
  * @link https://woocommerce.com/document/high-performance-order-storage/
  */
 add_action(

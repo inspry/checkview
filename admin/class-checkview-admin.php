@@ -8,6 +8,8 @@
  * @subpackage Checkview/admin
  */
 
+use AIOWPS\Firewall\Allow_List;
+use WP_Defender\Component\IP\Global_IP;
 /**
  * Handles various admin area features.
  *
@@ -249,6 +251,43 @@ class Checkview_Admin {
 			checkview_whitelist_api_ip();
 		}
 
+		if ( is_plugin_active( 'wordfence/wordfence.php' ) ) {
+			wordfence::whitelistIP( $visitor_ip );
+		}
+
+		if ( is_plugin_active( 'all-in-one-wp-security-and-firewall/wp-security.php' ) ) {
+			$allowlist                  = Allow_List::get_ips();
+			$aiowps_firewall_allow_list = AIOS_Firewall_Resource::request( AIOS_Firewall_Resource::ALLOW_LIST );
+			if ( ! empty( $allowlist ) ) {
+				$allowlist .= "\n" . $visitor_ip;
+			} else {
+				$allowlist = $visitor_ip;
+			}
+			$ips                     = sanitize_textarea_field( wp_unslash( $allowlist ) );
+			$ips                     = AIOWPSecurity_Utility_IP::create_ip_list_array_from_string_with_newline( $ips );
+			$validated_ip_list_array = AIOWPSecurity_Utility_IP::validate_ip_list( $ips, 'firewall_allowlist' );
+			if ( is_wp_error( $validated_ip_list_array ) ) {
+				$success = false;
+				$message = nl2br( $validated_ip_list_array->get_error_message() );
+				Checkview_Admin_Logs::add( 'ip-logs', 'Error ' . $message );
+			} else {
+				$aiowps_firewall_allow_list::add_ips( $validated_ip_list_array );
+			}
+		}
+
+		if ( is_plugin_active( 'defender-security/wp-defender.php' ) ) {
+			$data = array();
+
+			$data['allow_list'] = (array) $visitor_ip;
+
+			$data['block_list']           = array();
+			$data['last_update_time']     = '';
+			$data['last_update_time_utc'] = '';
+
+			$global_ip_component = wd_di()->get( Global_IP::class );
+			$result              = $global_ip_component->set_global_ip_list( $data );
+		}
+
 		// Gather test ID.
 		$cv_test_id = isset( $_REQUEST['checkview_test_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) : '';
 
@@ -300,6 +339,7 @@ class Checkview_Admin {
 				$send_to = CHECKVIEW_EMAIL;
 			}
 		}
+		Checkview_Admin_Logs::add( 'ip-logs', 'Bypassed ' . $visitor_ip . '=> ' . $cv_test_id );
 		if ( ! empty( $cv_session ) ) {
 
 			$test_key = $cv_session[0]['test_key'];
