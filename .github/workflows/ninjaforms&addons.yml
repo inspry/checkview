@@ -3,7 +3,7 @@ name: Check WordPress Plugin SVN Updates For Ninja Forms And Addons
 on:
   push:
     branches:
-      - main
+      - none
   schedule:
     - cron: '0 * * * *' # Runs every hour
   workflow_dispatch: # Allow manual trigger

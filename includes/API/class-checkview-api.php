@@ -2659,8 +2659,8 @@ class CheckView_Api {
 						'status' => 404,
 					)
 				);
+				wp_die();
 			}
-			wp_die();
 		}
 		return array(
 			'code' => 'jwt_auth_valid_token',
