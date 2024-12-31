@@ -88,7 +88,9 @@ function deactivate_checkview() {
 
 register_activation_hook( __FILE__, 'activate_checkview' );
 register_deactivation_hook( __FILE__, 'deactivate_checkview' );
-
+if ( ! function_exists( 'is_plugin_active' ) ) {
+	require_once ABSPATH . 'wp-admin/includes/plugin.php';
+}
 // Load CheckView Helper Plugins.
 require plugin_dir_path( __FILE__ ) . 'includes/checkview-helper-functions.php';
 
