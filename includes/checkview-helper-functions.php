@@ -40,15 +40,32 @@ if ( ! function_exists( 'checkview_my_hcap_activate' ) ) {
 	 * @return bool
 	 */
 	function checkview_my_hcap_activate( $activate ) {
-		// Get SaaS IPs.
-		if ( function_exists( 'checkview_get_visitor_ip' ) ) {
-			$ip        = checkview_get_visitor_ip();
-			$cv_bot_ip = checkview_get_api_ip();
-		} else {
-			return $activate;
+		$ip_options = array(
+			'HTTP_CLIENT_IP',
+			'HTTP_CF_CONNECTING_IP',
+			'HTTP_X_FORWARDED_FOR',
+			'HTTP_X_FORWARDED',
+			'HTTP_X_CLUSTER_CLIENT_IP',
+			'HTTP_X_REAL_IP',
+			'HTTP_FORWARDED_FOR',
+			'HTTP_FORWARDED',
+			'REMOTE_ADDR',
+		);
+		foreach ( $ip_options as $key ) {
+			if ( ! isset( $_SERVER[ $key ] ) ) {
+				continue;
+			}
+
+			$key = isset( $_SERVER[ $key ] ) ? wp_strip_all_tags( wp_unslash( $_SERVER[ $key ] ) ) : '';
+			foreach ( explode( ',', $key ) as $ip ) {
+				// Just to be safe.
+				$ip = trim( $ip );
+
+				if ( checkview_validate_ip( $ip ) ) {
+					$ip = sanitize_text_field( $ip );
+				}
+			}
 		}
-		// Determine the IP of the request.
-		$ip = checkview_get_visitor_ip();
 		// If validation fails, handle the error appropriately.
 		if ( ! checkview_validate_ip( $ip ) ) {
 			return $activate;

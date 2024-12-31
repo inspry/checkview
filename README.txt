@@ -86,24 +86,19 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 == Changelog ==
 
-= 2.0.8 =
-* Added bypass for PerfMatters API barrier.
-* Added function to disable all form actions except CF7.
-* Added Google Recaptcha V2 bypass in FluentForms.
-* Updated the init hook to re-enable Recaptcha V2 and Cloudflare Turnstile after test completion.
-* Added BCC and CC suppressions in all forms.
-* Updated IP address check function to adapt to different server settings.
-* Added support to hide/show plugin details.
-* Updated logs saving and retrieval method.
-* Added a new endpoint to share helper logs.
-* Added function to delete logs after 7 days.
-* Added endpoint to update status of test product.
-* Delayed checkview entries deletion in WS Form.
-* Appended test id with test emails for SaaS notifications.
-* Added forminator forms integrations.
-* Resolved warnings in Formidable forms and GravityForms.
-* Resolved WSF entry deletion issues by delays entry deletion.
-* Whitelisted SaaS IP addresses in WordFence,  All in One Security, SolidWP and Defender Pro.
+= 2.0.8 =   
+* Added Recaptcha V2 bypass in FluentForms.  
+* Updated the init hook to re-enable Recaptcha V2 and Cloudflare Turnstile after test completion.  
+* Added suppression of BCC and CC fields in all forms.  
+* Updated IP address check function to adapt to different server settings.    
+* Updated log saving and retrieval methods.  
+* Added a new endpoint to share helper logs.  
+* Added function to delete logs after 7 days.    
+* Delayed checkview entry deletion in WS Form.  
+* Appended test ID to test emails for SaaS notifications.   
+* Resolved warnings in Formidable Forms and GravityForms.  
+* Resolved WSF entry deletion issues by delaying entry deletion.  
+* Whitelisted SaaS IP addresses in WordFence, All in One Security, SolidWP, and Defender Pro.
 
 = 2.0.7 =
 * Updated IP address check function to adapt to different server configurations.
@@ -305,18 +300,20 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 == Upgrade Notice ==
 
-= 2.0.8 =
-* Added bypass for PerfMatters API barrier.
-* Added function to disable all form actions except CF7.
-* Added Google Recaptcha V2 bypass in FluentForms.
-* Updated the init hook to re-enable Recaptcha V2 and Cloudflare Turnstile after test completion.
-* Added BCC and CC suppressions in all forms.
-* Updated IP address check function to adapt to different server settings.
-* Added support to hide/show plugin details.
-* Updated logs saving and retrieval method.
-* Added a new endpoint to share helper logs.
-* Added function to delete logs after 7 days.
-* Whitelisted SaaS IP addresses in WordFence,  All in One Security, SolidWP and Defender Pro.
+= 2.0.8 =   
+* Added Recaptcha V2 bypass in FluentForms.  
+* Updated the init hook to re-enable Recaptcha V2 and Cloudflare Turnstile after test completion.  
+* Added suppression of BCC and CC fields in all forms.  
+* Updated IP address check function to adapt to different server settings.    
+* Updated log saving and retrieval methods.  
+* Added a new endpoint to share helper logs.  
+* Added function to delete logs after 7 days.    
+* Delayed checkview entry deletion in WS Form.  
+* Appended test ID to test emails for SaaS notifications.   
+* Resolved warnings in Formidable Forms and GravityForms.  
+* Resolved WSF entry deletion issues by delaying entry deletion.  
+* Whitelisted SaaS IP addresses in WordFence, All in One Security, SolidWP, and Defender Pro.
+
 
 = 2.0.7 =
 * Updated IP address check function to adapt to different server configurations.
