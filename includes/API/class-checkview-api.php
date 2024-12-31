@@ -2613,40 +2613,61 @@ class CheckView_Api {
 			wp_die();
 		}
 		if ( 'on' == $checkview_update ) {
-			echo "came";
+			ob_start();  // Start output buffering
 			// Include necessary files for plugin updates.
-			/** Load WordPress Bootstrap */
-			require_once ABSPATH . '/wp-load.php';
 			/** Load WordPress Administration APIs */
-require_once ABSPATH . 'wp-admin/includes/admin.php';
+			require_once ABSPATH . 'wp-admin/includes/admin.php';
 			include_once ABSPATH . 'wp-admin/includes/file.php';
 			include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader-skin.php';
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
 			include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-
+			
 			// Check for updates.
 			wp_update_plugins();
 
 			// Plugin slug (replace with your actual plugin slug).
-			$plugin_slug = 'simple-history/index.php';
+			$plugin_slug = 'sg-security/sg-security.php';
 			$current     = get_site_transient( 'update_plugins' );
 
 			if ( isset( $current->response[ $plugin_slug ] ) ) {
 				$upgrader = new Plugin_Upgrader();
 				$result   = $upgrader->upgrade( $plugin_slug );
-				return $result; // Returns true if update was successful.
+				$output   = ob_get_clean();
+				// Strip HTML tags from the response.
+				$clean_output = strip_tags( $output );
+				ob_end_clean();
+				if ( ! is_wp_error( $result ) ) {
+					return new WP_REST_Response(
+						array(
+							'success' => true,
+							'message' => $clean_output,
+						),
+						200
+					);
+					wp_die();
+				} else {
+					Checkview_Admin_Logs::add( 'api-logs', 'Failed to Update.' );
+					return new WP_Error(
+						400,
+						esc_html__( 'Invalid request.', 'checkview' ),
+						''
+					);
+					wp_die();
+				}
 			}
-
-			return false; // No updates available   echo 'not avaible'.
-		} else {
-			update_option( 'checkview_auto_update', 0 );
+			Checkview_Admin_Logs::add( 'api-logs', 'No update available for CV.' );
+			return new WP_Error(
+				400,
+				esc_html__( 'Invalid request.', 'checkview' ),
+				''
+			);
+			wp_die();
 		}
-		return new WP_REST_Response(
-			array(
-				'success' => true,
-				'message' => esc_html__( 'Auto updates status set successfully.', 'checkview' ),
-			),
-			200
+		Checkview_Admin_Logs::add( 'api-logs', 'Wrong update parameter.' );
+		return new WP_Error(
+			400,
+			esc_html__( 'Invalid request.', 'checkview' ),
+			''
 		);
 		wp_die();
 	}
