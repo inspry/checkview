@@ -90,7 +90,6 @@ if ( ! class_exists( 'Checkview_Forminator_Helper' ) ) {
 				'__return_true',
 				999
 			);
-
 			add_filter(
 				'forminator_invalid_captcha_message',
 				'__return_null'

@@ -74,10 +74,6 @@ if ( ! function_exists( 'checkview_my_hcap_activate' ) ) {
 		if ( isset( $_REQUEST['checkview_test_id'] ) || 'checkview-saas' === get_option( $ip ) ) {
 			return false;
 		}
-		// Whitelist our IPs.
-		if ( is_array( $cv_bot_ip ) && in_array( $ip, $cv_bot_ip ) ) {
-			return false;
-		}
 		return $activate;
 	}
 }

@@ -299,6 +299,7 @@ $allow_dev         = ! empty( $checkview_options['checkview_allowed_extensions']
 					</td>
 				</tr>
 
+<<<<<<< HEAD
 				<tr valign="top">
 					<th scope="row" >
 						<label for="checkview_site_rest_url">
@@ -327,6 +328,8 @@ $allow_dev         = ! empty( $checkview_options['checkview_allowed_extensions']
 					</td>
 				</tr>
 
+=======
+>>>>>>> d11e1860f5ffe72e4008ce45a5302f777413d1f9
 				<?php do_action( 'checkview_api_settings', $checkview_options ); ?>
 			</tbody>
 		</table>
