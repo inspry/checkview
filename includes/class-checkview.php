@@ -70,7 +70,7 @@ class Checkview {
 		if ( defined( 'CHECKVIEW_VERSION' ) ) {
 			$this->version = CHECKVIEW_VERSION;
 		} else {
-			$this->version = '2.0.8';
+			$this->version = '2.0.9';
 		}
 		$this->plugin_name = 'checkview';
 
@@ -138,11 +138,11 @@ class Checkview {
 		$cv_bot_ip = checkview_get_api_ip();
 		if ( ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) ) ) {
 			update_option( $visitor_ip, 'checkview-saas', true );
-		}
-		$woo_helper = '';
-		if ( class_exists( 'WooCommerce' ) ) {
-			require_once plugin_dir_path( __DIR__ ) . 'includes/woocommercehelper/class-checkview-woo-automated-testing.php';
-			$woo_helper = new Checkview_Woo_Automated_Testing( $this->get_plugin_name(), $this->get_version(), $this->loader );
+			$woo_helper = '';
+			if ( class_exists( 'WooCommerce' ) ) {
+				require_once plugin_dir_path( __DIR__ ) . 'includes/woocommercehelper/class-checkview-woo-automated-testing.php';
+				$woo_helper = new Checkview_Woo_Automated_Testing( $this->get_plugin_name(), $this->get_version(), $this->loader );
+			}
 		}
 		$this->loader->add_filter(
 			'plugin_action_links_' . CHECKVIEW_BASE_DIR,
