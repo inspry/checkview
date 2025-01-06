@@ -86,7 +86,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 == Changelog ==
 = 2.0.9 =
-* **Critical Bug Fix**: Addressed an intermittent issue preventing WooCommerce transactional emails from sending during automated test execution. This occurred regardless of whether the tests were directly related to WooCommerce, as long as WooCommerce was active on the site.
+* **Urgent Bug Fix**: Addressed a critical, but intermittent issue preventing WooCommerce transactional emails from sending during automated test execution. This occurred regardless of whether the tests were directly related to WooCommerce, as long as WooCommerce was active on the site.
 
 = 2.0.8 =   
 * Added Recaptcha V2 bypass in FluentForms.  
@@ -302,7 +302,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 == Upgrade Notice ==
 = 2.0.9 =
-* **Critical Bug Fix**: Addressed an intermittent issue preventing WooCommerce transactional emails from sending during automated test execution. This occurred regardless of whether the tests were directly related to WooCommerce, as long as WooCommerce was active on the site.
+* **Urgent Bug Fix**: Addressed a critical, but intermittent issue preventing WooCommerce transactional emails from sending during automated test execution. This occurred regardless of whether the tests were directly related to WooCommerce, as long as WooCommerce was active on the site.
 
 = 2.0.8 =   
 * Added Recaptcha V2 bypass in FluentForms.  
