@@ -2553,7 +2553,7 @@ class CheckView_Api {
 	public function checkview_get_items_permissions_check( \WP_REST_Request $request ) {
 		nocache_headers();
 		// Get the Authorization header.
-		$auth_header = $request->get_header( 'Authorization' );
+		$auth_header = $request->get_header( 'checkview_authorization' );
 		$auth_header = isset( $auth_header ) ? sanitize_text_field( $auth_header ) : '';
 
 		if ( empty( $auth_header ) ) {
