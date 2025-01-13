@@ -1,5 +1,5 @@
 === CheckView Automated Testing ===
-Contributors: checkview, inspry
+Contributors: checkview, inspry, muhammadfaizanhaidar
 Donate link: https://checkview.io/
 Tags: testing, monitoring, uptime, tests, woocommerce
 Requires at least: 5.0.1
