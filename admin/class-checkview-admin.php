@@ -84,7 +84,7 @@ class Checkview_Admin {
 			10,
 			2
 		);
-		if ( ! get_option( 'checkview_site_confirmed' ) ) {
+		if ( get_option( 'checkview_site_confirmed' ) || ! $this->checkview_is_app_password_in_list( wp_get_current_user(), 'CheckView SaaS Integration' ) ) {
 			add_action(
 				'admin_notices',
 				array(
@@ -93,6 +93,13 @@ class Checkview_Admin {
 				),
 			);
 		}
+		add_action(
+			'wp_ajax_checkview_connect',
+			array(
+				$this,
+				'checkview_generate_and_send_app_password',
+			),
+		);
 	}
 
 	/**
@@ -141,7 +148,7 @@ class Checkview_Admin {
 			$this->plugin_name,
 			CHECKVIEW_ADMIN_ASSETS . 'css/checkview-admin.css',
 			array(),
-			$this->version,
+			$this->version . rand( 1, 100 ),
 			'all'
 		);
 
@@ -171,7 +178,7 @@ class Checkview_Admin {
 		// Don't enqueue scripts for other admin screens.
 		$screen = get_current_screen();
 		if ( 'checkview-options' !== $screen->base && 'settings_page_checkview-options' !== $screen->base ) {
-			return;
+			// return;
 		}
 		wp_enqueue_script(
 			$this->plugin_name,
@@ -204,6 +211,12 @@ class Checkview_Admin {
 				'blog_id'                         => get_current_blog_id(),
 				'tab'                             => $tab,
 				'checkview_create_token_security' => wp_create_nonce( 'create-token-' . $user_id ),
+				'nonce'                           => wp_create_nonce( 'checkview_nonce' ),
+				'i18n'                            => array(
+					'connecting'        => __( 'Connecting to SaaS...', 'checkview' ),
+					'success_connected' => __( 'Successfully connected to SaaS!', 'checkview' ),
+					'error_connecting'  => __( 'Failed to connect. Please try again.', 'checkview' ),
+				),
 			)
 		);
 	}
@@ -473,50 +486,183 @@ class Checkview_Admin {
 	 * @return void
 	 */
 	public function checkview_admin_connect_banner() {
-		?>
-		<div class="notice notice-warning is-dismissible" id="checkview-connect-banner">
-			<p>
-				<strong> <?php esc_html_e( 'Connect CheckView to continue setup.', 'checkview' ); ?></strong> 
-				<a href="#" id="checkview-connect-button" class="button-primary"><?php esc_html_e( 'Connect Now', 'checkview' ); ?></a>
-			</p>
-		</div>
-	
-		<script>
-			document.addEventListener('DOMContentLoaded', function () {
-				const connectButton = document.getElementById('checkview-connect-button');
-				if (connectButton) {
-					connectButton.addEventListener('click', function (e) {
-						e.preventDefault();
-	
-						const siteUrl = '<?php echo esc_url( get_rest_url() ); ?>';
-	
-						// Make an AJAX request to send the URL to your REST route
-						fetch('<?php echo esc_url( rest_url( 'checkview/v1/confirm-site' ) ); ?>', {
-							method: 'POST',
-							headers: {
-								'Content-Type': 'application/json',
-								'X-WP-Nonce': '<?php echo esc_html( wp_create_nonce( 'wp_rest' ) ); ?>',
-							},
-							body: JSON.stringify({ site_url: siteUrl })
-						})
-						.then(response => response.json())
-						.then(data => {
-							if (data.success) {
-								alert('CheckView successfully connected!');
-								// Optionally reload to clear the banner
-								location.reload();
-							} else {
-								alert('Connection failed: ' + data.message);
-							}
-						})
-						.catch(error => {
-							console.error('Error:', error);
-							alert('An error occurred. Please try again.');
-						});
-					});
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$is_connected = get_option( 'checkview_site_confirmed', false );
+
+		if ( $is_connected ) {
+			?>
+			<style>
+				/* Styling for the CheckView admin notice */
+				.checkview-notice {
+					display: flex;
+					align-items: center;
+					border-left: 4px solid #0073aa;
+					padding: 15px;
+					margin: 15px 0;
+					background: #f1f1f1;
+					border-radius: 5px;
 				}
-			});
-		</script>
-		<?php
+
+				.checkview-notice-content {
+					display: flex;
+					align-items: center;
+					width: 100%;
+				}
+
+				.checkview-icon {
+					margin-right: 15px;
+				}
+
+				.checkview-icon img {
+					max-width: 50px;
+					height: auto;
+				}
+
+				.checkview-text {
+					flex-grow: 1;
+				}
+
+				.checkview-text p {
+					margin: 0;
+					font-size: 16px;
+					color: #555;
+				}
+
+				.checkview-action {
+					margin-left: 20px;
+				}
+
+				.checkview-action .button {
+					font-size: 12px;
+					padding: 10px 15px;
+					background-color: #0073aa;
+					color: #fff;
+					border: none;
+					border-radius: 3px;
+					text-transform: uppercase;
+					font-weight: bold;
+					transition: background-color 0.3s;
+				}
+
+				.checkview-action .button:hover {
+					background-color: #005177;
+					color: #fff;
+				}
+			</style>
+			<div class="notice notice-warning is-dismissible checkview-notice">
+				<div class="checkview-notice-content">
+					<div class="checkview-icon">
+						<img src="<?php echo esc_url( CHECKVIEW_ADMIN_ASSETS . '/images/logo.svg' ); ?>" alt="<?php esc_attr_e( 'CheckView Logo', 'checkview' ); ?>" />
+					</div>
+					<div class="checkview-text">
+						<p><?php esc_html_e( 'Connect CheckView to continue setup.', 'checkview' ); ?></p>
+					</div>
+					<div class="checkview-action">
+						<button id="checkview-connect" class="button button-primary">
+							<?php esc_html_e( 'Connect to SaaS', 'checkview' ); ?>
+						</button>
+					</div>
+				</div>
+			</div>
+			<?php
+		}
+	}
+	/**
+	 * AJAX handler for generating and sending the application password.
+	 */
+	public function checkview_generate_and_send_app_password() {
+		// Check nonce.
+		check_ajax_referer( 'checkview_nonce', 'nonce' );
+
+		// Get the current user.
+		$current_user = wp_get_current_user();
+
+		if ( empty( $current_user->ID ) ) {
+			wp_send_json_error( array( 'message' => __( 'User not logged in.', 'checkview' ) ) );
+		}
+		if ( $this->checkview_is_app_password_in_list( wp_get_current_user(), 'CheckView SaaS Integration' ) ) {
+			update_option( 'checkview_site_confirmed', true );
+			wp_send_json_success( array( 'message' => __( 'Already connected to the SaaS.', 'checkview' ) ) );
+			wp_die();
+		}
+		// echo 'came_here';
+		// Generate application password.
+		$result = WP_Application_Passwords::create_new_application_password(
+			$current_user->ID,
+			array(
+				'name' => 'CheckView SaaS Integration',
+			)
+		);
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+		}
+		$app_password = $result[0];
+		// $app_password = //WP_Application_Passwords::chunk_password( $app_password );
+		// Prepare data to send to SaaS.
+		$data = array(
+			'username'         => $current_user->user_login,
+			'application_pass' => $app_password,
+			'site_url'         => home_url(),
+		);
+
+		// Send data to SaaS via cURL.
+		$response = wp_remote_post(
+			'https://webhook-test.com/f388daaf757c7ee417dde5584c50f15b',
+			array(
+				'method'  => 'POST',
+				'headers' => array(
+					'Content-Type' => 'application/json',
+				),
+				'body'    => wp_json_encode( $data ),
+				'timeout' => 60,
+			)
+		);
+
+		// Handle the response.
+		if ( is_wp_error( $response ) ) {
+			wp_send_json_error( array( 'message' => $response->get_error_message() ) );
+		}
+
+		$response_code = wp_remote_retrieve_response_code( $response );
+
+		if ( 200 === $response_code ) {
+			update_option( 'checkview_site_confirmed', true );
+			wp_send_json_success( array( 'message' => __( 'Successfully connected to SaaS.', 'checkview' ) ) );
+			wp_die();
+		} else {
+			wp_send_json_error( array( 'message' => __( 'Failed to connect to SaaS.', 'checkview' ) ) );
+			wp_die();
+		}
+	}
+
+	/**
+	 * Check if the generated application password exists for a user.
+	 *
+	 * @param WP_User $user The user object.
+	 * @param string  $app_name The name of the application password to check for.
+	 *
+	 * @return bool True if the application password exists, false otherwise.
+	 */
+	public function checkview_is_app_password_in_list( $user, $app_name ) {
+		// Get all application passwords for the user.
+		$app_passwords = WP_Application_Passwords::get_user_application_passwords( $user->ID );
+
+		if ( empty( $app_passwords ) ) {
+			return false;
+		}
+
+		// Loop through each application password.
+		foreach ( $app_passwords as $app_password ) {
+			// Check if the name matches the one generated by your plugin.
+			if ( isset( $app_password['name'] ) && $app_password['name'] === $app_name ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

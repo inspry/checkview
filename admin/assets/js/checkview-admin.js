@@ -1,29 +1,29 @@
-(function( $ ) {
-	'use strict';
-    $( document ).ready(function() {
-        jQuery("#checkview_update_cache").click( function(e){ 
+(function ($) {
+    'use strict';
+    $(document).ready(function () {
+        jQuery("#checkview_update_cache").click(function (e) {
 
             e.preventDefault();
             var $thisButton = $(this);
             $thisButton.removeClass('success error').addClass('loading');
             Swal.fire({
                 title: 'Are you sure?',
-                text:  'Cache will be updated permanently!',
-                icon:  'warning',
+                text: 'Cache will be updated permanently!',
+                icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Update cache',
                 cancelButtonText: 'Cancel'
-              }).then((result) => {
-                if ( result.value ) {
-    
+            }).then((result) => {
+                if (result.value) {
+
                     $.ajax({
                         url: checkview_ajax_obj.ajaxurl,
                         type: 'post',
                         data: {
-                            'action':'checkview_update_cache',
+                            'action': 'checkview_update_cache',
                             'user_id': checkview_ajax_obj.user_id,
-                            _nonce   : $thisButton.data('nonce')
-                        },beforeSend: function() {
+                            _nonce: $thisButton.data('nonce')
+                        }, beforeSend: function () {
                             Swal.fire({
                                 title: 'Success',
                                 text: 'Update in progress it will take some time!',
@@ -34,32 +34,32 @@
                             })
                             $thisButton.removeClass('loading error').addClass('success');
                         },
-                        success: function( response ) {
-    
-                                var tokenObj = JSON.parse( response );
-                                 if( !tokenObj.success && tokenObj != '0'){
-    
-                                    Swal.fire({
-                                        title: 'Error',
-                                        text: tokenObj.message,
-                                        icon: 'warning',
-                                        showCancelButton: false,
-                                        confirmButtonText: 'Ok',
-    
-                                    })
-                                    $thisButton.removeClass('loading success').addClass('error');
-    
-                                } else {
-                                    Swal.fire({
-                                        title: 'Success',
-                                        text:  (tokenObj != '0' ? tokenObj.message : 'Updated Successfully.'),
-                                        icon: 'success',
-                                        showCancelButton: false,
-                                        confirmButtonText: 'Ok',
-                                    })
-                                    $thisButton.removeClass('loading error').addClass('success');
-                                }
-    
+                        success: function (response) {
+
+                            var tokenObj = JSON.parse(response);
+                            if (!tokenObj.success && tokenObj != '0') {
+
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: tokenObj.message,
+                                    icon: 'warning',
+                                    showCancelButton: false,
+                                    confirmButtonText: 'Ok',
+
+                                })
+                                $thisButton.removeClass('loading success').addClass('error');
+
+                            } else {
+                                Swal.fire({
+                                    title: 'Success',
+                                    text: (tokenObj != '0' ? tokenObj.message : 'Updated Successfully.'),
+                                    icon: 'success',
+                                    showCancelButton: false,
+                                    confirmButtonText: 'Ok',
+                                })
+                                $thisButton.removeClass('loading error').addClass('success');
+                            }
+
                         },
                     });
                 } else {
@@ -67,5 +67,37 @@
                 } //endif
             })
         });
+        $('#checkview-connect').on('click', function () {
+            Swal.fire({
+                title: checkview_ajax_obj.i18n.connecting,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            $.ajax({
+                url: checkview_ajax_obj.ajaxurl,
+                method: 'post',
+                data: {
+                    'action': 'checkview_connect',
+                    'nonce': checkview_ajax_obj.nonce
+                },
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: checkview_ajax_obj.i18n.success_connected
+                    });
+                },
+                error: function (response) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: checkview_ajax_obj.i18n.error_connecting,
+                        text: response.responseJSON?.message || ''
+                    });
+                }
+            });
+        });
+
     });
-})( jQuery );
+})(jQuery);

@@ -933,3 +933,66 @@ if ( ! defined( 'checkview_update_woocommerce_product_status' ) ) {
 		return $updated;
 	}
 }
+/**
+ * AJAX handler for generating and sending the application password.
+ */
+function checkview_generate_and_send_app_password() {
+	// Check nonce.
+	check_ajax_referer( 'checkview_nonce', 'nonce' );
+
+	// Get the current user.
+	$current_user = wp_get_current_user();
+
+	if ( empty( $current_user->ID ) ) {
+		wp_send_json_error( array( 'message' => __( 'User not logged in.', 'checkview' ) ) );
+	}
+
+	// Generate application password.
+	$app_password = wp_generate_password( 24, false );
+	$result       = wp_insert_application_password(
+		$current_user->ID,
+		array(
+			'name'     => 'CheckView SaaS Integration',
+			'password' => $app_password,
+		)
+	);
+
+	if ( is_wp_error( $result ) ) {
+		wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+	}
+
+	// Prepare data to send to SaaS.
+	$data = array(
+		'username'         => $current_user->user_login,
+		'application_pass' => $app_password,
+		'site_url'         => home_url(),
+	);
+
+	// Send data to SaaS via cURL.
+	$response = wp_remote_post(
+		'https://your-saas-url.com/connect',
+		array(
+			'method'  => 'POST',
+			'headers' => array(
+				'Content-Type' => 'application/json',
+			),
+			'body'    => wp_json_encode( $data ),
+			'timeout' => 15,
+		)
+	);
+
+	// Handle the response.
+	if ( is_wp_error( $response ) ) {
+		wp_send_json_error( array( 'message' => $response->get_error_message() ) );
+	}
+
+	$response_code = wp_remote_retrieve_response_code( $response );
+
+	if ( $response_code === 200 ) {
+		update_option( 'checkview_connected', true );
+		wp_send_json_success( array( 'message' => __( 'Successfully connected to SaaS.', 'checkview' ) ) );
+	} else {
+		wp_send_json_error( array( 'message' => __( 'Failed to connect to SaaS.', 'checkview' ) ) );
+	}
+}
+// add_action( 'wp_ajax_checkview_connect', 'checkview_generate_and_send_app_password' );
