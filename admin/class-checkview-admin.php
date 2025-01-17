@@ -216,7 +216,12 @@ class Checkview_Admin {
 
 		// Skip if visitor ip not equal to CV Bot IP.
 		if ( is_array( $cv_bot_ip ) && ! in_array( $visitor_ip, $cv_bot_ip ) ) {
-			checkview_options_cleanup();
+			if ( 'true' !== get_option( 'cv_ff_keys_set_turnstile' ) ) {
+				return;
+			}
+			if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
+				checkview_options_cleanup();
+			}
 			return;
 		}
 
