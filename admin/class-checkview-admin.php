@@ -61,6 +61,11 @@ class Checkview_Admin {
 		);
 
 		add_action(
+			'checkview_options_cleanup_cron',
+			'checkview_options_cleanup'
+		);
+
+		add_action(
 			'checkview_nonce_cleanup_cron',
 			array( $this, 'checkview_delete_expired_nonces' )
 		);
@@ -115,6 +120,10 @@ class Checkview_Admin {
 	public function checkview_schedule_nonce_cleanup() {
 		if ( ! wp_next_scheduled( 'checkview_nonce_cleanup_cron' ) ) {
 			wp_schedule_event( time(), 'hourly', 'checkview_nonce_cleanup_cron' );
+		}
+
+		if ( ! wp_next_scheduled( 'checkview_options_cleanup_cron' ) ) {
+			wp_schedule_event( time(), 'hourly', 'checkview_options_cleanup_cron' );
 		}
 	}
 	/**
