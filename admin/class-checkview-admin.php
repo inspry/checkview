@@ -250,6 +250,10 @@ class Checkview_Admin {
 			if ( 'true' !== get_option( 'cv_ff_keys_set_turnstile' ) ) {
 				return;
 			}
+			if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
+				checkview_options_cleanup();
+			}
+			return;
 		}
 
 		// If clean talk plugin active whitelist check form API IP.
