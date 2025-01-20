@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v3
+      - name: Make script executable
+        run: chmod +x ./webhooks.sh
       - name: Run pinger script
-        run: |
-          chmod +x ./webhooks.sh
-          ./webhooks.sh ./webhooks.txt
+        run: ./webhooks.sh webhooks.txt
