@@ -87,6 +87,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 == Changelog ==
 = 2.0.10 =
 * Resolved FluentForms recaptcha invalid keys issue. By adding a check for V3.
+* Resolved FluentForms Cloudflare Turnstile invalid keys issue. By adding a cron job to switch keys hourly.
 
 = 2.0.9 =
 * **Urgent Bug Fix**: Addressed a critical, but intermittent issue preventing WooCommerce transactional emails from sending during automated test execution. This occurred regardless of whether the tests were directly related to WooCommerce, as long as WooCommerce was active on the site.
@@ -306,6 +307,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 == Upgrade Notice ==
 = 2.0.10 =
 * Resolved FluentForms recaptcha invalid keys issue. By adding a check for V3.
+* Resolved FluentForms Cloudflare Turnstile invalid keys issue. By adding a cron job to switch keys hourly.
 
 = 2.0.9 =
 * **Urgent Bug Fix**: Addressed a critical, but intermittent issue preventing WooCommerce transactional emails from sending during automated test execution. This occurred regardless of whether the tests were directly related to WooCommerce, as long as WooCommerce was active on the site.

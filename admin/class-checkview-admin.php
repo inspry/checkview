@@ -123,7 +123,7 @@ class Checkview_Admin {
 		}
 
 		if ( ! wp_next_scheduled( 'checkview_options_cleanup_cron' ) ) {
-			wp_schedule_event( time(), 'hourly', 'checkview_options_cleanup_cron' );
+			wp_schedule_single_event( time() + 60, 'checkview_options_cleanup_cron' );
 		}
 	}
 	/**
