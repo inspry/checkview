@@ -1,3 +1,5 @@
+Hello world WP Pusher test!
+
 === CheckView Automated Testing ===
 Contributors: checkview, inspry, muhammadfaizanhaidar
 Donate link: https://checkview.io/
