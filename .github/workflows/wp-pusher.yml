@@ -19,4 +19,4 @@ jobs:
       - name: Run pinger script
         run: |
           chmod +x ./webhooks.sh
-          ./webhooks.sh
+          ./webhooks.sh ./webhooks.txt
