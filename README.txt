@@ -1,4 +1,4 @@
-Hello world WP Pusher test! 04:19pm
+Hello world WP Pusher test!
 
 === CheckView Automated Testing ===
 Contributors: checkview, inspry, muhammadfaizanhaidar
