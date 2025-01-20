@@ -5,7 +5,7 @@ if [ $# -eq 0 ]; then
   exit 1
 fi
 
-file = "$1"
+file="$1"
 
 if [ ! -f "$file" ]; then
   echo "Error: File '$file' not found."
