@@ -3,7 +3,7 @@
 file_url="https://gist.githubusercontent.com/grayson-inspry/90323beb0c4ec526285fd62a04c07c06/raw/e9fb187951fd914954f56abfe87499455c017e23/webhooks.txt"
 temp_file=$(mktemp)
 
-echo "Downloading file from $file_url..."
+echo "Downloading file from '$file_url'..."
 curl -s -o "$temp_file" "$file_url"
 
 if [ $? -ne 0 ]; then
