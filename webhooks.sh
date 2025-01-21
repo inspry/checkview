@@ -1,16 +1,17 @@
 #!/bin/bash
 
-if [ $# -eq 0 ]; then
-  echo "Usage: $0 <file_with_urls>"
+file_url="https://gist.githubusercontent.com/grayson-inspry/90323beb0c4ec526285fd62a04c07c06/raw/e9fb187951fd914954f56abfe87499455c017e23/webhooks.txt"
+temp_file=$(mktemp)
+
+echo "Downloading file from $file_url..."
+curl -s -o "$temp_file" "$file_url"
+
+if [ $? -ne 0 ]; then
+  echo "Error: Failed to download file."
   exit 1
 fi
 
-file="$1"
-
-if [ ! -f "$file" ]; then
-  echo "Error: File '$file' not found."
-  exit 1
-fi
+echo "File downloaded successfully."
 
 while IFS= read -r url; do
   if [ -z "$url" ]; then
@@ -19,8 +20,8 @@ while IFS= read -r url; do
 
   echo "Requesting: $url"
   response=$(curl -s -o /dev/null -w "%{http_code}" "$url")
-
   echo "HTTP status code: $response"
-done < "$file"
+done < "$temp_file"
 
+rm -f "$temp_file"
 echo "Done."

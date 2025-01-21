@@ -19,4 +19,4 @@ jobs:
       - name: Make script executable
         run: chmod +x ./webhooks.sh
       - name: Run pinger script
-        run: ./webhooks.sh webhooks.txt
+        run: ./webhooks.sh
