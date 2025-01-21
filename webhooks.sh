@@ -1,30 +1,27 @@
 #!/bin/bash
 
-# Echo webhooks
-echo "$WP_PUSHER_WEBHOOKS"
-
 # Read URLs from the environment variable, split by newlines
-IFS=$'\n' read -rd '' -a urls <<< "$WP_PUSHER_WEBHOOKS"
+IFS=',' read -ra entries <<< "$WP_PUSHER_WEBHOOKS"
 
 # Loop through each URL
-for url in "${urls[@]}"; do
+for entry in "${entries[@]}"; do
   # Trim leading and trailing whitespace
-  url=$(echo "$url" | xargs)
+  url=$(echo "$entry" | xargs)
 
   # Skip empty URLs
-  if [ -z "$url" ]; then
+  if [ -z "$entry" ]; then
     continue
   fi
 
   # Validate URL format
-  if ! [[ "$url" =~ ^https?:// ]]; then
-    echo "Invalid URL format: $url"
+  if ! [[ "$entry" =~ ^https?:// ]]; then
+    echo "Invalid URL format: $entry"
     continue
   fi
 
-  echo "Requesting: $url"
+  echo "Requesting: $entry"
 
-  response=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+  response=$(curl -s -o /dev/null -w "%{http_code}" "$entry")
   echo "HTTP status code: $response"
 done
 
