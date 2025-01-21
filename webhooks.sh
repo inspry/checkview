@@ -13,8 +13,14 @@ for url in "${urls[@]}"; do
   fi
 
   echo "Requesting: $url"
-  response=$(curl -s -o /dev/null -w "%{http_code}" "$url")
-  echo "HTTP status code: $response"
+  response=$(curl -s -o /dev/null -w "%{http_code}" -L "$url")
+
+  if [ "$response" == "000" ]; then
+    echo "Request to $url failed. Debugging with verbose output:"
+    curl -v -L "$url"
+  else
+    echo "HTTP status code: $response"
+  fi
 done
 
 echo "Done."
