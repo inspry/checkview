@@ -61,6 +61,11 @@ class Checkview_Admin {
 		);
 
 		add_action(
+			'checkview_options_cleanup_cron',
+			'checkview_options_cleanup'
+		);
+
+		add_action(
 			'checkview_nonce_cleanup_cron',
 			array( $this, 'checkview_delete_expired_nonces' )
 		);
@@ -115,6 +120,10 @@ class Checkview_Admin {
 	public function checkview_schedule_nonce_cleanup() {
 		if ( ! wp_next_scheduled( 'checkview_nonce_cleanup_cron' ) ) {
 			wp_schedule_event( time(), 'hourly', 'checkview_nonce_cleanup_cron' );
+		}
+
+		if ( ! wp_next_scheduled( 'checkview_options_cleanup_cron' ) ) {
+			wp_schedule_single_event( time() + 60, 'checkview_options_cleanup_cron' );
 		}
 	}
 	/**
@@ -216,23 +225,11 @@ class Checkview_Admin {
 
 		// Skip if visitor ip not equal to CV Bot IP.
 		if ( is_array( $cv_bot_ip ) && ! in_array( $visitor_ip, $cv_bot_ip ) ) {
-			$old_settings = array();
-			$old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
-			if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
-				if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' === $old_settings['siteKey'] ) {
-					$old_settings['siteKey']   = get_option( 'checkview_rc-site-key' );
-					$old_settings['secretKey'] = get_option( 'checkview_rc-secret-key' );
-					update_option( '_fluentform_reCaptcha_details', $old_settings );
-				}
+			if ( 'true' !== get_option( 'cv_ff_keys_set_turnstile' ) ) {
+				return;
 			}
-			$old_settings = array();
-			$old_settings = (array) get_option( '_fluentform_turnstile_details', array() );
-			if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
-				if ( '1x00000000000000000000AA' === $old_settings['siteKey'] ) {
-					$old_settings['siteKey']   = get_option( 'checkview_ff_turnstile-site-key' );
-					$old_settings['secretKey'] = get_option( 'checkview_ff_turnstile-secret-key' );
-					update_option( '_fluentform_turnstile_details', $old_settings );
-				}
+			if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
+				checkview_options_cleanup();
 			}
 			return;
 		}

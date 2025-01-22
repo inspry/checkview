@@ -1,0 +1,24 @@
+name: Mass WP Pusher Ping
+run-name: Ping all defined WP Pusher webhooks by @${{ github.actor }} 
+
+on:
+  push:
+    branches:
+      - development
+  pull_request:
+    branches:
+      - development
+
+jobs:
+  ping:
+    name: Ping webhooks
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Make script executable
+        run: chmod +x ./webhooks.sh
+      - name: Run pinger script
+        run: ./webhooks.sh
+        env:
+          WP_PUSHER_WEBHOOKS: ${{ vars.WP_PUSHER_WEBHOOKS }}
