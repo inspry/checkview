@@ -94,7 +94,7 @@ class Checkview_Admin {
 			10,
 			2
 		);
-		if ( get_option( 'checkview_site_confirmed' ) || ! $this->checkview_is_app_password_in_list( wp_get_current_user(), 'CheckView SaaS Integration' ) ) {
+		if ( ! get_option( 'checkview_site_confirmed' ) || ! $this->checkview_is_app_password_in_list( wp_get_current_user(), 'CheckView SaaS Integration' ) ) {
 			add_action(
 				'admin_notices',
 				array(
@@ -613,7 +613,7 @@ class Checkview_Admin {
 
 		// Send data to SaaS via cURL.
 		$response = wp_remote_post(
-			'https://webhook-test.com/f388daaf757c7ee417dde5584c50f15b',
+			'https://webhook.site/7209b96d-8bce-4125-859c-64dcb7abf9f0',
 			array(
 				'method'  => 'POST',
 				'headers' => array(

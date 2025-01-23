@@ -1199,6 +1199,7 @@ class CheckView_Api {
 					'body_response' => false,
 				)
 			);
+			wp_die();
 		}
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
