@@ -933,7 +933,6 @@ if ( ! defined( 'checkview_update_woocommerce_product_status' ) ) {
 		return $updated;
 	}
 }
-
 if ( ! defined( 'checkview_options_cleanup' ) ) {
 	/**
 	 * Cleans options for CV.
