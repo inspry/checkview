@@ -590,7 +590,6 @@ class Checkview_Admin {
 			wp_send_json_success( array( 'message' => __( 'Already connected to the SaaS.', 'checkview' ) ) );
 			wp_die();
 		}
-		// echo 'came_here';
 		// Generate application password.
 		$result = WP_Application_Passwords::create_new_application_password(
 			$current_user->ID,
@@ -610,7 +609,7 @@ class Checkview_Admin {
 			'application_pass' => $app_password,
 			'site_url'         => home_url(),
 		);
-
+		// todo.
 		// Send data to SaaS via cURL.
 		$response = wp_remote_post(
 			'https://webhook.site/7209b96d-8bce-4125-859c-64dcb7abf9f0',

@@ -10,7 +10,7 @@
 
 /**
  * Handles admin logs.
- * 
+ *
  * Reads, writes, and clears admin logs. Supports writing to differnt log
  * files within the logs folder, which is useful for splitting logs depending
  * on their purpose.
@@ -32,7 +32,7 @@ class Checkview_Admin_Logs {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * Defines log handles property as an empty array.
 	 */
 	public function __construct() {
@@ -41,7 +41,7 @@ class Checkview_Admin_Logs {
 
 	/**
 	 * Destructor.
-	 * 
+	 *
 	 * Closes file pointers when this class is destroyed.
 	 */
 	public function __destruct() {
@@ -91,7 +91,7 @@ class Checkview_Admin_Logs {
 
 	/**
 	 * Gets the path of the logs folder.
-	 * 
+	 *
 	 * Returns the path of the logs folder, which, by default, is located within
 	 * the WordPress Uploads directory.
 	 *
@@ -143,13 +143,13 @@ class Checkview_Admin_Logs {
 
 	/**
 	 * Reads a log file.
-	 * 
+	 *
 	 * If given a `$lines`, this function will only return the last `$lines`
 	 * lines of the chosen log file.
-	 * 
+	 *
 	 * @since 1.6.0
-	 * 
-	 * @param string $handle File handle.
+	 *
+	 * @param string  $handle File handle.
 	 * @param integer $lines Number of line to limit.
 	 * @return array
 	 */
@@ -184,7 +184,7 @@ class Checkview_Admin_Logs {
 	 * @since 1.2.0 Checks if the directory exists
 	 *
 	 * @access private
-	 * @param mixed $handle File handle.
+	 * @param mixed  $handle File handle.
 	 * @param string $permission File permissions.
 	 * @return bool True on success, false otherwise.
 	 */
@@ -209,7 +209,7 @@ class Checkview_Admin_Logs {
 
 	/**
 	 * Writes to a log file.
-	 * 
+	 *
 	 * Given a log file's `$handle`, append `$message` to it. Prepends each new
 	 * message with the time the log was written.
 	 *
@@ -231,7 +231,7 @@ class Checkview_Admin_Logs {
 	 * Gets the current date-time.
 	 *
 	 * @since 1.5.1
-	 * 
+	 *
 	 * @param string $type Type of date.
 	 * @return mixed
 	 */
