@@ -203,7 +203,7 @@ class Checkview_Woo_Automated_Testing {
 			);
 		}
 
-		add_filter( 'wp_mail', array( $this, 'checkview_filter_wp_mail' ), 99 );
+		// add_filter( 'wp_mail', array( $this, 'checkview_filter_wp_mail' ), 99 );
 		$this->checkview_test_mode();
 	}
 
