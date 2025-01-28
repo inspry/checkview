@@ -1994,7 +1994,7 @@ class CheckView_Api {
 			Checkview_Admin_Logs::add( 'api-logs', 'No forms to show.' );
 			return new WP_REST_Response(
 				array(
-					'status'   => 400,
+					'status'   => 200,
 					'response' => esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 				)
 			);
