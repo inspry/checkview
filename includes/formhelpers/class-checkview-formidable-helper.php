@@ -376,18 +376,12 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 							);
 							break;
 						case 'checkbox':
-							$field_options = maybe_unserialize( $field->options );							
+							$field_options = maybe_unserialize( $field->options );
 							foreach ( $field_options as $key => $val ) {
-								// Ensure the current value is an array
+								// Ensure the current value is an array.
 								if ( is_array( $val ) ) {
 									$field_options[ $key ]['field_id'] = $field_id . '-' . $key;
 								} else {
-									// Log unexpected types for debugging
-									// Store non-array values with a default 'field_id' key
-									/**$field_options[ $key ]['field_id'] = array(
-										'value'    => $val, // Keep the original value for reference
-										'field_id' => $field_id . '-' . $key, // Add a default field_id
-									);**/
 									error_log( "Non-array value detected in field_options for key '{$field_id }': " . print_r( $val, true ) );
 								}
 							}
