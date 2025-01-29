@@ -1981,7 +1981,7 @@ class CheckView_Api {
 			}
 		}
 
-		if ( $forms && ! empty( $forms ) && false !== $forms && '' !== $forms ) {
+		if ( is_array($forms) ) {
 			set_transient( 'checkview_forms_list_transient', $forms, 12 * HOUR_IN_SECONDS );
 			return new WP_REST_Response(
 				array(
@@ -1994,7 +1994,7 @@ class CheckView_Api {
 			Checkview_Admin_Logs::add( 'api-logs', 'No forms to show.' );
 			return new WP_REST_Response(
 				array(
-					'status'   => 200,
+					'status'   => 400,
 					'response' => esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 				)
 			);
