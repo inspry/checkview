@@ -1981,8 +1981,8 @@ class CheckView_Api {
 			}
 		}
 
-		if ( is_array($forms) ) {
-			if (!empty($forms)) {
+		if ( is_array( $forms ) ) {
+			if ( ! empty( $forms ) ) {
 				set_transient( 'checkview_forms_list_transient', $forms, 12 * HOUR_IN_SECONDS );
 			}
 
