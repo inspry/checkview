@@ -20,3 +20,5 @@ jobs:
 
       - name: Run script
         run: node instawp.js
+        env:
+          INSTAWP_API_KEY: ${{secrets.INSTAWP_API_KEY}}
