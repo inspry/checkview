@@ -7,7 +7,7 @@ Tested up to: 6.7.1
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 2.0.10
+Stable tag: 2.0.11
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -85,6 +85,13 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 3. CheckView general settings.
 
 == Changelog ==
+= 2.0.11 =
+* Resolved PHP errors related to the undefined wpforms() function.
+* Removed IP address check from WooCommerce API-based helper endpoints.
+* Corrected automated testing email handling in unit test cases.
+* Resolved undefined index error in Formidable Forms by adding compatibility for repeater conditional fields.
+* Enhanced formslist endpoint to properly handle empty form lists.
+
 = 2.0.10 =
 * Enhanced Cloudflare Turnstile integration with Fluent Forms by leveraging cron to prevent premature deactivation of test keys.
 *  Fixed an issue with websites using Fluent Forms who upgraded from Google reCAPTCHA v2 to v3 encountered invalid key errors.
@@ -305,6 +312,13 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Initial release.
 
 == Upgrade Notice ==
+= 2.0.11 =
+* Resolved PHP errors related to the undefined wpforms() function.
+* Removed IP address check from WooCommerce API-based helper endpoints.
+* Corrected automated testing email handling in unit test cases.
+* Resolved undefined index error in Formidable Forms by adding compatibility for repeater conditional fields.
+* Enhanced formslist endpoint to properly handle empty form lists.
+
 = 2.0.10 =
 * Enhanced Cloudflare Turnstile integration with Fluent Forms by leveraging cron to prevent premature deactivation of test keys.
 *  Fixed an issue with websites using Fluent Forms who upgraded from Google reCAPTCHA v2 to v3 encountered invalid key errors.
