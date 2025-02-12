@@ -305,6 +305,28 @@ class Checkview_Admin {
 				update_option( 'captcha_ip_range_opt', implode( ',', $captcha_ip_range ) );
 			}
 		}
+		if ( is_plugin_active( 'recaptcha-for-woocommerce/woo-recaptcha.php' ) ) {
+			$captcha_ip_range     = '';
+			$captcha_ip_range_opt = '';
+			$captcha_ip_range     = array();
+			// Get the existing whitelist from the database.
+			$captcha_ip_range_opt = sanitize_text_field( wp_unslash( get_option( 'i13_recapcha_ip_to_skip_captcha' ) ) );
+
+			// Convert to array (IPs stored as comma-separated values with dots replaced by commas).
+			$captcha_ip_range = array_filter( explode( ',', $captcha_ip_range_opt ) );
+
+			// Check if the IP is already in the list.
+			if ( ! in_array( $visitor_ip, $captcha_ip_range ) ) {
+				// Add new IP to the list.
+				$captcha_ip_range[] = $visitor_ip;
+				if ( count( $captcha_ip_range ) > 1 ) {
+					// Save the updated list back to the database.
+					update_option( 'i13_recapcha_ip_to_skip_captcha', implode( ',', $captcha_ip_range ) );
+				} else {
+					update_option( 'i13_recapcha_ip_to_skip_captcha', $visitor_ip );
+				}
+			}
+		}
 		// Gather test ID.
 		$cv_test_id = isset( $_REQUEST['checkview_test_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) : '';
 
