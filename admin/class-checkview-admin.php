@@ -198,7 +198,7 @@ class Checkview_Admin {
 			$this->plugin_name,
 			CHECKVIEW_ADMIN_ASSETS . 'js/checkview-admin.js',
 			array( 'jquery' ),
-			$this->version,
+			$this->version.rand( 1, 100 ),
 			false
 		);
 
@@ -214,8 +214,9 @@ class Checkview_Admin {
 		} else {
 			$tab = '';
 		}
-
-		$user_id = get_current_user_id();
+		$api_url      = get_rest_url(); // Gets the site’s REST API URL
+		$redirect_url = 'https://dev.checkview.io/organizations/f686c5cb-5512-4fcb-a03b-48248498abd7?api_url=' . urlencode( $api_url );
+		$user_id      = get_current_user_id();
 		wp_localize_script(
 			$this->plugin_name,
 			'checkview_ajax_obj',
@@ -226,6 +227,7 @@ class Checkview_Admin {
 				'tab'                             => $tab,
 				'checkview_create_token_security' => wp_create_nonce( 'create-token-' . $user_id ),
 				'nonce'                           => wp_create_nonce( 'checkview_nonce' ),
+				'redirectUrl'                     => $redirect_url,
 				'i18n'                            => array(
 					'connecting'        => __( 'Connecting to SaaS...', 'checkview' ),
 					'success_connected' => __( 'Successfully connected to SaaS!', 'checkview' ),
@@ -491,10 +493,8 @@ class Checkview_Admin {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
-
 		$is_connected = get_option( 'checkview_site_confirmed', false );
-
-		if ( $is_connected ) {
+		if ( $is_connected !== true ) {
 			?>
 			<style>
 				/* Styling for the CheckView admin notice */
@@ -586,7 +586,6 @@ class Checkview_Admin {
 			wp_send_json_error( array( 'message' => __( 'User not logged in.', 'checkview' ) ) );
 		}
 		if ( $this->checkview_is_app_password_in_list( wp_get_current_user(), 'CheckView SaaS Integration' ) ) {
-			update_option( 'checkview_site_confirmed', true );
 			wp_send_json_success( array( 'message' => __( 'Already connected to the SaaS.', 'checkview' ) ) );
 			wp_die();
 		}
@@ -604,40 +603,19 @@ class Checkview_Admin {
 		$app_password = $result[0];
 		// $app_password = //WP_Application_Passwords::chunk_password( $app_password );
 		// Prepare data to send to SaaS.
-		$data = array(
+		$data     = array(
 			'username'         => $current_user->user_login,
 			'application_pass' => $app_password,
 			'site_url'         => home_url(),
 		);
-		// todo.
-		// Send data to SaaS via cURL.
-		$response = wp_remote_post(
-			'https://webhook.site/7209b96d-8bce-4125-859c-64dcb7abf9f0',
-			array(
-				'method'  => 'POST',
-				'headers' => array(
-					'Content-Type' => 'application/json',
-				),
-				'body'    => wp_json_encode( $data ),
-				'timeout' => 60,
-			)
-		);
+		$response = update_option( 'checkview_application_details', $data );
 
 		// Handle the response.
 		if ( is_wp_error( $response ) ) {
 			wp_send_json_error( array( 'message' => $response->get_error_message() ) );
 		}
-
-		$response_code = wp_remote_retrieve_response_code( $response );
-
-		if ( 200 === $response_code ) {
-			update_option( 'checkview_site_confirmed', true );
-			wp_send_json_success( array( 'message' => __( 'Successfully connected to SaaS.', 'checkview' ) ) );
-			wp_die();
-		} else {
-			wp_send_json_error( array( 'message' => __( 'Failed to connect to SaaS.', 'checkview' ) ) );
-			wp_die();
-		}
+		wp_send_json_success( array( 'message' => __( 'Successfully connected to SaaS.', 'checkview' ) ) );
+		wp_die();
 	}
 
 	/**

@@ -460,9 +460,17 @@ class CheckView_Api {
 			'checkview/v1',
 			'/confirm-site',
 			array(
-				'methods'             => 'POST',
-				'callback'            => array( $this, 'checkview_confirm_site_callback' ),
-				'permission_callback' => '__return_true', // Restrict access as needed.
+				'methods'             => array( 'POST' ),
+				'callback'            => array( $this, 'checkview_saas_confirm_connection' ),
+				'permission_callback' => array( $this, 'checkview_get_items_permissions_check' ),
+				'args'                => array(
+					'_checkview_token'  => array(
+						'required' => false,
+					),
+					'_checkview_status' => array(
+						'required' => true,
+					),
+				),
 			)
 		);
 	}
@@ -2196,14 +2204,16 @@ class CheckView_Api {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 		$plugins = get_plugins();
+		$data    = get_option( 'checkview_application_details', array() );
 
 		$plugin_list = array();
 		foreach ( $plugins as $plugin_file => $plugin_data ) {
 			$plugin_list[] = array(
-				'name'        => $plugin_data['Name'],
-				'version'     => $plugin_data['Version'],
-				'plugin_file' => $plugin_file,
-				'active'      => is_plugin_active( $plugin_file ),
+				'name'                    => $plugin_data['Name'],
+				'version'                 => $plugin_data['Version'],
+				'plugin_file'             => $plugin_file,
+				'active'                  => is_plugin_active( $plugin_file ),
+				'application_credentials' => $data ? $data : '',
 			);
 		}
 
@@ -2491,51 +2501,29 @@ class CheckView_Api {
 	 * @param WP_REST_Request $request request object.
 	 * @return array
 	 */
-	public function checkview_confirm_site_callback( WP_REST_Request $request ) {
-		$nonce = $request->get_header( 'X-WP-Nonce' );
-
-		if ( ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
-			Checkview_Admin_Logs::add( 'api-logs', 'Invalid nonce.' );
+	public function checkview_saas_confirm_connection( WP_REST_Request $request ) {
+		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
+			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
 			return new WP_Error(
-				'rest_forbidden',
+				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
-				array( 'status' => 403 )
+			);
+			wp_die();
+		}
+		// Get the status from the request parameters.
+		$checkview_api_keys = $request->get_param( '_checkview_api_keys' );
+		$checkview_api_keys = sanitize_text_field( $checkview_api_keys );
+		if ( empty( $checkview_api_keys ) ) {
+			// Log the detailed error for internal use.
+			Checkview_Admin_Logs::add( 'api-logs', 'Missing api keys.' );
+			return new WP_Error(
+				'missing_param',
+				esc_html__( 'Invalid request.', 'checkview' ),
+				array( 'status' => 400 )
 			);
 		}
-		$site_url = $request->get_param( 'site_url' );
-
-		if ( empty( $site_url ) ) {
-			Checkview_Admin_Logs::add( 'api-logs', 'Site URL is required.' );
-			return new WP_REST_Response(
-				array(
-					'success' => false,
-					'message' => esc_html__( 'invalid url.', 'checkview' ),
-				),
-				400
-			);
-		}
-		// todo.
-		// Simulate sending the site URL to SaaS.
-		$response = wp_remote_post(
-			'https://webhook.site/e56102ab-19c9-4f72-8605-85c11362cf56',
-			array(
-				'body'    => json_encode( array( 'site_url' => $site_url ) ),
-				'headers' => array( 'Content-Type' => 'application/json' ),
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
-			return new WP_REST_Response(
-				array(
-					'success' => false,
-					'message' => esc_html__( 'Failed to send site URL.', 'checkview' ),
-				),
-				500
-			);
-		}
-
 		// On success, mark the site as confirmed.
-		update_option( 'checkview_site_confirmed', 1 );
+		update_option( 'checkview_site_confirmed', true );
 
 		return new WP_REST_Response(
 			array(

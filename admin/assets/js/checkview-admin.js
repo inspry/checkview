@@ -58,6 +58,7 @@
                                     confirmButtonText: 'Ok',
                                 })
                                 $thisButton.removeClass('loading error').addClass('success');
+                                window.location.href = checkview_ajax_obj.redirectUrl;
                             }
 
                         },
@@ -88,6 +89,7 @@
                         icon: 'success',
                         title: checkview_ajax_obj.i18n.success_connected
                     });
+                    window.open( checkview_ajax_obj.redirectUrl, "_blank" );
                 },
                 error: function (response) {
                     Swal.fire({
