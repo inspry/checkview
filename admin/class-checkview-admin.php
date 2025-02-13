@@ -398,7 +398,7 @@ class Checkview_Admin {
 		if ( is_plugin_active( 'ninja-forms/ninja-forms.php' ) ) {
 			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-ninja-forms-helper.php';
 		}
-		if ( is_plugin_active( 'wpforms/wpforms.php' ) || is_plugin_active( 'wpforms-lite/wpforms.php' ) ) {
+		if ( function_exists( 'wpforms' ) && ( is_plugin_active( 'wpforms/wpforms.php' ) || is_plugin_active( 'wpforms-lite/wpforms.php' ) ) ) {
 			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-wpforms-helper.php';
 		}
 		if ( is_plugin_active( 'formidable/formidable.php' ) ) {
