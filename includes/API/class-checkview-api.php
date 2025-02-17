@@ -2524,6 +2524,7 @@ class CheckView_Api {
 		}
 		// On success, mark the site as confirmed.
 		update_option( 'checkview_site_confirmed', true );
+		update_option( 'checkview_api_keys', $checkview_api_keys );
 
 		return new WP_REST_Response(
 			array(
