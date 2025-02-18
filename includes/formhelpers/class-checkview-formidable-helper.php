@@ -140,7 +140,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		 * @return array
 		 */
 		public function checkview_remove_email_header( array $headers, array $atts ): array {
-			if ( false == get_option( 'disable_email_receipt', false ) ) {
+			if ( true == get_option( 'disable_email_receipt', false ) ) {
 				return $headers;
 			}
 			// Ensure headers are an array.
