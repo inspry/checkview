@@ -61,6 +61,11 @@ class Checkview_Admin {
 		);
 
 		add_action(
+			'checkview_options_cleanup_cron',
+			'checkview_options_cleanup'
+		);
+
+		add_action(
 			'checkview_nonce_cleanup_cron',
 			array( $this, 'checkview_delete_expired_nonces' )
 		);
@@ -115,6 +120,10 @@ class Checkview_Admin {
 	public function checkview_schedule_nonce_cleanup() {
 		if ( ! wp_next_scheduled( 'checkview_nonce_cleanup_cron' ) ) {
 			wp_schedule_event( time(), 'hourly', 'checkview_nonce_cleanup_cron' );
+		}
+
+		if ( ! wp_next_scheduled( 'checkview_options_cleanup_cron' ) ) {
+			wp_schedule_single_event( time() + 60, 'checkview_options_cleanup_cron' );
 		}
 	}
 	/**
@@ -216,23 +225,11 @@ class Checkview_Admin {
 
 		// Skip if visitor ip not equal to CV Bot IP.
 		if ( is_array( $cv_bot_ip ) && ! in_array( $visitor_ip, $cv_bot_ip ) ) {
-			$old_settings = array();
-			$old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
-			if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
-				if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' === $old_settings['siteKey'] ) {
-					$old_settings['siteKey']   = get_option( 'checkview_rc-site-key' );
-					$old_settings['secretKey'] = get_option( 'checkview_rc-secret-key' );
-					update_option( '_fluentform_reCaptcha_details', $old_settings );
-				}
+			if ( 'true' !== get_option( 'cv_ff_keys_set_turnstile' ) ) {
+				return;
 			}
-			$old_settings = array();
-			$old_settings = (array) get_option( '_fluentform_turnstile_details', array() );
-			if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
-				if ( '1x00000000000000000000AA' === $old_settings['siteKey'] ) {
-					$old_settings['siteKey']   = get_option( 'checkview_ff_turnstile-site-key' );
-					$old_settings['secretKey'] = get_option( 'checkview_ff_turnstile-secret-key' );
-					update_option( '_fluentform_turnstile_details', $old_settings );
-				}
+			if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
+				checkview_options_cleanup();
 			}
 			return;
 		}
@@ -278,7 +275,58 @@ class Checkview_Admin {
 			$global_ip_component = wd_di()->get( Global_IP::class );
 			$result              = $global_ip_component->set_global_ip_list( $data );
 		}
+		if ( is_plugin_active( 'enhanced-cloudflare-turnstile/enhanced-cloudflare-turnstile.php' ) ) {
+			$ect_ip_address       = ecft_get_option( 'ecft_ip_address' );
+			$ect_ip_address_array = explode( "\n", $ect_ip_address );
+			if ( ! empty( $ect_ip_address_array ) && is_array( $ect_ip_address_array ) ) {
+				if ( ! in_array( $visitor_ip, $ect_ip_address_array ) ) {
+					$ect_ip_address .= "\n" . $visitor_ip;
+					update_option( 'ecft_ip_address', $ect_ip_address );
+				}
+			} else {
+				$ect_ip_address = $visitor_ip;
+				update_option( 'ecft_ip_address', $ect_ip_address );
+			}
+		}
 
+		if ( is_plugin_active( 'koala-google-recaptcha-for-woocommerce/class-main-ka-add-recaptcha.php' ) ) {
+			// Get the existing whitelist from the database.
+			$captcha_ip_range_opt = get_option( 'captcha_ip_range_opt', '' );
+
+			// Convert to array (IPs stored as comma-separated values with dots replaced by commas).
+			$captcha_ip_range = array_filter( explode( ',', $captcha_ip_range_opt ) );
+
+			// Check if the IP is already in the list.
+			if ( ! in_array( $visitor_ip, $captcha_ip_range ) ) {
+				// Add new IP to the list.
+				$captcha_ip_range[] = $visitor_ip;
+
+				// Save the updated list back to the database.
+				update_option( 'captcha_ip_range_opt', implode( ',', $captcha_ip_range ) );
+			}
+		}
+		if ( is_plugin_active( 'recaptcha-for-woocommerce/woo-recaptcha.php' ) ) {
+			$captcha_ip_range     = '';
+			$captcha_ip_range_opt = '';
+			$captcha_ip_range     = array();
+			// Get the existing whitelist from the database.
+			$captcha_ip_range_opt = sanitize_text_field( wp_unslash( get_option( 'i13_recapcha_ip_to_skip_captcha' ) ) );
+
+			// Convert to array (IPs stored as comma-separated values with dots replaced by commas).
+			$captcha_ip_range = array_filter( explode( ',', $captcha_ip_range_opt ) );
+
+			// Check if the IP is already in the list.
+			if ( ! in_array( $visitor_ip, $captcha_ip_range ) ) {
+				// Add new IP to the list.
+				$captcha_ip_range[] = $visitor_ip;
+				if ( count( $captcha_ip_range ) > 1 ) {
+					// Save the updated list back to the database.
+					update_option( 'i13_recapcha_ip_to_skip_captcha', implode( ',', $captcha_ip_range ) );
+				} else {
+					update_option( 'i13_recapcha_ip_to_skip_captcha', $visitor_ip );
+				}
+			}
+		}
 		// Gather test ID.
 		$cv_test_id = isset( $_REQUEST['checkview_test_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) : '';
 
@@ -374,7 +422,7 @@ class Checkview_Admin {
 		if ( is_plugin_active( 'ninja-forms/ninja-forms.php' ) ) {
 			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-ninja-forms-helper.php';
 		}
-		if ( is_plugin_active( 'wpforms/wpforms.php' ) || is_plugin_active( 'wpforms-lite/wpforms.php' ) ) {
+		if ( function_exists( 'wpforms' ) && ( is_plugin_active( 'wpforms/wpforms.php' ) || is_plugin_active( 'wpforms-lite/wpforms.php' ) ) ) {
 			require_once CHECKVIEW_INC_DIR . 'formhelpers/class-checkview-wpforms-helper.php';
 		}
 		if ( is_plugin_active( 'formidable/formidable.php' ) ) {

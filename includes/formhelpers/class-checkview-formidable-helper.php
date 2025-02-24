@@ -123,7 +123,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		 * @return string Email.
 		 */
 		public function checkview_inject_email( $email ) {
-			if ( ! defined( 'CV_DISABLE_EMAIL_RECEIPT' ) ) {
+			if ( get_option( 'disable_email_receipt', false ) == false ) {
 				$email = TEST_EMAIL;
 			} elseif ( is_array( $email ) ) {
 				$email[] = TEST_EMAIL;
@@ -140,6 +140,9 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		 * @return array
 		 */
 		public function checkview_remove_email_header( array $headers, array $atts ): array {
+			if ( true == get_option( 'disable_email_receipt', false ) ) {
+				return $headers;
+			}
 			// Ensure headers are an array.
 			if ( ! is_array( $headers ) ) {
 				$headers = explode( "\r\n", $headers );
@@ -309,7 +312,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			$fields      = array();
 			$tablename   = $wpdb->prefix . 'frm_fields';
 			$fields_data = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where form_id=%d', $form_id ) );
-			if ( $fields_data ) {
+			if ( ! empty( $fields_data ) && is_array( $fields_data ) ) {
 				foreach ( $fields_data as $field ) {
 					$type     = $field->type;
 					$field_id = 'field_' . $field->field_key;
@@ -378,7 +381,12 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 						case 'checkbox':
 							$field_options = maybe_unserialize( $field->options );
 							foreach ( $field_options as $key => $val ) {
-								$field_options[ $key ]['field_id'] = $field_id . '-' . $key;
+								// Ensure the current value is an array.
+								if ( is_array( $val ) ) {
+									$field_options[ $key ]['field_id'] = $field_id . '-' . $key;
+								} else {
+									error_log( "Non-array value detected in field_options for key '{$field_id }': " . print_r( $val, true ) );
+								}
 							}
 							$fields[ $field->id ] = array(
 								'type'     => $field->type,

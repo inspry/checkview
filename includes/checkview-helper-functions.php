@@ -202,12 +202,24 @@ if ( is_plugin_active( 'better-wp-security/better-wp-security.php' ) ) {
 				return $whitelisted_ips;
 			}
 			$visitor_ip = checkview_get_visitor_ip();
-			return array_merge( $whitelisted_ips, (array) $visitor_ip );
+			// Get SaaS IPs.
+			if ( function_exists( 'checkview_get_api_ip' ) ) {
+				$cv_bot_ip = checkview_get_api_ip();
+			} else {
+				return $whitelisted_ips;
+			}
+
+			// Whitelist our IPs.
+			if ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) {
+				return array_merge( $whitelisted_ips, (array) $visitor_ip );
+			}
+			return $whitelisted_ips;
 		},
 		0
 	);
 
 }
+// Bypass WP Defender.
 if ( is_plugin_active( 'defender-security/wp-defender.php' ) ) {
 	add_filter(
 		'ip_lockout_default_whitelist_ip',
@@ -216,7 +228,18 @@ if ( is_plugin_active( 'defender-security/wp-defender.php' ) ) {
 				return $whitelisted_ips;
 			}
 			$visitor_ip = checkview_get_visitor_ip();
-			return array_merge( $whitelisted_ips, (array) $visitor_ip );
+			// Get SaaS IPs.
+			if ( function_exists( 'checkview_get_api_ip' ) ) {
+				$cv_bot_ip = checkview_get_api_ip();
+			} else {
+				return $whitelisted_ips;
+			}
+
+			// Whitelist our IPs.
+			if ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) {
+				return array_merge( $whitelisted_ips, (array) $visitor_ip );
+			}
+			return $whitelisted_ips;
 		},
 		10
 	);
