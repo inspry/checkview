@@ -275,7 +275,58 @@ class Checkview_Admin {
 			$global_ip_component = wd_di()->get( Global_IP::class );
 			$result              = $global_ip_component->set_global_ip_list( $data );
 		}
+		if ( is_plugin_active( 'enhanced-cloudflare-turnstile/enhanced-cloudflare-turnstile.php' ) ) {
+			$ect_ip_address       = ecft_get_option( 'ecft_ip_address' );
+			$ect_ip_address_array = explode( "\n", $ect_ip_address );
+			if ( ! empty( $ect_ip_address_array ) && is_array( $ect_ip_address_array ) ) {
+				if ( ! in_array( $visitor_ip, $ect_ip_address_array ) ) {
+					$ect_ip_address .= "\n" . $visitor_ip;
+					update_option( 'ecft_ip_address', $ect_ip_address );
+				}
+			} else {
+				$ect_ip_address = $visitor_ip;
+				update_option( 'ecft_ip_address', $ect_ip_address );
+			}
+		}
 
+		if ( is_plugin_active( 'koala-google-recaptcha-for-woocommerce/class-main-ka-add-recaptcha.php' ) ) {
+			// Get the existing whitelist from the database.
+			$captcha_ip_range_opt = get_option( 'captcha_ip_range_opt', '' );
+
+			// Convert to array (IPs stored as comma-separated values with dots replaced by commas).
+			$captcha_ip_range = array_filter( explode( ',', $captcha_ip_range_opt ) );
+
+			// Check if the IP is already in the list.
+			if ( ! in_array( $visitor_ip, $captcha_ip_range ) ) {
+				// Add new IP to the list.
+				$captcha_ip_range[] = $visitor_ip;
+
+				// Save the updated list back to the database.
+				update_option( 'captcha_ip_range_opt', implode( ',', $captcha_ip_range ) );
+			}
+		}
+		if ( is_plugin_active( 'recaptcha-for-woocommerce/woo-recaptcha.php' ) ) {
+			$captcha_ip_range     = '';
+			$captcha_ip_range_opt = '';
+			$captcha_ip_range     = array();
+			// Get the existing whitelist from the database.
+			$captcha_ip_range_opt = sanitize_text_field( wp_unslash( get_option( 'i13_recapcha_ip_to_skip_captcha' ) ) );
+
+			// Convert to array (IPs stored as comma-separated values with dots replaced by commas).
+			$captcha_ip_range = array_filter( explode( ',', $captcha_ip_range_opt ) );
+
+			// Check if the IP is already in the list.
+			if ( ! in_array( $visitor_ip, $captcha_ip_range ) ) {
+				// Add new IP to the list.
+				$captcha_ip_range[] = $visitor_ip;
+				if ( count( $captcha_ip_range ) > 1 ) {
+					// Save the updated list back to the database.
+					update_option( 'i13_recapcha_ip_to_skip_captcha', implode( ',', $captcha_ip_range ) );
+				} else {
+					update_option( 'i13_recapcha_ip_to_skip_captcha', $visitor_ip );
+				}
+			}
+		}
 		// Gather test ID.
 		$cv_test_id = isset( $_REQUEST['checkview_test_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) : '';
 
