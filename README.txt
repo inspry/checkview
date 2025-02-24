@@ -7,7 +7,7 @@ Tested up to: 6.7.1
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 2.0.11
+Stable tag: 2.0.12
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -85,6 +85,18 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 3. CheckView general settings.
 
 == Changelog ==
+= 2.0.12 =
+* Added reCAPTCHA bypass for reCaptcha Integration for WooCommerce.
+* Added reCAPTCHA bypass for Google reCaptcha for WooCommerce.
+* Added Turnstile bypass for Enhanced Cloudflare Turnstile for WooCommerce.
+* Whitelisted SaaS IP in WordFence.
+* Whitelisted SaaS IP in All in One Security.
+* Whitelisted SaaS IP in SolidWP.
+* Whitelisted SaaS IP in Defender Pro.
+* Fixed CheckView email diversion issues for WooCommerce and WPForms.
+* Suppressed CustomCaptcha for WPForms.
+* Added Stripe test mode options for GravityForms when CheckView is active.
+
 = 2.0.11 =
 * Resolved PHP errors related to the undefined wpforms() function.
 * Removed IP address check from WooCommerce API-based helper endpoints.
@@ -312,6 +324,18 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Initial release.
 
 == Upgrade Notice ==
+= 2.0.12 =
+* Added reCAPTCHA bypass for reCaptcha Integration for WooCommerce.
+* Added reCAPTCHA bypass for Google reCaptcha for WooCommerce.
+* Added Turnstile bypass for Enhanced Cloudflare Turnstile for WooCommerce.
+* Whitelisted SaaS IP in WordFence.
+* Whitelisted SaaS IP in All in One Security.
+* Whitelisted SaaS IP in SolidWP.
+* Whitelisted SaaS IP in Defender Pro.
+* Fixed CheckView email diversion issues for WooCommerce and WPForms.
+* Suppressed CustomCaptcha for WPForms.
+* Added Stripe test mode options for GravityForms when CheckView is active.
+
 = 2.0.11 =
 * Resolved PHP errors related to the undefined wpforms() function.
 * Removed IP address check from WooCommerce API-based helper endpoints.
