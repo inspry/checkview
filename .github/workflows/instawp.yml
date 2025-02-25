@@ -18,7 +18,13 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Install dependencies
+        run: npm install
+
+      - name: Compile scripts
+        run: npx tsc
+
       - name: Run script
-        run: node instawp.js
+        run: node scripts/dist/instawp.js
         env:
           INSTAWP_API_KEY: ${{secrets.INSTAWP_API_KEY}}

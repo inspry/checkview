@@ -29,8 +29,7 @@ type PressableSite = {
   const PRESSABLE_CLIENT_SECRET = process.env.PRESSABLE_CLIENT_SECRET
 
   if (!PRESSABLE_CLIENT_ID || !PRESSABLE_CLIENT_SECRET) {
-    console.error('PRESSABLE_CLIENT_ID or PRESSABLE_CLIENT_SECRET environment variable not found.')
-    return
+    throw new Error('PRESSABLE_CLIENT_ID or PRESSABLE_CLIENT_SECRET environment variable not found.')
   }
 
   try {
@@ -40,6 +39,8 @@ type PressableSite = {
     const headers = new Headers()
     headers.append('Accept', 'application/json')
     headers.append('Content-Type', 'application/json')
+
+    console.log('Fetching token...')
 
     const authFetch = await fetch(`https://my.pressable.com/auth/token`, {
       method: 'POST',
@@ -87,7 +88,7 @@ type PressableSite = {
 
     const updatePromises = sites.data.map(async (site) => {
       try {
-        console.log(`Updating site: ${site.displayName} (${site.id})`)
+        console.log(`Updating site: ${site.displayName} (${site.id})...`)
 
         const pluginsEndpoint = new URL(`sites/${site.id}/plugins`, apiBase)
         const pluginsResult = await fetch(pluginsEndpoint, {
