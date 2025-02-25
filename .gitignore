@@ -4,3 +4,4 @@ wp-content
 public_html/*
 site/*
 web/*
+scripts/dist
