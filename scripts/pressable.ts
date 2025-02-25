@@ -78,7 +78,7 @@ type PressableSite = {
       throw new Error(sites.errors.join(', '))
     }
 
-    console.log(`Found ${sites.data.length} sites. Updating...`)
+    console.log(`Found ${sites.data.length} sites tagged with "${qualityTag}". Updating...`)
 
     const failedSites: {
       site: PressableSite
@@ -114,6 +114,8 @@ type PressableSite = {
       } catch (error) {
         if (error instanceof Error) {
           failedSites.push({site, message: error.message})
+        } else {
+          failedSites.push({site, message: 'Unknown error'})
         }
       }
     })
