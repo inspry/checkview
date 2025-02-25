@@ -87,23 +87,14 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 == Changelog ==
 = 2.0.12 =
 * Added Google reCAPTCHA bypass for reCaptcha Integration for WooCommerce by I13 Web Solution.
-
 * Added Google reCAPTCHA bypass for Google reCaptcha for WooCommerce by KoalaApps.
-
 * Added Cloudflare Turnstile bypass for Enhanced Cloudflare Turnstile for WooCommerce by Press75.
-
 * Whitelisted SaaS IP in WordFence.
-
 * Whitelisted SaaS IP in All in One Security.
-
 * Platform Filter bypass in SolidWP.
-
 * Platform Filter bypass in Defender Pro.
-
-* Fixed CheckView email diversion issues for FormidableForms and WPForms.
-
+* Fixed CheckView email diversion issues for Formidable Forms and WPForms.
 * Suppressed Custom Captcha field for WPForms.
-
 * Added Stripe test mode options for Gravity Forms.
 
 = 2.0.11 =
