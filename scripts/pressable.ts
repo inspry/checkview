@@ -88,7 +88,7 @@ type PressableSite = {
 
     const updatePromises = sites.data.map(async (site) => {
       try {
-        console.log(`Updating site: ${site.displayName} (${site.id})...`)
+        console.log(`Requesting update for site: ${site.displayName} (${site.id})...`)
 
         const pluginsEndpoint = new URL(`sites/${site.id}/plugins`, apiBase)
         const pluginsResult = await fetch(pluginsEndpoint, {
@@ -126,7 +126,7 @@ type PressableSite = {
     if (failedSites.length) {
       console.log('Failed executions:', failedSites)
     } else {
-      console.log('All sites updated successfully. Get to testin!')
+      console.log('All sites have been told to update their plugins. Note that it may take some time for the plugin update to complete. Get to testin!')
     }
   } catch (error) {
     if (error instanceof Error) {
