@@ -464,7 +464,7 @@ class Checkview_Woo_Automated_Testing {
 		$product = $this->checkview_get_test_product();
 		if ( ! $product ) {
 			$product = new WC_Product();
-			$product->set_status( 'publish' );
+			$product->set_status( 'draft' );
 			$product->set_name( 'CheckView Testing Product' );
 			$product->set_short_description( 'An example product for automated testing.' );
 			$product->set_description( 'This is a placeholder product used for automatically testing your WooCommerce store. It\'s designed to be hidden from all customers.' );
