@@ -380,7 +380,7 @@ class Checkview_Admin {
 			}
 		}
 		if ( empty( $cv_test_id ) ) {
-			Checkview_Admin_Logs::add( 'ip-logs', 'Not Bypassed invalid test id. ' . $visitor_ip . '=> ' . $cv_test_id );
+			Checkview_Admin_Logs::add( 'ip-logs', 'Not Bypassed missing test id. ' . $visitor_ip . '=> ' . $cv_test_id );
 		} else {
 			Checkview_Admin_Logs::add( 'ip-logs', 'Bypassed ' . $visitor_ip . '=> ' . $cv_test_id );
 		}
