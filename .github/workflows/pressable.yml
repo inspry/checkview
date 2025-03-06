@@ -1,9 +1,9 @@
-name: Run InstaWP script
+name: Run Pressable script
 
 on:
   push:
     branches:
-      - development
+      - quality
 
 jobs:
   run-script:
@@ -25,6 +25,7 @@ jobs:
         run: npx tsc
 
       - name: Run script
-        run: node scripts/dist/instawp.js
+        run: node scripts/dist/pressable.js
         env:
-          INSTAWP_API_KEY: ${{secrets.INSTAWP_API_KEY}}
+          PRESSABLE_CLIENT_ID: ${{secrets.PRESSABLE_CLIENT_ID}}
+          PRESSABLE_CLIENT_SECRET: ${{secrets.PRESSABLE_CLIENT_SECRET}}

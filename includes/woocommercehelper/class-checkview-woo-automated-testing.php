@@ -666,7 +666,13 @@ class Checkview_Woo_Automated_Testing {
 		$cv_bot_ip = checkview_get_api_ip();
 		if ( ( isset( $_REQUEST['checkview_test_id'] ) || ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) ) || ( 'checkview' === $payment_method || 'checkview' === $payment_made_by ) ) {
 			if ( get_option( 'disable_email_receipt' ) == true || get_option( 'disable_email_receipt' ) == 'true' || defined( 'CV_DISABLE_EMAIL_RECEIPT' ) || $this->suppress_email ) {
-				$recipient = $recipient . ', ' . CHECKVIEW_EMAIL;
+				if ( defined( 'TEST_EMAIL' ) ) {
+					$recipient = $recipient . ', ' . TEST_EMAIL;
+				} else {
+					$recipient = $recipient . ', ' . CHECKVIEW_EMAIL;
+				}
+			} elseif ( defined( 'TEST_EMAIL' ) ) {
+				return TEST_EMAIL;
 			} else {
 				return CHECKVIEW_EMAIL;
 			}

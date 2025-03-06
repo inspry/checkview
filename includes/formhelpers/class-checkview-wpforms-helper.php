@@ -126,6 +126,26 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 				'__return_null',
 				-10
 			);
+
+			add_filter(
+				'wpforms_frontend_form_data',
+				array(
+					$this,
+					'checkview_disable_wpforms_custom_captcha',
+				),
+				99,
+				1
+			);
+
+			add_filter(
+				'wpforms_process_before_form_data',
+				array(
+					$this,
+					'checkview_disable_wpforms_custom_captcha',
+				),
+				99,
+				1
+			);
 		}
 
 		/**
@@ -292,6 +312,25 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 			}
 
 			complete_checkview_test( $checkview_test_id );
+		}
+		/**
+		 * Disable Custom CAPTCHA in WPForms.
+		 *
+		 * @param array $form_data Form data and settings.
+		 * @return array Modified form data.
+		 */
+		public function checkview_disable_wpforms_custom_captcha( $form_data ) {
+			if ( empty( $form_data['fields'] ) ) {
+				return $form_data;
+			}
+
+			foreach ( $form_data['fields'] as $id => $field ) {
+				if ( 'captcha' === $field['type'] ) {
+					unset( $form_data['fields'][ $id ] );
+				}
+			}
+
+			return $form_data;
 		}
 	}
 	$checkview_wpforms_helper = new Checkview_Wpforms_Helper();
