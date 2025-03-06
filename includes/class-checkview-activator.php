@@ -27,6 +27,7 @@ class Checkview_Activator {
 	 */
 	public static function activate() {
 		self::checkview_run_sql();
+		self::checkview_notify_saas( 'activated' );
 		// Set transient.
 		set_transient( 'checkview_activation_notification', true, 5 );
 	}
@@ -113,6 +114,33 @@ class Checkview_Activator {
 				UNIQUE KEY nonce (nonce)
 			) $charset_collate;";
 			dbDelta( $sql );
+		}
+	}
+
+	/**
+	 * Notifies SaaS of activation.
+	 *
+	 * @param string $status The status to notify the SaaS of.
+	 */
+	private static function checkview_notify_saas( $status ) {
+		$api_key  = 'your_api_key_here'; // Replace with your actual API key
+		$endpoint = 'https://example.com/xyz/helper-status'; // Replace with your SaaS endpoint
+
+		$response = wp_remote_post(
+			$endpoint,
+			array(
+				'body'    => json_encode( array( 'status' => $status ) ),
+				'headers' => array(
+					'Content-Type'  => 'application/json',
+					'Authorization' => 'Bearer ' . $api_key,
+				),
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			error_log( 'Checkview: Failed to notify SaaS. ' . $response->get_error_message() );
+		} else {
+			error_log( 'Checkview: SaaS notified of ' . $status . ' status.' );
 		}
 	}
 }
