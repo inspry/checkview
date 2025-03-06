@@ -155,6 +155,19 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 				'__return_null',
 				-10
 			);
+
+			/**
+			 * Enable Test Mode for Stripe in Gravity Forms
+			 */
+			add_filter(
+				'gform_stripe_api_mode',
+				function ( $mode ) {
+					$mode = 'test';
+					return $mode;
+				},
+				99,
+				1
+			);
 		}
 		/**
 		 * Unsets Captchas from the form.
