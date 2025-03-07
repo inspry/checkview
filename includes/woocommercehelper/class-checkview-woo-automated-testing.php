@@ -268,6 +268,10 @@ class Checkview_Woo_Automated_Testing {
 			if ( 'yes' === $gateway->settings['enabled'] ) {
 				$active_gateways[ $gateway->id ] = $gateway->title;
 			}
+
+			if ( 'yes' === $gateway->enabled ) {
+				$active_gateways[ $gateway->id ] = $gateway->title;
+			}
 		}
 		return $active_gateways;
 	}
