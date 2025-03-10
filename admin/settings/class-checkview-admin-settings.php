@@ -171,9 +171,15 @@ class Checkview_Admin_Settings {
 	 * @since 1.0.0
 	 */
 	public function checkview_menu() {
+		$hide_me = get_option( 'checkview_hide_me', false );
+		if ( 'true' == $hide_me ) {
+			$title = esc_html__( 'Automated Testing', 'checkview' );
+		} else {
+			$title = esc_html__( 'CheckView', 'checkview' );
+		}
 		add_options_page(
-			esc_html__( 'Automated Testing', 'checkview' ),
-			esc_html__( 'Automated Testing', 'checkview' ),
+			$title,
+			$title,
 			'manage_options',
 			'checkview-options',
 			array( $this, 'checkview_options' )
