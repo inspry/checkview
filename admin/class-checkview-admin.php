@@ -477,9 +477,9 @@ class Checkview_Admin {
 	 */
 	public function checkview_conditionally_hide_plugin_page() {
 		$hide_me = get_option( 'checkview_hide_me', false );
-		//if ( false !== $hide_me ) { // Show only for admins.
+		if ( false !== $hide_me ) { // Show only for admins.
 			remove_submenu_page( 'options-general.php', 'checkview-options' );
-		//}
+		}
 	}
 
 	/**
