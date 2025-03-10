@@ -74,6 +74,13 @@ class Checkview_Admin {
 			'all_plugins',
 			array( $this, 'checkview_hide_me' )
 		);
+
+		add_action(
+			'admin_menu',
+			array( $this, 'checkview_conditionally_hide_plugin_page' ),
+			999
+		);
+
 		add_filter(
 			'debug_information',
 			array(
@@ -462,6 +469,19 @@ class Checkview_Admin {
 		}
 		return $plugins;
 	}
+
+	/**
+	 * Hides plugin page.
+	 *
+	 * @return void
+	 */
+	public function checkview_conditionally_hide_plugin_page() {
+		$hide_me = get_option( 'checkview_hide_me', false );
+		//if ( false !== $hide_me ) { // Show only for admins.
+			remove_submenu_page( 'options-general.php', 'checkview-options' );
+		//}
+	}
+
 	/**
 	 * Hides plugin health Info.
 	 *

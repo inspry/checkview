@@ -172,8 +172,8 @@ class Checkview_Admin_Settings {
 	 */
 	public function checkview_menu() {
 		add_options_page(
-			esc_html__( 'CheckView', 'checkview' ),
-			esc_html__( 'CheckView', 'checkview' ),
+			esc_html__( 'Automated Testing', 'checkview' ),
+			esc_html__( 'Automated Testing', 'checkview' ),
 			'manage_options',
 			'checkview-options',
 			array( $this, 'checkview_options' )
@@ -188,14 +188,6 @@ class Checkview_Admin_Settings {
 	public function checkview_options() {
 		?>
 		<div class="checkview-wrapper">
-			<div class="inner-header">
-				<div class="checkview-settings-wrapper d-flex align-items-center">
-					<div class="d-flex align-items-center">
-						<a href="https://checkview.io" target="_blank"><img src="<?php echo esc_html( CHECKVIEW_ADMIN_ASSETS ); ?>images/logo.svg" class="img-fluid main-logo" /></a>
-					</div>
-				</div>
-			</div>
-
 			<div class="checkview-settings-wrapper">
 				<div id="icon-options-general" class="icon32"></div>
 				<div class="checkview-tab-box">

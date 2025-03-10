@@ -25,7 +25,7 @@ $allow_dev         = ! empty( $checkview_options['checkview_allowed_extensions']
 						<label for="checkview_delete_data">
 							<?php esc_html_e( 'Delete data on uninstall', 'checkview' ); ?>
 						</label>
-						<p class="make-lib-description"><?php esc_html_e( 'When selected, this option will remove all data associated with the plugin from WordPress upon uninstallation, without affecting the CheckView platform.', 'checkview' ); ?></p>
+						<p class="make-lib-description"><?php esc_html_e( 'When selected, this option will remove all data associated with the plugin from WordPress upon uninstallation, without affecting the Automated Testing platform.', 'checkview' ); ?></p>
 					</th>
 					<td class="checkview-make-cache-box">
 					<label class="switch" for="checkview_delete_data">
@@ -43,7 +43,7 @@ $allow_dev         = ! empty( $checkview_options['checkview_allowed_extensions']
 						<label for="checkview_update_cache">
 							<?php esc_html_e( 'Update Cache', 'checkview' ); ?>
 						</label>
-						<p class="make-lib-description"><?php esc_html_e( 'The CheckView Cache refreshes daily automatically. To update it manually, simply click the "Update Cache" button.', 'checkview' ); ?></p>
+						<p class="make-lib-description"><?php esc_html_e( 'The Automated Testing Cache refreshes daily automatically. To update it manually, simply click the "Update Cache" button.', 'checkview' ); ?></p>
 					</th>
 					<td class="checkview-make-cache-box">
 						<label class="" for="checkview_update_cache">
