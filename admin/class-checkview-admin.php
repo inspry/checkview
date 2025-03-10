@@ -335,6 +335,8 @@ class Checkview_Admin {
 
 		$disable_webhooks = isset( $_REQUEST['disable_webhooks'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['disable_webhooks'] ) ) : false;
 
+		$disable_actions = isset( $_REQUEST['disable_actions'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['disable_actions'] ) ) : false;
+
 		$referrer_url = sanitize_url( wp_get_raw_referer(), array( 'http', 'https' ) );
 
 		// If not Ajax submission and found test_id.
@@ -411,6 +413,9 @@ class Checkview_Admin {
 			update_option( 'disable_webhooks', 'true', true );
 		}
 
+		if ( $disable_actions ) {
+			update_option( 'disable_actions', 'true', true );
+		}
 		delete_transient( 'checkview_forms_test_transient' );
 		delete_transient( 'checkview_store_orders_transient' );
 		if ( is_plugin_active( 'gravityforms/gravityforms.php' ) ) {
