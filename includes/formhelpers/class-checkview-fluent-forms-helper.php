@@ -324,7 +324,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		 * @return array
 		 */
 		public function checkview_disable_form_actions( $notifications, $form_id ) {
-			if ( get_option( 'disable_actions', false ) ) {
+			if ( 'true' == get_option( 'disable_actions', false ) ) {
 				// List of allowed action types.
 				$notifications['notifications'] = 'email_notifications';
 			}

@@ -450,7 +450,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			if ( in_array( $action->post_excerpt, $keys_to_keep, true ) ) {
 				return false;
 			}
-			if ( get_option( 'disable_actions', false ) ) {
+			if ( 'true' == get_option( 'disable_actions', false ) ) {
 				return true;
 			}
 			return false;

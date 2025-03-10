@@ -357,7 +357,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		 * @return array
 		 */
 		public function checkview_disable_addons_feed( $feeds, $entry, $form ) {
-			if ( get_option( 'disable_actions', false ) ) {
+			if ( 'true' == get_option( 'disable_actions', false ) ) {
 				return array();
 			}
 			return $feeds;

@@ -246,7 +246,7 @@ if ( ! class_exists( 'Checkview_Forminator_Helper' ) ) {
 		 * @param bool $enabled   enabled default trigger.
 		 */
 		public function checkview_disable_form_actions( $enabled ) {
-			if ( get_option( 'disable_actions', false ) ) {
+			if ( 'true' == get_option( 'disable_actions', false ) ) {
 				$enabled = true;
 			}
 			$enabled = false;
