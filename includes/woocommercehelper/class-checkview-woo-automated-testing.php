@@ -683,43 +683,38 @@ class Checkview_Woo_Automated_Testing {
 
 
 	/**
-	 * Stops delivery of webhooks for CheckView orders.
+	 * Stops delivery of webhooks for CheckView orders and subscriptions.
 	 *
-	 * @param bool   $should_deliver Delivery status.
+	 * @param bool   $should_deliver Whether the webhook should be delivered.
 	 * @param object $webhook_object Webhook object.
-	 * @param array  $arg Args to support.
+	 * @param array  $arg Arguments supporting the webhook.
 	 * @return bool
 	 */
 	public function checkview_filter_webhooks( $should_deliver, $webhook_object, $arg ) {
+		if ( empty( $webhook_object ) || empty( $arg ) ) {
+			return $should_deliver;
+		}
 
 		$topic = $webhook_object->get_topic();
+		$order = wc_get_order( $arg );
 
-		if ( ! empty( $topic ) && ! empty( $arg ) && 'order.' === substr( $topic, 0, 6 ) ) {
+		if ( ! $order || ! $topic ) {
+			return $should_deliver;
+		}
 
-			$order = wc_get_order( $arg );
+		$payment_method  = method_exists( $order, 'get_payment_method' ) ? $order->get_payment_method() : '';
+		$payment_made_by = $order->get_meta( 'payment_made_by' );
 
-			if ( ! empty( $order ) ) {
-				$payment_method  = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
-				$payment_made_by = $order->get_meta( 'payment_made_by' );
-				if ( ( $payment_method && 'checkview' === $payment_method && ( true === $this->suppress_webhook || 'true' === $this->suppress_webhook ) ) || ( 'checkview' === $payment_made_by && ( true === $this->suppress_webhook || 'true' === $this->suppress_webhook ) ) ) {
-					return false;
-				}
-			}
-		} elseif ( ! empty( $topic ) && ! empty( $arg ) && 'subscription.' === substr( $topic, 0, 13 ) ) {
+		$is_checkview_order = ( 'checkview' === $payment_method || 'checkview' === $payment_made_by );
+		$should_suppress    = ( true === $this->suppress_webhook || 'true' === $this->suppress_webhook );
 
-			$order = wc_get_order( $arg );
-
-			if ( ! empty( $order ) ) {
-				$payment_method  = ( \is_object( $order ) && \method_exists( $order, 'get_payment_method' ) ) ? $order->get_payment_method() : false;
-				$payment_made_by = is_object( $order ) ? $order->get_meta( 'payment_made_by' ) : '';
-				if ( ( $payment_method && 'checkview' === $payment_method && ( true === $this->suppress_webhook || 'true' === $this->suppress_webhook ) ) || ( 'checkview' === $payment_made_by && ( true === $this->suppress_webhook || 'true' === $this->suppress_webhook ) ) ) {
-					return false;
-				}
-			}
+		if ( $is_checkview_order && $should_suppress ) {
+			return false; // Block webhook delivery
 		}
 
 		return $should_deliver;
 	}
+
 
 	/**
 	 * Adds CheckView dummy payment gateway to Woo.
