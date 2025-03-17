@@ -191,7 +191,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 				}
 			}
 
-			wp_delete_post( $entry_id, true );
+			checkview_schedule_ninjaform_entry_deletion( $form_id, $entry_id );
 
 			complete_checkview_test( $checkview_test_id );
 		}

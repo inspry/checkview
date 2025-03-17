@@ -143,7 +143,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			}
 			$old_settings = array();
 			$old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
-			if ( null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] && strpos( $old_settings['api_version'], 'v3' ) === false ) {
+			if ( ! empty( $old_settings['siteKey'] ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] && strpos( $old_settings['api_version'], 'v3' ) === false ) {
 				if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' !== $old_settings['siteKey'] ) {
 					update_option( 'checkview_rc-site-key', $old_settings['siteKey'], true );
 					update_option( 'checkview_rc-secret-key', $old_settings['secretKey'], true );
@@ -303,15 +303,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			);
 			$wpdb->insert( $table1, $data );
 
-			// remove entry from Fluent forms tables.
-			$delete = wpFluent()->table( 'fluentform_submissions' )
-			->where( 'form_id', $form_id )
-			->where( 'id', '=', $entry_id )
-			->delete();
-			$delete = wpFluent()->table( 'fluentform_entry_details' )
-			->where( 'form_id', $form_id )
-			->where( 'submission_id', '=', $entry_id )
-			->delete();
+			checkview_schedule_fluentform_entry_deletion( $form_id, $entry_id );
 
 			complete_checkview_test( $checkview_test_id );
 		}

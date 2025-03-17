@@ -294,8 +294,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			}
 
 			// Remove test entry form Formidable.
-			$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . 'frm_item_metas WHERE item_id=%d', $entry_id ) );
-			$result = $wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . 'frm_items WHERE id=%d', $entry_id ) );
+			checkview_schedule_formidable_entry_deletion( $form_id, $entry_id );
 
 			complete_checkview_test( $checkview_test_id );
 		}

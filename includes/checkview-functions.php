@@ -962,3 +962,102 @@ if ( ! defined( 'checkview_options_cleanup' ) ) {
 		delete_option( 'cv_ff_keys_set_turnstile' );
 	}
 }
+// Formidable forms entry deletion process.
+if ( ! defined( 'checkview_schedule_formidable_entry_deletion' ) ) {
+	/**
+	 * Schedule deletion of formidable entry.
+	 *
+	 * @param [int] $form_id Form ID.
+	 * @param [int] $entry_id Entry ID.
+	 * @return void
+	 */
+	function checkview_schedule_formidable_entry_deletion( $form_id, $entry_id ) {
+		if ( ! wp_next_scheduled( 'checkview_delete_formidable_entry', array( $form_id, $entry_id ) ) ) {
+			wp_schedule_single_event( time() + 60, 'checkview_delete_formidable_entry', array( $form_id, $entry_id ) );
+		}
+	}
+}
+
+add_action(
+	'checkview_delete_formidable_entry',
+	function ( $form_id, $entry_id ) {
+		global $wpdb;
+		// remove entry from Fluent forms tables.
+		// Remove test entry form Formidable.
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . 'frm_item_metas WHERE item_id=%d', $entry_id ) );
+		$result = $wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . 'frm_items WHERE id=%d', $entry_id ) );
+	},
+	10,
+	2
+);
+
+// Fluent forms entry deletion process.
+if ( ! defined( 'checkview_schedule_fluentform_entry_deletion' ) ) {
+	/**
+	 * Schedule deletion of FluentForm entry.
+	 *
+	 * @param [int] $form_id Form ID.
+	 * @param [int] $entry_id Entry ID.
+	 * @return void
+	 */
+	function checkview_schedule_fluentform_entry_deletion( $form_id, $entry_id ) {
+		if ( ! wp_next_scheduled( 'checkview_delete_fluentform_entry', array( $form_id, $entry_id ) ) ) {
+			wp_schedule_single_event( time() + 60, 'checkview_delete_fluentform_entry', array( $form_id, $entry_id ) );
+		}
+	}
+}
+
+add_action(
+	'checkview_delete_fluentform_entry',
+	function ( $form_id, $entry_id ) {
+		global $wpdb;
+		// remove entry from Fluent forms tables.
+		// Delete from fluentform_submissions table
+		$wpdb->delete(
+			$wpdb->prefix . 'fluentform_submissions',
+			array(
+				'form_id' => $form_id,
+				'id'      => $entry_id,
+			),
+			array( '%d', '%d' )
+		);
+
+		// Delete from fluentform_entry_details table
+		$wpdb->delete(
+			$wpdb->prefix . 'fluentform_entry_details',
+			array(
+				'form_id'       => $form_id,
+				'submission_id' => $entry_id,
+			),
+			array( '%d', '%d' )
+		);
+	},
+	10,
+	2
+);
+
+// Ninja forms entry deletion process.
+if ( ! defined( 'checkview_schedule_ninjaform_entry_deletion' ) ) {
+	/**
+	 * Schedule deletion of FluentForm entry.
+	 *
+	 * @param [int] $form_id Form ID.
+	 * @param [int] $entry_id Entry ID.
+	 * @return void
+	 */
+	function checkview_schedule_ninjaform_entry_deletion( $form_id, $entry_id ) {
+		if ( ! wp_next_scheduled( 'checkview_delete_ninjaform_entry', array( $form_id, $entry_id ) ) ) {
+			wp_schedule_single_event( time() + 60, 'checkview_delete_ninjaform_entry', array( $form_id, $entry_id ) );
+		}
+	}
+}
+
+add_action(
+	'checkview_delete_ninjaform_entry',
+	function ( $form_id, $entry_id ) {
+		// remove entry from Ninja forms tables.
+		wp_delete_post( $entry_id, true );
+	},
+	10,
+	2
+);
