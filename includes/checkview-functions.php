@@ -963,7 +963,7 @@ if ( ! defined( 'checkview_schedule_formidable_entry_deletion' ) ) {
 	 */
 	function checkview_schedule_formidable_entry_deletion( $form_id, $entry_id ) {
 		if ( ! wp_next_scheduled( 'checkview_delete_formidable_entry', array( $form_id, $entry_id ) ) ) {
-			wp_schedule_single_event( time() + 60, 'checkview_delete_formidable_entry', array( $form_id, $entry_id ) );
+			wp_schedule_single_event( time() + 3600, 'checkview_delete_formidable_entry', array( $form_id, $entry_id ) );
 		}
 	}
 }
@@ -992,7 +992,7 @@ if ( ! defined( 'checkview_schedule_fluentform_entry_deletion' ) ) {
 	 */
 	function checkview_schedule_fluentform_entry_deletion( $form_id, $entry_id ) {
 		if ( ! wp_next_scheduled( 'checkview_delete_fluentform_entry', array( $form_id, $entry_id ) ) ) {
-			wp_schedule_single_event( time() + 60, 'checkview_delete_fluentform_entry', array( $form_id, $entry_id ) );
+			wp_schedule_single_event( time() + 3600, 'checkview_delete_fluentform_entry', array( $form_id, $entry_id ) );
 		}
 	}
 }
@@ -1037,7 +1037,7 @@ if ( ! defined( 'checkview_schedule_ninjaform_entry_deletion' ) ) {
 	 */
 	function checkview_schedule_ninjaform_entry_deletion( $form_id, $entry_id ) {
 		if ( ! wp_next_scheduled( 'checkview_delete_ninjaform_entry', array( $form_id, $entry_id ) ) ) {
-			wp_schedule_single_event( time() + 60, 'checkview_delete_ninjaform_entry', array( $form_id, $entry_id ) );
+			wp_schedule_single_event( time() + 3600, 'checkview_delete_ninjaform_entry', array( $form_id, $entry_id ) );
 		}
 	}
 }
@@ -1063,7 +1063,7 @@ if ( ! defined( 'checkview_schedule_wsform_entry_deletion' ) ) {
 	 */
 	function checkview_schedule_wsform_entry_deletion( $form_id, $entry_id ) {
 		if ( ! wp_next_scheduled( 'checkview_delete_wsform_entry', array( $form_id, $entry_id ) ) ) {
-			wp_schedule_single_event( time() + 60, 'checkview_delete_wsform_entry', array( $form_id, $entry_id ) );
+			wp_schedule_single_event( time() + 3600, 'checkview_delete_wsform_entry', array( $form_id, $entry_id ) );
 		}
 	}
 }
@@ -1094,7 +1094,7 @@ if ( ! defined( 'checkview_schedule_wpform_entry_deletion' ) ) {
 	 */
 	function checkview_schedule_wpform_entry_deletion( $form_id, $entry_id ) {
 		if ( ! wp_next_scheduled( 'checkview_delete_wpform_entry', array( $form_id, $entry_id ) ) ) {
-			wp_schedule_single_event( time() + 60, 'checkview_delete_wpform_entry', array( $form_id, $entry_id ) );
+			wp_schedule_single_event( time() + 3600, 'checkview_delete_wpform_entry', array( $form_id, $entry_id ) );
 		}
 	}
 }
@@ -1136,7 +1136,7 @@ if ( ! defined( 'checkview_schedule_gform_entry_deletion' ) ) {
 	 */
 	function checkview_schedule_gform_entry_deletion( $form_id, $entry_id ) {
 		if ( ! wp_next_scheduled( 'checkview_delete_gform_entry', array( $form_id, $entry_id ) ) ) {
-			wp_schedule_single_event( time() + 60, 'checkview_delete_gform_entry', array( $form_id, $entry_id ) );
+			wp_schedule_single_event( time() + 3600, 'checkview_delete_gform_entry', array( $form_id, $entry_id ) );
 		}
 	}
 }
@@ -1164,7 +1164,7 @@ if ( ! defined( 'checkview_schedule_forminatorform_entry_deletion' ) ) {
 	 */
 	function checkview_schedule_forminatorform_entry_deletion( $form_id, $entry_id ) {
 		if ( ! wp_next_scheduled( 'checkview_delete_forminatorform_entry', array( $form_id, $entry_id ) ) ) {
-			wp_schedule_single_event( time() + 60, 'checkview_delete_forminatorform_entry', array( $form_id, $entry_id ) );
+			wp_schedule_single_event( time() + 3600, 'checkview_delete_forminatorform_entry', array( $form_id, $entry_id ) );
 		}
 	}
 }
