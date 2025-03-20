@@ -205,7 +205,7 @@ if ( ! class_exists( 'Checkview_Forminator_Helper' ) ) {
 
 			complete_checkview_test( $checkview_test_id );
 			// Delete entry.
-			Forminator_Form_Entry_Model::delete_by_entry( $entry_id );
+			checkview_schedule_forminatorform_entry_deletion( $form_id, $entry_id );
 		}
 
 		/**

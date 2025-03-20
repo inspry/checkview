@@ -283,25 +283,8 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 						break;
 				}
 			}
-
-			// Remove entry if Pro plugin.
-			if ( is_plugin_active( 'wpforms/wpforms.php' ) ) {
-				// Remove Test Entry From WpForms Tables.
-				$wpdb->delete(
-					$wpdb->prefix . 'wpforms_entries',
-					array(
-						'entry_id' => $entry_id,
-						'form_id'  => $form_id,
-					)
-				);
-				$wpdb->delete(
-					$wpdb->prefix . 'wpforms_entry_fields',
-					array(
-						'entry_id' => $entry_id,
-						'form_id'  => $form_id,
-					)
-				);
-			}
+			
+			checkview_schedule_wpform_entry_deletion( $form_id, $entry_id );
 			$old_settings = (array) get_option( 'wpforms_settings', array() );
 			if ( ! empty( $old_settings['turnstile-site-key'] ) && null !== $old_settings['turnstile-site-key'] && null !== $old_settings['turnstile-secret-key'] ) {
 				if ( '1x00000000000000000000AA' === $old_settings['turnstile-site-key'] ) {

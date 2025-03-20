@@ -215,8 +215,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 					$wpdb->insert( $entry_meta_table, $entry_metadata );
 				}
 			}
-			update_option( $checkview_test_id . '_wsf_entry_id', $entry_id );
-			update_option( $checkview_test_id . '_wsf_frm_id', $form_id );
+			checkview_schedule_wsform_entry_deletion( $form_id, $entry_id );
 			complete_checkview_test( $checkview_test_id );
 		}
 

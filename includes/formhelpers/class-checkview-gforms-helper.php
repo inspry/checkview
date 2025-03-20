@@ -193,7 +193,7 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 			}
 			self::checkview_clone_gf_entry( $entry['id'], $form_id, $checkview_test_id );
 			if ( isset( $entry['id'] ) ) {
-				GFAPI::delete_entry( $entry['id'] );
+				checkview_schedule_gform_entry_deletion( $form_id, $entry['id'] );
 			}
 
 			complete_checkview_test( $checkview_test_id );

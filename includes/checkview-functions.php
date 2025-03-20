@@ -159,16 +159,6 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 				'test_id'    => $checkview_test_id,
 			)
 		);
-		$entry_id = get_option( $checkview_test_id . '_wsf_entry_id', '' );
-		$form_id  = get_option( $checkview_test_id . '_wsf_frm_id', '' );
-		if ( ! empty( $form_id ) && ! empty( $entry_id ) ) {
-			$ws_form_submit          = new WS_Form_Submit();
-			$ws_form_submit->id      = $entry_id;
-			$ws_form_submit->form_id = $form_id;
-			$ws_form_submit->db_delete( true, true, true );
-		}
-		delete_option( $checkview_test_id . '_wsf_entry_id' );
-		delete_option( $checkview_test_id . '_wsf_frm_id' );
 		delete_option( $visitor_ip );
 		setcookie( 'checkview_test_id', '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
 		setcookie( 'checkview_test_id' . $checkview_test_id, '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
@@ -1057,6 +1047,134 @@ add_action(
 	function ( $form_id, $entry_id ) {
 		// remove entry from Ninja forms tables.
 		wp_delete_post( $entry_id, true );
+	},
+	10,
+	2
+);
+
+// WS forms entry deletion process.
+if ( ! defined( 'checkview_schedule_wsform_entry_deletion' ) ) {
+	/**
+	 * Schedule deletion of WSForm entry.
+	 *
+	 * @param [int] $form_id Form ID.
+	 * @param [int] $entry_id Entry ID.
+	 * @return void
+	 */
+	function checkview_schedule_wsform_entry_deletion( $form_id, $entry_id ) {
+		if ( ! wp_next_scheduled( 'checkview_delete_wsform_entry', array( $form_id, $entry_id ) ) ) {
+			wp_schedule_single_event( time() + 60, 'checkview_delete_wsform_entry', array( $form_id, $entry_id ) );
+		}
+	}
+}
+
+add_action(
+	'checkview_delete_wsform_entry',
+	function ( $form_id, $entry_id ) {
+		// remove entry from WS forms tables.
+		if ( ! empty( $form_id ) && ! empty( $entry_id ) ) {
+			$ws_form_submit          = new WS_Form_Submit();
+			$ws_form_submit->id      = $entry_id;
+			$ws_form_submit->form_id = $form_id;
+			$ws_form_submit->db_delete( true, true, true );
+		}
+	},
+	10,
+	2
+);
+
+// WP forms entry deletion process.
+if ( ! defined( 'checkview_schedule_wpform_entry_deletion' ) ) {
+	/**
+	 * Schedule deletion of WPForm entry.
+	 *
+	 * @param [int] $form_id Form ID.
+	 * @param [int] $entry_id Entry ID.
+	 * @return void
+	 */
+	function checkview_schedule_wpform_entry_deletion( $form_id, $entry_id ) {
+		if ( ! wp_next_scheduled( 'checkview_delete_wpform_entry', array( $form_id, $entry_id ) ) ) {
+			wp_schedule_single_event( time() + 60, 'checkview_delete_wpform_entry', array( $form_id, $entry_id ) );
+		}
+	}
+}
+
+add_action(
+	'checkview_delete_wpform_entry',
+	function ( $form_id, $entry_id ) {
+		global $wpdb;
+		// Remove entry if Pro plugin.
+
+		// Remove Test Entry From WpForms Tables.
+		$wpdb->delete(
+			$wpdb->prefix . 'wpforms_entries',
+			array(
+				'entry_id' => $entry_id,
+				'form_id'  => $form_id,
+			)
+		);
+		$wpdb->delete(
+			$wpdb->prefix . 'wpforms_entry_fields',
+			array(
+				'entry_id' => $entry_id,
+				'form_id'  => $form_id,
+			)
+		);
+	},
+	10,
+	2
+);
+
+// Gravity forms entry deletion process.
+if ( ! defined( 'checkview_schedule_gform_entry_deletion' ) ) {
+	/**
+	 * Schedule deletion of GForm entry.
+	 *
+	 * @param [int] $form_id Form ID.
+	 * @param [int] $entry_id Entry ID.
+	 * @return void
+	 */
+	function checkview_schedule_gform_entry_deletion( $form_id, $entry_id ) {
+		if ( ! wp_next_scheduled( 'checkview_delete_gform_entry', array( $form_id, $entry_id ) ) ) {
+			wp_schedule_single_event( time() + 60, 'checkview_delete_gform_entry', array( $form_id, $entry_id ) );
+		}
+	}
+}
+
+add_action(
+	'checkview_delete_gform_entry',
+	function ( $form_id, $entry_id ) {
+		global $wpdb;
+		// Remove entry if Pro plugin.
+		// Remove Test Entry From WpForms Tables.
+		GFAPI::delete_entry( $entry_id );
+	},
+	10,
+	2
+);
+
+// Forminator forms entry deletion process.
+if ( ! defined( 'checkview_schedule_forminatorform_entry_deletion' ) ) {
+	/**
+	 * Schedule deletion of Forminator entry.
+	 *
+	 * @param [int] $form_id Form ID.
+	 * @param [int] $entry_id Entry ID.
+	 * @return void
+	 */
+	function checkview_schedule_forminatorform_entry_deletion( $form_id, $entry_id ) {
+		if ( ! wp_next_scheduled( 'checkview_delete_forminatorform_entry', array( $form_id, $entry_id ) ) ) {
+			wp_schedule_single_event( time() + 60, 'checkview_delete_forminatorform_entry', array( $form_id, $entry_id ) );
+		}
+	}
+}
+
+add_action(
+	'checkview_delete_forminatorform_entry',
+	function ( $form_id, $entry_id ) {
+		// Remove Test Entry From Forminator Tables.
+		// Delete entry.
+		Forminator_Form_Entry_Model::delete_by_entry( $entry_id );
 	},
 	10,
 	2
