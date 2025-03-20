@@ -17,6 +17,21 @@ use Firebase\JWT\Key;
 if ( ! defined( 'WPINC' ) ) {
 	die( 'Direct access not Allowed.' );
 }
+
+if ( ! function_exists( 'checkview_ensure_trailing_slash')) {
+	/**
+	 * Ensures a string ends with a trailing slash.
+	 * 
+	 * @since 2.0.13
+	 * 
+	 * @param string $string String to ensure trailing slash.
+	 * @return string
+	 */
+	function checkview_ensure_trailing_slash( $string ) {
+		return rtrim($string, '/') . '/';
+	}
+}
+
 if ( ! function_exists( 'checkview_validate_jwt_token' ) ) {
 	/**
 	 * Validates a JWT.
@@ -70,7 +85,7 @@ if ( ! function_exists( 'checkview_validate_jwt_token' ) ) {
 		$jwt = (array) $decoded;
 
 		// If a URL mismatch, return false.
-		if ( ! strpos( get_bloginfo( 'url' ), $jwt['websiteUrl'] ) ) {
+		if ( ! strpos( get_bloginfo( 'url' ), checkview_ensure_trailing_slash( $jwt['websiteUrl'] ) ) ) {
 			Checkview_Admin_Logs::add( 'api-logs', 'Invalid site url.' );
 			return false;
 		}
