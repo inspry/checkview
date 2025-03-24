@@ -18,17 +18,17 @@ if ( ! defined( 'WPINC' ) ) {
 	die( 'Direct access not Allowed.' );
 }
 
-if ( ! function_exists( 'checkview_ensure_trailing_slash')) {
+if ( ! function_exists( 'checkview_ensure_trailing_slash' ) ) {
 	/**
 	 * Ensures a string ends with a trailing slash.
-	 * 
+	 *
 	 * @since 2.0.13
-	 * 
+	 *
 	 * @param string $string String to ensure trailing slash.
 	 * @return string
 	 */
 	function checkview_ensure_trailing_slash( $string ) {
-		return rtrim($string, '/') . '/';
+		return rtrim( $string, '/' ) . '/';
 	}
 }
 
