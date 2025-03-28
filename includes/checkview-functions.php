@@ -85,7 +85,7 @@ if ( ! function_exists( 'checkview_validate_jwt_token' ) ) {
 		$jwt = (array) $decoded;
 
 		// If a URL mismatch, return false.
-		if ( ! strpos( get_bloginfo( 'url' ), checkview_ensure_trailing_slash( $jwt['websiteUrl'] ) ) ) {
+		if ( false === strpos( get_bloginfo( 'url' ), checkview_ensure_trailing_slash( $jwt['websiteUrl'] ) ) ) {
 			Checkview_Admin_Logs::add( 'api-logs', 'Invalid site url.' );
 			return false;
 		}
