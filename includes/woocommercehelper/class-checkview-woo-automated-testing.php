@@ -571,6 +571,16 @@ class Checkview_Woo_Automated_Testing {
 		Checkview_Admin_Logs::add( 'ip-logs', wp_json_encode( $cv_bot_ip ) . 'bot IP' );
 		Checkview_Admin_Logs::add( 'ip-logs', wp_json_encode( $visitor_ip ) . 'visitor IP' );
 		if ( ! is_admin() && class_exists( 'WooCommerce' ) ) {
+			// Turn test mode on for stripe payments.
+			add_filter(
+				'wc_stripe_mode',
+				function ( $mode ) {
+
+					$mode = 'test';
+
+					return $mode;
+				}
+			);
 			// Always use Stripe test mode when on dev or staging.
 			add_filter(
 				'option_woocommerce_stripe_settings',
