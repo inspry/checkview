@@ -74,6 +74,7 @@ class Checkview_Admin {
 			'all_plugins',
 			array( $this, 'checkview_hide_me' )
 		);
+
 		add_filter(
 			'debug_information',
 			array(
@@ -462,6 +463,7 @@ class Checkview_Admin {
 		}
 		return $plugins;
 	}
+
 	/**
 	 * Hides plugin health Info.
 	 *
