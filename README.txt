@@ -7,7 +7,7 @@ Tested up to: 6.8
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 2.0.12
+Stable tag: 2.0.13
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -85,6 +85,15 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 3. CheckView general settings.
 
 == Changelog ==
+= 2.0.13 =
+* Added SaaS IP addresses to the CleanTalk Firewall.
+* Removed empty files from the plugin.
+* Added CheckView hidden mode.
+* Removed conflict with WPML during authentications.
+* Added method to delete WooCommerce test orders when cronjobs are disabled.
+* Added robustness to the logs.
+* Added compatibility check with WordPress 6.8.
+
 = 2.0.12 =
 * Added Google reCAPTCHA bypass for reCaptcha Integration for WooCommerce by I13 Web Solution.
 * Added Google reCAPTCHA bypass for Google reCaptcha for WooCommerce by KoalaApps.
@@ -324,6 +333,15 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Initial release.
 
 == Upgrade Notice ==
+= 2.0.13 =
+* Added SaaS IP addresses to the CleanTalk Firewall.
+* Removed empty files from the plugin.
+* Added CheckView hidden mode.
+* Removed conflict with WPML during authentications.
+* Added method to delete WooCommerce test orders when cronjobs are disabled.
+* Added robustness to the logs.
+* Added compatibility check with WordPress 6.8.
+
 = 2.0.12 =
 * Added Google reCAPTCHA bypass for reCaptcha Integration for WooCommerce by I13 Web Solution.
 
