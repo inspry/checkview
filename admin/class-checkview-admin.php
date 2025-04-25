@@ -357,6 +357,7 @@ class Checkview_Admin {
 			}
 		}
 		if ( ! empty( $cv_test_id ) && ! checkview_is_valid_uuid( $cv_test_id ) ) {
+			Checkview_Admin_Logs::add( 'ip-logs', 'Not Bypassed invalid test id. ' . $visitor_ip . '=> ' . $cv_test_id );
 			return;
 		}
 		if ( $cv_test_id && '' !== $cv_test_id ) {
@@ -379,7 +380,11 @@ class Checkview_Admin {
 				$send_to = CHECKVIEW_EMAIL;
 			}
 		}
-		Checkview_Admin_Logs::add( 'ip-logs', 'Bypassed ' . $visitor_ip . '=> ' . $cv_test_id );
+		if ( empty( $cv_test_id ) ) {
+			Checkview_Admin_Logs::add( 'ip-logs', 'Not Bypassed missing test id. ' . $visitor_ip . '=> ' . $cv_test_id );
+		} else {
+			Checkview_Admin_Logs::add( 'ip-logs', 'Bypassed ' . $visitor_ip . '=> ' . $cv_test_id );
+		}
 		if ( ! empty( $cv_session ) ) {
 
 			$test_key = $cv_session[0]['test_key'];
