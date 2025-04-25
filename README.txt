@@ -3,7 +3,7 @@ Contributors: checkview, inspry, muhammadfaizanhaidar
 Donate link: https://checkview.io/
 Tags: testing, monitoring, uptime, tests, woocommerce
 Requires at least: 5.0.1
-Tested up to: 6.7.1
+Tested up to: 6.8
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
