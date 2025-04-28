@@ -178,13 +178,13 @@ class Checkview_Woo_Automated_Testing {
 			);
 
 			// Delete orders on backend page load if crons are disabled.
-			if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
-				$this->loader->add_action(
-					'admin_init',
-					$this,
-					'delete_orders_from_backend',
-				);
-			}
+			// if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
+			// $this->loader->add_action(
+			// 'admin_init',
+			// $this,
+			// 'delete_orders_from_backend',
+			// );
+			// }
 
 			$this->loader->add_filter(
 				'woocommerce_can_reduce_order_stock',
@@ -266,6 +266,10 @@ class Checkview_Woo_Automated_Testing {
 		$payment_gateways = WC_Payment_Gateways::instance()->payment_gateways();
 		foreach ( $payment_gateways as $gateway ) {
 			if ( 'yes' === $gateway->settings['enabled'] ) {
+				$active_gateways[ $gateway->id ] = $gateway->title;
+			}
+
+			if ( 'yes' === $gateway->enabled ) {
 				$active_gateways[ $gateway->id ] = $gateway->title;
 			}
 		}

@@ -17,6 +17,21 @@ use Firebase\JWT\Key;
 if ( ! defined( 'WPINC' ) ) {
 	die( 'Direct access not Allowed.' );
 }
+
+if ( ! function_exists( 'checkview_ensure_trailing_slash' ) ) {
+	/**
+	 * Ensures a string ends with a trailing slash.
+	 *
+	 * @since 2.0.13
+	 *
+	 * @param string $string String to ensure trailing slash.
+	 * @return string
+	 */
+	function checkview_ensure_trailing_slash( $string ) {
+		return rtrim( $string, '/' ) . '/';
+	}
+}
+
 if ( ! function_exists( 'checkview_validate_jwt_token' ) ) {
 	/**
 	 * Validates a JWT.
@@ -70,7 +85,7 @@ if ( ! function_exists( 'checkview_validate_jwt_token' ) ) {
 		$jwt = (array) $decoded;
 
 		// If a URL mismatch, return false.
-		if ( str_contains( $jwt['websiteUrl'], get_bloginfo( 'url' ) ) !== true && get_bloginfo( 'url' ) !== $jwt['websiteUrl'] && ! strpos( $jwt['websiteUrl'], get_bloginfo( 'url' ) ) ) {
+		if ( false === strpos( checkview_ensure_trailing_slash( get_bloginfo( 'url' ) ), checkview_ensure_trailing_slash( $jwt['websiteUrl'] ) ) ) {
 			Checkview_Admin_Logs::add( 'api-logs', 'Invalid site url.' );
 			return false;
 		}
@@ -341,9 +356,10 @@ if ( ! function_exists( 'checkview_get_cleantalk_whitelisted_ips' ) ) {
 	/**
 	 * Gathers a list of whitelisted IPs from CleanTalk.
 	 *
+	 * @param string $service_type Service type.
 	 * @return array List of whitelisted IPs.
 	 */
-	function checkview_get_cleantalk_whitelisted_ips() {
+	function checkview_get_cleantalk_whitelisted_ips( $service_type = 'antispam' ) {
 		$ip_array = get_transient( 'checkview_whitelisted_ips' );
 		if ( ! empty( $ip_array ) && is_array( $ip_array ) ) {
 			return $ip_array;
@@ -352,7 +368,7 @@ if ( ! function_exists( 'checkview_get_cleantalk_whitelisted_ips' ) ) {
 		$user_token = $spbc_data['user_token'];
 
 		// CleanTalk API endpoint to get whitelisted IPs.
-		$api_url = "https://api.cleantalk.org/?method_name=private_list_get&user_token=$user_token&service_type=antispam";
+		$api_url = "https://api.cleantalk.org/?method_name=private_list_get&user_token=$user_token&service_type=" . $service_type . '&service_id=all&product_id=1';
 
 		// Perform a remote GET request using WordPress' wp_remote_get() function.
 		$response = wp_remote_get( $api_url );
@@ -394,56 +410,69 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @modified 2.0.13
+	 * @updated  2.0.13
 	 * @return mixed
 	 */
 	function checkview_whitelist_api_ip() {
-
 		$spbc_data  = get_option( 'cleantalk_data', array() );
 		$user_token = $spbc_data['user_token'];
 		$current_ip = checkview_get_visitor_ip();
 		$api_ip     = checkview_get_api_ip();
 
 		if ( is_array( $api_ip ) && in_array( $current_ip, $api_ip ) ) {
-			$ips       = checkview_get_cleantalk_whitelisted_ips();
 			$host_name = parse_url( home_url(), PHP_URL_HOST );
-			if ( ! empty( $ips[ $host_name ] ) && is_array( $ips[ $host_name ] ) && in_array( $current_ip, $ips[ $host_name ] ) ) {
-				return;
+
+			// Check antispam whitelist.
+			$antispam_ips = checkview_get_cleantalk_whitelisted_ips( 'antispam' );
+			if ( empty( $antispam_ips[ $host_name ] ) || ! in_array( $current_ip, $antispam_ips[ $host_name ] ) ) {
+				checkview_add_to_cleantalk( $user_token, 'antispam', $current_ip, 1 );
+				checkview_add_to_cleantalk( $user_token, 'antispam', 'checkview.io', 4 );
+				checkview_add_to_cleantalk( $user_token, 'antispam', 'test-mail.checkview.io', 4 );
 			}
-			$response = wp_remote_get(
-				'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=1&status=allow&note=Checkview Bot&records=' . $current_ip,
-				array(
-					'method'  => 'GET',
-					'timeout' => 500,
-				)
-			);
 
-			$response = wp_remote_get(
-				'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=4&status=allow&note=Checkview Bot&records=checkview.io',
-				array(
-					'method'  => 'GET',
-					'timeout' => 500,
-				)
-			);
-
-			$response = wp_remote_get(
-				'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token . '&service_id=all&service_type=antispam&product_id=1&record_type=4&status=allow&note=Checkview Bot&records=test-mail.checkview.io',
-				array(
-					'method'  => 'GET',
-					'timeout' => 500,
-				)
-			);
-
-			if ( is_wp_error( $response ) ) {
-				$error_message = $response->get_error_message();
-				error_log( "Request failed: $error_message" );
-
-				return null;
+			// Check spamfirewall whitelist.
+			$spamfirewall_ips = checkview_get_cleantalk_whitelisted_ips( 'spamfirewall' );
+			if ( empty( $spamfirewall_ips[ $host_name ] ) || ! in_array( $current_ip, $spamfirewall_ips[ $host_name ] ) ) {
+				checkview_add_to_cleantalk( $user_token, 'spamfirewall', $current_ip . '/32', 6 );
 			}
-			return json_decode( $response['body'], true );
 		}
 		return null;
 	}
 }
+if ( ! function_exists( 'checkview_add_to_cleantalk' ) ) {
+	/**
+	 * Adds an IP address to CleanTalk's whitelist.
+	 *
+	 * @since 2.0.13
+	 *
+	 * @param string $user_token User token.
+	 * @param string $service_type Service type.
+	 * @param string $record Record.
+	 * @param string $record_type Record type.
+	 * @return mixed
+	 */
+	function checkview_add_to_cleantalk( $user_token, $service_type, $record, $record_type ) {
+		$response = wp_remote_get(
+			'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token .
+			'&service_id=all&service_type=' . $service_type .
+			'&product_id=1&record_type=' . $record_type .
+			'&status=allow&note=Checkview Bot&records=' . $record,
+			array(
+				'method'  => 'POST',
+				'timeout' => 500,
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			error_log( 'Request failed: ' . $response->get_error_message() );
+			return null;
+		}
+
+		return json_decode( wp_remote_retrieve_body( $response ), true );
+	}
+}
+
 if ( ! function_exists( 'checkview_must_ssl_url' ) ) {
 	/**
 	 * Replaces `http:` with `https:`.

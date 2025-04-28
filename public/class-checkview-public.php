@@ -22,7 +22,7 @@ class Checkview_Public {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * 
+	 *
 	 * @var string $plugin_name The ID of this plugin.
 	 */
 	private $plugin_name;
@@ -32,18 +32,18 @@ class Checkview_Public {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * 
+	 *
 	 * @var string $version The current version of this plugin.
 	 */
 	private $version;
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * Sets class properties.
 	 *
 	 * @since 1.0.0
-	 * 
+	 *
 	 * @param string $plugin_name The name of the plugin.
 	 * @param string $version The version of this plugin.
 	 */
@@ -54,34 +54,11 @@ class Checkview_Public {
 	}
 
 	/**
-	 * Enqueues public facing styles.
-	 *
-	 * @since 1.0.0
-	 */
-	public function enqueue_styles() {
-		wp_enqueue_style(
-			$this->plugin_name,
-			plugin_dir_url( __FILE__ ) . 'css/checkview-public.css',
-			array(),
-			$this->version,
-			'all'
-		);
-	}
-
-	/**
 	 * Enqueues public facing scripts, dequeues CF7 scripts and styles for tests.
 	 *
 	 * @since 1.0.0
 	 */
 	public function enqueue_scripts() {
-		wp_enqueue_script(
-			$this->plugin_name,
-			plugin_dir_url( __FILE__ ) . 'js/checkview-public.js',
-			array( 'jquery' ),
-			$this->version,
-			false
-		);
-
 		// Current Vsitor IP.
 		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP.
