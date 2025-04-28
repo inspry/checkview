@@ -70,7 +70,7 @@ class Checkview {
 		if ( defined( 'CHECKVIEW_VERSION' ) ) {
 			$this->version = CHECKVIEW_VERSION;
 		} else {
-			$this->version = '2.0.12';
+			$this->version = '2.0.13';
 		}
 		$this->plugin_name = 'checkview';
 
@@ -287,13 +287,6 @@ class Checkview {
 	private function define_public_hooks() {
 
 		$plugin_public = new Checkview_Public( $this->get_plugin_name(), $this->get_version() );
-
-		$this->loader->add_action(
-			'wp_enqueue_scripts',
-			$plugin_public,
-			'enqueue_styles'
-		);
-
 		$this->loader->add_action(
 			'wp_enqueue_scripts',
 			$plugin_public,
