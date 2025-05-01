@@ -106,6 +106,18 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				10,
 				1
 			);
+			// new hook to disable recaptcha v2.
+			add_filter(
+				'fluentform/disable_captcha',
+				function ( $isDisable, $form, $type ) {
+
+					if ( $type == 'recaptcha' ) {
+						return true;
+					}
+				},
+				10,
+				3
+			);
 
 			add_filter(
 				'fluentform/has_turnstile',
@@ -131,28 +143,28 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				999
 			);
 
-			$old_settings = (array) get_option( '_fluentform_turnstile_details', array() );
-			if ( ! empty( $old_settings['siteKey'] ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
-				if ( '1x00000000000000000000AA' !== $old_settings['siteKey'] ) {
-					update_option( 'checkview_ff_turnstile-site-key', $old_settings['siteKey'], true );
-					update_option( 'checkview_ff_turnstile-secret-key', $old_settings['secretKey'], true );
-					$old_settings['siteKey']   = '1x00000000000000000000AA';
-					$old_settings['secretKey'] = '1x0000000000000000000000000000000AA';
-					update_option( '_fluentform_turnstile_details', $old_settings );
-				}
-			}
-			$old_settings = array();
-			$old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
-			if ( null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] && strpos( $old_settings['api_version'], 'v3' ) === false ) {
-				if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' !== $old_settings['siteKey'] ) {
-					update_option( 'checkview_rc-site-key', $old_settings['siteKey'], true );
-					update_option( 'checkview_rc-secret-key', $old_settings['secretKey'], true );
-					$old_settings['siteKey']   = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
-					$old_settings['secretKey'] = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
-					update_option( '_fluentform_reCaptcha_details', $old_settings );
-				}
-			}
-			update_option( 'cv_ff_keys_set_turnstile', 'true' );
+			// $old_settings = (array) get_option( '_fluentform_turnstile_details', array() );
+			// if ( ! empty( $old_settings['siteKey'] ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
+			// if ( '1x00000000000000000000AA' !== $old_settings['siteKey'] ) {
+			// update_option( 'checkview_ff_turnstile-site-key', $old_settings['siteKey'], true );
+			// update_option( 'checkview_ff_turnstile-secret-key', $old_settings['secretKey'], true );
+			// $old_settings['siteKey']   = '1x00000000000000000000AA';
+			// $old_settings['secretKey'] = '1x0000000000000000000000000000000AA';
+			// update_option( '_fluentform_turnstile_details', $old_settings );
+			// }
+			// }
+			// $old_settings = array();
+			// $old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
+			// if ( null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] && strpos( $old_settings['api_version'], 'v3' ) === false ) {
+			// if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' !== $old_settings['siteKey'] ) {
+			// update_option( 'checkview_rc-site-key', $old_settings['siteKey'], true );
+			// update_option( 'checkview_rc-secret-key', $old_settings['secretKey'], true );
+			// $old_settings['siteKey']   = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
+			// $old_settings['secretKey'] = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
+			// update_option( '_fluentform_reCaptcha_details', $old_settings );
+			// }
+			// }
+			// update_option( 'cv_ff_keys_set_turnstile', 'true' );
 			add_filter(
 				'fluentform/recaptcha_v3_ref_score',
 				function ( $score ) {
