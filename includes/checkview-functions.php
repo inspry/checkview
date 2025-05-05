@@ -411,7 +411,7 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 	 * @since 1.0.0
 	 *
 	 * @modified 2.0.13
-	 * @updated  2.0.13
+	 * @updated  2.0.14
 	 * @return mixed
 	 */
 	function checkview_whitelist_api_ip() {
