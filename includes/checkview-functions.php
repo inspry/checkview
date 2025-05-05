@@ -368,7 +368,7 @@ if ( ! function_exists( 'checkview_get_cleantalk_whitelisted_ips' ) ) {
 		$user_token = $spbc_data['user_token'];
 
 		// CleanTalk API endpoint to get whitelisted IPs.
-		$api_url = "https://api.cleantalk.org/?method_name=private_list_get&user_token=$user_token&service_type=" . $service_type . '&service_id=all&product_id=1';
+		$api_url = "https://api.cleantalk.org/?method_name=private_list_get&user_token=$user_token&service_type=" . $service_type . '&product_id=1';
 
 		// Perform a remote GET request using WordPress' wp_remote_get() function.
 		$response = wp_remote_get( $api_url );
@@ -411,7 +411,7 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 	 * @since 1.0.0
 	 *
 	 * @modified 2.0.13
-	 * @updated  2.0.13
+	 * @updated  2.0.14
 	 * @return mixed
 	 */
 	function checkview_whitelist_api_ip() {
@@ -425,14 +425,22 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 
 			// Check antispam whitelist.
 			$antispam_ips = checkview_get_cleantalk_whitelisted_ips( 'antispam' );
-			if ( empty( $antispam_ips[ $host_name ] ) || ! in_array( $current_ip, $antispam_ips[ $host_name ] ) ) {
+
+			if ( ! in_array( $current_ip, $antispam_ips[ $host_name ] ) ) {
 				checkview_add_to_cleantalk( $user_token, 'antispam', $current_ip, 1 );
-				checkview_add_to_cleantalk( $user_token, 'antispam', 'checkview.io', 4 );
+			}
+
+			if ( ! in_array( 'checkview.io', $antispam_ips[ $host_name ] ) ) {
+				checkview_add_to_cleantalk( $user_token, 'antispam', 'checkview.io', 1 );
+			}
+
+			if ( ! in_array( 'test-mail.checkview.io', $antispam_ips[ $host_name ] ) ) {
 				checkview_add_to_cleantalk( $user_token, 'antispam', 'test-mail.checkview.io', 4 );
 			}
 
 			// Check spamfirewall whitelist.
 			$spamfirewall_ips = checkview_get_cleantalk_whitelisted_ips( 'spamfirewall' );
+
 			if ( empty( $spamfirewall_ips[ $host_name ] ) || ! in_array( $current_ip, $spamfirewall_ips[ $host_name ] ) ) {
 				checkview_add_to_cleantalk( $user_token, 'spamfirewall', $current_ip . '/32', 6 );
 			}
@@ -460,7 +468,7 @@ if ( ! function_exists( 'checkview_add_to_cleantalk' ) ) {
 			'&status=allow&note=Checkview Bot&records=' . $record,
 			array(
 				'method'  => 'POST',
-				'timeout' => 500,
+				'timeout' => 30,
 			)
 		);
 
