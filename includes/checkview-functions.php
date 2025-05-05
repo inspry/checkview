@@ -460,7 +460,7 @@ if ( ! function_exists( 'checkview_add_to_cleantalk' ) ) {
 			'&status=allow&note=Checkview Bot&records=' . $record,
 			array(
 				'method'  => 'POST',
-				'timeout' => 500,
+				'timeout' => 30,
 			)
 		);
 
