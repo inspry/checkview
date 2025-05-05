@@ -86,7 +86,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 == Changelog ==
 = 2.0.14 =
-* Fixed an issue where CleanTalk requests were not properly being requested and cached
+* Fixed an issue where CleanTalk requests were not properly being requested and cached.
 
 = 2.0.13 =
 * Added SaaS IP addresses to the CleanTalk Firewall.
@@ -336,6 +336,9 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Initial release.
 
 == Upgrade Notice ==
+= 2.0.14 =
+* Fixed an issue where CleanTalk requests were not properly being requested and cached.
+
 = 2.0.13 =
 * Added SaaS IP addresses to the CleanTalk Firewall.
 * Removed empty files from the plugin.
