@@ -7,7 +7,7 @@ Tested up to: 6.8
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 2.0.14
+Stable tag: 2.0.15
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -85,6 +85,9 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 3. CheckView general settings.
 
 == Changelog ==
+= 2.0.15 =
+* Fixed an issue where CleanTalk requests were not properly being requested and cached.
+
 = 2.0.14 =
 * Fixed an issue where CleanTalk requests were not properly being requested and cached.
 
@@ -336,6 +339,9 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Initial release.
 
 == Upgrade Notice ==
+= 2.0.15 =
+* Fixed an issue where CleanTalk requests were not properly being requested and cached.
+
 = 2.0.14 =
 * Fixed an issue where CleanTalk requests were not properly being requested and cached.
 
