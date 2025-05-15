@@ -87,6 +87,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 == Changelog ==
 = 2.0.15 =
 * Fixed an issue where CleanTalk requests were not properly being requested and cached.
+* Errored CleanTalk API requests now return an empty array instead of null.
 
 = 2.0.14 =
 * Fixed an issue where CleanTalk requests were not properly being requested and cached.
@@ -341,6 +342,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 == Upgrade Notice ==
 = 2.0.15 =
 * Fixed an issue where CleanTalk requests were not properly being requested and cached.
+* Errored CleanTalk API requests now return an empty array instead of null.
 
 = 2.0.14 =
 * Fixed an issue where CleanTalk requests were not properly being requested and cached.
