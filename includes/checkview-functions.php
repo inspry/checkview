@@ -379,7 +379,7 @@ if ( ! function_exists( 'checkview_get_cleantalk_whitelisted_ips' ) ) {
 			error_log( 'Error fetching whitelisted IPs: ' . $response->get_error_message() );
 			Checkview_Admin_Logs::add( 'ip-logs', esc_html__( 'Error fetching whitelisted IPs: ' . $response->get_error_message(), 'checkview' ) );
 
-			return null;
+			return array();
 		}
 
 		// Get the response body.
