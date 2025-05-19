@@ -7,7 +7,7 @@ Tested up to: 6.8
 Requires PHP: 7.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 2.0.15
+Stable tag: 2.0.16
 
 [CheckView](https://checkview.io/) is the friendly WordPress automated testing platform for everyone, from developers, shop owners to agencies.  
 
@@ -85,6 +85,16 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 3. CheckView general settings.
 
 == Changelog ==
+= 2.0.16 =
+* Check status of CleanTalk token before attempting API requests.
+* Separate transients for CleanTalk Antispam and CleanTalk Spam Firewall IPs.
+* Improve validation and handling of data from CleanTalk requests.
+* Utilize CleanTalk service ID for requests, greatly reducing CleanTalk API response times.
+* Lower CleanTalk API timeout errors.
+* Correct record types in CleanTalk POST requests.
+* Loosen checks for IPs/domains in CleanTalk responses.
+* Improve logging.
+
 = 2.0.15 =
 * Fixed an issue where CleanTalk requests were not properly being requested and cached.
 * Errored CleanTalk API requests now return an empty array instead of null.
@@ -340,6 +350,16 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Initial release.
 
 == Upgrade Notice ==
+= 2.0.16 =
+* Check status of CleanTalk token before attempting API requests.
+* Separate transients for CleanTalk Antispam and CleanTalk Spam Firewall IPs.
+* Improve validation and handling of data from CleanTalk requests.
+* Utilize CleanTalk service ID for requests, greatly reducing CleanTalk API response times.
+* Lower CleanTalk API timeout errors.
+* Correct record types in CleanTalk POST requests.
+* Loosen checks for IPs/domains in CleanTalk responses.
+* Improve logging.
+
 = 2.0.15 =
 * Fixed an issue where CleanTalk requests were not properly being requested and cached.
 * Errored CleanTalk API requests now return an empty array instead of null.
