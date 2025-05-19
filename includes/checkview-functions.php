@@ -359,27 +359,29 @@ if ( ! function_exists( 'checkview_get_cleantalk_whitelisted_ips' ) ) {
 	 * Gathers a list of whitelisted IPs from CleanTalk.
 	 *
 	 * @param string $service_type Service type.
-	 * @return array List of whitelisted IPs.
+	 * @param string $service_id Service ID.
+	 * @return array|false List of whitelisted IPs, false on error.
 	 */
-	function checkview_get_cleantalk_whitelisted_ips( $service_type = 'antispam' ) {
-		$ip_array = get_transient( 'checkview_whitelisted_ips' );
+	function checkview_get_cleantalk_whitelisted_ips( $service_type = 'antispam', $service_id = 'all' ) {
+		$ip_array = get_transient( 'checkview_whitelisted_ips_' . $service_type );
+
 		if ( ! empty( $ip_array ) && is_array( $ip_array ) ) {
 			return $ip_array;
 		}
+
 		$spbc_data  = get_option( 'cleantalk_data', array() );
 		$user_token = $spbc_data['user_token'];
+		$api_url = "https://api.cleantalk.org/?method_name=private_list_get&user_token=$user_token&service_type=" . $service_type . '&product_id=1&service_id=' . $service_id;
 
-		// CleanTalk API endpoint to get whitelisted IPs.
-		$api_url = "https://api.cleantalk.org/?method_name=private_list_get&user_token=$user_token&service_type=" . $service_type . '&product_id=1';
-
-		// Perform a remote GET request using WordPress' wp_remote_get() function.
-		$response = wp_remote_get( $api_url );
+		$response = wp_remote_get( $api_url, array(
+			'timeout' => 20,
+		) );
 
 		if ( is_wp_error( $response ) ) {
 			error_log( 'Error fetching whitelisted IPs: ' . $response->get_error_message() );
 			Checkview_Admin_Logs::add( 'ip-logs', esc_html__( 'Error fetching whitelisted IPs: ' . $response->get_error_message(), 'checkview' ) );
 
-			return array();
+			return false;
 		}
 
 		// Get the response body.
@@ -392,7 +394,7 @@ if ( ! function_exists( 'checkview_get_cleantalk_whitelisted_ips' ) ) {
 		$ip_array = array();
 
 		// Check if we have valid data.
-		if ( isset( $whitelisted_ips['data'] ) && ! empty( $whitelisted_ips['data'] ) ) {
+		if ( isset( $whitelisted_ips['data'] ) && is_array( $whitelisted_ips['data'] ) && ! empty( $whitelisted_ips['data'] ) ) {
 			// Loop through and add IPs to the array.
 			foreach ( $whitelisted_ips['data'] as $entry ) {
 				// Add the IP address (from the 'record' key) to the array.
@@ -401,7 +403,9 @@ if ( ! function_exists( 'checkview_get_cleantalk_whitelisted_ips' ) ) {
 				}
 			}
 		}
-		set_transient( 'checkview_whitelisted_ips', $ip_array, 12 * HOUR_IN_SECONDS );
+
+		set_transient( 'checkview_whitelisted_ips_' . $service_type, $ip_array, 12 * HOUR_IN_SECONDS );
+
 		return $ip_array;
 	}
 }
@@ -411,42 +415,129 @@ if ( ! function_exists( 'checkview_whitelist_api_ip' ) ) {
 	 * Whitelists CheckView in a CleanTalk account via their API.
 	 *
 	 * @since 1.0.0
-	 *
-	 * @modified 2.0.13
-	 * @updated  2.0.14
-	 * @return mixed
+	 * 
+	 * @return null
 	 */
 	function checkview_whitelist_api_ip() {
+		global $apbct;
+
+		if ( ! isset($apbct->data['service_id'] ) ) {
+			error_log( 'CleanTalk service ID could not be found.' );
+		}
+
+		$service_id = $apbct->data['service_id'];
 		$spbc_data  = get_option( 'cleantalk_data', array() );
 		$user_token = $spbc_data['user_token'];
+
+		if ( empty( $user_token ) || ( function_exists('apbct_api_key__is_correct') && ! apbct_api_key__is_correct() ) ) {
+			return null;
+		}
+
 		$current_ip = checkview_get_visitor_ip();
 		$api_ip     = checkview_get_api_ip();
 
 		if ( is_array( $api_ip ) && in_array( $current_ip, $api_ip ) ) {
-			$host_name = parse_url( home_url(), PHP_URL_HOST );
+			$home_url = parse_url( home_url() ); // Returns `false`, `null`, or an assosiative array.
+
+			if ( $home_url === false || $home_url === null ) {
+				error_log( sprintf( 'Error parsing the home url [%1$s].', home_url() ) );
+				Checkview_Admin_Logs::add( 'ip-logs', sprintf( 'Error parsing the home url [%1$s].', home_url() ) );
+
+				return null;
+			}
+
+			if ( is_array( $home_url ) && ! isset( $home_url[ 'host' ] ) ) {
+				error_log( sprintf( 'Cannot determine host when parsing URL [%1$s].', json_encode( $home_url ) ) );
+				Checkview_Admin_Logs::add( 'ip-logs', sprintf( 'Cannot determine host when parsing URL [%1$s].', json_encode( $home_url ) ) );
+
+				return null;
+			}
+
+			$host_name = $home_url['host'];
 
 			// Check antispam whitelist.
-			$antispam_ips = checkview_get_cleantalk_whitelisted_ips( 'antispam' );
+			$antispam_ips = checkview_get_cleantalk_whitelisted_ips( 'antispam', $service_id );
 
-			if ( ! in_array( $current_ip, $antispam_ips[ $host_name ] ) ) {
-				checkview_add_to_cleantalk( $user_token, 'antispam', $current_ip, 1 );
-			}
+			if ( is_array( $antispam_ips ) ) {
+				if ( ! isset( $antispam_ips[ $host_name ] ) ) {
+					error_log( 'No host name found in Antispam IP list.' );
 
-			if ( ! in_array( 'checkview.io', $antispam_ips[ $host_name ] ) ) {
-				checkview_add_to_cleantalk( $user_token, 'antispam', 'checkview.io', 1 );
-			}
+					// If the host name is not in the whitelist, request to add our IPs/hosts.
+					checkview_add_to_cleantalk( $user_token, 'antispam', $current_ip, 1, $service_id );
+					checkview_add_to_cleantalk( $user_token, 'antispam', 'checkview.io', 4, $service_id );
+					checkview_add_to_cleantalk( $user_token, 'antispam', 'test-mail.checkview.io', 4, $service_id );
+				} else {
+					// Otherwise, check for our IPs/hosts individually, and request to add them if needed.
+					if ( is_array( $antispam_ips[ $host_name ] ) ) {
+						$has_current_ip = array_find( $antispam_ips[ $host_name ], function( $value, $key ) use ($current_ip) {
+							$position = strpos( $value, $current_ip );
 
-			if ( ! in_array( 'test-mail.checkview.io', $antispam_ips[ $host_name ] ) ) {
-				checkview_add_to_cleantalk( $user_token, 'antispam', 'test-mail.checkview.io', 4 );
+							return $position === false ? false : true;
+						});
+
+						if ( ! $has_current_ip ) {
+							checkview_add_to_cleantalk( $user_token, 'antispam', $current_ip, 1, $service_id );
+						}
+
+						$has_checkview_hostname = array_find( $antispam_ips[ $host_name ], function( $value, $key ) {
+							$position = strpos( $value, 'checkview.io' );
+
+							// Skip test-mail domain
+							if ($value === 'test-mail.checkview.io') {
+								return false;
+							}
+
+							return $position === false ? false : true;
+						});
+
+						if ( ! $has_checkview_hostname ) {
+							checkview_add_to_cleantalk( $user_token, 'antispam', 'checkview.io', 4, $service_id );
+						}
+
+						$has_mail_hostname = array_find( $antispam_ips[ $host_name ], function( $value, $key ) {
+							$position = strpos( $value, 'test-mail.checkview.io' );
+
+							return $position === false ? false : true;
+						});
+
+						if ( ! $has_mail_hostname ) {
+							checkview_add_to_cleantalk( $user_token, 'antispam', 'test-mail.checkview.io', 4, $service_id );
+						}
+					} else {
+						error_log( sprintf( 'The value for antispam IPs at hostname [%1$s] is not an array.', $host_name ) );
+						Checkview_Admin_Logs::add( 'ip-logs', sprintf( 'The value for antispam IPs at hostname [%1$s] is not an array.', $host_name ) );
+					}
+				}
 			}
 
 			// Check spamfirewall whitelist.
-			$spamfirewall_ips = checkview_get_cleantalk_whitelisted_ips( 'spamfirewall' );
+			$spamfirewall_ips = checkview_get_cleantalk_whitelisted_ips( 'spamfirewall', $service_id );
 
-			if ( empty( $spamfirewall_ips[ $host_name ] ) || ! in_array( $current_ip, $spamfirewall_ips[ $host_name ] ) ) {
-				checkview_add_to_cleantalk( $user_token, 'spamfirewall', $current_ip . '/32', 6 );
+			if ( is_array( $spamfirewall_ips ) ) {
+				if ( ! isset( $spamfirewall_ips[ $host_name ] ) ) {
+					error_log( 'No host name found in Spam Firewall IP list.' );
+
+					// If host name is not set, request to add it.
+					checkview_add_to_cleantalk( $user_token, 'spamfirewall', $current_ip . '/32', 6, $service_id );
+				} else {
+					if ( is_array( $spamfirewall_ips[ $host_name ] ) ) {
+						$has_current_ip = array_find( $spamfirewall_ips[ $host_name ], function( $value, $key ) use ($current_ip) {
+							$position = strpos( $value, $current_ip );
+
+							return $position === false ? false : true;
+						});
+
+						if ( ! $has_current_ip ) {
+							checkview_add_to_cleantalk( $user_token, 'spamfirewall', $current_ip, 6, $service_id );
+						}
+					} else {
+						error_log( sprintf( 'Value for spam firewall IPs at hostname [%1$s] is unexpected type [%2$s], expected array.', $host_name, gettype( $antispam_ips[ $host_name ] ) ) );
+						Checkview_Admin_Logs::add( 'ip-logs', sprintf( 'Value for spam firewall IPs at hostname [%1$s] is unexpected type [%2$s], expected array.', $host_name, gettype( $antispam_ips[ $host_name ] ) ) );
+					}
+				}
 			}
 		}
+
 		return null;
 	}
 }
@@ -460,19 +551,30 @@ if ( ! function_exists( 'checkview_add_to_cleantalk' ) ) {
 	 * @param string $service_type Service type.
 	 * @param string $record Record.
 	 * @param string $record_type Record type.
+	 * @param string $service_id Service ID.
 	 * @return mixed
 	 */
-	function checkview_add_to_cleantalk( $user_token, $service_type, $record, $record_type ) {
+	function checkview_add_to_cleantalk( $user_token, $service_type, $record, $record_type, $service_id ) {
+		error_log( sprintf(
+			'Adding record [%1$s] with type [%2$s] and service type [%3$s] to CleanTalk\'s API with service id [%4$s]',
+			$record,
+			$record_type,
+			$service_type,
+			$service_id,
+		) );
+
 		$response = wp_remote_get(
 			'https://api.cleantalk.org/?method_name=private_list_add&user_token=' . $user_token .
-			'&service_id=all&service_type=' . $service_type .
+			'&service_id=' . $service_id . '&service_type=' . $service_type .
 			'&product_id=1&record_type=' . $record_type .
 			'&status=allow&note=Checkview Bot&records=' . $record,
 			array(
 				'method'  => 'POST',
-				'timeout' => 30,
+				'timeout' => 20,
 			)
 		);
+
+		delete_transient('checkview_whitelisted_ips_' . $service_type);
 
 		if ( is_wp_error( $response ) ) {
 			error_log( 'Request failed: ' . $response->get_error_message() );
@@ -637,7 +739,8 @@ if ( ! function_exists( 'checkview_reset_cache' ) ) {
 		delete_transient( 'checkview_store_orders_transient' );
 		delete_transient( 'checkview_store_products_transient' );
 		delete_transient( 'checkview_store_shipping_transient' );
-		delete_transient( 'checkview_whitelisted_ips' );
+		delete_transient( 'checkview_whitelisted_ips_spamfirewall' );
+		delete_transient( 'checkview_whitelisted_ips_antispam' );
 		$sync = true;
 		return $sync;
 	}
