@@ -1103,3 +1103,24 @@ if ( ! defined( 'checkview_options_cleanup' ) ) {
 		delete_option( 'cv_ff_keys_set_turnstile' );
 	}
 }
+
+if (!function_exists('array_find')) {
+    /**
+     * Finds the first element in the array that satisfies the callback condition.
+		 * 
+		 * Essentially polyfills `array_find`, which was introduced in PHP v8.4.0.
+     *
+     * @param array $array The array to search.
+     * @param callable $callback The callback function to test each element.
+     * @return mixed The first matching element, or null if none found.
+     */
+    function array_find(array $array, callable $callback): mixed {
+        foreach ($array as $key => $value) {
+            if ($callback($value, $key)) {
+                return $value;
+            }
+        }
+
+        return null;
+    }
+}
