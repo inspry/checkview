@@ -1302,7 +1302,7 @@ class CheckView_Api {
 			);
 		}
 		$user_email = $request->get_param( 'user_email' );
-		$user_email = isset( $user_email ) ? sanitize_email( user_email ) : null;
+		$user_email = isset( $user_email ) ? sanitize_email( $user_email ) : null;
 		if ( null === $user_email || empty( $user_email ) ) {
 			return new WP_Error(
 				400,
@@ -1343,7 +1343,7 @@ class CheckView_Api {
 			);
 		}
 		$user_email = $request->get_param( 'user_email' );
-		$user_email = isset( $user_email ) ? sanitize_email( user_email ) : null;
+		$user_email = isset( $user_email ) ? sanitize_email( $user_email ) : null;
 		if ( null === $user_email || empty( $user_email ) ) {
 			return new WP_Error(
 				400,
