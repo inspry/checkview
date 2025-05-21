@@ -64,7 +64,6 @@ class CheckView_Api {
 	 * @param class  $woo_helper The woohelper class.
 	 */
 	public function __construct( $plugin_name, $version, $woo_helper = '' ) {
-
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
 		$this->woo_helper  = $woo_helper;
@@ -455,16 +454,6 @@ class CheckView_Api {
 				),
 			)
 		);// end checkview_register_rest_route.
-
-		register_rest_route(
-			'checkview/v1',
-			'/confirm-site',
-			array(
-				'methods'             => 'POST',
-				'callback'            => array( $this, 'checkview_confirm_site_callback' ),
-				'permission_callback' => '__return_true', // Restrict access as needed.
-			)
-		);
 	}
 
 	/**
@@ -2013,21 +2002,26 @@ class CheckView_Api {
 	 */
 	public function checkview_get_available_forms_test_results( WP_REST_Request $request ) {
 		global $wpdb;
+
 		$uid     = $request->get_param( 'uid' );
 		$uid     = isset( $uid ) ? sanitize_text_field( $uid ) : null;
 		$results = array();
+
 		if ( '' === $uid || null === $uid ) {
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
+
 			return new WP_Error(
 				400,
 				esc_html__( 'Insuficient data.', 'checkview' ),
 			);
+
 			wp_die();
 		} else {
 			$tablename = $wpdb->prefix . 'cv_entry';
 			$result    = $wpdb->get_row( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s', $uid ) );
 			$tablename = $wpdb->prefix . 'cv_entry_meta';
 			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s order by id ASC', $uid ) );
+
 			if ( $rows ) {
 				foreach ( $rows as $row ) {
 					if ( 'gravityforms' === strtolower( $result->form_type ) ) {
@@ -2035,12 +2029,13 @@ class CheckView_Api {
 							'field_id'    => 'input_' . $row->form_id . '_' . str_replace( '.', '_', $row->meta_key ),
 							'field_value' => $row->meta_value,
 						);
-
 					} elseif ( 'cf7' === strtolower( $result->form_type ) ) {
 						$value = $row->meta_value;
+
 						if ( strpos( $value, 'htt' ) !== false ) {
 							$value = html_entity_decode( $value );
 						}
+
 						$results[] = array(
 							'field_id'    => '',
 							'field_name'  => $row->meta_key,
@@ -2048,16 +2043,17 @@ class CheckView_Api {
 						);
 					} elseif ( 'Forminator' === $result->form_type ) {
 						$value = $row->meta_value;
+
 						if ( strpos( $value, 'htt' ) !== false ) {
 							$value = html_entity_decode( $value );
 						}
+
 						$results[] = array(
 							'field_id'    => '',
 							'field_name'  => $row->meta_key,
 							'field_value' => $value,
 						);
 					} else {
-
 						$results[] = array(
 							'field_id'    => $row->meta_key,
 							'field_value' => maybe_unserialize( $row->meta_value ),
@@ -2074,6 +2070,7 @@ class CheckView_Api {
 					);
 				} else {
 					Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the results.' );
+
 					return new WP_Error(
 						400,
 						esc_html__( 'An error occurred while processing your request.', 'checkview' ),
@@ -2082,10 +2079,12 @@ class CheckView_Api {
 				wp_die();
 			} else {
 				Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the results.' );
+
 				return new WP_Error(
 					400,
 					esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 				);
+
 				wp_die();
 			}
 		}
