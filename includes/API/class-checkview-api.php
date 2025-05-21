@@ -18,26 +18,6 @@
  */
 class CheckView_Api {
 	/**
-	 * Plugin name.
-	 *
-	 * @since 1.0.0
-	 * @access private
-	 *
-	 * @var string $plugin_name The ID of this plugin.
-	 */
-	private $plugin_name;
-
-	/**
-	 * Plugin version.
-	 *
-	 * @since 1.0.0
-	 * @access private
-	 *
-	 * @var string $version The current version of this plugin.
-	 */
-	private $version;
-
-	/**
 	 * Woo Helper class.
 	 *
 	 * @since 1.0.0
@@ -59,15 +39,12 @@ class CheckView_Api {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $plugin_name The name of the plugin.
-	 * @param string $version The version of this plugin.
-	 * @param class  $woo_helper The woohelper class.
+	 * @param Checkview_Woo_Automated_Testing $woo_helper The woohelper class.
 	 */
-	public function __construct( $plugin_name, $version, $woo_helper = '' ) {
-		$this->plugin_name = $plugin_name;
-		$this->version     = $version;
+	public function __construct( $woo_helper = '' ) {
 		$this->woo_helper  = $woo_helper;
 	}
+
 	/**
 	 * Registers API routes.
 	 *
