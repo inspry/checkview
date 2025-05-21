@@ -1969,7 +1969,7 @@ class CheckView_Api {
 
 			return new WP_Error(
 				400,
-				esc_html__( 'Insuficient data.', 'checkview' ),
+				esc_html__( 'Insufficient data.', 'checkview' ),
 			);
 		} else {
 			$tablename = $wpdb->prefix . 'cv_entry';
