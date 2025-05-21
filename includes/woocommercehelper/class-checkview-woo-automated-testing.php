@@ -72,15 +72,15 @@ class Checkview_Woo_Automated_Testing {
 	 *
 	 * @param string $plugin_name The name of this plugin.
 	 * @param string $version The version of this plugin.
-	 * @param string $loader Loads the hooks.
+	 * @param Checkview_Loader $loader Loads the hooks.
 	 */
 	public function __construct( $plugin_name, $version, $loader ) {
-
 		$this->plugin_name      = $plugin_name;
 		$this->version          = $version;
 		$this->loader           = $loader;
 		$this->suppress_email   = get_option( 'disable_email_receipt', false );
 		$this->suppress_webhook = get_option( 'disable_webhooks', false );
+
 		if ( $this->loader ) {
 			$this->loader->add_action(
 				'admin_init',
