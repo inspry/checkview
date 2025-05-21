@@ -1949,73 +1949,105 @@ class CheckView_Api {
 				esc_html__( 'Insufficient data.', 'checkview' ),
 			);
 		} else {
-			$tablename = $wpdb->prefix . 'cv_entry';
-			$result    = $wpdb->get_row( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s', $uid ) );
-			$tablename = $wpdb->prefix . 'cv_entry_meta';
-			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s order by id ASC', $uid ) );
+			$table_name    = $wpdb->prefix . 'cv_entry';
+			$query         = $wpdb->prepare( 'Select * from ' . $table_name . ' where uid=%s', $uid );
+			$query_as_json = wp_json_encode( array( 'query' => $query ) );
+			$result        = $wpdb->get_row( $query ); // We expect an object
 
-			if ( $rows ) {
-				foreach ( $rows as $row ) {
-					if ( 'gravityforms' === strtolower( $result->form_type ) ) {
-						$results[] = array(
-							'field_id'    => 'input_' . $row->form_id . '_' . str_replace( '.', '_', $row->meta_key ),
-							'field_value' => $row->meta_value,
-						);
-					} elseif ( 'cf7' === strtolower( $result->form_type ) ) {
-						$value = $row->meta_value;
-
-						if ( strpos( $value, 'htt' ) !== false ) {
-							$value = html_entity_decode( $value );
-						}
-
-						$results[] = array(
-							'field_id'    => '',
-							'field_name'  => $row->meta_key,
-							'field_value' => $value,
-						);
-					} elseif ( 'Forminator' === $result->form_type ) {
-						$value = $row->meta_value;
-
-						if ( strpos( $value, 'htt' ) !== false ) {
-							$value = html_entity_decode( $value );
-						}
-
-						$results[] = array(
-							'field_id'    => '',
-							'field_name'  => $row->meta_key,
-							'field_value' => $value,
-						);
-					} else {
-						$results[] = array(
-							'field_id'    => $row->meta_key,
-							'field_value' => maybe_unserialize( $row->meta_value ),
-						);
-					}
-				}
-				if ( ! empty( $results ) && false !== $results ) {
-					return new WP_REST_Response(
-						array(
-							'status'        => 200,
-							'response'      => esc_html__( 'Successfully retrieved the results.', 'checkview' ),
-							'body_response' => $results,
-						)
-					);
-				} else {
-					Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the results.' );
-
-					return new WP_Error(
-						400,
-						esc_html__( 'An error occurred while processing your request.', 'checkview' ),
-					);
-				}
-			} else {
-				Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the results.' );
+			if ( is_null( $result ) ) {
+				Checkview_Admin_Logs::add( 'api-logs', 'Failed to find test results (query [' . $query_as_json . '] returned null).' );
 
 				return new WP_Error(
 					400,
-					esc_html__( 'An error occurred while processing your request.', 'checkview' ),
+					esc_html__( 'Failed to find test results (query [' . $query_as_json . '] returned null).', 'checkview' ),
 				);
 			}
+
+			if ( ! is_object( $result ) ) {
+				Checkview_Admin_Logs::add( 'api-logs', 'Failed to find test results (query [' . $query_as_json . '] returned unexpected type [' . gettype( $result ) . ']).' );
+
+				return new WP_Error(
+					400,
+					esc_html__( 'Failed to find test results (query [' . $query_as_json . '] returned unexpected type [' . gettype( $result ) . ']).', 'checkview' ),
+				);
+			}
+
+			$table_name         = $wpdb->prefix . 'cv_entry_meta';
+			$query              = $wpdb->prepare( 'Select * from ' . $table_name . ' where uid=%s order by id ASC', $uid );
+			$meta_query_as_json = wp_json_encode( array( 'query' => $query ) );
+			$rows               = $wpdb->get_results( $query ); // We expect an array of objects
+
+			if ( is_null( $rows ) ) {
+				Checkview_Admin_Logs::add( 'api-logs', 'Failed to find test results (query [' . $meta_query_as_json . '] returned null).' );
+
+				return new WP_Error(
+					400,
+					esc_html__( 'Failed to find test results (query [' . $meta_query_as_json . '] returned null).', 'checkview' ),
+				);
+			}
+
+			if ( ! is_array( $rows ) ) {
+				Checkview_Admin_Logs::add( 'api-logs', 'Failed to find test results (query [' . $meta_query_as_json . '] returned unexpected type [' . gettype( $rows ) . ']).' );
+
+				return new WP_Error(
+					400,
+					esc_html__( 'Failed to find test results (query [' . $meta_query_as_json . '] returned unexpected type [' . gettype( $rows ) . ']).', 'checkview' ),
+				);
+			}
+
+			foreach ( $rows as $row ) {
+				if ( 'gravityforms' === strtolower( $result->form_type ) ) {
+					$results[] = array(
+						'field_id'    => 'input_' . $row->form_id . '_' . str_replace( '.', '_', $row->meta_key ),
+						'field_value' => $row->meta_value,
+					);
+				} elseif ( 'cf7' === strtolower( $result->form_type ) ) {
+					$value = $row->meta_value;
+
+					if ( strpos( $value, 'htt' ) !== false ) {
+						$value = html_entity_decode( $value );
+					}
+
+					$results[] = array(
+						'field_id'    => '',
+						'field_name'  => $row->meta_key,
+						'field_value' => $value,
+					);
+				} elseif ( 'Forminator' === $result->form_type ) {
+					$value = $row->meta_value;
+
+					if ( strpos( $value, 'htt' ) !== false ) {
+						$value = html_entity_decode( $value );
+					}
+
+					$results[] = array(
+						'field_id'    => '',
+						'field_name'  => $row->meta_key,
+						'field_value' => $value,
+					);
+				} else {
+					$results[] = array(
+						'field_id'    => $row->meta_key,
+						'field_value' => maybe_unserialize( $row->meta_value ),
+					);
+				}
+			}
+
+			if ( ! empty( $results ) ) {
+				return new WP_REST_Response(
+					array(
+						'status'        => 200,
+						'response'      => esc_html__( 'Successfully retrieved the results.', 'checkview' ),
+						'body_response' => $results,
+					)
+				);
+			}
+			Checkview_Admin_Logs::add( 'api-logs', 'Failed to find test results (rows were found, but results were determined to be empty).' );
+
+			return new WP_Error(
+				400,
+				esc_html__( 'Failed to find test results (rows were found, but results were determined to be empty).', 'checkview' ),
+			);
 		}
 	}
 
