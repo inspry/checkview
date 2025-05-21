@@ -529,8 +529,8 @@ class CheckView_Api {
 			$orders    = array();
 			if ( $wc_orders ) {
 				foreach ( $wc_orders as $order ) {
-					$order_object                 = new WC_Order( $order->id );
-					$order_details['order_id']    = $order->id;
+					$order_object                 = new WC_Order( $order->get_id() );
+					$order_details['order_id']    = $order->get_id();
 					$order_details['customer_id'] = $order_object->get_customer_id();
 					$orders[]                     = $order_details;
 
