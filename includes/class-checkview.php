@@ -54,7 +54,7 @@ class Checkview {
 	 * @since 1.0.0
 	 * @access private
 	 *
-	 * @var class $instance The instance of the class.
+	 * @var Checkview $instance The instance of the class.
 	 */
 
 	private static $instance = null;
@@ -153,7 +153,7 @@ class Checkview {
 		require_once plugin_dir_path( __DIR__ ) . 'includes/API/class-checkview-api.php';
 
 		// Initialize the plugin's API.
-		$plugin_api = new CheckView_Api( $this->get_plugin_name(), $this->get_version(), $woo_helper );
+		$plugin_api = new CheckView_Api( $woo_helper );
 
 		// Hook our routes into WordPress.
 		$this->loader->add_action(
