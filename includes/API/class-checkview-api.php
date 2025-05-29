@@ -18,26 +18,6 @@
  */
 class CheckView_Api {
 	/**
-	 * Plugin name.
-	 *
-	 * @since 1.0.0
-	 * @access private
-	 *
-	 * @var string $plugin_name The ID of this plugin.
-	 */
-	private $plugin_name;
-
-	/**
-	 * Plugin version.
-	 *
-	 * @since 1.0.0
-	 * @access private
-	 *
-	 * @var string $version The current version of this plugin.
-	 */
-	private $version;
-
-	/**
 	 * Woo Helper class.
 	 *
 	 * @since 1.0.0
@@ -59,16 +39,12 @@ class CheckView_Api {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $plugin_name The name of the plugin.
-	 * @param string $version The version of this plugin.
-	 * @param class  $woo_helper The woohelper class.
+	 * @param Checkview_Woo_Automated_Testing $woo_helper The woohelper class.
 	 */
-	public function __construct( $plugin_name, $version, $woo_helper = '' ) {
-
-		$this->plugin_name = $plugin_name;
-		$this->version     = $version;
+	public function __construct( $woo_helper = '' ) {
 		$this->woo_helper  = $woo_helper;
 	}
+
 	/**
 	 * Registers API routes.
 	 *
@@ -455,16 +431,6 @@ class CheckView_Api {
 				),
 			)
 		);// end checkview_register_rest_route.
-
-		register_rest_route(
-			'checkview/v1',
-			'/confirm-site',
-			array(
-				'methods'             => 'POST',
-				'callback'            => array( $this, 'checkview_confirm_site_callback' ),
-				'permission_callback' => '__return_true', // Restrict access as needed.
-			)
-		);
 	}
 
 	/**
@@ -475,11 +441,12 @@ class CheckView_Api {
 	 * from the database and cached.
 	 *
 	 * @param WP_REST_Request $request Request object.
-	 * @return WP_REST_Response/json
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_get_available_orders( WP_REST_Request $request ) {
 		if ( ! class_exists( 'WooCommerce' ) ) {
 			Checkview_Admin_Logs::add( 'api-logs', 'WooCommerce not found.' );
+
 			return new WP_REST_Response(
 				array(
 					'status'        => 200,
@@ -503,11 +470,11 @@ class CheckView_Api {
 		$checkview_order_id_before = isset( $checkview_order_id_before ) ? sanitize_text_field( $checkview_order_id_before ) : '';
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
+
 			return new WP_Error(
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
-			wp_die();
 		}
 
 		if ( '' !== $orders && null !== $orders && false !== $orders && empty( $checkview_order_id_before ) && empty( $checkview_order_id_after ) && empty( $checkview_order_last_modified_until ) && empty( $checkview_order_last_modified_since ) ) {
@@ -518,19 +485,18 @@ class CheckView_Api {
 					'body_response' => $orders,
 				)
 			);
-			wp_die();
 		}
 		$orders = array();
 		if ( ! is_admin() ) {
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
-		$per_page = -1;
+		$per_page = - 1;
 
 		$params = array();
 
 		$args = array(
-			'limit'          => -1,
+			'limit'          => - 1,
 			'payment_method' => 'checkview',
 			'meta_query'     => array(
 				array(
@@ -563,8 +529,8 @@ class CheckView_Api {
 			$orders    = array();
 			if ( $wc_orders ) {
 				foreach ( $wc_orders as $order ) {
-					$order_object                 = new WC_Order( $order->id );
-					$order_details['order_id']    = $order->id;
+					$order_object                 = new WC_Order( $order->get_id() );
+					$order_details['order_id']    = $order->get_id();
 					$order_details['customer_id'] = $order_object->get_customer_id();
 					$orders[]                     = $order_details;
 
@@ -574,6 +540,7 @@ class CheckView_Api {
 
 		if ( $orders && ! empty( $orders ) && false !== $orders && '' !== $orders ) {
 			set_transient( 'checkview_store_orders_transient', $orders, 12 * HOUR_IN_SECONDS );
+
 			return new WP_REST_Response(
 				array(
 					'status'        => 200,
@@ -590,14 +557,13 @@ class CheckView_Api {
 				)
 			);
 		}
-		wp_die();
 	}
 
 	/**
 	 * Retrieves details about a CheckView order.
 	 *
 	 * @param WP_REST_Request $request Request object.
-	 * @return WP_REST_Response/json
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_get_available_order_details( WP_REST_Request $request ) {
 		if ( ! class_exists( 'WooCommerce' ) ) {
@@ -619,7 +585,6 @@ class CheckView_Api {
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
-			wp_die();
 		}
 
 		$order_details = array();
@@ -774,13 +739,12 @@ class CheckView_Api {
 				)
 			);
 		}
-		wp_die();
 	}
 	/**
 	 * Retrieves available CheckView products.
 	 *
 	 * @param WP_REST_Request $request Request object.
-	 * @return WP_REST_Response/json
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_get_available_products( WP_REST_Request $request ) {
 		if ( ! class_exists( 'WooCommerce' ) ) {
@@ -805,7 +769,6 @@ class CheckView_Api {
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
-			wp_die();
 		}
 		if ( '' !== $products && null !== $products && false !== $products ) {
 			return new WP_REST_Response(
@@ -815,7 +778,6 @@ class CheckView_Api {
 					'body_response' => $products,
 				)
 			);
-			wp_die();
 		}
 		$products = array();
 		if ( ! is_admin() ) {
@@ -904,7 +866,6 @@ class CheckView_Api {
 				)
 			);
 		}
-		wp_die();
 	}
 
 	/**
@@ -912,7 +873,7 @@ class CheckView_Api {
 	 *
 	 * Firstly, attempts to retrieve details from the cache.
 	 *
-	 * @return WP_REST_Response
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_get_available_shipping_details() {
 
@@ -934,7 +895,6 @@ class CheckView_Api {
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
-			wp_die();
 		}
 		if ( '' !== $shipping_details && null !== $shipping_details && false !== $shipping_details ) {
 			return new WP_REST_Response(
@@ -944,7 +904,6 @@ class CheckView_Api {
 					'body_response' => $shipping_details,
 				)
 			);
-			wp_die();
 		}
 		$country_class                   = new WC_Countries();
 		$country_list                    = $country_class->get_shipping_countries();
@@ -1027,13 +986,12 @@ class CheckView_Api {
 				)
 			);
 		}
-		wp_die();
 	}
 	/**
 	 * Deletes CheckView orders.
 	 *
 	 * @param WP_REST_Request $request Request object.
-	 * @return WP_REST_Response/WP_Error/json
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_delete_orders( WP_REST_Request $request ) {
 		if ( ! class_exists( 'WooCommerce' ) ) {
@@ -1052,7 +1010,6 @@ class CheckView_Api {
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
-			wp_die();
 		}
 		global $wpdb;
 		$order_id = $request->get_param( 'order_id' );
@@ -1098,21 +1055,19 @@ class CheckView_Api {
 					'response' => esc_html__( 'Successfully removed the results.', 'checkview' ),
 				)
 			);
-			wp_die();
 		} else {
 			Checkview_Admin_Logs::add( 'api-logs', 'Empty records.' );
 			return new WP_Error(
 				400,
 				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 			);
-			wp_die();
 		}
 	}
 
 	/**
 	 * Retrieves information from the site's WooCommerce API cart endpoint.
 	 *
-	 * @return WP_REST_Response/WP_Error/json
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_get_cart_details() {
 		if ( ! class_exists( 'WooCommerce' ) ) {
@@ -1131,7 +1086,6 @@ class CheckView_Api {
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
-			wp_die();
 		}
 		$url     = home_url( 'wp-json/wc/store/v1/cart' );
 		$url     = get_rest_url() . 'wc/store/v1/cart';
@@ -1158,7 +1112,6 @@ class CheckView_Api {
 				400,
 				esc_html__( 'There was a technical issue while processing your request', 'checkview' ),
 			);
-			wp_die();
 		} else {
 			$body         = wp_remote_retrieve_body( $response );
 			$cart_details = json_decode( $body, true );
@@ -1174,20 +1127,18 @@ class CheckView_Api {
 					'body'     => $cart_details,
 				)
 			);
-			wp_die();
 		} else {
 			return new WP_Error(
 				400,
 				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 			);
-			wp_die();
 		}
 	}
 
 	/**
 	 * Retrieves a list of active payment gateways.
 	 *
-	 * @return WP_REST_Response/WP_Error/json
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_get_active_payment_gateways() {
 		if ( ! class_exists( 'WooCommerce' ) ) {
@@ -1206,7 +1157,6 @@ class CheckView_Api {
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
-			wp_die();
 		}
 		$active_gateways = $this->woo_helper->get_active_payment_gateways();
 		if ( $active_gateways ) {
@@ -1217,7 +1167,6 @@ class CheckView_Api {
 					'body'     => $active_gateways,
 				)
 			);
-			wp_die();
 		} else {
 			// Log the detailed error for internal use.
 			Checkview_Admin_Logs::add( 'api-logs', 'No payment methods found.' );
@@ -1228,14 +1177,13 @@ class CheckView_Api {
 					'body'     => array(),
 				),
 			);
-			wp_die();
 		}
 	}
 
 	/**
 	 * Creates the testing customer.
 	 *
-	 * @return WP_REST_Response/WP_Error/json
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_create_test_customer() {
 		if ( ! class_exists( 'WooCommerce' ) ) {
@@ -1254,7 +1202,6 @@ class CheckView_Api {
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
-			wp_die();
 		}
 		$customer = $this->woo_helper->checkview_create_test_customer();
 		if ( $customer ) {
@@ -1265,21 +1212,19 @@ class CheckView_Api {
 					'body'     => 'Credentials will be provided on request.',
 				)
 			);
-			wp_die();
 		} else {
 			Checkview_Admin_Logs::add( 'api-logs', 'Failed to create the customer.' );
 			return new WP_Error(
 				400,
 				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 			);
-			wp_die();
 		}
 	}
 
 	/**
 	 * Retrieves credentials about the testing customer.
 	 *
-	 * @return WP_REST_Response/WP_Error/json
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_get_test_customer_credentials() {
 		if ( ! class_exists( 'WooCommerce' ) ) {
@@ -1298,7 +1243,6 @@ class CheckView_Api {
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
-			wp_die();
 		}
 		$customer = $this->woo_helper->checkview_get_test_credentials();
 		if ( $customer ) {
@@ -1309,14 +1253,12 @@ class CheckView_Api {
 					'body'     => $customer,
 				)
 			);
-			wp_die();
 		} else {
 			Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the customer.' );
 			return new WP_Error(
 				400,
 				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 			);
-			wp_die();
 		}
 	}
 
@@ -1326,7 +1268,7 @@ class CheckView_Api {
 	 * Checks for the existance of a user with the email from the request parameters.
 	 *
 	 * @param WP_REST_Request $request Request object.
-	 * @return WP_REST_Response/WP_Error/json
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_verify_test_user_credentials( WP_REST_Request $request ) {
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
@@ -1335,16 +1277,14 @@ class CheckView_Api {
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
-			wp_die();
 		}
 		$user_email = $request->get_param( 'user_email' );
-		$user_email = isset( $user_email ) ? sanitize_email( user_email ) : null;
+		$user_email = isset( $user_email ) ? sanitize_email( $user_email ) : null;
 		if ( null === $user_email || empty( $user_email ) ) {
 			return new WP_Error(
 				400,
 				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 			);
-			wp_die();
 		}
 		$user = email_exists( $user_email );
 
@@ -1356,14 +1296,12 @@ class CheckView_Api {
 					'body'     => $user,
 				)
 			);
-			wp_die();
 		} else {
 			Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the user.' );
 			return new WP_Error(
 				400,
 				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 			);
-			wp_die();
 		}
 	}
 
@@ -1371,7 +1309,7 @@ class CheckView_Api {
 	 * Deletes the CheckView testing user.
 	 *
 	 * @param WP_REST_Request $request Request object.
-	 * @return WP_REST_Response/WP_Error/json
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_delete_test_user_credentials( WP_REST_Request $request ) {
 		if ( isset( $this->jwt_error ) && null !== $this->jwt_error ) {
@@ -1380,16 +1318,14 @@ class CheckView_Api {
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
-			wp_die();
 		}
 		$user_email = $request->get_param( 'user_email' );
-		$user_email = isset( $user_email ) ? sanitize_email( user_email ) : null;
+		$user_email = isset( $user_email ) ? sanitize_email( $user_email ) : null;
 		if ( null === $user_email || empty( $user_email ) ) {
 			return new WP_Error(
 				400,
 				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 			);
-			wp_die();
 		}
 		$user = email_exists( $user_email );
 
@@ -1405,23 +1341,19 @@ class CheckView_Api {
 						'body'     => $deleted,
 					)
 				);
-				wp_die();
 			} else {
 				Checkview_Admin_Logs::add( 'api-logs', 'Failed to delete the user.' );
 				return new WP_Error(
 					400,
 					esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 				);
-				wp_die();
 			}
-			wp_die();
 		} else {
 			Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the user.' );
 			return new WP_Error(
 				400,
 				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 			);
-			wp_die();
 		}
 	}
 
@@ -1430,7 +1362,7 @@ class CheckView_Api {
 	 *
 	 * Retrieves a list of shipping and selling locations.
 	 *
-	 * @return WP_REST_Response/json
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_get_store_locations() {
 		if ( ! class_exists( 'WooCommerce' ) ) {
@@ -1449,7 +1381,6 @@ class CheckView_Api {
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
-			wp_die();
 		}
 		$selling_locations = array();
 
@@ -1473,21 +1404,19 @@ class CheckView_Api {
 					'body'     => $store_locations,
 				)
 			);
-			wp_die();
 		} else {
 			Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the store locations.' );
 			return new WP_Error(
 				400,
 				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 			);
-			wp_die();
 		}
 	}
 
 	/**
 	 * Retrieves the permalink of the test product.
 	 *
-	 * @return WP_REST_Response/json
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_get_store_test_product() {
 		if ( ! class_exists( 'WooCommerce' ) ) {
@@ -1506,7 +1435,6 @@ class CheckView_Api {
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
-			wp_die();
 		}
 		$product                              = $this->woo_helper->checkview_get_test_product();
 		$product_details['checkview_product'] = $product ? get_permalink( $product->get_id() ) : false;
@@ -1518,21 +1446,19 @@ class CheckView_Api {
 					'body'     => $product_details,
 				)
 			);
-			wp_die();
 		} else {
 			Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the test product.' );
 			return new WP_Error(
 				400,
 				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 			);
-			wp_die();
 		}
 	}
 
 	/**
 	 * Retrieves a list of supported forms used throughout the site.
 	 *
-	 * @return WP_REST_Response/json
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_get_available_forms_list() {
 		global $wpdb;
@@ -1543,7 +1469,6 @@ class CheckView_Api {
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
-			wp_die();
 		}
 		// Temporarily suppress errors.
 		$previous_error_reporting = error_reporting( 0 );
@@ -1556,7 +1481,6 @@ class CheckView_Api {
 					'body_response' => $forms_list,
 				)
 			);
-			wp_die();
 		}
 		$forms = array();
 		if ( ! is_admin() ) {
@@ -2002,92 +1926,128 @@ class CheckView_Api {
 				)
 			);
 		}
-		wp_die();
 	}
 
 	/**
 	 * Gets results of a test.
 	 *
 	 * @param WP_REST_Request $request Request param with the API call.
-	 * @return WP_REST_Response/WP_Error/json
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_get_available_forms_test_results( WP_REST_Request $request ) {
 		global $wpdb;
+
 		$uid     = $request->get_param( 'uid' );
 		$uid     = isset( $uid ) ? sanitize_text_field( $uid ) : null;
 		$results = array();
+
 		if ( '' === $uid || null === $uid ) {
 			Checkview_Admin_Logs::add( 'api-logs', $this->jwt_error );
+
 			return new WP_Error(
 				400,
-				esc_html__( 'Insuficient data.', 'checkview' ),
+				esc_html__( 'Insufficient data.', 'checkview' ),
 			);
-			wp_die();
 		} else {
-			$tablename = $wpdb->prefix . 'cv_entry';
-			$result    = $wpdb->get_row( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s', $uid ) );
-			$tablename = $wpdb->prefix . 'cv_entry_meta';
-			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where uid=%s order by id ASC', $uid ) );
-			if ( $rows ) {
-				foreach ( $rows as $row ) {
-					if ( 'gravityforms' === strtolower( $result->form_type ) ) {
-						$results[] = array(
-							'field_id'    => 'input_' . $row->form_id . '_' . str_replace( '.', '_', $row->meta_key ),
-							'field_value' => $row->meta_value,
-						);
+			$table_name    = $wpdb->prefix . 'cv_entry';
+			$query         = $wpdb->prepare( 'Select * from ' . $table_name . ' where uid=%s', $uid );
+			$query_as_json = wp_json_encode( array( 'query' => $query ) );
+			$result        = $wpdb->get_row( $query ); // We expect an object
 
-					} elseif ( 'cf7' === strtolower( $result->form_type ) ) {
-						$value = $row->meta_value;
-						if ( strpos( $value, 'htt' ) !== false ) {
-							$value = html_entity_decode( $value );
-						}
-						$results[] = array(
-							'field_id'    => '',
-							'field_name'  => $row->meta_key,
-							'field_value' => $value,
-						);
-					} elseif ( 'Forminator' === $result->form_type ) {
-						$value = $row->meta_value;
-						if ( strpos( $value, 'htt' ) !== false ) {
-							$value = html_entity_decode( $value );
-						}
-						$results[] = array(
-							'field_id'    => '',
-							'field_name'  => $row->meta_key,
-							'field_value' => $value,
-						);
-					} else {
+			if ( is_null( $result ) ) {
+				Checkview_Admin_Logs::add( 'api-logs', 'Failed to find test results (query [' . $query_as_json . '] returned null).' );
 
-						$results[] = array(
-							'field_id'    => $row->meta_key,
-							'field_value' => maybe_unserialize( $row->meta_value ),
-						);
-					}
-				}
-				if ( ! empty( $results ) && false !== $results ) {
-					return new WP_REST_Response(
-						array(
-							'status'        => 200,
-							'response'      => esc_html__( 'Successfully retrieved the results.', 'checkview' ),
-							'body_response' => $results,
-						)
-					);
-				} else {
-					Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the results.' );
-					return new WP_Error(
-						400,
-						esc_html__( 'An error occurred while processing your request.', 'checkview' ),
-					);
-				}
-				wp_die();
-			} else {
-				Checkview_Admin_Logs::add( 'api-logs', 'Failed to retrieve the results.' );
 				return new WP_Error(
 					400,
-					esc_html__( 'An error occurred while processing your request.', 'checkview' ),
+					esc_html__( 'Failed to find test results (query [' . $query_as_json . '] returned null).', 'checkview' ),
 				);
-				wp_die();
 			}
+
+			if ( ! is_object( $result ) ) {
+				Checkview_Admin_Logs::add( 'api-logs', 'Failed to find test results (query [' . $query_as_json . '] returned unexpected type [' . gettype( $result ) . ']).' );
+
+				return new WP_Error(
+					400,
+					esc_html__( 'Failed to find test results (query [' . $query_as_json . '] returned unexpected type [' . gettype( $result ) . ']).', 'checkview' ),
+				);
+			}
+
+			$table_name         = $wpdb->prefix . 'cv_entry_meta';
+			$query              = $wpdb->prepare( 'Select * from ' . $table_name . ' where uid=%s order by id ASC', $uid );
+			$meta_query_as_json = wp_json_encode( array( 'query' => $query ) );
+			$rows               = $wpdb->get_results( $query ); // We expect an array of objects
+
+			if ( is_null( $rows ) ) {
+				Checkview_Admin_Logs::add( 'api-logs', 'Failed to find test results (query [' . $meta_query_as_json . '] returned null).' );
+
+				return new WP_Error(
+					400,
+					esc_html__( 'Failed to find test results (query [' . $meta_query_as_json . '] returned null).', 'checkview' ),
+				);
+			}
+
+			if ( ! is_array( $rows ) ) {
+				Checkview_Admin_Logs::add( 'api-logs', 'Failed to find test results (query [' . $meta_query_as_json . '] returned unexpected type [' . gettype( $rows ) . ']).' );
+
+				return new WP_Error(
+					400,
+					esc_html__( 'Failed to find test results (query [' . $meta_query_as_json . '] returned unexpected type [' . gettype( $rows ) . ']).', 'checkview' ),
+				);
+			}
+
+			foreach ( $rows as $row ) {
+				if ( 'gravityforms' === strtolower( $result->form_type ) ) {
+					$results[] = array(
+						'field_id'    => 'input_' . $row->form_id . '_' . str_replace( '.', '_', $row->meta_key ),
+						'field_value' => $row->meta_value,
+					);
+				} elseif ( 'cf7' === strtolower( $result->form_type ) ) {
+					$value = $row->meta_value;
+
+					if ( strpos( $value, 'htt' ) !== false ) {
+						$value = html_entity_decode( $value );
+					}
+
+					$results[] = array(
+						'field_id'    => '',
+						'field_name'  => $row->meta_key,
+						'field_value' => $value,
+					);
+				} elseif ( 'Forminator' === $result->form_type ) {
+					$value = $row->meta_value;
+
+					if ( strpos( $value, 'htt' ) !== false ) {
+						$value = html_entity_decode( $value );
+					}
+
+					$results[] = array(
+						'field_id'    => '',
+						'field_name'  => $row->meta_key,
+						'field_value' => $value,
+					);
+				} else {
+					$results[] = array(
+						'field_id'    => $row->meta_key,
+						'field_value' => maybe_unserialize( $row->meta_value ),
+					);
+				}
+			}
+
+			if ( ! empty( $results ) ) {
+				return new WP_REST_Response(
+					array(
+						'status'        => 200,
+						'response'      => esc_html__( 'Successfully retrieved the results.', 'checkview' ),
+						'body_response' => $results,
+					)
+				);
+			}
+			Checkview_Admin_Logs::add( 'api-logs', 'Failed to find test results (rows were found, but results were determined to be empty).' );
+
+			return new WP_Error(
+				400,
+				esc_html__( 'Failed to find test results (rows were found, but results were determined to be empty).', 'checkview' ),
+			);
 		}
 	}
 
@@ -2097,7 +2057,7 @@ class CheckView_Api {
 	 * Expects form ID, page ID, test type, and the email to send the result to.
 	 *
 	 * @param WP_REST_Request $request Object with the API call.
-	 * @return WP_REST_Response/WP_Error
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_register_form_test( WP_REST_Request $request ) {
 		$frm_id  = $request->get_param( 'frm_id' );
@@ -2123,14 +2083,12 @@ class CheckView_Api {
 					'body_response' => esc_html__( 'Check Form Test Successfully Added.', 'checkview' ),
 				)
 			);
-			wp_die();
 		} else {
 			Checkview_Admin_Logs::add( 'api-logs', sanitize_text_field( 'Details to register form test are not correct.' ) );
 			return new WP_Error(
 				400,
 				esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 			);
-			wp_die();
 		}
 	}
 
@@ -2140,7 +2098,7 @@ class CheckView_Api {
 	 * Given a test ID, delete its information from the database.
 	 *
 	 * @param WP_REST_Request $request Request param with the API call.
-	 * @return WP_REST_Response/WP_Error/json
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_delete_forms_test_results( WP_REST_Request $request ) {
 		global $wpdb;
@@ -2159,7 +2117,6 @@ class CheckView_Api {
 				400,
 				esc_html__( 'Insuficient data.', 'checkview' ),
 			);
-			wp_die();
 		} else {
 			$rows = true;
 			if ( $rows ) {
@@ -2170,14 +2127,12 @@ class CheckView_Api {
 						'body_response' => $results,
 					)
 				);
-				wp_die();
 			} else {
 				Checkview_Admin_Logs::add( 'api-logs', sanitize_text_field( 'Failed to remove the results.' ) );
 				return new WP_Error(
 					400,
 					esc_html__( 'An error occurred while processing your request.', 'checkview' ),
 				);
-				wp_die();
 			}
 		}
 	}
@@ -2188,7 +2143,7 @@ class CheckView_Api {
 	 * Information includes plugins & themes (active or inactive), WordPress core
 	 * version, and the admin AJAX url.
 	 *
-	 * @return WP_Rest_Response Forms details.
+	 * @return WP_Rest_Response|WP_Error
 	 */
 	public function checkview_saas_get_site_info() {
 		if ( ! function_exists( 'get_plugins' ) ) {
@@ -2273,7 +2228,7 @@ class CheckView_Api {
 	 * For all other cases, assume the plugin slug matches the plugin's directory name.
 	 *
 	 * @param WP_REST_Request $request WP_Request object.
-	 * @return Json/WP Error
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_saas_get_plugin_version( WP_REST_Request $request ) {
 		if ( null !== $this->jwt_error ) {
@@ -2283,7 +2238,6 @@ class CheckView_Api {
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
-			wp_die();
 		}
 		// Get all plugins.
 		if ( ! function_exists( 'get_plugins' ) ) {
@@ -2340,7 +2294,7 @@ class CheckView_Api {
 	/**
 	 * Returns plugin logs.
 	 *
-	 * @return WP_Rest_Response log details.
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_saas_get_helper_logs() {
 		// Get all plugins.
@@ -2399,8 +2353,8 @@ class CheckView_Api {
 	/**
 	 * Sets status for helper plugin.
 	 *
-	 * @param \WP_REST_Request $request wp request object.
-	 * @return WP_Error/WP_REST_RESPONSE
+	 * @param WP_REST_Request $request wp request object.
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_saas_set_helper_status( \WP_REST_Request $request ) {
 		// Get the status from the request parameters.
@@ -2429,10 +2383,10 @@ class CheckView_Api {
 	}
 
 	/**
-	 * Sets status for test product..
+	 * Sets status for test product.
 	 *
-	 * @param \WP_REST_Request $request wp request object.
-	 * @return WP_Error/WP_REST_RESPONSE
+	 * @param WP_REST_Request $request wp request object.
+	 * @return WP_REST_Response|WP_Error
 	 */
 	public function checkview_saas_set_test_product_status( \WP_REST_Request $request ) {
 		if ( ! class_exists( 'WooCommerce' ) ) {
@@ -2451,7 +2405,6 @@ class CheckView_Api {
 				400,
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
-			wp_die();
 		}
 		// Get the status from the request parameters.
 		$checkview_status = $request->get_param( '_checkview_status' );
@@ -2491,8 +2444,8 @@ class CheckView_Api {
 	 * Checks for the `Authorization` header, is SSL, and valid unused nonce token.
 	 * On success, stores the nonce token so it will not be used again.
 	 *
-	 * @param \WP_REST_Request $request request data with the api call.
-	 * @return json/array
+	 * @param WP_REST_Request $request request data with the api call.
+	 * @return WP_Error|array
 	 */
 	public function checkview_get_items_permissions_check( \WP_REST_Request $request ) {
 		nocache_headers();
@@ -2507,7 +2460,6 @@ class CheckView_Api {
 				esc_html__( 'Invalid request.', 'checkview' ),
 				''
 			);
-			wp_die();
 		}
 
 		if ( ! is_ssl() ) {
@@ -2517,7 +2469,6 @@ class CheckView_Api {
 				esc_html__( 'Invalid request.', 'checkview' ),
 				array( 'status' => 400 )
 			);
-			wp_die();
 		}
 		$nonce_token = checkview_validate_jwt_token( $auth_header );
 		// checking for JWT token.
@@ -2530,7 +2481,6 @@ class CheckView_Api {
 				esc_html__( 'Invalid request.', 'checkview' ),
 				''
 			);
-			wp_die();
 		}
 		if ( ! checkview_is_valid_uuid( $nonce_token ) ) {
 			Checkview_Admin_Logs::add( 'api-logs', 'Invalid nonce format.' );
@@ -2539,7 +2489,6 @@ class CheckView_Api {
 				esc_html__( 'Invalid request.', 'checkview' ),
 				''
 			);
-			wp_die();
 		}
 		global $wpdb;
 		$cv_used_nonces = $wpdb->prefix . 'cv_used_nonces';
@@ -2586,7 +2535,6 @@ class CheckView_Api {
 				esc_html__( 'Invalid request.', 'checkview' ),
 				''
 			);
-			wp_die();
 		} else {
 			// Store the nonce in the database.
 			$response = $wpdb->insert( $cv_used_nonces, array( 'nonce' => $nonce_token ) );
@@ -2602,7 +2550,6 @@ class CheckView_Api {
 						'status' => 404,
 					)
 				);
-				wp_die();
 			}
 		}
 		return array(

@@ -74,7 +74,7 @@ if ( ! function_exists( 'checkview_validate_jwt_token' ) ) {
 		// Attempt decoding.
 		try {
 			// Allow one-second leeway for JWT tokens
-			JWT::$leeway = 1;
+			JWT::$leeway = 5;
 			$decoded = JWT::decode( $token, new Key( $key, 'RS256' ) );
 		} catch ( Exception $e ) {
 			Checkview_Admin_Logs::add( 'api-logs', esc_html( $e->getMessage() ) );
