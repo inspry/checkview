@@ -169,8 +169,6 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 
 		// Stop if session not found.
 		if ( ! empty( $cv_session ) ) {
-			Checkview_Admin_Logs::add( 'ip-logs', 'CheckView session was not found when completing test, exiting.' );
-
 			$test_key = $cv_session[0]['test_key'];
 
 			cv_delete_option( $test_key );
