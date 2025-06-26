@@ -219,6 +219,12 @@ class Checkview_Admin {
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
+		$is_helper_api_request = isset( $_SERVER['REQUEST_URI'] ) && strpos( $_SERVER['REQUEST_URI'], '_checkview_timestamp' );
+
+		if ( $is_helper_api_request ) {
+			return;
+		}
+
 		// Current Visitor IP.
 		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP.
