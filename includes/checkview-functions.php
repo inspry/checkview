@@ -365,7 +365,7 @@ if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
 		// Check view Bot IP.
 		$cv_bot_ip  = checkview_get_api_ip();
 		$ip_options = checkview_get_custom_header_keys_for_ip();
-		$ip         = '';
+		$ip = '';
 
 		foreach ( $ip_options as $key ) {
 			if ( ! isset( $_SERVER[ $key ] ) ) {
@@ -373,12 +373,11 @@ if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
 			}
 
 			$key = checkview_get_server_value( $key );
+
 			foreach ( explode( ',', $key ) as $ip ) {
-				// Just to be safe.
 				$ip = trim( $ip );
 
 				if ( checkview_validate_ip( $ip ) && is_array( $cv_bot_ip ) && in_array( $ip, $cv_bot_ip ) ) {
-					Checkview_Admin_Logs::add( 'ip-logs', 'Bypassed ' . $ip );
 					return sanitize_text_field( $ip );
 				}
 			}
