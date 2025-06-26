@@ -1173,9 +1173,11 @@ if ( ! function_exists( 'cv_update_option' ) ) {
 	/**
 	 * Updates an option in WordPress.
 	 *
-	 * Wrapper for update_option() that also includes logging.
+	 * Wrapper for update_option() that also includes logging. Suppresses logs from
+	 * failures due to option already existing with the same value.
 	 *
 	 * @see update_option()
+	 * @see get_option()
 	 *
 	 * @param $option string Name of the option to update.
 	 * @param $value mixed Option value.
@@ -1184,12 +1186,15 @@ if ( ! function_exists( 'cv_update_option' ) ) {
 	 * @return boolean True if the value was updated, false otherwise.
 	 */
 	function cv_update_option( $option, $value, $autoload = null ) {
+		$old_option = get_option( $option );
 		$result = update_option( $option, $value, $autoload );
 
 		if ( $result ) {
 			Checkview_Admin_Logs::add( 'ip-logs', 'Updated option [' . $option . '] with value [' . print_r( $value, true ) . '].' );
 		} else {
-			Checkview_Admin_Logs::add( 'ip-logs', 'Failed updating option [' . $option . '] with value [' . print_r( $value, true ) . '].' );
+			if ($old_option !== false && $old_option !== $value && maybe_serialize( $old_option ) !== maybe_serialize( $value ) ) {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Failed updating option [' . $option . '] with value [' . print_r( $value, true ) . '].' );
+			}
 		}
 
 		return $result;
@@ -1200,23 +1205,31 @@ if ( ! function_exists( 'cv_delete_option' ) ) {
 	/**
 	 * Deletes an option in WordPress.
 	 *
-	 * Wrapper for delete_option() that also includes logging.
+	 * Wrapper for delete_option() that also includes logging. Only attempts
+	 * deletion if the option is found in the database.
 	 *
 	 * @see delete_option()
+	 * @see get_option()
 	 *
 	 * @param $option string Name of the option to delete.
 	 *
 	 * @return boolean True if the value was deleted, false otherwise.
 	 */
 	function cv_delete_option( $option ) {
-		$result = delete_option( $option );
+		$current_option = get_option( $option );
 
-		if ( $result ) {
-			Checkview_Admin_Logs::add( 'ip-logs', 'Deleted option [' . $option . '].' );
-		} else {
-			Checkview_Admin_Logs::add( 'ip-logs', 'Failed deleting option [' . $option . '].' );
+		if ( false !== $current_option ) {
+			$result = delete_option( $option );
+
+			if ( $result ) {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Deleted option [' . $option . '].' );
+			} else {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Failed deleting option [' . $option . '].' );
+			}
+
+			return $result;
 		}
 
-		return $result;
+		return true;
 	}
 }
