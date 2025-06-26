@@ -154,6 +154,7 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 	 * @return void
 	 */
 	function complete_checkview_test( $checkview_test_id = '' ) {
+		// TODO: Better logs
 		global $wpdb;
 		global $CV_TEST_ID;
 		if ( ! defined( 'CV_TEST_ID' ) ) {
@@ -234,9 +235,11 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 	 * @return string[]|null|false
 	 */
 	function checkview_get_api_ip() {
-
 		$ip_address = get_transient( 'checkview_saas_ip_address' ) ? get_transient( 'checkview_saas_ip_address' ) : array();
-		if ( null === $ip_address || '' === $ip_address || empty( $ip_address ) ) {
+
+		if ( empty( $ip_address ) ) {
+			Checkview_Admin_Logs::add( 'ip-logs', 'Bot IP address list transient empty, requesting new IP addresses.' );
+
 			$request = wp_remote_get(
 				'https://verify.checkview.io/whitelist.json',
 				array(
@@ -244,15 +247,22 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 					'timeout' => 500,
 				)
 			);
+
 			if ( is_wp_error( $request ) ) {
+				$code = $request->get_error_code();
+				$message = $request->get_error_message();
+
+				Checkview_Admin_Logs::add( 'ip-logs', 'Request for new IP addresses failed with code [' . $code . ']. Message: ' . $message );
+
 				return null;
 			}
 
 			$body = wp_remote_retrieve_body( $request );
-
 			$data = json_decode( $body, true );
+
 			if ( ! empty( $data ) && ! empty( $data['ipAddresses'] ) ) {
 				$ip_address = $data['ipAddresses'];
+
 				if ( ! empty( $ip_address ) && is_array( $ip_address ) ) {
 					foreach ( $ip_address as $ip ) {
 						// If validation fails, handle the error appropriately.
@@ -263,17 +273,25 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 				} elseif ( ! checkview_validate_ip( $ip_address ) ) {
 					return false;
 				}
+
 				set_transient( 'checkview_saas_ip_address', $ip_address, 12 * HOUR_IN_SECONDS );
+
+				Checkview_Admin_Logs::add( 'ip-logs', 'Set bot IP address list transient to response data [' . wp_json_encode( $ip_address ) . ']' );
+			} else {
+				Checkview_Admin_Logs::add( 'ip-logs', 'IP addresses not found in request for new IP addresses.' );
 			}
 		}
+
 		if ( ! is_array( $ip_address ) ) {
 			$ip_address = (array) $ip_address;
 		}
+
 		if ( is_array( $ip_address ) ) {
 			$ip_address[] = '::1';
 			$ip_address[] = '188.251.23.194';
 			$ip_address[] = '2001:8a0:e5d0:a900:70a5:138a:d159:5054';
 		}
+
 		return $ip_address;
 	}
 }
@@ -887,9 +905,20 @@ if ( ! function_exists( 'checkview_is_valid_uuid' ) ) {
 	 */
 	function checkview_is_valid_uuid( $uuid ) {
 		if ( empty( $uuid ) || is_wp_error( $uuid ) ) {
+			Checkview_Admin_Logs::add( 'ip-logs', 'Invalid UUID [' . $uuid . '].' );
+
 			return false;
 		}
-		return preg_match( '/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i', $uuid );
+
+		$matches = preg_match( '/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i', $uuid );
+
+		if ( ! $matches ) {
+			Checkview_Admin_Logs::add( 'ip-logs', 'Invalid UUID [' . $uuid . '].' );
+
+			return false;
+		}
+
+		return true;
 	}
 }
 
@@ -1123,4 +1152,31 @@ if (!function_exists('array_find')) {
 
         return null;
     }
+}
+
+if ( ! function_exists( 'cv_update_option' ) ) {
+	/**
+	 * Updates an option in WordPress.
+	 *
+	 * Wrapper for update_option() that also includes logging.
+	 *
+	 * @see update_option()
+	 *
+	 * @param $option string Name of the option to update.
+	 * @param $value mixed Option value.
+	 * @param $autoload boolean|null Optional. Whether to load the option when WordPress starts up.
+	 *
+	 * @return boolean True if the value was updated, false otherwise.
+	 */
+	function cv_update_option( $option, $value, $autoload = null ) {
+		$result = update_option( $option, $value, $autoload );
+
+		if ( $result ) {
+			Checkview_Admin_Logs::add( 'ip-logs', 'Updated option [' . $option . '] with value [' . print_r( $value, true ) . '].' );
+		} else {
+			Checkview_Admin_Logs::add( 'ip-logs', 'Failed updating option [' . $option . '] with value [' . print_r( $value, true ) . '].' );
+		}
+
+		return $result;
+	}
 }

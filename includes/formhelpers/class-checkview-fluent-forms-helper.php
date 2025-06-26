@@ -87,6 +87,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				99,
 				3
 			);
+
 			add_filter(
 				'fluentform/has_recaptcha',
 				function ( $isSpamCheck ) {
@@ -117,6 +118,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				10,
 				1
 			);
+
 			add_filter(
 				'fluentform/akismet_check_spam',
 				function ( $isSpamCheck, $form_id, $formData ) {
@@ -125,6 +127,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				20,
 				3
 			);
+
 			add_filter(
 				'cfturnstile_whitelisted',
 				'__return_true',
@@ -132,6 +135,7 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 			);
 
 			$old_settings = (array) get_option( '_fluentform_turnstile_details', array() );
+
 			if ( ! empty( $old_settings['siteKey'] ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
 				if ( '1x00000000000000000000AA' !== $old_settings['siteKey'] ) {
 					update_option( 'checkview_ff_turnstile-site-key', $old_settings['siteKey'], true );
@@ -141,18 +145,23 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 					update_option( '_fluentform_turnstile_details', $old_settings );
 				}
 			}
-			$old_settings = array();
+
 			$old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
+
 			if ( null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] && strpos( $old_settings['api_version'], 'v3' ) === false ) {
 				if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' !== $old_settings['siteKey'] ) {
 					update_option( 'checkview_rc-site-key', $old_settings['siteKey'], true );
 					update_option( 'checkview_rc-secret-key', $old_settings['secretKey'], true );
+
 					$old_settings['siteKey']   = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
 					$old_settings['secretKey'] = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
+
 					update_option( '_fluentform_reCaptcha_details', $old_settings );
 				}
 			}
-			update_option( 'cv_ff_keys_set_turnstile', 'true' );
+
+			cv_update_option( 'cv_ff_keys_set_turnstile', 'true' );
+
 			add_filter(
 				'fluentform/recaptcha_v3_ref_score',
 				function ( $score ) {
@@ -259,7 +268,9 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 		public function checkview_clone_fluentform_entry( $entry_id, $form_data, $form ) {
 			global $wpdb;
 
-			$form_id           = $form->id;
+			Checkview_Admin_Logs::add( 'ip-logs', 'Cloning submission entry [' . $entry_id . ']...' );
+
+			$form_id = $form->id;
 			$checkview_test_id = get_checkview_test_id();
 
 			if ( empty( $checkview_test_id ) ) {
@@ -268,13 +279,17 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 
 			// Clone entry to check view tables.
 			$tablename = $wpdb->prefix . 'fluentform_entry_details';
-			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where submission_id=%d and form_id=%d order by id ASC', $entry_id, $form_id ) );
+			$rows = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where submission_id=%d and form_id=%d order by id ASC', $entry_id, $form_id ) );
+			$count = 0;
+			$entry_meta_table = $wpdb->prefix . 'cv_entry_meta';
+
 			foreach ( $rows as $row ) {
 				$meta_key = 'ff_' . $form_id . '_' . $row->field_name;
+
 				if ( '' !== $row->sub_field_name ) {
 					$meta_key .= '_' . $row->sub_field_name . '_';
 				}
-				$table = $wpdb->prefix . 'cv_entry_meta';
+
 				$data  = array(
 					'uid'        => $checkview_test_id,
 					'form_id'    => $form_id,
@@ -282,26 +297,47 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 					'meta_key'   => $meta_key,
 					'meta_value' => $row->field_value,
 				);
-				$wpdb->insert( $table, $data );
+
+				$result = $wpdb->insert( $entry_meta_table, $data );
+
+				if ( $result ) {
+					$count++;
+				}
 			}
+
+			if ( $count > 0 ) {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Cloned submission entry meta data (inserted ' . $count . ' rows into ' . $entry_meta_table . ').' );
+			} else {
+				if ( count( $rows ) > 0 ) {
+					Checkview_Admin_Logs::add( 'ip-logs', 'Failed to clone submission entry meta data.' );
+				}
+			}
+
 			$tablename = $wpdb->prefix . 'fluentform_submissions';
-			$row       = $wpdb->get_row( $wpdb->prepare( 'Select * from ' . $tablename . ' where id=%d and form_id=%d LIMIT 1', $entry_id, $form_id ), ARRAY_A );
-			$table1    = $wpdb->prefix . 'cv_entry';
-			$data      = array(
-				'uid'            => $checkview_test_id,
-				'form_type'      => 'FluentForms',
-				'form_id'        => $form_id,
-				'source_url'     => isset( $row['source_url'] ) ? $row['source_url'] : 'n/a',
-				'response'       => isset( $row['response'] ) ? $row['response'] : 'n/a',
-				'user_agent'     => isset( $row['browser'] ) ? $row['browser'] : 'n/a',
-				'ip'             => isset( $row['ip'] ) ? $row['ip'] : 'n/a',
-				'date_created'   => isset( $row['created_at'] ) ? $row['created_at'] : 'n/a',
-				'date_updated'   => isset( $row['updated_at'] ) ? $row['updated_at'] : 'n/a',
+			$row = $wpdb->get_row( $wpdb->prepare( 'Select * from ' . $tablename . ' where id=%d and form_id=%d LIMIT 1', $entry_id, $form_id ), ARRAY_A );
+			$entry_table = $wpdb->prefix . 'cv_entry';
+			$data = array(
+				'uid' => $checkview_test_id,
+				'form_type' => 'FluentForms',
+				'form_id' => $form_id,
+				'source_url' => isset( $row['source_url'] ) ? $row['source_url'] : 'n/a',
+				'response' => isset( $row['response'] ) ? $row['response'] : 'n/a',
+				'user_agent' => isset( $row['browser'] ) ? $row['browser'] : 'n/a',
+				'ip' => isset( $row['ip'] ) ? $row['ip'] : 'n/a',
+				'date_created' => isset( $row['created_at'] ) ? $row['created_at'] : 'n/a',
+				'date_updated' => isset( $row['updated_at'] ) ? $row['updated_at'] : 'n/a',
 				'payment_status' => isset( $row['payment_status'] ) ? $row['payment_status'] : 'n/a',
 				'payment_method' => isset( $row['payment_method'] ) ? $row['payment_payment'] : 'n/a',
 				'payment_amount' => isset( $row['payment_total'] ) ? $row['payment_total'] : 0,
 			);
-			$wpdb->insert( $table1, $data );
+
+			$result = $wpdb->insert( $entry_table, $data );
+
+			if ( ! $result ) {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Failed to clone submission entry data.' );
+			} else {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Cloned submission entry data (inserted ' . (int) $result . ' rows into ' . $entry_table . ').' );
+			}
 
 			// remove entry from Fluent forms tables.
 			$delete = wpFluent()->table( 'fluentform_submissions' )

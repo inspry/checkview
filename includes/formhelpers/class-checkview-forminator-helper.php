@@ -40,6 +40,7 @@ if ( ! class_exists( 'Checkview_Forminator_Helper' ) ) {
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
+
 			if ( defined( 'TEST_EMAIL' ) ) {
 				// update email to our test email.
 				add_filter(
@@ -90,10 +91,12 @@ if ( ! class_exists( 'Checkview_Forminator_Helper' ) ) {
 				'__return_true',
 				999
 			);
+
 			add_filter(
 				'forminator_invalid_captcha_message',
 				'__return_null'
 			);
+
 			// Disbale form action.
 			add_filter(
 				'forminator_is_addons_feature_enabled',
@@ -150,19 +153,18 @@ if ( ! class_exists( 'Checkview_Forminator_Helper' ) ) {
 		 *
 		 * @param object $entry entry object.
 		 * @param int    $form_id Form entry ID.
-		 * @param int    $form_fields Form's fields.
+		 * @param array  $form_fields Form's fields.
 		 * @return void
 		 */
-		public function checkview_log_form_test_entry(
-			$entry,
-			$form_id,
-			$form_fields
-		) {
+		public function checkview_log_form_test_entry($entry, $form_id, $form_fields) {
 			global $wpdb;
 
 			$checkview_test_id = get_checkview_test_id();
-			$entry_id          = $entry->entry_id;
-			$form_id           = $entry->form_id;
+			$entry_id = $entry->entry_id;
+			$form_id = $entry->form_id;
+
+			Checkview_Admin_Logs::add( 'ip-logs', 'Cloning submission entry [' . $entry_id . ']...' );
+
 			if ( empty( $checkview_test_id ) ) {
 				$checkview_test_id = $form_id . gmdate( 'Ymd' );
 			}
@@ -179,16 +181,22 @@ if ( ! class_exists( 'Checkview_Forminator_Helper' ) ) {
 			);
 
 			$entry_table = $wpdb->prefix . 'cv_entry';
-			$wpdb->insert( $entry_table, $entry_data );
-			$inserted_entry_id = $wpdb->insert_id;
+			$result = $wpdb->insert( $entry_table, $entry_data );
 
-			// Insert entry meta.
+			if ( ! $result ) {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Failed to clone submission entry data.' );
+			} else {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Cloned submission entry data (inserted ' . (int) $result . ' rows into ' . $entry_table . ').' );
+			}
+
 			$entry_meta_table = $wpdb->prefix . 'cv_entry_meta';
+			$count = 0;
 
 			foreach ( $form_fields as $field ) {
 				if ( '_forminator_user_ip' === $field['name'] ) {
 					continue;
 				}
+
 				$field_value    = $field['value'];
 				$meta_key       = $field['name'];
 				$entry_metadata = array(
@@ -198,12 +206,24 @@ if ( ! class_exists( 'Checkview_Forminator_Helper' ) ) {
 					'meta_key'   => $meta_key,
 					'meta_value' => $field_value,
 				);
-				$wpdb->insert( $entry_meta_table, $entry_metadata );
+
+				$result = $wpdb->insert( $entry_meta_table, $entry_metadata );
+
+				if ( $result ) {
+					$count++;
+				}
 			}
 
-			// Remove test entry form Forminator.
+			if ( $count > 0 ) {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Cloned submission entry meta data (inserted ' . $count . ' rows into ' . $entry_meta_table . ').' );
+			} else {
+				if ( count( $form_fields ) > 0 ) {
+					Checkview_Admin_Logs::add( 'ip-logs', 'Failed to clone submission entry meta data.' );
+				}
+			}
 
 			complete_checkview_test( $checkview_test_id );
+
 			// Delete entry.
 			Forminator_Form_Entry_Model::delete_by_entry( $entry_id );
 		}

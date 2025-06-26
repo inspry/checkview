@@ -41,6 +41,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
+
 			add_action(
 				'ninja_forms_after_submission',
 				array(
@@ -50,6 +51,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 				99,
 				1
 			);
+
 			add_filter(
 				'akismet_get_api_key',
 				'__return_null',
@@ -64,6 +66,7 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 				),
 				20
 			);
+
 			add_filter(
 				'ninja_forms_validate_fields',
 				function ( $check, $data ) {
@@ -78,11 +81,13 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 				'__return_true',
 				999
 			);
+
 			add_filter(
 				'ninja_forms_action_recaptcha__verify_response',
 				'__return_true',
 				99
 			);
+
 			if ( defined( 'TEST_EMAIL' ) ) {
 				add_filter(
 					'ninja_forms_action_email_send',
@@ -153,6 +158,8 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 			$form_id  = $form_data['form_id'];
 			$entry_id = isset( $form_data['actions']['save']['sub_id'] ) ? $form_data['actions']['save']['sub_id'] : 0;
 
+			Checkview_Admin_Logs::add( 'ip-logs', 'Cloning submission entry [' . $entry_id . ']...' );
+
 			$checkview_test_id = get_checkview_test_id();
 
 			if ( empty( $checkview_test_id ) ) {
@@ -161,23 +168,30 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 
 			// Insert Entry.
 			$entry_data  = array(
-				'form_id'      => $form_id,
-				'status'       => 'publish',
-				'source_url'   => isset( $_SERVER['HTTP_REFERER'] ) ? sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : '',
+				'form_id' => $form_id,
+				'status' => 'publish',
+				'source_url' => isset( $_SERVER['HTTP_REFERER'] ) ? sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : '',
 				'date_created' => current_time( 'mysql' ),
 				'date_updated' => current_time( 'mysql' ),
-				'uid'          => $checkview_test_id,
-				'form_type'    => 'NinjaForms',
+				'uid' => $checkview_test_id,
+				'form_type' => 'NinjaForms',
 			);
 			$entry_table = $wpdb->prefix . 'cv_entry';
-			$wpdb->insert( $entry_table, $entry_data );
-			$inserted_entry_id = $wpdb->insert_id;
 
-			// Insert entry meta.
+			$result = $wpdb->insert( $entry_table, $entry_data );
+
+			if ( ! $result ) {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Failed to clone submission entry data.' );
+			} else {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Cloned submission entry data (inserted ' . (int) $result . ' rows into ' . $entry_table . ').' );
+			}
+
 			$entry_meta_table = $wpdb->prefix . 'cv_entry_meta';
 			$field_id_prefix  = 'nf';
-			$tablename        = $wpdb->prefix . 'postmeta';
-			$form_fields      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where post_id=%d', $entry_id ) );
+			$tablename = $wpdb->prefix . 'postmeta';
+			$form_fields = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where post_id=%d', $entry_id ) );
+			$count = 0;
+
 			foreach ( $form_fields as $field ) {
 				if ( ! in_array( $field->meta_key, array( '_form_id', '_seq_num' ) ) ) {
 					$entry_metadata = array(
@@ -187,7 +201,20 @@ if ( ! class_exists( 'Checkview_Ninja_Forms_Helper' ) ) {
 						'meta_key'   => $field_id_prefix . str_replace( '_', '-', $field->meta_key ),
 						'meta_value' => $field->meta_value,
 					);
-					$wpdb->insert( $entry_meta_table, $entry_metadata );
+
+					$result = $wpdb->insert( $entry_meta_table, $entry_metadata );
+
+					if ( $result ) {
+						$count++;
+					}
+				}
+			}
+
+			if ( $count > 0 ) {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Cloned submission entry meta data (inserted ' . $count . ' rows into ' . $entry_meta_table . ').' );
+			} else {
+				if ( count( $form_fields ) > 0 ) {
+					Checkview_Admin_Logs::add( 'ip-logs', 'Failed to clone submission entry meta data.' );
 				}
 			}
 

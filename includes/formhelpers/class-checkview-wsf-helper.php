@@ -41,6 +41,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
+
 			add_action(
 				'wsf_submit_post_complete',
 				array(
@@ -50,6 +51,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 				999,
 				1
 			);
+
 			add_filter(
 				'akismet_get_api_key',
 				'__return_null',
@@ -61,6 +63,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 				'__return_true',
 				999
 			);
+
 			if ( defined( 'TEST_EMAIL' ) ) {
 				add_filter(
 					'wsf_action_email_to',
@@ -82,6 +85,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 				99,
 				2
 			);
+
 			add_filter(
 				'wsf_config_meta_keys',
 				array( $this, 'config_meta_keys' ),
@@ -95,6 +99,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 				99,
 				6
 			);
+
 			add_filter(
 				'wsf_action_email_headers',
 				array(
@@ -156,6 +161,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 			if ( ! is_array( $headers ) ) {
 				$headers = explode( "\r\n", $headers );
 			}
+
 			$filtered_headers = array_filter(
 				$headers,
 				function ( $header ) {
@@ -163,6 +169,7 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 					return stripos( $header, 'bcc:' ) !== 0 && stripos( $header, 'cc:' ) !== 0;
 				}
 			);
+
 			return array_values( $filtered_headers );
 		}
 		/**
@@ -178,45 +185,69 @@ if ( ! class_exists( 'Checkview_WSF_Helper' ) ) {
 
 			$form_id  = $form_data->form_id;
 			$entry_id = $form_data->id;
-
 			$checkview_test_id = get_checkview_test_id();
+
+			Checkview_Admin_Logs::add( 'ip-logs', 'Cloning submission entry [' . $entry_id . ']...' );
 
 			if ( empty( $checkview_test_id ) ) {
 				$checkview_test_id = $form_id . gmdate( 'Ymd' );
 			}
+
 			// Insert Entry.
 			$entry_data  = array(
-				'form_id'      => $form_id,
-				'status'       => 'publish',
-				'source_url'   => isset( $_SERVER['HTTP_REFERER'] ) ? sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : '',
+				'form_id' => $form_id,
+				'status' => 'publish',
+				'source_url' => isset( $_SERVER['HTTP_REFERER'] ) ? sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : '',
 				'date_created' => current_time( 'mysql' ),
 				'date_updated' => current_time( 'mysql' ),
-				'uid'          => $checkview_test_id,
-				'form_type'    => 'WSForms',
+				'uid' => $checkview_test_id,
+				'form_type' => 'WSForms',
 			);
 			$entry_table = $wpdb->prefix . 'cv_entry';
-			$wpdb->insert( $entry_table, $entry_data );
-			$inserted_entry_id = $wpdb->insert_id;
 
-			// Insert entry meta.
+			$result = $wpdb->insert( $entry_table, $entry_data );
+
+			if ( ! $result ) {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Failed to clone submission entry data.' );
+			} else {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Cloned submission entry data (inserted ' . (int) $result . ' rows into ' . $entry_table . ').' );
+			}
+
 			$entry_meta_table = $wpdb->prefix . 'cv_entry_meta';
 			$field_id_prefix  = 'wsf';
-			$tablename        = $wpdb->prefix . 'wsf_submit_meta';
-			$form_fields      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where parent_id=%d', $entry_id ) );
+			$tablename = $wpdb->prefix . 'wsf_submit_meta';
+			$form_fields = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where parent_id=%d', $entry_id ) );
+			$count = 0;
+
 			foreach ( $form_fields as $field ) {
 				if ( ! in_array( $field->meta_key, array( '_form_id', 'post_id', 'wsf_meta_key_hidden' ) ) ) {
 					$entry_metadata = array(
-						'uid'        => $checkview_test_id,
-						'form_id'    => $form_id,
-						'entry_id'   => $entry_id,
-						'meta_key'   => $field_id_prefix . str_replace( '_', '-', $field->meta_key ),
+						'uid' => $checkview_test_id,
+						'form_id' => $form_id,
+						'entry_id' => $entry_id,
+						'meta_key' => $field_id_prefix . str_replace( '_', '-', $field->meta_key ),
 						'meta_value' => $field->meta_value,
 					);
-					$wpdb->insert( $entry_meta_table, $entry_metadata );
+
+					$result = $wpdb->insert( $entry_meta_table, $entry_metadata );
+
+					if ( $result ) {
+						$count++;
+					}
 				}
 			}
-			update_option( $checkview_test_id . '_wsf_entry_id', $entry_id );
-			update_option( $checkview_test_id . '_wsf_frm_id', $form_id );
+
+			if ( $count > 0 ) {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Cloned submission entry meta data (inserted ' . $count . ' rows into ' . $entry_meta_table . ').' );
+			} else {
+				if ( count( $form_fields ) > 0 ) {
+					Checkview_Admin_Logs::add( 'ip-logs', 'Failed to clone submission entry meta data.' );
+				}
+			}
+
+			cv_update_option( $checkview_test_id . '_wsf_entry_id', $entry_id );
+			cv_update_option( $checkview_test_id . '_wsf_frm_id', $form_id );
+
 			complete_checkview_test( $checkview_test_id );
 		}
 

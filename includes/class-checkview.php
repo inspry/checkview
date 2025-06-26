@@ -201,10 +201,10 @@ class Checkview {
 	 * @access private
 	 */
 	private function define_admin_hooks() {
-
 		$plugin_admin    = new Checkview_Admin( $this->get_plugin_name(), $this->get_version() );
 		$plugin_settings = new Checkview_Admin_Settings( $this->get_plugin_name(), $this->get_version() );
 		$plugin_logs     = new Checkview_Admin_Logs();
+
 		if ( is_admin() ) {
 			// load backend hooks.
 			$this->loader->add_action(
