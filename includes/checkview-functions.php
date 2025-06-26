@@ -143,6 +143,7 @@ if ( ! function_exists( 'get_checkview_test_id' ) ) {
 		}
 	}
 }
+
 if ( ! function_exists( 'complete_checkview_test' ) ) {
 	/**
 	 * Concludes a test.
@@ -154,8 +155,9 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 	 * @return void
 	 */
 	function complete_checkview_test( $checkview_test_id = '' ) {
-		// TODO: Better logs
 		global $wpdb;
+
+		Checkview_Admin_Logs::add( 'ip-logs', 'Completing test...' );
 
 		if ( ! defined( 'CV_TEST_ID' ) ) {
 			define( 'CV_TEST_ID', $checkview_test_id );
@@ -167,17 +169,24 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 
 		// Stop if session not found.
 		if ( ! empty( $cv_session ) ) {
+			Checkview_Admin_Logs::add( 'ip-logs', 'CheckView session was not found when completing test, exiting.' );
+
 			$test_key = $cv_session[0]['test_key'];
-			delete_option( $test_key );
+
+			cv_delete_option( $test_key );
 		}
 
-		$wpdb->delete(
+		$result = $wpdb->delete(
 			$session_table,
 			array(
 				'visitor_ip' => $visitor_ip,
-				'test_id'    => $checkview_test_id,
+				'test_id' => $checkview_test_id,
 			)
 		);
+
+		if ( false === $result ) {
+			Checkview_Admin_Logs::add( 'ip-logs', 'Failed to delete rows from session table [' . $session_table . '].' );
+		}
 
 		$entry_id = get_option( $checkview_test_id . '_wsf_entry_id', '' );
 		$form_id  = get_option( $checkview_test_id . '_wsf_frm_id', '' );
@@ -189,15 +198,15 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 			$ws_form_submit->db_delete( true, true, true );
 		}
 
-		delete_option( $checkview_test_id . '_wsf_entry_id' );
-		delete_option( $checkview_test_id . '_wsf_frm_id' );
-		delete_option( $visitor_ip );
+		cv_delete_option( $checkview_test_id . '_wsf_entry_id' );
+		cv_delete_option( $checkview_test_id . '_wsf_frm_id' );
+		cv_delete_option( $visitor_ip );
 
 		setcookie( 'checkview_test_id', '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
 		setcookie( 'checkview_test_id' . $checkview_test_id, '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
 
-		delete_option( 'disable_email_receipt' );
-		delete_option( 'disable_webhooks' );
+		cv_delete_option( 'disable_email_receipt' );
+		cv_delete_option( 'disable_webhooks' );
 	}
 }
 
@@ -1182,6 +1191,31 @@ if ( ! function_exists( 'cv_update_option' ) ) {
 			Checkview_Admin_Logs::add( 'ip-logs', 'Updated option [' . $option . '] with value [' . print_r( $value, true ) . '].' );
 		} else {
 			Checkview_Admin_Logs::add( 'ip-logs', 'Failed updating option [' . $option . '] with value [' . print_r( $value, true ) . '].' );
+		}
+
+		return $result;
+	}
+}
+
+if ( ! function_exists( 'cv_delete_option' ) ) {
+	/**
+	 * Deletes an option in WordPress.
+	 *
+	 * Wrapper for delete_option() that also includes logging.
+	 *
+	 * @see delete_option()
+	 *
+	 * @param $option string Name of the option to delete.
+	 *
+	 * @return boolean True if the value was deleted, false otherwise.
+	 */
+	function cv_delete_option( $option ) {
+		$result = delete_option( $option );
+
+		if ( $result ) {
+			Checkview_Admin_Logs::add( 'ip-logs', 'Deleted option [' . $option . '].' );
+		} else {
+			Checkview_Admin_Logs::add( 'ip-logs', 'Failed deleting option [' . $option . '].' );
 		}
 
 		return $result;
