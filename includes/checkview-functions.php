@@ -207,6 +207,8 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 
 		cv_delete_option( 'disable_email_receipt' );
 		cv_delete_option( 'disable_webhooks' );
+
+		Checkview_Admin_Logs::add( 'ip-logs', 'Test complete.' );
 	}
 }
 
