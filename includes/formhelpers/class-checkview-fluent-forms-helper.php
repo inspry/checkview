@@ -201,6 +201,12 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				999,
 				2
 			);
+
+			add_filter(
+				'fluentform/token_based_spam_protection_status',
+				'__return_false',
+				999
+			);
 		}
 
 		/**
