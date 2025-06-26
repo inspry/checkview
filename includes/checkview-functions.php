@@ -156,13 +156,14 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 	function complete_checkview_test( $checkview_test_id = '' ) {
 		// TODO: Better logs
 		global $wpdb;
-		global $CV_TEST_ID;
+
 		if ( ! defined( 'CV_TEST_ID' ) ) {
 			define( 'CV_TEST_ID', $checkview_test_id );
 		}
+
 		$session_table = $wpdb->prefix . 'cv_session';
-		$visitor_ip    = checkview_get_visitor_ip();
-		$cv_session    = checkview_get_cv_session( $visitor_ip, CV_TEST_ID );
+		$visitor_ip = checkview_get_visitor_ip();
+		$cv_session = checkview_get_cv_session( $visitor_ip, CV_TEST_ID );
 
 		// Stop if session not found.
 		if ( ! empty( $cv_session ) ) {
@@ -177,23 +178,29 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 				'test_id'    => $checkview_test_id,
 			)
 		);
+
 		$entry_id = get_option( $checkview_test_id . '_wsf_entry_id', '' );
 		$form_id  = get_option( $checkview_test_id . '_wsf_frm_id', '' );
+
 		if ( ! empty( $form_id ) && ! empty( $entry_id ) ) {
-			$ws_form_submit          = new WS_Form_Submit();
-			$ws_form_submit->id      = $entry_id;
+			$ws_form_submit = new WS_Form_Submit();
+			$ws_form_submit->id = $entry_id;
 			$ws_form_submit->form_id = $form_id;
 			$ws_form_submit->db_delete( true, true, true );
 		}
+
 		delete_option( $checkview_test_id . '_wsf_entry_id' );
 		delete_option( $checkview_test_id . '_wsf_frm_id' );
 		delete_option( $visitor_ip );
+
 		setcookie( 'checkview_test_id', '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
 		setcookie( 'checkview_test_id' . $checkview_test_id, '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
+
 		delete_option( 'disable_email_receipt' );
 		delete_option( 'disable_webhooks' );
 	}
 }
+
 if ( ! function_exists( 'checkview_get_publickey' ) ) {
 	/**
 	 * Gets the SaaS' public key.
