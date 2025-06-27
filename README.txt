@@ -89,6 +89,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Improve logging
 * Disable test-related hooks on API requests
 * Disable Fluent Forms token-based spam prevention for tests
+* Disable Fluent Forms CAPTCHAs using newly provided hook
 
 = 2.0.18 =
 * Improve logging when querying for available test results.
@@ -368,6 +369,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 * Improve logging
 * Disable test-related hooks on API requests
 * Disable Fluent Forms token-based spam prevention for tests
+* Disable Fluent Forms CAPTCHAs using newly provided hook
 
 = 2.0.18 =
 * Improve logging when querying for available test results.

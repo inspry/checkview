@@ -207,6 +207,12 @@ if ( ! class_exists( 'Checkview_Fluent_Forms_Helper' ) ) {
 				'__return_false',
 				999
 			);
+
+			add_filter(
+				'fluentform/disable_captcha',
+				'__return_true',
+				999
+			);
 		}
 
 		/**
