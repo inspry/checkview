@@ -167,11 +167,14 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 
 			foreach ( $form['fields'] as $key => $field ) {
 				if ( 'captcha' === $field->type || 'hcaptcha' === $field->type || 'turnstile' === $field->type ) {
+					Checkview_Admin_Logs::add( 'ip-logs', 'Unset captcha field type [' . $field->type . '].' );
+
 					unset( $fields[ $key ] );
 				}
 			}
 
 			$form['fields'] = $fields;
+
 			return $form;
 		}
 
@@ -185,13 +188,15 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		 * @return void
 		 */
 		public function checkview_clone_entry( $entry, $form ) {
-			$form_id           = rgar( $form, 'id' );
+			$form_id = rgar( $form, 'id' );
 			$checkview_test_id = get_checkview_test_id();
 
 			if ( empty( $checkview_test_id ) ) {
 				$checkview_test_id = $form_id . gmdate( 'Ymd' );
 			}
+
 			self::checkview_clone_gf_entry( $entry['id'], $form_id, $checkview_test_id );
+
 			if ( isset( $entry['id'] ) ) {
 				GFAPI::delete_entry( $entry['id'] );
 			}
@@ -284,27 +289,53 @@ if ( ! class_exists( 'Checkview_Gforms_Helper' ) ) {
 		public function checkview_clone_gf_entry( $entry_id, $form_id, $uid ) {
 			global $wpdb;
 
+			Checkview_Admin_Logs::add( 'ip-logs', 'Cloning submission entry [' . $entry_id . '] with unique ID [' . $uid . ']...' );
+
 			$tablename = $wpdb->prefix . 'gf_entry_meta';
-			$rows      = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where entry_id=%d and form_id=%d order by id ASC', $entry_id, $form_id ) );
+			$rows = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where entry_id=%d and form_id=%d order by id ASC', $entry_id, $form_id ) );
+			$entry_meta_table = $wpdb->prefix . 'cv_entry_meta';
+			$count = 0;
+
 			foreach ( $rows as $row ) {
-				$table = $wpdb->prefix . 'cv_entry_meta';
 				$data  = array(
-					'uid'        => $uid,
-					'form_id'    => $row->form_id,
-					'entry_id'   => $row->entry_id,
-					'meta_key'   => $row->meta_key,
+					'uid' => $uid,
+					'form_id' => $row->form_id,
+					'entry_id' => $row->entry_id,
+					'meta_key' => $row->meta_key,
 					'meta_value' => $row->meta_value,
 				);
-				$wpdb->insert( $table, $data );
+
+				$result = $wpdb->insert( $entry_meta_table, $data );
+
+				if ( $result ) {
+					$count++;
+				}
 			}
+
+			if ( $count > 0 ) {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Cloned submission entry meta data (inserted ' . $count . ' rows into ' . $entry_meta_table . ').' );
+			} else {
+				if ( count( $rows ) > 0 ) {
+					Checkview_Admin_Logs::add( 'ip-logs', 'Failed to clone submission entry meta data.' );
+				}
+			}
+
 			$tablename = $wpdb->prefix . 'gf_entry';
-			$row       = $wpdb->get_row( $wpdb->prepare( 'Select * from ' . $tablename . ' where id=%d and form_id=%d LIMIT 1', $entry_id, $form_id ), ARRAY_A );
+			$row = $wpdb->get_row( $wpdb->prepare( 'Select * from ' . $tablename . ' where id=%d and form_id=%d LIMIT 1', $entry_id, $form_id ), ARRAY_A );
+
 			unset( $row['id'] );
 			unset( $row['source_id'] );
-			$table1           = $wpdb->prefix . 'cv_entry';
-			$row['uid']       = $uid;
+
+			$entry_table = $wpdb->prefix . 'cv_entry';
+			$row['uid'] = $uid;
 			$row['form_type'] = 'GravityForms';
-			$wpdb->insert( $table1, $row );
+			$result = $wpdb->insert( $entry_table, $row );
+
+			if ( ! $result ) {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Failed to clone submission entry data.' );
+			} else {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Cloned submission entry data (inserted ' . (int) $result . ' rows into ' . $entry_table . ').' );
+			}
 		}
 
 		/**
