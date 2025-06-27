@@ -87,6 +87,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 == Changelog ==
 = 2.0.19 =
 * Improve logging
+* Add hooks for disabling WP Forms CAPTCHAs/Turnstiles for tests
 * Disable test-related hooks on API requests
 * Disable Fluent Forms token-based spam prevention for tests
 * Remove Fluent Forms CAPTCHA/Turnstile key swap
@@ -368,6 +369,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 == Upgrade Notice ==
 = 2.0.19 =
 * Improve logging
+* Add hooks for disabling WP Forms CAPTCHAs/Turnstiles for tests
 * Disable test-related hooks on API requests
 * Disable Fluent Forms token-based spam prevention for tests
 * Remove Fluent Forms CAPTCHA/Turnstile key swap

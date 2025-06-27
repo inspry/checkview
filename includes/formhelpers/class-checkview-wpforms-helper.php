@@ -46,24 +46,13 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 				include_once ABSPATH . 'wp-admin/includes/plugin.php';
 			}
 
-			$old_settings = (array) get_option( 'wpforms_settings', array() );
+			add_filter( 'wpforms_frontend_form_data', array( $this, 'checkview_disable_turnstile' ) );
 
-			if ( ! empty( $old_settings['turnstile-site-key'] ) && null !== $old_settings['turnstile-site-key'] && null !== $old_settings['turnstile-secret-key'] ) {
-				if ( '1x00000000000000000000AA' !== $old_settings['turnstile-site-key'] ) {
-					update_option( 'checkview_wpforms_turnstile-site-key', $old_settings['turnstile-site-key'], true );
-					update_option( 'checkview_wpforms_turnstile-secret-key', $old_settings['turnstile-secret-key'], true );
-					$old_settings['turnstile-site-key']   = '1x00000000000000000000AA';
-					$old_settings['turnstile-secret-key'] = '1x0000000000000000000000000000000AA';
-					update_option( 'wpforms_settings', $old_settings );
-				}
-			} else {
-				// Disable reCAPTCHA assets and initialisation on the frontend.
-				add_filter(
-					'wpforms_frontend_recaptcha_disable',
-					'__return_true',
-					99
-				);
-			}
+			add_filter( 'wpforms_process_before_form_data', array( $this, 'checkview_disable_turnstile' ) );
+
+			add_filter( 'wpforms_frontend_captcha_api', array( $this, 'checkview_disable_frontend_captcha_api' ) );
+
+			add_filter( 'wpforms_frontend_recaptcha_disable', '__return_true', 99 );
 
 			// Disable validation and verification on the backend.
 			add_filter(
@@ -148,6 +137,40 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 				99,
 				1
 			);
+		}
+
+		/**
+		 * Disable Cloudflare Turnstile.
+		 *
+		 * @param array $form_data Form data.
+		 *
+		 * @return array Modified form data.
+		 *
+		 * @since 2.0.19
+		 */
+		public function checkview_disable_turnstile( $form_data ) {
+			$form_data['settings']['recaptcha'] = '0';
+
+			return $form_data;
+		}
+
+		/**
+		 * Disable WP Forms frontend CAPTCHA API.
+		 *
+		 * @param $captcha_api string CAPTCHA API.
+		 *
+		 * @return string
+		 *
+		 * @since 2.0.19
+		 */
+		public function checkview_disable_frontend_captcha_api( $captcha_api ) {
+			$captcha_settings = wpforms_get_captcha_settings();
+
+			if ( $captcha_settings['provider'] === 'turnstile' ) {
+				return '';
+			}
+
+			return $captcha_api;
 		}
 
 		/**
@@ -362,16 +385,6 @@ if ( ! class_exists( 'Checkview_Wpforms_Helper' ) ) {
 						'form_id'  => $form_id,
 					)
 				);
-			}
-
-			$old_settings = (array) get_option( 'wpforms_settings', array() );
-
-			if ( ! empty( $old_settings['turnstile-site-key'] ) && null !== $old_settings['turnstile-site-key'] && null !== $old_settings['turnstile-secret-key'] ) {
-				if ( '1x00000000000000000000AA' === $old_settings['turnstile-site-key'] ) {
-					$old_settings['turnstile-site-key']   = get_option( 'checkview_wpforms_turnstile-site-key' );
-					$old_settings['turnstile-secret-key'] = get_option( 'checkview_wpforms_turnstile-secret-key' );
-					update_option( 'wpforms_settings', $old_settings );
-				}
 			}
 
 			complete_checkview_test( $checkview_test_id );
