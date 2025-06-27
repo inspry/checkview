@@ -1119,34 +1119,6 @@ if ( ! defined( 'checkview_update_woocommerce_product_status' ) ) {
 		return $updated;
 	}
 }
-if ( ! defined( 'checkview_options_cleanup' ) ) {
-	/**
-	 * Cleans options for CV.
-	 *
-	 * @return void
-	 */
-	function checkview_options_cleanup() {
-		$old_settings = array();
-		$old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
-		if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
-			if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' === $old_settings['siteKey'] ) {
-				$old_settings['siteKey']   = get_option( 'checkview_rc-site-key' );
-				$old_settings['secretKey'] = get_option( 'checkview_rc-secret-key' );
-				update_option( '_fluentform_reCaptcha_details', $old_settings );
-			}
-		}
-		$old_settings = array();
-		$old_settings = (array) get_option( '_fluentform_turnstile_details', array() );
-		if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
-			if ( '1x00000000000000000000AA' === $old_settings['siteKey'] ) {
-				$old_settings['siteKey']   = get_option( 'checkview_ff_turnstile-site-key' );
-				$old_settings['secretKey'] = get_option( 'checkview_ff_turnstile-secret-key' );
-				update_option( '_fluentform_turnstile_details', $old_settings );
-			}
-		}
-		delete_option( 'cv_ff_keys_set_turnstile' );
-	}
-}
 
 if (!function_exists('array_find')) {
     /**
