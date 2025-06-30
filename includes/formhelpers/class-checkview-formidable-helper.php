@@ -40,6 +40,7 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		 */
 		public function __construct() {
 			$this->loader = new Checkview_Loader();
+
 			if ( defined( 'TEST_EMAIL' ) ) {
 				// update email to our test email.
 				add_filter(
@@ -82,11 +83,13 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 				11,
 				2
 			);
+
 			add_filter(
 				'akismet_get_api_key',
 				'__return_null',
 				-10
 			);
+
 			add_filter(
 				'frm_fields_to_validate',
 				array(
@@ -96,15 +99,18 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 				20,
 				2
 			);
+
 			add_filter(
 				'cfturnstile_whitelisted',
 				'__return_true',
 				999
 			);
+
 			add_filter(
 				'frm_run_honeypot',
 				'__return_false'
 			);
+
 			// Disbale form action.
 			add_filter(
 				'frm_custom_trigger_action',
@@ -168,6 +174,8 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 		public function checkview_log_form_test_entry( $entry_id, $form_id ) {
 			global $wpdb;
 
+			Checkview_Admin_Logs::add( 'ip-logs', 'Cloning submission entry [' . $entry_id . ']...' );
+
 			$checkview_test_id = get_checkview_test_id();
 
 			if ( empty( $checkview_test_id ) ) {
@@ -175,127 +183,188 @@ if ( ! class_exists( 'Checkview_Formidable_Helper' ) ) {
 			}
 
 			// Insert entry.
-			$entry_data  = array(
-				'form_id'      => $form_id,
-				'status'       => 'publish',
-				'source_url'   => isset( $_SERVER['HTTP_REFERER'] ) ? sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : '',
+			$entry_data = array(
+				'form_id' => $form_id,
+				'status' => 'publish',
+				'source_url' => isset( $_SERVER['HTTP_REFERER'] ) ? sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : '',
 				'date_created' => current_time( 'mysql' ),
 				'date_updated' => current_time( 'mysql' ),
-				'uid'          => $checkview_test_id,
-				'form_type'    => 'Formidable',
+				'uid' => $checkview_test_id,
+				'form_type' => 'Formidable',
 			);
 			$entry_table = $wpdb->prefix . 'cv_entry';
-			$wpdb->insert( $entry_table, $entry_data );
-			$inserted_entry_id = $wpdb->insert_id;
+
+			$result  = $wpdb->insert( $entry_table, $entry_data );
+
+			if ( ! $result ) {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Failed to clone submission entry data.' );
+			} else {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Cloned submission entry data (inserted ' . (int) $result . ' rows into ' . $entry_table . ').' );
+			}
 
 			// Insert entry meta.
 			$entry_meta_table = $wpdb->prefix . 'cv_entry_meta';
-			$fields           = $this->get_form_fields( $form_id );
+			$fields = $this->get_form_fields( $form_id );
+
 			if ( empty( $fields ) ) {
 				return;
 			}
-			$tablename   = $wpdb->prefix . 'frm_item_metas';
+
+			$tablename = $wpdb->prefix . 'frm_item_metas';
 			$form_fields = $wpdb->get_results( $wpdb->prepare( 'Select * from ' . $tablename . ' where item_id=%d', $entry_id ) );
+			$count = 0;
+
 			foreach ( $form_fields as $field ) {
 				if ( empty( $field->field_id ) ) {
 					continue;
 				}
+
 				if ( 'name' === $fields[ $field->field_id ]['type'] ) {
-
 					$field_values = maybe_unserialize( $field->meta_value );
-
 					$name_format = $fields[ $field->field_id ]['name_layout'];
+
 					switch ( $name_format ) {
 						case 'first_middle_last':
 							// First.
 							$entry_metadata = array(
-								'uid'        => $checkview_test_id,
-								'form_id'    => $form_id,
-								'entry_id'   => $entry_id,
-								'meta_key'   => $fields[ $field->field_id ]['sub_fields'][0]['field_id'],
+								'uid' => $checkview_test_id,
+								'form_id' => $form_id,
+								'entry_id' => $entry_id,
+								'meta_key' => $fields[ $field->field_id ]['sub_fields'][0]['field_id'],
 								'meta_value' => $field_values['first'],
 							);
-							$wpdb->insert( $entry_meta_table, $entry_metadata );
+
+							$result = $wpdb->insert( $entry_meta_table, $entry_metadata );
+
+							if ( $result ) {
+								$count++;
+							}
 
 							// middle.
 							$entry_metadata = array(
-								'uid'        => $checkview_test_id,
-								'form_id'    => $form_id,
-								'entry_id'   => $entry_id,
-								'meta_key'   => $fields[ $field->field_id ]['sub_fields'][1]['field_id'],
+								'uid' => $checkview_test_id,
+								'form_id' => $form_id,
+								'entry_id' => $entry_id,
+								'meta_key' => $fields[ $field->field_id ]['sub_fields'][1]['field_id'],
 								'meta_value' => $field_values['middle'],
 							);
-							$wpdb->insert( $entry_meta_table, $entry_metadata );
+
+							$result = $wpdb->insert( $entry_meta_table, $entry_metadata );
+
+							if ( $result ) {
+								$count++;
+							}
 
 							// last.
 							$entry_metadata = array(
-								'uid'        => $checkview_test_id,
-								'form_id'    => $form_id,
-								'entry_id'   => $entry_id,
-								'meta_key'   => $fields[ $field->field_id ]['sub_fields'][2]['field_id'],
+								'uid' => $checkview_test_id,
+								'form_id' => $form_id,
+								'entry_id' => $entry_id,
+								'meta_key' => $fields[ $field->field_id ]['sub_fields'][2]['field_id'],
 								'meta_value' => $field_values['last'],
 							);
-							$wpdb->insert( $entry_meta_table, $entry_metadata );
+
+							$result = $wpdb->insert( $entry_meta_table, $entry_metadata );
+
+							if ( $result ) {
+								$count++;
+							}
 
 							break;
 						case 'first_last':
 							// First.
 							$entry_metadata = array(
-								'uid'        => $checkview_test_id,
-								'form_id'    => $form_id,
-								'entry_id'   => $entry_id,
-								'meta_key'   => $fields[ $field->field_id ]['sub_fields'][0]['field_id'],
+								'uid' => $checkview_test_id,
+								'form_id' => $form_id,
+								'entry_id' => $entry_id,
+								'meta_key' => $fields[ $field->field_id ]['sub_fields'][0]['field_id'],
 								'meta_value' => $field_values['first'],
 							);
-							$wpdb->insert( $entry_meta_table, $entry_metadata );
+
+							$result = $wpdb->insert( $entry_meta_table, $entry_metadata );
+
+							if ( $result ) {
+								$count++;
+							}
+
 							// last.
 							$entry_metadata = array(
-								'uid'        => $checkview_test_id,
-								'form_id'    => $form_id,
-								'entry_id'   => $entry_id,
-								'meta_key'   => $fields[ $field->field_id ]['sub_fields'][1]['field_id'],
+								'uid' => $checkview_test_id,
+								'form_id' => $form_id,
+								'entry_id' => $entry_id,
+								'meta_key' => $fields[ $field->field_id ]['sub_fields'][1]['field_id'],
 								'meta_value' => $field_values['last'],
 							);
-							$wpdb->insert( $entry_meta_table, $entry_metadata );
+
+							$result = $wpdb->insert( $entry_meta_table, $entry_metadata );
+
+							if ( $result ) {
+								$count++;
+							}
+
 							break;
 						case 'last_first':
 							// First.
 							$entry_metadata = array(
-								'uid'        => $checkview_test_id,
-								'form_id'    => $form_id,
-								'entry_id'   => $entry_id,
-								'meta_key'   => $fields[ $field->field_id ]['sub_fields'][1]['field_id'],
+								'uid' => $checkview_test_id,
+								'form_id' => $form_id,
+								'entry_id' => $entry_id,
+								'meta_key' => $fields[ $field->field_id ]['sub_fields'][1]['field_id'],
 								'meta_value' => $field_values['first'],
 							);
-							$wpdb->insert( $entry_meta_table, $entry_metadata );
+
+							$result = $wpdb->insert( $entry_meta_table, $entry_metadata );
+
+							if ( $result ) {
+								$count++;
+							}
+
 							// last.
 							$entry_metadata = array(
-								'uid'        => $checkview_test_id,
-								'form_id'    => $form_id,
-								'entry_id'   => $entry_id,
-								'meta_key'   => $fields[ $field->field_id ]['sub_fields'][0]['field_id'],
+								'uid' => $checkview_test_id,
+								'form_id' => $form_id,
+								'entry_id' => $entry_id,
+								'meta_key' => $fields[ $field->field_id ]['sub_fields'][0]['field_id'],
 								'meta_value' => $field_values['last'],
 							);
-							$wpdb->insert( $entry_meta_table, $entry_metadata );
-							break;
 
+							$result = $wpdb->insert( $entry_meta_table, $entry_metadata );
+
+							if ( $result ) {
+								$count++;
+							}
+
+							break;
 					}
 				} else {
-					$field_value    = $field->meta_value;
+					$field_value = $field->meta_value;
 					$entry_metadata = array(
-						'uid'        => $checkview_test_id,
-						'form_id'    => $form_id,
-						'entry_id'   => $entry_id,
-						'meta_key'   => $fields[ $field->field_id ]['field_id'],
+						'uid' => $checkview_test_id,
+						'form_id' => $form_id,
+						'entry_id' => $entry_id,
+						'meta_key' => $fields[ $field->field_id ]['field_id'],
 						'meta_value' => $field_value,
 					);
-					$wpdb->insert( $entry_meta_table, $entry_metadata );
+
+					$result = $wpdb->insert( $entry_meta_table, $entry_metadata );
+
+					if ( $result ) {
+						$count++;
+					}
+				}
+			}
+
+			if ( $count > 0 ) {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Cloned submission entry meta data (inserted ' . $count . ' rows into ' . $entry_meta_table . ').' );
+			} else {
+				if ( count( $form_fields ) > 0 ) {
+					Checkview_Admin_Logs::add( 'ip-logs', 'Failed to clone submission entry meta data.' );
 				}
 			}
 
 			// Remove test entry form Formidable.
 			$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . 'frm_item_metas WHERE item_id=%d', $entry_id ) );
-			$result = $wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . 'frm_items WHERE id=%d', $entry_id ) );
+			$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . 'frm_items WHERE id=%d', $entry_id ) );
 
 			complete_checkview_test( $checkview_test_id );
 		}

@@ -143,6 +143,7 @@ if ( ! function_exists( 'get_checkview_test_id' ) ) {
 		}
 	}
 }
+
 if ( ! function_exists( 'complete_checkview_test' ) ) {
 	/**
 	 * Concludes a test.
@@ -155,44 +156,60 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 	 */
 	function complete_checkview_test( $checkview_test_id = '' ) {
 		global $wpdb;
-		global $CV_TEST_ID;
+
+		Checkview_Admin_Logs::add( 'ip-logs', 'Completing test...' );
+
 		if ( ! defined( 'CV_TEST_ID' ) ) {
 			define( 'CV_TEST_ID', $checkview_test_id );
 		}
+
 		$session_table = $wpdb->prefix . 'cv_session';
-		$visitor_ip    = checkview_get_visitor_ip();
-		$cv_session    = checkview_get_cv_session( $visitor_ip, CV_TEST_ID );
+		$visitor_ip = checkview_get_visitor_ip();
+		$cv_session = checkview_get_cv_session( $visitor_ip, CV_TEST_ID );
 
 		// Stop if session not found.
 		if ( ! empty( $cv_session ) ) {
 			$test_key = $cv_session[0]['test_key'];
-			delete_option( $test_key );
+
+			cv_delete_option( $test_key );
 		}
 
-		$wpdb->delete(
+		$result = $wpdb->delete(
 			$session_table,
 			array(
 				'visitor_ip' => $visitor_ip,
-				'test_id'    => $checkview_test_id,
+				'test_id' => $checkview_test_id,
 			)
 		);
+
+		if ( false === $result ) {
+			Checkview_Admin_Logs::add( 'ip-logs', 'Failed to delete rows from session table [' . $session_table . '].' );
+		}
+
 		$entry_id = get_option( $checkview_test_id . '_wsf_entry_id', '' );
 		$form_id  = get_option( $checkview_test_id . '_wsf_frm_id', '' );
+
 		if ( ! empty( $form_id ) && ! empty( $entry_id ) ) {
-			$ws_form_submit          = new WS_Form_Submit();
-			$ws_form_submit->id      = $entry_id;
+			$ws_form_submit = new WS_Form_Submit();
+			$ws_form_submit->id = $entry_id;
 			$ws_form_submit->form_id = $form_id;
 			$ws_form_submit->db_delete( true, true, true );
 		}
-		delete_option( $checkview_test_id . '_wsf_entry_id' );
-		delete_option( $checkview_test_id . '_wsf_frm_id' );
-		delete_option( $visitor_ip );
+
+		cv_delete_option( $checkview_test_id . '_wsf_entry_id' );
+		cv_delete_option( $checkview_test_id . '_wsf_frm_id' );
+		cv_delete_option( $visitor_ip );
+
 		setcookie( 'checkview_test_id', '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
 		setcookie( 'checkview_test_id' . $checkview_test_id, '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
-		delete_option( 'disable_email_receipt' );
-		delete_option( 'disable_webhooks' );
+
+		cv_delete_option( 'disable_email_receipt' );
+		cv_delete_option( 'disable_webhooks' );
+
+		Checkview_Admin_Logs::add( 'ip-logs', 'Test complete.' );
 	}
 }
+
 if ( ! function_exists( 'checkview_get_publickey' ) ) {
 	/**
 	 * Gets the SaaS' public key.
@@ -234,9 +251,11 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 	 * @return string[]|null|false
 	 */
 	function checkview_get_api_ip() {
-
 		$ip_address = get_transient( 'checkview_saas_ip_address' ) ? get_transient( 'checkview_saas_ip_address' ) : array();
-		if ( null === $ip_address || '' === $ip_address || empty( $ip_address ) ) {
+
+		if ( empty( $ip_address ) ) {
+			Checkview_Admin_Logs::add( 'ip-logs', 'Bot IP address list transient empty, requesting new IP addresses.' );
+
 			$request = wp_remote_get(
 				'https://verify.checkview.io/whitelist.json',
 				array(
@@ -244,15 +263,22 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 					'timeout' => 500,
 				)
 			);
+
 			if ( is_wp_error( $request ) ) {
+				$code = $request->get_error_code();
+				$message = $request->get_error_message();
+
+				Checkview_Admin_Logs::add( 'ip-logs', 'Request for new IP addresses failed with code [' . $code . ']. Message: ' . $message );
+
 				return null;
 			}
 
 			$body = wp_remote_retrieve_body( $request );
-
 			$data = json_decode( $body, true );
+
 			if ( ! empty( $data ) && ! empty( $data['ipAddresses'] ) ) {
 				$ip_address = $data['ipAddresses'];
+
 				if ( ! empty( $ip_address ) && is_array( $ip_address ) ) {
 					foreach ( $ip_address as $ip ) {
 						// If validation fails, handle the error appropriately.
@@ -263,17 +289,25 @@ if ( ! function_exists( 'checkview_get_api_ip' ) ) {
 				} elseif ( ! checkview_validate_ip( $ip_address ) ) {
 					return false;
 				}
+
 				set_transient( 'checkview_saas_ip_address', $ip_address, 12 * HOUR_IN_SECONDS );
+
+				Checkview_Admin_Logs::add( 'ip-logs', 'Set bot IP address list transient to response data [' . wp_json_encode( $ip_address ) . ']' );
+			} else {
+				Checkview_Admin_Logs::add( 'ip-logs', 'IP addresses not found in request for new IP addresses.' );
 			}
 		}
+
 		if ( ! is_array( $ip_address ) ) {
 			$ip_address = (array) $ip_address;
 		}
+
 		if ( is_array( $ip_address ) ) {
 			$ip_address[] = '::1';
 			$ip_address[] = '188.251.23.194';
 			$ip_address[] = '2001:8a0:e5d0:a900:70a5:138a:d159:5054';
 		}
+
 		return $ip_address;
 	}
 }
@@ -331,7 +365,7 @@ if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
 		// Check view Bot IP.
 		$cv_bot_ip  = checkview_get_api_ip();
 		$ip_options = checkview_get_custom_header_keys_for_ip();
-		$ip         = '';
+		$ip = '';
 
 		foreach ( $ip_options as $key ) {
 			if ( ! isset( $_SERVER[ $key ] ) ) {
@@ -339,12 +373,11 @@ if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
 			}
 
 			$key = checkview_get_server_value( $key );
+
 			foreach ( explode( ',', $key ) as $ip ) {
-				// Just to be safe.
 				$ip = trim( $ip );
 
 				if ( checkview_validate_ip( $ip ) && is_array( $cv_bot_ip ) && in_array( $ip, $cv_bot_ip ) ) {
-					Checkview_Admin_Logs::add( 'ip-logs', 'Bypassed ' . $ip );
 					return sanitize_text_field( $ip );
 				}
 			}
@@ -887,9 +920,20 @@ if ( ! function_exists( 'checkview_is_valid_uuid' ) ) {
 	 */
 	function checkview_is_valid_uuid( $uuid ) {
 		if ( empty( $uuid ) || is_wp_error( $uuid ) ) {
+			Checkview_Admin_Logs::add( 'ip-logs', 'Invalid UUID [' . $uuid . '].' );
+
 			return false;
 		}
-		return preg_match( '/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i', $uuid );
+
+		$matches = preg_match( '/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i', $uuid );
+
+		if ( ! $matches ) {
+			Checkview_Admin_Logs::add( 'ip-logs', 'Invalid UUID [' . $uuid . '].' );
+
+			return false;
+		}
+
+		return true;
 	}
 }
 
@@ -1075,34 +1119,6 @@ if ( ! defined( 'checkview_update_woocommerce_product_status' ) ) {
 		return $updated;
 	}
 }
-if ( ! defined( 'checkview_options_cleanup' ) ) {
-	/**
-	 * Cleans options for CV.
-	 *
-	 * @return void
-	 */
-	function checkview_options_cleanup() {
-		$old_settings = array();
-		$old_settings = (array) get_option( '_fluentform_reCaptcha_details', array() );
-		if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
-			if ( '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' === $old_settings['siteKey'] ) {
-				$old_settings['siteKey']   = get_option( 'checkview_rc-site-key' );
-				$old_settings['secretKey'] = get_option( 'checkview_rc-secret-key' );
-				update_option( '_fluentform_reCaptcha_details', $old_settings );
-			}
-		}
-		$old_settings = array();
-		$old_settings = (array) get_option( '_fluentform_turnstile_details', array() );
-		if ( ! empty( $old_settings ) && null !== $old_settings['siteKey'] && null !== $old_settings['secretKey'] ) {
-			if ( '1x00000000000000000000AA' === $old_settings['siteKey'] ) {
-				$old_settings['siteKey']   = get_option( 'checkview_ff_turnstile-site-key' );
-				$old_settings['secretKey'] = get_option( 'checkview_ff_turnstile-secret-key' );
-				update_option( '_fluentform_turnstile_details', $old_settings );
-			}
-		}
-		delete_option( 'cv_ff_keys_set_turnstile' );
-	}
-}
 
 if (!function_exists('array_find')) {
     /**
@@ -1123,4 +1139,69 @@ if (!function_exists('array_find')) {
 
         return null;
     }
+}
+
+if ( ! function_exists( 'cv_update_option' ) ) {
+	/**
+	 * Updates an option in WordPress.
+	 *
+	 * Wrapper for update_option() that also includes logging. Suppresses logs from
+	 * failures due to option already existing with the same value.
+	 *
+	 * @see update_option()
+	 * @see get_option()
+	 *
+	 * @param $option string Name of the option to update.
+	 * @param $value mixed Option value.
+	 * @param $autoload boolean|null Optional. Whether to load the option when WordPress starts up.
+	 *
+	 * @return boolean True if the value was updated, false otherwise.
+	 */
+	function cv_update_option( $option, $value, $autoload = null ) {
+		$old_option = get_option( $option );
+		$result = update_option( $option, $value, $autoload );
+
+		if ( $result ) {
+			Checkview_Admin_Logs::add( 'ip-logs', 'Updated option [' . $option . '] with value [' . print_r( $value, true ) . '].' );
+		} else {
+			if ($old_option !== false && $old_option !== $value && maybe_serialize( $old_option ) !== maybe_serialize( $value ) ) {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Failed updating option [' . $option . '] with value [' . print_r( $value, true ) . '].' );
+			}
+		}
+
+		return $result;
+	}
+}
+
+if ( ! function_exists( 'cv_delete_option' ) ) {
+	/**
+	 * Deletes an option in WordPress.
+	 *
+	 * Wrapper for delete_option() that also includes logging. Only attempts
+	 * deletion if the option is found in the database.
+	 *
+	 * @see delete_option()
+	 * @see get_option()
+	 *
+	 * @param $option string Name of the option to delete.
+	 *
+	 * @return boolean True if the value was deleted, false otherwise.
+	 */
+	function cv_delete_option( $option ) {
+		$current_option = get_option( $option );
+
+		if ( false !== $current_option ) {
+			$result = delete_option( $option );
+
+			if ( $result ) {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Deleted option [' . $option . '].' );
+			} else {
+				Checkview_Admin_Logs::add( 'ip-logs', 'Failed deleting option [' . $option . '].' );
+			}
+
+			return $result;
+		}
+
+		return true;
+	}
 }
