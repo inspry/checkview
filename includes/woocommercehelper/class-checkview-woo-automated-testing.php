@@ -563,32 +563,33 @@ class Checkview_Woo_Automated_Testing {
 	 * @return void
 	 */
 	public function checkview_test_mode() {
-
-		// Current Vsitor IP.
 		$visitor_ip = checkview_get_visitor_ip();
-		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
-		if ( ! is_array( $cv_bot_ip ) || ! in_array( $visitor_ip, $cv_bot_ip ) ) {
 
+		if ( ! is_array( $cv_bot_ip ) || ! in_array( $visitor_ip, $cv_bot_ip ) ) {
 			return;
 		}
-		Checkview_Admin_Logs::add( 'ip-logs', wp_json_encode( $cv_bot_ip ) . 'bot IP' );
-		Checkview_Admin_Logs::add( 'ip-logs', wp_json_encode( $visitor_ip ) . 'visitor IP' );
+
+		Checkview_Admin_Logs::add( 'ip-logs', 'Running Woo test mode hooks, visitor IP [' . $visitor_ip . '] matched a bot IP.' );
+
 		if ( ! is_admin() && class_exists( 'WooCommerce' ) ) {
 			// Always use Stripe test mode when on dev or staging.
 			add_filter(
 				'option_woocommerce_stripe_settings',
 				function ( $value ) {
+					Checkview_Admin_Logs::add( 'ip-logs', 'Setting Woo test mode to true for hook [option_woocommerce_stripe_settings].' );
 
 					$value['testmode'] = 'yes';
 
 					return $value;
 				}
 			);
+
 			// Turn test mode on for stripe payments.
 			add_filter(
 				'wc_stripe_mode',
 				function ( $mode ) {
+					Checkview_Admin_Logs::add( 'ip-logs', 'Setting Woo test mode to true for hook [wc_stripe_mode].' );
 
 					$mode = 'test';
 
@@ -614,26 +615,37 @@ class Checkview_Woo_Automated_Testing {
 				$this,
 				'checkview_woocommerce_block_support',
 			);
+
 			add_filter(
 				'cfturnstile_whitelisted',
 				'__return_true',
 				999
 			);
+
 			// Make the test product visible in the catalog.
 			add_filter(
 				'woocommerce_product_is_visible',
-				function ( $visible, $product_id ) {
+				function ( bool $visible, $product_id ) {
 					$product = $this->checkview_get_test_product();
 
 					if ( ! $product ) {
 						return false;
 					}
 
-					return $product_id === $product->get_id() ? true : $visible;
+					$is_visible = $product_id === $product->get_id() ? true : $visible;
+
+					if ($is_visible) {
+						Checkview_Admin_Logs::add( 'ip-logs', 'Setting Woo test product visibility to true.' );
+
+						return true;
+					}
+
+					return false;
 				},
 				9999,
 				2
 			);
+
 			$this->loader->add_action(
 				'woocommerce_order_status_changed',
 				$this,
@@ -641,8 +653,11 @@ class Checkview_Woo_Automated_Testing {
 				10,
 				3
 			);
+		} else {
+			Checkview_Admin_Logs::add( 'ip-logs', 'No Woo hooks were ran (WooCommerce was not found or client is requesting admin area).' );
 		}
 	}
+
 	/**
 	 * Returns false.
 	 *
@@ -728,11 +743,16 @@ class Checkview_Woo_Automated_Testing {
 	/**
 	 * Adds CheckView dummy payment gateway to Woo.
 	 *
-	 * @param string $methods Methods to add payments.
-	 * @return array
+	 * @param string[] $methods Methods to add payments.
+	 * @return string[]
 	 */
 	public function checkview_add_payment_gateway( $methods ) {
-		$methods[] = 'Checkview_Payment_Gateway';
+		$gateway = 'Checkview_Payment_Gateway';
+
+		Checkview_Admin_Logs::add( 'ip-logs', 'Adding Woo payment gateway [' . $gateway . '].' );
+
+		$methods[] = $gateway;
+
 		return $methods;
 	}
 
@@ -748,6 +768,8 @@ class Checkview_Woo_Automated_Testing {
 			add_action(
 				'woocommerce_blocks_payment_method_type_registration',
 				function ( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
+					Checkview_Admin_Logs::add( 'ip-logs', 'Added Woo Blocks payment gateway.' );
+
 					$payment_method_registry->register( new Checkview_Blocks_Payment_Gateway() );
 				}
 			);
@@ -766,6 +788,7 @@ class Checkview_Woo_Automated_Testing {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			return;
 		}
+
 		return $this->checkview_delete_orders();
 	}
 
@@ -776,52 +799,58 @@ class Checkview_Woo_Automated_Testing {
 	 * @return bool
 	 */
 	public function checkview_delete_orders( $order_id = '' ) {
+		Checkview_Admin_Logs::add( 'ip-logs', 'Deleting CheckView orders from the database...' );
 
-		global $wpdb;
 		$orders = array();
-		// WPDBPREPARE.
-		if ( empty( $orders ) || false === $orders ) {
-			$args = array(
-				'limit'        => -1,
-				'type'         => 'shop_order',
-				'meta_key'     => 'payment_made_by', // Postmeta key field.
-				'meta_value'   => 'checkview', // Postmeta value field.
-				'meta_compare' => '=',
-				'return'       => 'ids',
-			);
-			if ( function_exists( 'wc_get_orders' ) ) {
-				$orders = wc_get_orders( $args );
-			}
-			$orders_cv = array();
-			$args      = array(
-				'limit'          => -1,
-				'type'           => 'shop_order',
-				'payment_method' => 'checkview',
-				'return'         => 'ids',
-			);
-			if ( function_exists( 'wc_get_orders' ) ) {
-				$orders_cv = wc_get_orders( $args );
-			}
-			$orders = array_unique( array_merge( $orders, $orders_cv ) );
+		$args = array(
+			'limit' => -1,
+			'type' => 'shop_order',
+			'meta_key' => 'payment_made_by', // Postmeta key field.
+			'meta_value' => 'checkview', // Postmeta value field.
+			'meta_compare' => '=',
+			'return' => 'ids',
+		);
 
+		if ( function_exists( 'wc_get_orders' ) ) {
+			$orders = wc_get_orders( $args );
 		}
+
+		$orders_cv = array();
+		$args = array(
+			'limit' => -1,
+			'type' => 'shop_order',
+			'payment_method' => 'checkview',
+			'return' => 'ids',
+		);
+
+		if ( function_exists( 'wc_get_orders' ) ) {
+			$orders_cv = wc_get_orders( $args );
+		}
+
+		$orders = array_unique( array_merge( $orders, $orders_cv ) );
+
+		Checkview_Admin_Logs::add( 'cron-logs', 'Found ' . count( $orders ) . ' CheckView orders to delete.' );
+
 		// Delete orders.
 		if ( ! empty( $orders ) ) {
 			foreach ( $orders as $order ) {
+				$order_object = wc_get_order( $order );
 
+				// Delete order.
 				try {
-					$order_object = wc_get_order( $order );
-					// Delete order.
 					if ( $order_object && method_exists( $order_object, 'get_customer_id' ) ) {
 						if ( $order_object->get_meta( 'payment_made_by' ) !== 'checkview' && 'checkview' !== $order_object->get_payment_method() ) {
 							continue;
 						}
+
 						$customer_id = $order_object->get_customer_id();
 						$order_object->delete( true );
+
 						delete_transient( 'checkview_store_orders_transient' );
 
 						$order_object = null;
 						$current_user = get_user_by( 'id', $customer_id );
+
 						// Delete customer if available.
 						if ( $customer_id && isset( $current_user->roles ) && isset( $current_user->roles ) && ! in_array( 'administrator', $current_user->roles, true ) ) {
 							$customer = new WC_Customer( $customer_id );
@@ -830,7 +859,7 @@ class Checkview_Woo_Automated_Testing {
 								require_once ABSPATH . 'wp-admin/includes/user.php';
 							}
 
-							$res      = $customer->delete( true );
+							$res = $customer->delete( true );
 							$customer = null;
 						}
 					}
@@ -838,9 +867,16 @@ class Checkview_Woo_Automated_Testing {
 					if ( ! class_exists( 'Checkview_Admin_Logs' ) ) {
 						require_once CHECKVIEW_ADMIN_DIR . '/class-checkview-admin-logs.php';
 					}
-					Checkview_Admin_Logs::add( 'cron-logs', 'Crone job failed.' );
+
+					if ($order_object) {
+						Checkview_Admin_Logs::add( 'cron-logs', 'Failed to delete CheckView order [' . $order_object->get_id() . '] from the database.' );
+					} else {
+						Checkview_Admin_Logs::add( 'cron-logs', 'Failed to delete CheckView order from the database.' );
+					}
+
 				}
 			}
+
 			return true;
 		}
 	}
@@ -857,11 +893,16 @@ class Checkview_Woo_Automated_Testing {
 		if ( isset( $_COOKIE['checkview_test_id'] ) && '' !== $_COOKIE['checkview_test_id'] && checkview_is_valid_uuid( sanitize_text_field( wp_unslash( $_COOKIE['checkview_test_id'] ) ) ) ) {
 			$order = new WC_Order( $order_id );
 			$order->update_meta_data( 'payment_made_by', 'checkview' );
-
 			$order->update_meta_data( 'checkview_test_id', sanitize_text_field( wp_unslash( $_COOKIE['checkview_test_id'] ) ) );
+
+			Checkview_Admin_Logs::add( 'ip-logs', 'Added meta data to test order.' );
+
 			complete_checkview_test( sanitize_text_field( wp_unslash( $_COOKIE['checkview_test_id'] ) ) );
 
 			$order->save();
+
+			Checkview_Admin_Logs::add( 'ip-logs', 'Saved new order [' . $order->get_id() . '].' );
+
 			unset( $_COOKIE['checkview_test_id'] );
 			setcookie( 'checkview_test_id', '', time() - 6600, COOKIEPATH, COOKIE_DOMAIN );
 			checkview_schedule_delete_orders( $order_id );
