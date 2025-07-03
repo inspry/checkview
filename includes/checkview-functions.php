@@ -358,8 +358,8 @@ if ( ! function_exists( 'checkview_get_visitor_ip' ) ) {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return string|false IP address of visitor, or `false` if determined to be
-	 *                      an invalid IP.
+	 * @return string IP address of visitor, or `false` if determined to be
+	 *                an invalid IP.
 	 */
 	function checkview_get_visitor_ip() {
 		// Check view Bot IP.
@@ -840,6 +840,8 @@ if ( ! function_exists( 'checkview_schedule_delete_orders' ) ) {
 	 * @return void
 	 */
 	function checkview_schedule_delete_orders( $order_id ) {
+		Checkview_Admin_Logs::add( 'ip-logs', 'Scheduling order deletion.' );
+
 		wp_schedule_single_event( time() + 1 * HOUR_IN_SECONDS, 'checkview_delete_orders_action', array( $order_id ) );
 	}
 }
