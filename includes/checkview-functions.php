@@ -1130,7 +1130,7 @@ if (!function_exists('array_find')) {
      * @param callable $callback The callback function to test each element.
      * @return mixed The first matching element, or null if none found.
      */
-    function array_find(array $array, callable $callback): mixed {
+    function array_find(array $array, callable $callback) {
         foreach ($array as $key => $value) {
             if ($callback($value, $key)) {
                 return $value;
