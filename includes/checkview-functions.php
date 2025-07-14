@@ -686,16 +686,30 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 		$url         = explode( '?', $current_url );
 		$current_url = $url[0];
 		$page_id     = '';
+
 		// Retrieve the current post's ID based on its URL.
-		if ( $current_url ) {
-			$page_id = get_page_by_path( $current_url );
-			$page_id = $page_id->ID;
-		} else {
+		if ( ! $current_url ) {
 			global $post;
-			if ( $post ) {
+
+			if ( $post instanceof WP_Post ) {
 				$page_id = $post->ID;
 			}
+		} else {
+			$page = get_page_by_path( $current_url );
+
+			if ( $page instanceof WP_Post ) {
+				$page_id = $page->ID;
+			} else {
+				global $post;
+
+				if ( $post instanceof WP_Post ) {
+					$page_id = $post->ID;
+				} else {
+					$page_id = get_the_ID();
+				}
+			}
 		}
+
 		$session_table = $wpdb->prefix . 'cv_session';
 		$test_key      = 'CF_TEST_' . $page_id;
 		$session_data  = array(
