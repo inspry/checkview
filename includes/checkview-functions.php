@@ -118,8 +118,6 @@ if ( ! function_exists( 'get_checkview_test_id' ) ) {
 	 * @return string|false Test ID, or `false` on failure.
 	 */
 	function get_checkview_test_id() {
-		global $wpdb;
-
 		$cv_test_id = isset( $_REQUEST['checkview_test_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) : '';
 
 		if ( ! empty( $cv_test_id ) ) {
