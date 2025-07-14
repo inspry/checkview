@@ -1012,7 +1012,7 @@ if ( ! function_exists( 'checkview_get_option_data_handler' ) ) {
 	 * @return void
 	 */
 	function checkview_get_option_data_handler() {
-		if ( ! isset( $_POST['_checkview_token'] ) || empty( $_POST['_checkview_token'] ) ) {
+		if ( empty( $_POST['_checkview_token'] ) ) {
 			Checkview_Admin_Logs::add( 'api-logs', 'Token absent.' );
 			wp_send_json_error( esc_html__( 'There was a technical error while processing your request.', 'checkview' ) );
 			wp_die();
