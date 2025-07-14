@@ -152,7 +152,7 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 	 * @param string $checkview_test_id Test ID.
 	 * @return void
 	 */
-	function complete_checkview_test( $checkview_test_id = '' ) {
+	function complete_checkview_test( string $checkview_test_id = '' ) {
 		global $wpdb;
 
 		Checkview_Admin_Logs::add( 'ip-logs', 'Completing test...' );
