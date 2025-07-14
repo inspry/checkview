@@ -188,10 +188,14 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 		$form_id  = get_option( $checkview_test_id . '_wsf_frm_id', '' );
 
 		if ( ! empty( $form_id ) && ! empty( $entry_id ) ) {
-			$ws_form_submit = new WS_Form_Submit();
-			$ws_form_submit->id = $entry_id;
-			$ws_form_submit->form_id = $form_id;
-			$ws_form_submit->db_delete( true, true, true );
+			if ( class_exists( 'WS_Form_Submit' ) ) {
+				$ws_form_submit = new WS_Form_Submit();
+				$ws_form_submit->id = $entry_id;
+				$ws_form_submit->form_id = $form_id;
+				$ws_form_submit->db_delete( true, true, true );
+			} else {
+				Checkview_Admin_Logs::add( 'ip-logs', 'WS_Form_Submit class does not exist.' );
+			}
 		}
 
 		cv_delete_option( $checkview_test_id . '_wsf_entry_id' );
