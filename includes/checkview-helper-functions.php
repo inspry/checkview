@@ -16,10 +16,10 @@ if ( ! function_exists( 'checkview_validate_ip' ) ) {
 	/**
 	 * Validates an IP address.
 	 *
-	 * @param IP $ip IP address.
+	 * @param string $ip IP address.
 	 * @return bool
 	 */
-	function checkview_validate_ip( $ip ) {
+	function checkview_validate_ip( string $ip ): bool {
 		// Validate that the input is a valid IP address.
 		if ( ! empty( $ip ) && ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
 			// If validation fails, handle the error appropriately.
