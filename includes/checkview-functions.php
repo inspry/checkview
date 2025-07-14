@@ -1030,9 +1030,7 @@ if ( ! function_exists( 'checkview_get_option_data_handler' ) ) {
 		$nonce_token = checkview_validate_jwt_token( $token );
 
 		// Checking for JWT token.
-		if ( ! isset( $nonce_token ) || empty( $nonce_token ) || is_wp_error( $nonce_token ) ) {
-			$this->jwt_error = $nonce_token;
-			// Log the detailed error for internal use.
+		if ( empty( $nonce_token ) || is_wp_error( $nonce_token ) ) {
 			Checkview_Admin_Logs::add( 'api-logs', 'Invalid token.' );
 			wp_send_json_error( esc_html__( 'There was a technical error while processing your request.', 'checkview' ) );
 			wp_die();
