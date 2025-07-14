@@ -665,7 +665,7 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 
 		$is_sub_directory = explode( '/', str_replace( '//', '|', $current_url ) );
 		if ( count( $is_sub_directory ) > 1 ) {
-			// remove subdiretory from home url.
+			// remove subdirectory from home url.
 			$current_url = str_replace( '/' . $is_sub_directory[1], '', $current_url );
 		}
 
