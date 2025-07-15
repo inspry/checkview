@@ -60,6 +60,16 @@ class Checkview {
 	private static $instance = null;
 
 	/**
+	 * Bot cookie name.
+	 *
+	 * @since 2.0.20
+	 * @access private
+	 *
+	 * @var string $bot_cookie Bot cookie name.
+	 */
+	private static string $bot_cookie = 'cv_trigger';
+
+	/**
 	 * Constructor.
 	 *
 	 * Sets up class properties, loads dependencies, and hooks up functions.
@@ -95,6 +105,19 @@ class Checkview {
 		}
 
 		return self::$instance;
+	}
+
+	/**
+	 * Determine if the request contains the cookie necessary for running testing code.
+	 *
+	 * @return boolean
+	 */
+	public static function has_cookie(): bool {
+		if ( isset( $_COOKIE[self::$bot_cookie] ) && $_COOKIE[self::$bot_cookie] === '1' ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
