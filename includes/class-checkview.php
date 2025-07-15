@@ -121,6 +121,19 @@ class Checkview {
 	}
 
 	/**
+	 * Determine if the current request is a CheckView bot.
+	 *
+	 * @return bool
+	 */
+	public static function is_bot(): bool {
+		$visitor_ip = checkview_get_visitor_ip();
+		$cv_bot_ip = checkview_get_api_ip();
+		$has_cookie = self::has_cookie();
+
+		return $has_cookie && is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip );
+	}
+
+	/**
 	 * Loads plugin dependencies.
 	 *
 	 * Loads WordPress Core dependenceis, vendor files, and CheckView classes.
