@@ -131,7 +131,7 @@ class Checkview {
 
 		$this->loader = new Checkview_Loader();
 
-		// Current Vsitor IP.
+		// Current visitor IP.
 		$visitor_ip = checkview_get_visitor_ip();
 		$woo_helper = '';
 		// Check view Bot IP.
