@@ -77,6 +77,7 @@ function activate_checkview() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-checkview-activator.php';
 	Checkview_Activator::activate();
 }
+register_activation_hook( __FILE__, 'activate_checkview' );
 
 /**
  * Handles CheckView deactivation.
@@ -85,12 +86,12 @@ function deactivate_checkview() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-checkview-deactivator.php';
 	Checkview_Deactivator::deactivate();
 }
-
-register_activation_hook( __FILE__, 'activate_checkview' );
 register_deactivation_hook( __FILE__, 'deactivate_checkview' );
+
 if ( ! function_exists( 'is_plugin_active' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/plugin.php';
 }
+
 // Load CheckView Helper Plugins.
 require plugin_dir_path( __FILE__ ) . 'includes/checkview-helper-functions.php';
 
