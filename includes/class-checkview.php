@@ -16,7 +16,7 @@
  * @subpackage Checkview/includes
  * @author Check View <support@checkview.io>
  */
-class Checkview {
+class CheckView {
 
 	/**
 	 * Hook loader.
@@ -54,7 +54,7 @@ class Checkview {
 	 * @since 1.0.0
 	 * @access private
 	 *
-	 * @var Checkview $instance The instance of the class.
+	 * @var CheckView $instance The instance of the class.
 	 */
 
 	private static $instance = null;
@@ -101,7 +101,7 @@ class Checkview {
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
-			self::$instance = new Checkview();
+			self::$instance = new CheckView();
 		}
 
 		return self::$instance;
