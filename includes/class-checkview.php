@@ -75,7 +75,7 @@ class Checkview {
 		$this->plugin_name = 'checkview';
 
 		$this->load_dependencies();
-		$this->define_public_hooks();
+		$this->dequeue_scripts();
 		$this->set_locale();
 		$this->define_admin_hooks();
 	}
@@ -284,15 +284,7 @@ class Checkview {
 	 * @since 1.0.0
 	 * @access private
 	 */
-	private function define_public_hooks() {
-
-		$plugin_public = new Checkview_Public( $this->get_plugin_name(), $this->get_version() );
-		$this->loader->add_action(
-			'wp_enqueue_scripts',
-			$plugin_public,
-			'enqueue_scripts'
-		);
-
+	private function dequeue_scripts() {
 		// Current Vsitor IP.
 		$visitor_ip = checkview_get_visitor_ip();
 		// Check view Bot IP.
@@ -300,6 +292,11 @@ class Checkview {
 
 		// Proceed if visitor IP is in SaaS IPs.
 		if ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) {
+			wp_dequeue_script( 'contact-form-7' );
+			wp_dequeue_style( 'contact-form-7' );
+			wp_dequeue_script( 'wpcf7-recaptcha' );
+			wp_dequeue_style( 'wpcf7-recaptcha' );
+
 			$this->loader->add_action(
 				'pre_option_require_name_email',
 				'',
