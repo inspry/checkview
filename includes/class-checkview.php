@@ -85,8 +85,10 @@ class CheckView {
 		$this->plugin_name = 'checkview';
 
 		$this->load_dependencies();
+
+		$this->loader->add_action( 'init', $this, 'load_textdomain' );
+
 		$this->dequeue_scripts();
-		$this->set_locale();
 		$this->define_admin_hooks();
 	}
 
@@ -205,18 +207,15 @@ class CheckView {
 	}
 
 	/**
-	 * Sets up i18n.
+	 * Loads the CheckView text domain.
 	 *
 	 * @since 1.0.0
-	 * @access private
 	 */
-	private function set_locale() {
-
-		$plugin_i18n = new Checkview_i18n();
-		$plugin_i18n->load_plugin_textdomain();
-		add_action(
-			'plugins_loaded',
-			array( $plugin_i18n, 'load_plugin_textdomain' )
+	public function load_textdomain() {
+		load_plugin_textdomain(
+			'checkview',
+			false,
+			dirname( plugin_basename( __FILE__ ) ) . '/languages/'
 		);
 	}
 
