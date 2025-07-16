@@ -184,6 +184,8 @@ class CheckView {
 		$woo_helper = '';
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
+
+		// TODO: What is this for?
 		if ( ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) ) ) {
 			update_option( $visitor_ip, 'checkview-saas', true );
 		}
