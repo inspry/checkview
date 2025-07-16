@@ -134,9 +134,17 @@ class CheckView {
 	public static function is_bot(): bool {
 		$visitor_ip = checkview_get_visitor_ip();
 		$cv_bot_ip = checkview_get_api_ip();
+		$ip_verified = is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip );
+
+		if ( isset( $_REQUEST['checkview_test_id'] ) && ! $ip_verified ) {
+			Checkview_Admin_Logs::add( 'ip-logs', 'Although checkview_test_id is set in the request, failing bot check due to visitor IP [' . $visitor_ip . '] not existing in bot IP list [' . implode(', ', $cv_bot_ip) . '].' );
+
+			return false;
+		}
+
 		$has_cookie = self::has_cookie();
 
-		return $has_cookie && is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip );
+		return $has_cookie && $ip_verified;
 	}
 
 	/**
