@@ -177,11 +177,9 @@ class CheckView {
 		}
 
 		if ( class_exists( 'WooCommerce' ) ) {
-			if ( is_product() || is_cart() || is_checkout() ) {
-				require_once plugin_dir_path( __DIR__ ) . 'includes/woocommercehelper/class-checkview-woo-automated-testing.php';
+			require_once plugin_dir_path( __DIR__ ) . 'includes/woocommercehelper/class-checkview-woo-automated-testing.php';
 
-				$woo_helper = new Checkview_Woo_Automated_Testing( $this->get_plugin_name(), $this->get_version(), $this->loader );
-			}
+			$woo_helper = new Checkview_Woo_Automated_Testing( $this->get_plugin_name(), $this->get_version(), $this->loader );
 		}
 
 		$this->loader->add_filter(
