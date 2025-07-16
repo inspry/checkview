@@ -112,11 +112,15 @@ class CheckView {
 	/**
 	 * Determine if the request contains the cookie necessary for running testing code.
 	 *
-	 * @return boolean
+	 * Returns one of `woo_checkout`, `form`, or `custom`. False if not set or invalid value.
+	 *
+	 * @return string|false Validated cookie value, or false.
 	 */
-	public static function has_cookie(): bool {
-		if ( isset( $_COOKIE[self::$bot_cookie] ) && $_COOKIE[self::$bot_cookie] === '1' ) {
-			return true;
+	public static function has_cookie() {
+		$valid_values = array('woo_checkout', 'form', 'custom');
+
+		if ( isset( $_COOKIE[self::$bot_cookie] ) && in_array( $_COOKIE[self::$bot_cookie], $valid_values ) ) {
+			return $_COOKIE[self::$bot_cookie];
 		}
 
 		return false;
