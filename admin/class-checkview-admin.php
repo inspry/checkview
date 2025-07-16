@@ -203,6 +203,8 @@ class Checkview_Admin {
 	/**
 	 * Initializes a test.
 	 *
+	 * Should only be called if the request is a verified CheckView bot.
+	 *
 	 * @return void
 	 */
 	public function checkview_init_current_test() {
@@ -216,25 +218,9 @@ class Checkview_Admin {
 			return;
 		}
 
-		// Current Visitor IP.
 		$visitor_ip = checkview_get_visitor_ip();
-		// Check view Bot IP.
-		$cv_bot_ip = checkview_get_api_ip();
 
-		// Skip if visitor ip not equal to CV Bot IP.
-		if ( is_array( $cv_bot_ip ) && ! in_array( $visitor_ip, $cv_bot_ip ) ) {
-			if ( isset( $_REQUEST['checkview_test_id'] ) ) {
-				Checkview_Admin_Logs::add( 'ip-logs', 'Although checkview_test_id is set in the request, exiting test init due to visitor IP [' . $visitor_ip . '] failing bot IP check [' . implode(', ', $cv_bot_ip) . '].' );
-			}
-
-			if ( 'true' !== get_option( 'cv_ff_keys_set_turnstile' ) ) {
-				return;
-			}
-
-			return;
-		}
-
-		Checkview_Admin_Logs::add( 'ip-logs', 'Visitor IP [' . $visitor_ip . '] determined to be in bot IP list, continuing.' );
+		Checkview_Admin_Logs::add( 'ip-logs', 'Visitor IP [' . $visitor_ip . '] determined to be in bot IP list, continuing with test code.' );
 
 		if ( is_plugin_active( 'cleantalk-spam-protect/cleantalk.php' ) ) {
 			checkview_whitelist_api_ip();

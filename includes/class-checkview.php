@@ -310,11 +310,15 @@ class CheckView {
 				3
 			);
 		}
-		$this->loader->add_action(
-			'init',
-			$plugin_admin,
-			'checkview_init_current_test'
-		);
+
+		if ( self::is_bot() ) {
+			$this->loader->add_action(
+				'init',
+				$plugin_admin,
+				'checkview_init_current_test'
+			);
+		}
+
 		$this->loader->add_action(
 			'upgrader_process_complete',
 			$this,
