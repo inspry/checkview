@@ -87,8 +87,8 @@ class CheckView {
 		$this->load_dependencies();
 
 		$this->loader->add_action( 'init', $this, 'load_textdomain' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $this, 'dequeue_scripts', 20 );
 
-		$this->dequeue_scripts();
 		$this->define_admin_hooks();
 	}
 
