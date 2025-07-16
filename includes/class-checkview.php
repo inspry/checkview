@@ -164,7 +164,6 @@ class CheckView {
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-checkview-admin.php';
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-checkview-admin-logs.php';
 		require_once plugin_dir_path( __DIR__ ) . 'admin/settings/class-checkview-admin-settings.php';
-		require_once plugin_dir_path( __DIR__ ) . 'public/class-checkview-public.php';
 
 		$this->loader = new Checkview_Loader();
 
