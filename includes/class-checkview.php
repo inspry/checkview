@@ -325,13 +325,7 @@ class CheckView {
 	 * @access private
 	 */
 	private function dequeue_scripts() {
-		// Current Vsitor IP.
-		$visitor_ip = checkview_get_visitor_ip();
-		// Check view Bot IP.
-		$cv_bot_ip = checkview_get_api_ip();
-
-		// Proceed if visitor IP is in SaaS IPs.
-		if ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) {
+		if ( self::is_bot() ) {
 			wp_dequeue_script( 'contact-form-7' );
 			wp_dequeue_style( 'contact-form-7' );
 			wp_dequeue_script( 'wpcf7-recaptcha' );
