@@ -338,7 +338,7 @@ class CheckView {
 	 * @since 1.0.0
 	 * @access private
 	 */
-	private function dequeue_scripts() {
+	public function dequeue_scripts() {
 		if ( self::is_bot() ) {
 			wp_dequeue_script( 'contact-form-7' );
 			wp_dequeue_style( 'contact-form-7' );
