@@ -194,7 +194,7 @@ class CheckView {
 		require_once plugin_dir_path( __DIR__ ) . 'includes/API/class-checkview-api.php';
 
 		// Initialize the plugin's API.
-		$plugin_api = new CheckView_Api( $woo_helper );
+		$plugin_api = new CheckView_Api();
 
 		// Hook our routes into WordPress.
 		$this->loader->add_action(

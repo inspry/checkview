@@ -261,7 +261,7 @@ class Checkview_Woo_Automated_Testing {
 	 *
 	 * @return array
 	 */
-	public function get_active_payment_gateways() {
+	public static function get_active_payment_gateways() {
 		$active_gateways  = array();
 		$payment_gateways = WC_Payment_Gateways::instance()->payment_gateways();
 		foreach ( $payment_gateways as $gateway ) {
@@ -284,8 +284,8 @@ class Checkview_Woo_Automated_Testing {
 	 *
 	 * @return WC_Customer
 	 */
-	public function checkview_create_test_customer() {
-		$customer = $this->checkview_get_test_customer();
+	public static function checkview_create_test_customer() {
+		$customer = self::checkview_get_test_customer();
 		$email    = CHECKVIEW_EMAIL;
 
 		if ( false === $customer || empty( $customer ) ) {
@@ -317,7 +317,7 @@ class Checkview_Woo_Automated_Testing {
 	 *
 	 * @return WC_Customer|false
 	 */
-	public function checkview_get_test_customer() {
+	public static function checkview_get_test_customer() {
 		$customer_id = get_option( 'checkview_test_user', false );
 
 		if ( $customer_id ) {
@@ -359,21 +359,21 @@ class Checkview_Woo_Automated_Testing {
 	 * @type string $username The test user's username.
 	 * @type string $password The newly-generated password for the test user.
 	 */
-	public function checkview_get_test_credentials() {
+	public static function checkview_get_test_credentials() {
 		add_filter( 'pre_wp_mail', '__return_false', PHP_INT_MAX );
 
 		$password = wp_generate_password();
-		$customer = $this->checkview_get_test_customer();
+		$customer = self::checkview_get_test_customer();
 
 		if ( ! $customer ) {
-			$customer = $this->checkview_create_test_customer();
+			$customer = self::checkview_create_test_customer();
 		}
 
 		$customer->set_password( $password );
 		$customer->save();
 
 		// Schedule the password to be rotated 15min from now.
-		$this->checkview_rotate_password_cron();
+		self::checkview_rotate_password_cron();
 
 		return array(
 			'email'    => $customer->get_email(),
@@ -388,7 +388,7 @@ class Checkview_Woo_Automated_Testing {
 	public function checkview_rotate_test_user_credentials() {
 		add_filter( 'pre_wp_mail', '__return_false', PHP_INT_MAX );
 
-		$customer = $this->checkview_get_test_customer();
+		$customer = self::checkview_get_test_customer();
 
 		if ( ! $customer ) {
 			return false;
@@ -403,7 +403,7 @@ class Checkview_Woo_Automated_Testing {
 	 *
 	 * @return void
 	 */
-	public function checkview_rotate_password_cron() {
+	public static function checkview_rotate_password_cron() {
 		wp_schedule_single_event( time() + 15 * MINUTE_IN_SECONDS, 'checkview_rotate_user_credentials' );
 	}
 
@@ -414,7 +414,7 @@ class Checkview_Woo_Automated_Testing {
 	 *
 	 * @return WC_Product/bool
 	 */
-	public function checkview_get_test_product() {
+	public static function checkview_get_test_product() {
 		$product_id = get_option( 'checkview_woo_product_id' );
 		if ( $product_id ) {
 			try {
@@ -782,14 +782,14 @@ class Checkview_Woo_Automated_Testing {
 	 *
 	 * Doesn't run on AJAX requests.
 	 *
-	 * @return void
+	 * @return boolean
 	 */
-	public function delete_orders_from_backend() {
+	public static function delete_orders_from_backend() {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			return;
+			return false;
 		}
 
-		return $this->checkview_delete_orders();
+		return self::checkview_delete_orders();
 	}
 
 	/**
@@ -798,7 +798,7 @@ class Checkview_Woo_Automated_Testing {
 	 * @param integer $order_id Woocommerce Order ID.
 	 * @return bool
 	 */
-	public function checkview_delete_orders( $order_id = '' ) {
+	public static function checkview_delete_orders( $order_id = '' ) {
 		Checkview_Admin_Logs::add( 'ip-logs', 'Deleting CheckView orders from the database...' );
 
 		$orders = array();
