@@ -67,7 +67,7 @@ class CheckView {
 	 *
 	 * @var string $bot_cookie Bot cookie name.
 	 */
-	private static string $bot_cookie = 'cv_trigger';
+	private static string $bot_cookie = 'cv_running';
 
 	/**
 	 * Constructor.
