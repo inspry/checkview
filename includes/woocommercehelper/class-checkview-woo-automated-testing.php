@@ -203,7 +203,6 @@ class Checkview_Woo_Automated_Testing {
 			);
 		}
 
-		// add_filter( 'wp_mail', array( $this, 'checkview_filter_wp_mail' ), 99 );
 		$this->checkview_test_mode();
 	}
 
@@ -563,14 +562,19 @@ class Checkview_Woo_Automated_Testing {
 	 * @return void
 	 */
 	public function checkview_test_mode() {
-		$visitor_ip = checkview_get_visitor_ip();
-		$cv_bot_ip = checkview_get_api_ip();
+		$is_bot = CheckView::is_bot();
 
-		if ( ! is_array( $cv_bot_ip ) || ! in_array( $visitor_ip, $cv_bot_ip ) ) {
+		if ( ! $is_bot ) {
 			return;
 		}
 
-		Checkview_Admin_Logs::add( 'ip-logs', 'Running Woo test mode hooks, visitor IP [' . $visitor_ip . '] matched a bot IP.' );
+		$cookie = CheckView::has_cookie();
+
+		if ( $cookie !== 'woo_checkout' ) {
+			return;
+		}
+
+		Checkview_Admin_Logs::add( 'ip-logs', 'Running Woo test mode hooks, visitor is bot and cookie value equals [' . $cookie . '].' );
 
 		if ( ! is_admin() && class_exists( 'WooCommerce' ) ) {
 			// Always use Stripe test mode when on dev or staging.
