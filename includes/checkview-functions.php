@@ -118,8 +118,6 @@ if ( ! function_exists( 'get_checkview_test_id' ) ) {
 	 * @return string|false Test ID, or `false` on failure.
 	 */
 	function get_checkview_test_id() {
-		global $wpdb;
-
 		$cv_test_id = isset( $_REQUEST['checkview_test_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['checkview_test_id'] ) ) : '';
 
 		if ( ! empty( $cv_test_id ) ) {
@@ -154,7 +152,7 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 	 * @param string $checkview_test_id Test ID.
 	 * @return void
 	 */
-	function complete_checkview_test( $checkview_test_id = '' ) {
+	function complete_checkview_test( string $checkview_test_id = '' ) {
 		global $wpdb;
 
 		Checkview_Admin_Logs::add( 'ip-logs', 'Completing test...' );
@@ -190,10 +188,14 @@ if ( ! function_exists( 'complete_checkview_test' ) ) {
 		$form_id  = get_option( $checkview_test_id . '_wsf_frm_id', '' );
 
 		if ( ! empty( $form_id ) && ! empty( $entry_id ) ) {
-			$ws_form_submit = new WS_Form_Submit();
-			$ws_form_submit->id = $entry_id;
-			$ws_form_submit->form_id = $form_id;
-			$ws_form_submit->db_delete( true, true, true );
+			if ( class_exists( 'WS_Form_Submit' ) ) {
+				$ws_form_submit = new WS_Form_Submit();
+				$ws_form_submit->id = $entry_id;
+				$ws_form_submit->form_id = $form_id;
+				$ws_form_submit->db_delete( true, true, true );
+			} else {
+				Checkview_Admin_Logs::add( 'ip-logs', 'WS_Form_Submit class does not exist.' );
+			}
 		}
 
 		cv_delete_option( $checkview_test_id . '_wsf_entry_id' );
@@ -665,7 +667,7 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 
 		$is_sub_directory = explode( '/', str_replace( '//', '|', $current_url ) );
 		if ( count( $is_sub_directory ) > 1 ) {
-			// remove subdiretory from home url.
+			// remove subdirectory from home url.
 			$current_url = str_replace( '/' . $is_sub_directory[1], '', $current_url );
 		}
 
@@ -686,16 +688,30 @@ if ( ! function_exists( 'checkview_create_cv_session' ) ) {
 		$url         = explode( '?', $current_url );
 		$current_url = $url[0];
 		$page_id     = '';
+
 		// Retrieve the current post's ID based on its URL.
-		if ( $current_url ) {
-			$page_id = get_page_by_path( $current_url );
-			$page_id = $page_id->ID;
-		} else {
+		if ( ! $current_url ) {
 			global $post;
-			if ( $post ) {
+
+			if ( $post instanceof WP_Post ) {
 				$page_id = $post->ID;
 			}
+		} else {
+			$page = get_page_by_path( $current_url );
+
+			if ( $page instanceof WP_Post ) {
+				$page_id = $page->ID;
+			} else {
+				global $post;
+
+				if ( $post instanceof WP_Post ) {
+					$page_id = $post->ID;
+				} else {
+					$page_id = get_the_ID();
+				}
+			}
 		}
+
 		$session_table = $wpdb->prefix . 'cv_session';
 		$test_key      = 'CF_TEST_' . $page_id;
 		$session_data  = array(
@@ -1012,7 +1028,7 @@ if ( ! function_exists( 'checkview_get_option_data_handler' ) ) {
 	 * @return void
 	 */
 	function checkview_get_option_data_handler() {
-		if ( ! isset( $_POST['_checkview_token'] ) || empty( $_POST['_checkview_token'] ) ) {
+		if ( empty( $_POST['_checkview_token'] ) ) {
 			Checkview_Admin_Logs::add( 'api-logs', 'Token absent.' );
 			wp_send_json_error( esc_html__( 'There was a technical error while processing your request.', 'checkview' ) );
 			wp_die();
@@ -1030,9 +1046,7 @@ if ( ! function_exists( 'checkview_get_option_data_handler' ) ) {
 		$nonce_token = checkview_validate_jwt_token( $token );
 
 		// Checking for JWT token.
-		if ( ! isset( $nonce_token ) || empty( $nonce_token ) || is_wp_error( $nonce_token ) ) {
-			$this->jwt_error = $nonce_token;
-			// Log the detailed error for internal use.
+		if ( empty( $nonce_token ) || is_wp_error( $nonce_token ) ) {
 			Checkview_Admin_Logs::add( 'api-logs', 'Invalid token.' );
 			wp_send_json_error( esc_html__( 'There was a technical error while processing your request.', 'checkview' ) );
 			wp_die();
@@ -1132,7 +1146,7 @@ if (!function_exists('array_find')) {
      * @param callable $callback The callback function to test each element.
      * @return mixed The first matching element, or null if none found.
      */
-    function array_find(array $array, callable $callback): mixed {
+    function array_find(array $array, callable $callback) {
         foreach ($array as $key => $value) {
             if ($callback($value, $key)) {
                 return $value;

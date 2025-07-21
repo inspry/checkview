@@ -11,7 +11,7 @@
  * Plugin Name:       CheckView
  * Plugin URI:        https://checkview.io
  * Description:       CheckView is the #1 fully automated solution to test your WordPress forms and detect form problems fast.  Automatically test your WordPress forms to ensure you never miss a lead again.
- * Version:           2.0.19
+ * Version:           2.0.20
  * Author:            CheckView
  * Author URI:        https://checkview.io/
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  *
  * @link https://semver.org
  */
-define( 'CHECKVIEW_VERSION', '2.0.19' );
+define( 'CHECKVIEW_VERSION', '2.0.20' );
 
 if ( ! defined( 'CHECKVIEW_BASE_DIR' ) ) {
 	define( 'CHECKVIEW_BASE_DIR', plugin_basename( __FILE__ ) );
@@ -77,6 +77,7 @@ function activate_checkview() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-checkview-activator.php';
 	Checkview_Activator::activate();
 }
+register_activation_hook( __FILE__, 'activate_checkview' );
 
 /**
  * Handles CheckView deactivation.
@@ -85,12 +86,12 @@ function deactivate_checkview() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-checkview-deactivator.php';
 	Checkview_Deactivator::deactivate();
 }
-
-register_activation_hook( __FILE__, 'activate_checkview' );
 register_deactivation_hook( __FILE__, 'deactivate_checkview' );
+
 if ( ! function_exists( 'is_plugin_active' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/plugin.php';
 }
+
 // Load CheckView Helper Plugins.
 require plugin_dir_path( __FILE__ ) . 'includes/checkview-helper-functions.php';
 
@@ -103,7 +104,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-checkview.php';
  * @since 1.0.0
  */
 function run_checkview() {
-	$plugin = Checkview::get_instance();
+	$plugin = CheckView::get_instance();
 	$plugin->run();
 }
 add_action( 'plugins_loaded', 'run_checkview', '10' );

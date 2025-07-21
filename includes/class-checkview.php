@@ -16,7 +16,7 @@
  * @subpackage Checkview/includes
  * @author Check View <support@checkview.io>
  */
-class Checkview {
+class CheckView {
 
 	/**
 	 * Hook loader.
@@ -54,10 +54,20 @@ class Checkview {
 	 * @since 1.0.0
 	 * @access private
 	 *
-	 * @var Checkview $instance The instance of the class.
+	 * @var CheckView $instance The instance of the class.
 	 */
 
 	private static $instance = null;
+
+	/**
+	 * Bot cookie name.
+	 *
+	 * @since 2.0.20
+	 * @access private
+	 *
+	 * @var string $bot_cookie Bot cookie name.
+	 */
+	private static string $bot_cookie = 'cv_running';
 
 	/**
 	 * Constructor.
@@ -70,13 +80,15 @@ class Checkview {
 		if ( defined( 'CHECKVIEW_VERSION' ) ) {
 			$this->version = CHECKVIEW_VERSION;
 		} else {
-			$this->version = '2.0.19';
+			$this->version = '2.0.20';
 		}
 		$this->plugin_name = 'checkview';
 
 		$this->load_dependencies();
-		$this->define_public_hooks();
-		$this->set_locale();
+
+		$this->loader->add_action( 'init', $this, 'load_textdomain' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $this, 'dequeue_scripts', 20 );
+
 		$this->define_admin_hooks();
 	}
 
@@ -91,10 +103,48 @@ class Checkview {
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
-			self::$instance = new Checkview();
+			self::$instance = new CheckView();
 		}
 
 		return self::$instance;
+	}
+
+	/**
+	 * Determine if the request contains the cookie necessary for running testing code.
+	 *
+	 * Returns one of `woo_checkout`, `form`, or `custom`. False if not set or invalid value.
+	 *
+	 * @return string|false Validated cookie value, or false.
+	 */
+	public static function has_cookie() {
+		$valid_values = array('woo_checkout', 'form', 'custom');
+
+		if ( isset( $_COOKIE[self::$bot_cookie] ) && in_array( $_COOKIE[self::$bot_cookie], $valid_values ) ) {
+			return $_COOKIE[self::$bot_cookie];
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine if the current request is a CheckView bot.
+	 *
+	 * @return bool
+	 */
+	public static function is_bot(): bool {
+		$visitor_ip = checkview_get_visitor_ip();
+		$cv_bot_ip = checkview_get_api_ip();
+		$ip_verified = is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip );
+
+		if ( isset( $_REQUEST['checkview_test_id'] ) && ! $ip_verified ) {
+			Checkview_Admin_Logs::add( 'ip-logs', 'Although checkview_test_id is set in the request, failing bot check due to visitor IP [' . $visitor_ip . '] not existing in bot IP list [' . implode(', ', $cv_bot_ip) . '].' );
+
+			return false;
+		}
+
+		$has_cookie = self::has_cookie();
+
+		return $has_cookie && $ip_verified;
 	}
 
 	/**
@@ -123,26 +173,29 @@ class Checkview {
 		// CheckView
 		require_once plugin_dir_path( __DIR__ ) . 'includes/checkview-functions.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-checkview-loader.php';
-		require_once plugin_dir_path( __DIR__ ) . 'includes/class-checkview-i18n.php';
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-checkview-admin.php';
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-checkview-admin-logs.php';
 		require_once plugin_dir_path( __DIR__ ) . 'admin/settings/class-checkview-admin-settings.php';
-		require_once plugin_dir_path( __DIR__ ) . 'public/class-checkview-public.php';
 
 		$this->loader = new Checkview_Loader();
 
-		// Current Vsitor IP.
+		// Current visitor IP.
 		$visitor_ip = checkview_get_visitor_ip();
 		$woo_helper = '';
 		// Check view Bot IP.
 		$cv_bot_ip = checkview_get_api_ip();
+
+		// TODO: What is this for?
 		if ( ( 'checkview-saas' === get_option( $visitor_ip ) || isset( $_REQUEST['checkview_test_id'] ) || ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) ) ) {
 			update_option( $visitor_ip, 'checkview-saas', true );
 		}
+
 		if ( class_exists( 'WooCommerce' ) ) {
 			require_once plugin_dir_path( __DIR__ ) . 'includes/woocommercehelper/class-checkview-woo-automated-testing.php';
+
 			$woo_helper = new Checkview_Woo_Automated_Testing( $this->get_plugin_name(), $this->get_version(), $this->loader );
 		}
+
 		$this->loader->add_filter(
 			'plugin_action_links_' . CHECKVIEW_BASE_DIR,
 			$this,
@@ -153,7 +206,7 @@ class Checkview {
 		require_once plugin_dir_path( __DIR__ ) . 'includes/API/class-checkview-api.php';
 
 		// Initialize the plugin's API.
-		$plugin_api = new CheckView_Api( $woo_helper );
+		$plugin_api = new CheckView_Api();
 
 		// Hook our routes into WordPress.
 		$this->loader->add_action(
@@ -164,18 +217,15 @@ class Checkview {
 	}
 
 	/**
-	 * Sets up i18n.
+	 * Loads the CheckView text domain.
 	 *
 	 * @since 1.0.0
-	 * @access private
 	 */
-	private function set_locale() {
-
-		$plugin_i18n = new Checkview_i18n();
-		$plugin_i18n->load_plugin_textdomain();
-		add_action(
-			'plugins_loaded',
-			array( $plugin_i18n, 'load_plugin_textdomain' )
+	public function load_textdomain() {
+		load_plugin_textdomain(
+			'checkview',
+			false,
+			dirname( plugin_basename( __FILE__ ) ) . '/languages/'
 		);
 	}
 
@@ -262,11 +312,15 @@ class Checkview {
 				3
 			);
 		}
-		$this->loader->add_action(
-			'init',
-			$plugin_admin,
-			'checkview_init_current_test'
-		);
+
+		if ( self::is_bot() ) {
+			$this->loader->add_action(
+				'init',
+				$plugin_admin,
+				'checkview_init_current_test'
+			);
+		}
+
 		$this->loader->add_action(
 			'upgrader_process_complete',
 			$this,
@@ -284,22 +338,13 @@ class Checkview {
 	 * @since 1.0.0
 	 * @access private
 	 */
-	private function define_public_hooks() {
+	public function dequeue_scripts() {
+		if ( self::is_bot() ) {
+			wp_dequeue_script( 'contact-form-7' );
+			wp_dequeue_style( 'contact-form-7' );
+			wp_dequeue_script( 'wpcf7-recaptcha' );
+			wp_dequeue_style( 'wpcf7-recaptcha' );
 
-		$plugin_public = new Checkview_Public( $this->get_plugin_name(), $this->get_version() );
-		$this->loader->add_action(
-			'wp_enqueue_scripts',
-			$plugin_public,
-			'enqueue_scripts'
-		);
-
-		// Current Vsitor IP.
-		$visitor_ip = checkview_get_visitor_ip();
-		// Check view Bot IP.
-		$cv_bot_ip = checkview_get_api_ip();
-
-		// Proceed if visitor IP is in SaaS IPs.
-		if ( is_array( $cv_bot_ip ) && in_array( $visitor_ip, $cv_bot_ip ) ) {
 			$this->loader->add_action(
 				'pre_option_require_name_email',
 				'',

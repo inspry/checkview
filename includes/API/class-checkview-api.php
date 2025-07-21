@@ -18,32 +18,11 @@
  */
 class CheckView_Api {
 	/**
-	 * Woo Helper class.
-	 *
-	 * @since 1.0.0
-	 * @access private
-	 *
-	 * @var bool/Checkview_Woo_Automated_Testing $woo_helper The woo helper of this plugin.
-	 */
-	private $woo_helper;
-	/**
 	 * Holds the JWT error.
 	 *
 	 * @var WP_Error
 	 */
 	public $jwt_error = null;
-	/**
-	 * Constructor.
-	 *
-	 * Sets class properties.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param Checkview_Woo_Automated_Testing $woo_helper The woohelper class.
-	 */
-	public function __construct( $woo_helper = '' ) {
-		$this->woo_helper  = $woo_helper;
-	}
 
 	/**
 	 * Registers API routes.
@@ -1015,7 +994,7 @@ class CheckView_Api {
 		$order_id = $request->get_param( 'order_id' );
 		$order_id = isset( $order_id ) ? intval( $order_id ) : null;
 		if ( null === $order_id || empty( $order_id ) ) {
-			$results = $this->woo_helper->delete_orders_from_backend();
+			$results = Checkview_Woo_Automated_Testing::delete_orders_from_backend();
 		} else {
 			try {
 				$order_object = new WC_Order( $order_id );
@@ -1046,6 +1025,8 @@ class CheckView_Api {
 					require_once CHECKVIEW_ADMIN_DIR . '/class-checkview-admin-logs.php';
 				}
 				Checkview_Admin_Logs::add( 'api-logs', 'API failed to delete customer.' );
+
+				$results = false;
 			}
 		}
 		if ( $results ) {
@@ -1158,7 +1139,7 @@ class CheckView_Api {
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
 		}
-		$active_gateways = $this->woo_helper->get_active_payment_gateways();
+		$active_gateways = Checkview_Woo_Automated_Testing::get_active_payment_gateways();
 		if ( $active_gateways ) {
 			return new WP_REST_Response(
 				array(
@@ -1203,7 +1184,7 @@ class CheckView_Api {
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
 		}
-		$customer = $this->woo_helper->checkview_create_test_customer();
+		$customer = Checkview_Woo_Automated_Testing::checkview_create_test_customer();
 		if ( $customer ) {
 			return new WP_REST_Response(
 				array(
@@ -1244,7 +1225,7 @@ class CheckView_Api {
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
 		}
-		$customer = $this->woo_helper->checkview_get_test_credentials();
+		$customer = Checkview_Woo_Automated_Testing::checkview_get_test_credentials();
 		if ( $customer ) {
 			return new WP_REST_Response(
 				array(
@@ -1436,7 +1417,7 @@ class CheckView_Api {
 				esc_html__( 'Invalid request.', 'checkview' ),
 			);
 		}
-		$product                              = $this->woo_helper->checkview_get_test_product();
+		$product = Checkview_Woo_Automated_Testing::checkview_get_test_product();
 		$product_details['checkview_product'] = $product ? get_permalink( $product->get_id() ) : false;
 		if ( ! empty( $product_details ) && false !== $product_details['checkview_product'] ) {
 			return new WP_REST_Response(
@@ -2418,9 +2399,9 @@ class CheckView_Api {
 				array( 'status' => 400 )
 			);
 		}
-		$product    = $this->woo_helper->checkview_get_test_product();
+		$product = Checkview_Woo_Automated_Testing::checkview_get_test_product();
 		$product_id = ! empty( $product->get_id() ) ? $product->get_id() : false;
-		$status     = checkview_update_woocommerce_product_status( $product_id, $checkview_status );
+		$status = checkview_update_woocommerce_product_status( $product_id, $checkview_status );
 		if ( 0 != $status && ! is_wp_error( $product_id ) ) {
 			return new WP_REST_Response(
 				array(
