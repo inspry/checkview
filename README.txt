@@ -86,6 +86,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 == Changelog ==
 = 2.0.21 =
+* Handle errors when setting up logs folder.
 
 = 2.0.20 =
 * Only run testing code for requests with newly required cookie.
@@ -380,6 +381,7 @@ Yes, creating a [CheckView.io](https://checkview.io/) account is required - for 
 
 == Upgrade Notice ==
 = 2.0.21 =
+* Handle errors when setting up logs folder.
 
 = 2.0.20 =
 * Only run testing code for requests with newly required cookie.

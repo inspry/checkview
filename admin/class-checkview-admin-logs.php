@@ -121,9 +121,13 @@ class Checkview_Admin_Logs {
 
 			$fp = @fopen( $htaccess, 'w' );
 
-			@fputs( $fp, 'deny from all' );
+			if ( ! $fp ) {
+				error_log( 'CheckView: Could not create logs htaccess file: ' . $htaccess );
+			} else {
+				@fputs( $fp, 'deny from all' );
 
-			@fclose( $fp );
+				@fclose( $fp );
+			}
 
 		}
 
@@ -134,9 +138,13 @@ class Checkview_Admin_Logs {
 
 			$fp = @fopen( $index, 'w' );
 
-			@fputs( $fp, '' );
+			if ( ! $fp ) {
+				error_log( 'CheckView: Could not create logs index.html file: ' . $index );
+			} else {
+				@fputs( $fp, '' );
 
-			@fclose( $fp );
+				@fclose( $fp );
+			}
 
 		}
 	}
